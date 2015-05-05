@@ -1,0 +1,32 @@
+{
+  "name": "RFIDMonitorPlatform",
+  "version": "0.1.0",
+  "description": "A prototype version of RFIDMonitor Platform system",
+  "author": [
+    {
+      "name": "Gustavo Valiati",
+      "email": "gustavovaliati@gmail.com"
+    },
+    {
+      "name": "Thiago Bitencourt",
+      "email": "thiago.mbitencourt@gmail.com"
+    }
+  ],
+  "homepage": "www.celtab.org.br",
+  "repository": {
+    "type": "git",
+    "url": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  },
+  "dependencies": {
+    "body-parser": "^1.12.3",
+    "cors": "^2.5.3",
+    "express": "^3.4.8",
+    "express-session": "^1.11.1",
+    "passport": "^0.2.1",
+    "pg": "^4.3.0"
+  },
+  "engines" : { 
+    "node" : "0.12.2" 
+  },
+  "main": "server.js"
+}
