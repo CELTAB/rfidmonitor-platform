@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+CAUTION: Do not modify this file unless you know what you are doing.
+         Unexpected results may occur if the code is changed deliberately.
+-->
+<dbmodel pgmodeler-ver="0.8.1-alpha1" last-position="0,0" last-zoom="1"
+	 default-schema="public" default-owner="postgres">
+<database name="new_database">
+</database>
+
+<schema name="public" protected="true" fill-color="#e1e1e1" sql-disabled="true">
+</schema>
+
+<table name="collector">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="177" y="327"/>
+	<column name="id" not-null="true">
+		<type name="serial"/>
+	</column>
+	<column name="group_id" not-null="true">
+		<type name="integer"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="text"/>
+	</column>
+	<column name="mac" not-null="true">
+		<type name="text"/>
+	</column>
+	<column name="description">
+		<type name="text"/>
+	</column>
+	<column name="lat">
+		<type name="text"/>
+	</column>
+	<column name="lng">
+		<type name="text"/>
+	</column>
+	<column name="rfiddata_type_id" not-null="true">
+		<type name="integer"/>
+	</column>
+	<column name="status" not-null="true">
+		<type name="integer"/>
+	</column>
+	<constraint name="pk_collector" type="pk-constr" table="public.collector">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="group">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<comment><![CDATA[Refers to a group of collectors: institution, department, region, etc.]]></comment>
+	<position x="524" y="344"/>
+	<column name="id" not-null="true">
+		<type name="serial"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="text"/>
+	</column>
+	<column name="lat">
+		<type name="text"/>
+	</column>
+	<column name="lng">
+		<type name="text"/>
+	</column>
+	<column name="creation_date" not-null="true">
+		<type name="timestamp"/>
+	</column>
+	<constraint name="pk_group" type="pk-constr" table="public.group">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="rfiddata">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<comment><![CDATA[json string containing extra fields]]></comment>
+	<position x="508" y="108"/>
+	<column name="id" not-null="true">
+		<type name="serial"/>
+	</column>
+	<column name="collector_mac" not-null="true">
+		<type name="text"/>
+	</column>
+	<column name="group_id" not-null="true">
+		<type name="integer"/>
+	</column>
+	<column name="timestamp" not-null="true">
+		<type name="timestamp"/>
+	</column>
+	<column name="md5hash" not-null="true">
+		<type name="text"/>
+	</column>
+	<column name="rfidcode" not-null="true">
+		<type name="text"/>
+	</column>
+	<column name="collector_id" not-null="true">
+		<type name="integer"/>
+	</column>
+	<column name="extra_data">
+		<type name="text"/>
+	</column>
+	<constraint name="pk_rfiddata" type="pk-constr" table="public.rfiddata">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="user">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="854" y="345"/>
+	<column name="username" not-null="true">
+		<type name="text"/>
+	</column>
+	<column name="password" not-null="true">
+		<type name="text"/>
+	</column>
+	<column name="email">
+		<type name="text"/>
+	</column>
+	<column name="name">
+		<type name="text"/>
+	</column>
+	<constraint name="pk_user" type="pk-constr" table="public.user">
+		<columns names="username" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="user_session">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="859" y="167"/>
+	<column name="id" not-null="true">
+		<type name="text"/>
+	</column>
+	<column name="username" not-null="true">
+		<type name="text"/>
+	</column>
+	<constraint name="pk_usersession" type="pk-constr" table="public.user_session">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<constraint name="fk_group_collector" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.group" table="public.collector">
+	<columns names="group_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_group_rfiddata" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.group" table="public.rfiddata">
+	<columns names="group_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_collector_rfidata" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.collector" table="public.rfiddata">
+	<columns names="collector_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_user_usersession" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.user" table="public.user_session">
+	<columns names="username" ref-type="src-columns"/>
+	<columns names="username" ref-type="dst-columns"/>
+</constraint>
+
+<relationship name="rel_collectors_group" type="relfk"
+	 src-table="public.collector"
+	 dst-table="public.group"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_rfiddata_group" type="relfk"
+	 src-table="public.rfiddata"
+	 dst-table="public.group"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_rfiddata_collector" type="relfk"
+	 src-table="public.rfiddata"
+	 dst-table="public.collector"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_user_session_user" type="relfk"
+	 src-table="public.user_session"
+	 dst-table="public.user"
+	 src-required="false" dst-required="false"/>
+
+</dbmodel>
