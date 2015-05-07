@@ -17,16 +17,16 @@
     "type": "git",
     "url": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
   },
+  "engines": {
+    "node": "0.12.2"
+  },
+  "main": "server.js",
   "dependencies": {
-    "body-parser": "^1.12.3",
-    "cors": "^2.5.3",
-    "express": "^3.4.8",
-    "express-session": "^1.11.1",
-    "passport": "^0.2.1",
-    "pg": "^4.3.0"
-  },
-  "engines" : { 
-    "node" : "0.12.2" 
-  },
-  "main": "server.js"
+    "express": "4.1.1",
+    "body-parser": "~1.12.3",
+    "cors": "~2.6.0",
+    "express-session": "~1.11.1",
+    "passport": "~0.2.1",
+    "pg": "~4.3.0"
+  }
 }

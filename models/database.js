@@ -1,6 +1,6 @@
 var pg = require('pg');
 
-var connectionString = 'postgres://rfidplatform:rfidplatform@192.168.1.106:5432/rfidplatform';
+var connectionString = 'postgres://rfidplatform:rfidplatform@localhost:5432/rfidplatform';
 
 if(process.env.OPENSHIFT_POSTGRESQL_DB_HOST){
   connectionString = process.env.OPENSHIFT_POSTGRESQL_DB_URL;
@@ -17,6 +17,8 @@ module.exports = {
           client.query(text, values, function(err, result) {
             done();
             cb(err, result);
+            // Fecha conexão
+            // pg.end();
           })
       });
    }

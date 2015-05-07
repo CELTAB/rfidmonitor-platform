@@ -13,13 +13,15 @@ exports.postInstitution = function(req, res) {
   institution.image = req.body.type;
   institution.lat = req.body.lat;
   institution.lng = req.body.lng;
-  institution.date = req.body.date;
+  // institution.date = req.body.date;
 
   var institutionDao = new InstitutionDao();
   institutionDao.insert(institution, function(err, result){
     if(err)
       console.log(err);
-    else
+    else{
       console.log(result);
+      res.json({ message: 'Instituition added: ' + institution.name});
+    }
   });
 };
