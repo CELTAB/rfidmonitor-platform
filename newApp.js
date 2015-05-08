@@ -99,6 +99,11 @@
 
 	server.on('connection', function(socket) {
 		var address = socket.address();
+
+		var permanentDataBuffer = new Buffer(0);
+		var waitingForRemainingData = false;
+		var packetSize = 0;
+
     	console.log("RFIDPLATFORM[DEBUG]: New connection from " + address.address + ":" + address.port);    	 	
 
 		socket.on('end', function() {
@@ -126,22 +131,70 @@
 	
 		socket.on('data', function(data) {
 
-			// Convert message to JSON
-			var message = "";
-			try {
-			 //  console.log("RFIDPLATFORM[DEBUG]: Raw data: "+data.toString());
-				var buffer = [];
-				buffer = data.slice(0, 8);
-				var size = parseInt(buffer);
-				// console.log("RFIDPLATFORM[DEBUG]: Size of packet = " + size + " /  Size of data = " + data.length);
+			//permanentDataBuffer.length = 22
+			//packetSize = 50
+			//chegou = 28
 
-				var jsonString = data.slice(8, data.length).toString();
-			 	message = JSON.parse(jsonString);
-			} catch (e) {
-			  console.log("RFIDPLATFORM[DEBUG]: Error on JSON.parse: " + e);
-			  console.log("RFIDPLATFORM[DEBUG]: Message : " + data.toString());
-			  return;
+			permanentDataBuffer = Buffer.concat([permanentDataBuffer, data]);
+
+			if(!waitingForRemainingData){
+				console.log("A");
+				//new packet.
+				if(! (permanentDataBuffer.length >= 8)){	
+				console.log("b");				
+					return;
+				}
+				var buffer = [];
+				buffer = permanentDataBuffer.slice(0, 8);
+				permanentDataBuffer = permanentDataBuffer.slice(8, permanentDataBuffer.length);
+				packetSize = parseInt(buffer);
+				waitingForRemainingData = true;
+				console.log("c");
 			}
+
+			if(permanentDataBuffer.length < packetSize){
+				console.log("d");
+				return;
+			}
+
+			var jsonString = permanentDataBuffer.slice(0, packetSize).toString();
+			permanentDataBuffer = permanentDataBuffer.slice(packetSize, permanentDataBuffer.length);
+
+			message = JSON.parse(jsonString);
+			console.log(message);
+			// return;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+			// // Convert message to JSON
+			// var message = "";
+			// try {
+			//  	console.log("RFIDPLATFORM[DEBUG]: Raw data: " + data.toString());
+				
+
+
+			// 	// console.log("RFIDPLATFORM[DEBUG]: Size of packet = " + size + " /  Size of data = " + data.length);
+			// 	var jsonString = data.slice(8, data.length).toString();
+			//  	message = JSON.parse(jsonString);
+			// } catch (e) {
+			//  console.log("RFIDPLATFORM[DEBUG]: Error on JSON.parse: " + e);
+			//  // console.log("RFIDPLATFORM[DEBUG]: Message : " + jsonString);
+			//   return;
+			// }
 
 
 			// Handshake ONLY
