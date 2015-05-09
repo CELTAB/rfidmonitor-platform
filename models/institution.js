@@ -1,5 +1,3 @@
-
-
 var Institution = function(){
 
     /* If this constructor is called without the "new" operator, "this" points
@@ -14,31 +12,6 @@ var Institution = function(){
 	this.lat = '';
 	this.lng = '';
 	this.date = new Date()
-
- 	//this.id = {
-	// 	value : 0,
-	// 	dbname: 'ID'
-	// };
-	// this.name = {
-	// 	value : 'teste',
-	// 	dbname: 'NAME'
-	// };
-	// this.image = {
-	// 	value : '',
-	// 	dbname: 'IMAGE'
-	// };
-	// this.lat = {
-	// 	value : '',
-	// 	dbname: 'LAT'
-	// };
-	// this.lng = {
-	// 	value : '',
-	// 	dbname: 'LNG'
-	// };
-	// this.date = {
-	// 	value : new Date(),
-	// 	dbname: 'DATE'
-	// };
 }
 
 
