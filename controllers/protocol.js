@@ -8,12 +8,23 @@ var ProtocolController = function(){
         waitingForRemainingData = false;
         packetSize =0;
 
+        /*
+        TMP
+        */
+        var tmp_receivedObjs=0;
+        var tmp_successJsonObjs=0;
+        var tmp_brokenJsonObjs=0;
+
+
         var consumeData = function(data){
+        	tmp_receivedObjs++;
         	try {
 				message = JSON.parse(data);
 				console.log(message);
+				tmp_successJsonObjs++;
 			}catch(e){
-				console.log(e);				
+				console.log(e);
+				tmp_brokenJsonObjs++;				
 				return;
 			}
         }
@@ -50,6 +61,10 @@ var ProtocolController = function(){
 			waitingForRemainingData = false;
 
 			consumeData(data);
+
+			console.log("tmp_receivedObjs: "+tmp_receivedObjs);
+			console.log("tmp_successJsonObjs: "+tmp_successJsonObjs);
+			console.log("tmp_brokenJsonObjs: "+tmp_brokenJsonObjs);
         }
 
         ProtocolController.prototype.processData = function(data){
