@@ -14,6 +14,9 @@ var ProtocolController = function(){
         var tmp_receivedObjs=0;
         var tmp_successJsonObjs=0;
         var tmp_brokenJsonObjs=0;
+        this.getTmpVars = function(){
+        	return {received : tmp_receivedObjs, success:tmp_successJsonObjs, broken:tmp_brokenJsonObjs};
+        }
 
 
         var consumeData = function(data){
@@ -62,12 +65,12 @@ var ProtocolController = function(){
 
 			consumeData(data);
 
-			console.log("tmp_receivedObjs: "+tmp_receivedObjs);
-			console.log("tmp_successJsonObjs: "+tmp_successJsonObjs);
-			console.log("tmp_brokenJsonObjs: "+tmp_brokenJsonObjs);
+			console.log("RFIDPLATFORM[DEBUG] : tmp_receivedObjs: "+tmp_receivedObjs);
+			console.log("RFIDPLATFORM[DEBUG] : tmp_successJsonObjs: "+tmp_successJsonObjs);
+			console.log("RFIDPLATFORM[DEBUG] : tmp_brokenJsonObjs: "+tmp_brokenJsonObjs);
         }
 
-        ProtocolController.prototype.processData = function(data){
+        this.processData = function(data){
         	
         	console.log("\nRFIDPLATFORM[DEBUG] : NEW DATA RECEIVED: " + data.toString());
 
