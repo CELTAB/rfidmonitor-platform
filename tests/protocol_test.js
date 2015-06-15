@@ -1,6 +1,6 @@
 
-var ProtocolController = require('../controllers/protocol');
-protocol = new ProtocolController();
+var ProtocolConnectionController = require('../controllers/protocol-connection');
+protocol = new ProtocolConnectionController();
 
 // simulate limit number of bytes to send each TCP commit.
 var maxBytesSend = 500;
