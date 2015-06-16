@@ -1,4 +1,6 @@
 var Server = require('./server');
+// var Group = require('./models/group');
+// var GroupDao = require('./models/groupdao');
 
 var server = new Server();
 
@@ -11,11 +13,10 @@ server.startServer();
 
 
 */
-
 /*
-
+var groupDao = new GroupDao();
 var group = new Group();
-	group.name = "test";
+	group.name = "default";
 	group.lat = 'abc';
 	group.lng = 'def';
 	group.creationDate = new Date();
@@ -26,7 +27,6 @@ var group = new Group();
 		else
 			console.log("RFIDDataDao group inserted : " + result);
 
-		callback(err,result);
+		//callback(err,result);
 	});
-
 */

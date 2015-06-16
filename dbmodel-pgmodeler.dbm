@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.8.1-alpha1" last-position="1,1" last-zoom="1"
+<dbmodel pgmodeler-ver="0.8.1-alpha1" last-position="38,80" last-zoom="1"
 	 default-schema="public" default-owner="postgres">
 <database name="rfidplatform">
 </database>
@@ -35,9 +35,6 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</column>
 	<column name="lng">
 		<type name="text"/>
-	</column>
-	<column name="rfiddata_type_id" not-null="true">
-		<type name="integer"/>
 	</column>
 	<column name="status" not-null="true">
 		<type name="integer"/>

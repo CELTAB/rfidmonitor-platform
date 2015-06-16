@@ -52,10 +52,13 @@ var ProtocolMessagesController = function(socket){
 	}
 
 	var handle_DATA = function(message){
-		console.log("RFIDPLATFORM[DEBUG]: handle_DATA data: " + message.data.datasummary);
+		//console.log("RFIDPLATFORM[DEBUG]: handle_DATA data: " + JSON.stringify(message.data.datasummary));
 
 		var rfiddatadao = new RFIDDataDao();
-		rfiddatadao.insert(message.data.datasummary, function(err,result){
+
+
+
+		rfiddatadao.insert(message.data, function(err,result){
 			if (err)
 				console.log("PROTOCOL MESSAGES err : " + err);
 			else

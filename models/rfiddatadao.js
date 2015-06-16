@@ -1,6 +1,7 @@
 var db = require('./database');
 var CollectorDao = require('./collectordao');
 var Collector = require('./collector');
+var Rfiddata = require('./rfiddata')
 
 var GroupDao = require('./groupdao');
 var Group = require('./group');
@@ -13,6 +14,9 @@ var RFIDDataDao = function(){
 
 RFIDDataDao.prototype.insert = function(obj, callback){
 
+
+   // console.log(">>>>>>  OBJECT   <<<<<<<< " + JSON.stringify(obj));
+
 	//TODO check obj structure?
 
 	/*
@@ -22,22 +26,50 @@ RFIDDataDao.prototype.insert = function(obj, callback){
 		3) call callback with success or failure.
 	*/
 
+    var rfiddataInsert = function(rfiddata){
+
+        console.log("RFIDPLATFORM[DEBUG]: Inserting New RFIDData");
+        console.log("COLLECTOR ID: " + rfiddata.collector_id);
+        var query = "INSERT INTO rfiddata (collector_mac, group_id, timestamp, md5hash, rfidcode, collector_id, extra_data) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING ID";
+
+        db.query(query, [rfiddata.collector_mac, rfiddata.group_id, rfiddata.timestamp, rfiddata.md5hash, rfiddata.rfidcode, rfiddata.collector_id, rfiddata.extra_data], function(err, result){
+            
+            if(err)
+                callback(err, null);
+
+            //console.log("RFIDPLATFORM[DEBUG]: RFIDData Inserted. HASH: " + rfiddata.md5hash);
+            callback(null, rfiddata.md5hash);
+        });
+    }
+
 	collectorDao.findByMac(obj.macaddress, function(err,collector){
+
+        // console.log("RFIDPLATFORM[DEBUG]: Find Collector By Mac >>> " + collector);
 
 		if(err){
 			console.log("RFIDDataDao error " + err);
 			return callback(err,null);
 		}
 
+        var rfidObject = new Rfiddata();
+        // rfidObject.group_id = ;
+        // rfidObject.timestamp = ;
+        // rfidObject.md5hash = ;
+        // rfidObject.rfidcode = ;
+        // rfidObject.collector_id = ;
+        // rfidObject.extra_data = ;
+        // rfidObject.collector_mac = ;
+        // rfidObject.collector_id = ;
+
 		if(collector === null){
-			console.log("collector null");
+			console.log("No Collector Found");
+            console.log("NAME: " + obj.name);
 			var newCollector = new Collector();
 
 			newCollector.groupId = 1;
 			newCollector.name = obj.name;
 			newCollector.mac = obj.macaddress;
-			newCollector.status = "Online"; //TODO enum?
-			newCollector.rfiddata_type; //TODO que que é isso mesmo?
+			//newCollector.status = newCollector.statusEnum.Online; //TODO enum?
 
 			collectorDao.insert(newCollector, function(err,result){
 				if(err){
@@ -45,12 +77,33 @@ RFIDDataDao.prototype.insert = function(obj, callback){
 					return;
 				}
 
-				console.log("result" + result);
+                // console.log(">>>>>> HEREEEEE <<<<<<<\n\n" + JSON.stringify(result));
+                // console.log("Collector Inserted with ID: " + result.rows[0].id);
+                obj.datasummary.collector_id = result.rows[0].id;
+                obj.datasummary.collector_mac = newCollector.mac;
+                rfiddataInsert(obj.datasummary);
 			});	
 		}else{
-			callback(null,collector);
-		}
+                //console.log("RESULTTTTT >> " + JSON.stringify(collector[0],null, "\t"));
 
+// rfiddata.collector_mac, rfiddata.group_id, rfiddata.timestamp, rfiddata.md5hash, rfiddata.rfidcode, rfiddata.collector_id, rfiddata.extra_data
+                
+                rfidObject.collector_mac = collector.mac;
+                rfidObject.group_id = collector.group_id;
+
+                rfidObject.rfidcode = pack.identificationcode;
+
+                // identificationcode
+                var pack = obj.datasummary.data[0];
+
+                console.log(">>>>>>>>>>>> OBJECT >> " + JSON.stringify(pack.identificationcode));
+
+                // console.log("RFIDOBJECT >> " + JSON.stringify(rfidObject));
+
+               // obj.datasummary.collector_id = collector[0].id;
+                
+                // rfiddataInsert(rfidObject);
+		}
 	});
 
 

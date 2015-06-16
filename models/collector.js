@@ -5,6 +5,20 @@ var Collector = function(){
     if (false === (this instanceof Collector)) {
         console.warn('Warning: Collector constructor called without "new" operator');
     }
+
+    var statusEnum = {
+        Online: 0,
+        Offline: 1
+    };
+
+    this.id = 0;
+    this.groupId = 0;
+    this.lat = '';
+    this.lng = '';
+    this.mac = '';
+    this.name = '';
+    this.status = statusEnum.Offline;
+    this.description = '';
 }
 
 

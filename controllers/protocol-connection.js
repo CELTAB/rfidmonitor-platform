@@ -111,9 +111,9 @@ var ProtocolConnectionController = function(socket){
 			// consumeData(data);
 			consumeData_unwantedFormat(data);
 
-			console.log("RFIDPLATFORM[DEBUG] : tmp_receivedObjs: "+tmp_receivedObjs);
-			console.log("RFIDPLATFORM[DEBUG] : tmp_successJsonObjs: "+tmp_successJsonObjs);
-			console.log("RFIDPLATFORM[DEBUG] : tmp_brokenJsonObjs: "+tmp_brokenJsonObjs);
+			// console.log("RFIDPLATFORM[DEBUG] : tmp_receivedObjs: "+tmp_receivedObjs);
+			// console.log("RFIDPLATFORM[DEBUG] : tmp_successJsonObjs: "+tmp_successJsonObjs);
+			// console.log("RFIDPLATFORM[DEBUG] : tmp_brokenJsonObjs: "+tmp_brokenJsonObjs);
         }
 
         this.processData = function(data){

@@ -11,7 +11,7 @@ var Institution = function(){
 	this.image = '';
 	this.lat = '';
 	this.lng = '';
-	this.date = new Date()
+	this.date = new Date();
 }
 
 
