@@ -2,6 +2,8 @@ var RFIDDataDao = require('../models/rfiddatadao');
 
 var ProtocolMessagesController = function(socket){
 
+	var rfiddatadao = new RFIDDataDao();
+
 	this.processMessage = function(message){
 
 		//todo should we check message structure?
@@ -52,17 +54,15 @@ var ProtocolMessagesController = function(socket){
 	}
 
 	var handle_DATA = function(message){
-		//console.log("RFIDPLATFORM[DEBUG]: handle_DATA data: " + JSON.stringify(message.data.datasummary));
+		// console.log("RFIDPLATFORM[DEBUG]: handle_DATA raw message: " + JSON.stringify(message,null,"\t"));
 
-		var rfiddatadao = new RFIDDataDao();
-
-
-
-		rfiddatadao.insert(message.data, function(err,result){
+		rfiddatadao.insert(message.data, function(err,md5diggest){
 			if (err)
 				console.log("PROTOCOL MESSAGES err : " + err);
-			else
-				console.log("PROTOCOL MESSAGES : " + result);
+			else{
+				//send back to collecting point an ACK-DATA message.
+				console.log("todo. send back to collecting point an ACK-DATA message."+md5diggest);				
+			}
 		});
 
 		/*TODO insert the data on database.
@@ -125,3 +125,30 @@ var ProtocolMessagesController = function(socket){
 };
 
 module.exports = ProtocolMessagesController;
+
+/*
+RFIDPLATFORM[DEBUG]: handle_DATA raw message: {
+	"data": {
+		"datasummary": {
+			"data": [
+				{
+					"applicationcode": 0,
+					"datetime": "2014-10-15T15:58:33",
+					"id": 1282,
+					"idantena": 1,
+					"idcollectorpoint": 100,
+					"identificationcode": 44332211
+				}
+			],
+			"idbegin": -1273252204,
+			"idend": -1273254596,
+			"md5diggest": "f9b0941547b464689121e9e80266fde2"
+		},
+		"id": 100,
+		"macaddress": "B8:27:EB:BB:0C:70",
+		"name": "Celtab-Serial"
+	},
+	"datetime": "2015-06-17T14:49:17",
+	"type": "DATA"
+}
+*/

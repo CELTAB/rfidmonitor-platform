@@ -6,7 +6,7 @@ var Collector = function(){
         console.warn('Warning: Collector constructor called without "new" operator');
     }
 
-    var statusEnum = {
+    this.statusEnum = {
         Online: 0,
         Offline: 1
     };
@@ -17,7 +17,7 @@ var Collector = function(){
     this.lng = '';
     this.mac = '';
     this.name = '';
-    this.status = statusEnum.Offline;
+    this.status = this.statusEnum.Offline;
     this.description = '';
 }
 

@@ -8,7 +8,7 @@ var Rfiddata = function(){
 
     this.id = 0;
     this.collector_mac = '';
-	this.group_id = 0;
+	this.groupId = 0;
 	this.timestamp = new Date();
     this.md5hash = '';
     this.rfidcode = '';

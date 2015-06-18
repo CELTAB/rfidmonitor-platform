@@ -23,6 +23,10 @@ var ProtocolConnectionController = function(socket){
         // 	return {received : tmp_receivedObjs, success:tmp_successJsonObjs, broken:tmp_brokenJsonObjs};
         // }
 
+        //##
+        //start of temporary code below.
+        //##
+        
         /*
         	This is a temporary function that handles an unwanted format of comming bytes.
         	Bytes can come in 2 formats:
@@ -38,6 +42,7 @@ var ProtocolConnectionController = function(socket){
         	 For now, this is a very fast and simple solution (also known as gambiarra) that should be fixed some day (or not).
 
         */
+        
         var consumeData_unwantedFormat = function(packet){
 
         	if( (packet.indexOf("}\n{")) == -1){
@@ -61,6 +66,9 @@ var ProtocolConnectionController = function(socket){
         var replaceAll = function(string, find, replace) {
 		  return string.replace(new RegExp(find, 'g'), replace);
 		}
+		//##
+		//end of temporary code above.
+		//##
 
 
         var consumeData = function(packet){

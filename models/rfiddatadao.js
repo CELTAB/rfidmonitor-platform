@@ -12,10 +12,76 @@ var RFIDDataDao = function(){
 	groupDao = new GroupDao();
 }
 
+var insertSummary = function(rfiddata, collector, summaryCallback){
+
+    // console.log("RFIDPLATFORM[DEBUG]: Inserting New RFIDData");
+    existsByHash(rfiddata.md5diggest, function(err, exists){
+        if(!exists){
+
+            totalDataCount = rfiddata.data.length;
+
+            if(totalDataCount == 0){
+                return summaryCallback("ERROR totalDataCount: " + JSON.stringify(rfiddata,null,"\t"), null);
+            }
+            dataCount = 0;
+
+            for (i=0; i<totalDataCount; i++){
+
+                var rfidObject = new Rfiddata();
+                rfidObject.groupId = collector.groupId;
+                rfidObject.timestamp = rfiddata.data[i].datetime;
+                rfidObject.md5hash = rfiddata.md5diggest;
+                rfidObject.rfidcode = rfiddata.data[i].identificationcode;
+                rfidObject.collector_id = collector.id;
+                // rfidObject.extra_data = ;
+                rfidObject.collector_mac = collector.mac;
+
+                insertRFIDData(rfidObject, summaryCallback);
+            }            
+            
+        }
+        else{
+            //TODO send ACK-DATA in this situation?
+            console.log("RFIDData already has the hash pesisted. ACK-DATA needed.");
+        }
+
+    });     
+
+}
+
+var insertRFIDData = function(rfiddata, summaryCallback){
+
+    var query = "INSERT INTO rfiddata (collector_mac, group_id, timestamp, md5hash, rfidcode, collector_id, extra_data) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING ID";
+
+    db.query(query, [rfiddata.collector_mac, rfiddata.groupId, rfiddata.timestamp, rfiddata.md5hash, rfiddata.rfidcode, rfiddata.collector_id, rfiddata.extra_data], function(err, result){
+        
+        if(err){
+            return summaryCallback(err, null);
+        }
+
+        console.log("RFIDPLATFORM[DEBUG]: RFIDData Inserted. HASH: " + rfiddata.md5hash);
+        dataCount++;
+        if(dataCount == totalDataCount)
+            summaryCallback(null,rfiddata.md5hash);
+    });
+
+
+}
+
+var existsByHash = function(hash,callback){
+    var query = "SELECT id FROM rfiddata WHERE md5hash = $1";
+
+    db.query(query, [hash], function(err, result){
+        
+        if(err){
+            return callback(err, null);            
+        }
+
+        callback(null, result.rowCount > 0);
+    });
+}
+
 RFIDDataDao.prototype.insert = function(obj, callback){
-
-
-   // console.log(">>>>>>  OBJECT   <<<<<<<< " + JSON.stringify(obj));
 
 	//TODO check obj structure?
 
@@ -26,83 +92,33 @@ RFIDDataDao.prototype.insert = function(obj, callback){
 		3) call callback with success or failure.
 	*/
 
-    var rfiddataInsert = function(rfiddata){
-
-        console.log("RFIDPLATFORM[DEBUG]: Inserting New RFIDData");
-        console.log("COLLECTOR ID: " + rfiddata.collector_id);
-        var query = "INSERT INTO rfiddata (collector_mac, group_id, timestamp, md5hash, rfidcode, collector_id, extra_data) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING ID";
-
-        db.query(query, [rfiddata.collector_mac, rfiddata.group_id, rfiddata.timestamp, rfiddata.md5hash, rfiddata.rfidcode, rfiddata.collector_id, rfiddata.extra_data], function(err, result){
-            
-            if(err)
-                callback(err, null);
-
-            //console.log("RFIDPLATFORM[DEBUG]: RFIDData Inserted. HASH: " + rfiddata.md5hash);
-            callback(null, rfiddata.md5hash);
-        });
-    }
-
 	collectorDao.findByMac(obj.macaddress, function(err,collector){
-
-        // console.log("RFIDPLATFORM[DEBUG]: Find Collector By Mac >>> " + collector);
 
 		if(err){
 			console.log("RFIDDataDao error " + err);
 			return callback(err,null);
 		}
 
-        var rfidObject = new Rfiddata();
-        // rfidObject.group_id = ;
-        // rfidObject.timestamp = ;
-        // rfidObject.md5hash = ;
-        // rfidObject.rfidcode = ;
-        // rfidObject.collector_id = ;
-        // rfidObject.extra_data = ;
-        // rfidObject.collector_mac = ;
-        // rfidObject.collector_id = ;
-
 		if(collector === null){
-			console.log("No Collector Found");
-            console.log("NAME: " + obj.name);
 			var newCollector = new Collector();
 
-			newCollector.groupId = 1;
+           
+			newCollector.groupId = 1;  //set default group.
 			newCollector.name = obj.name;
 			newCollector.mac = obj.macaddress;
-			//newCollector.status = newCollector.statusEnum.Online; //TODO enum?
+			newCollector.status = newCollector.statusEnum.Online;
 
-			collectorDao.insert(newCollector, function(err,result){
+			collectorDao.insertOrFindByMacUniqueError(newCollector, function(err, collectorId){
 				if(err){
 					console.log("RFIDDataDao error " + err);
 					return;
 				}
+                newCollector.id =  collectorId;
+                insertSummary(obj.datasummary, newCollector, callback);
 
-                // console.log(">>>>>> HEREEEEE <<<<<<<\n\n" + JSON.stringify(result));
-                // console.log("Collector Inserted with ID: " + result.rows[0].id);
-                obj.datasummary.collector_id = result.rows[0].id;
-                obj.datasummary.collector_mac = newCollector.mac;
-                rfiddataInsert(obj.datasummary);
-			});	
-		}else{
-                //console.log("RESULTTTTT >> " + JSON.stringify(collector[0],null, "\t"));
-
-// rfiddata.collector_mac, rfiddata.group_id, rfiddata.timestamp, rfiddata.md5hash, rfiddata.rfidcode, rfiddata.collector_id, rfiddata.extra_data
-                
-                rfidObject.collector_mac = collector.mac;
-                rfidObject.group_id = collector.group_id;
-
-                rfidObject.rfidcode = pack.identificationcode;
-
-                // identificationcode
-                var pack = obj.datasummary.data[0];
-
-                console.log(">>>>>>>>>>>> OBJECT >> " + JSON.stringify(pack.identificationcode));
-
-                // console.log("RFIDOBJECT >> " + JSON.stringify(rfidObject));
-
-               // obj.datasummary.collector_id = collector[0].id;
-                
-                // rfiddataInsert(rfidObject);
+            }); 
+        }else{
+            insertSummary(obj.datasummary, collector, callback);
 		}
 	});
 
@@ -110,6 +126,30 @@ RFIDDataDao.prototype.insert = function(obj, callback){
 }
 
 module.exports = RFIDDataDao;
+
+/*
+>>>>>>  OBJECT   <<<<<<<< {
+    "datasummary": {
+        "data": [
+            {
+                "applicationcode": 0,
+                "datetime": "2014-10-15T15:58:33",
+                "id": 1282,
+                "idantena": 1,
+                "idcollectorpoint": 100,
+                "identificationcode": 44332211
+            }
+        ],
+        "idbegin": -1273252204,
+        "idend": -1273254596,
+        "md5diggest": "f9b0941547b464689121e9e80266fde2"
+    },
+    "id": 100,
+    "macaddress": "B8:27:EB:BB:0C:70",
+    "name": "Celtab-Serial"
+}
+
+*/
 
 /*
         "datasummary": {
