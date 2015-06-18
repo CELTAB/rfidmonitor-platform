@@ -43,6 +43,7 @@ var insertSummary = function(rfiddata, collector, summaryCallback){
         else{
             //TODO send ACK-DATA in this situation?
             console.log("RFIDData already has the hash pesisted. ACK-DATA needed.");
+            summaryCallback(null, rfiddata.md5diggest);
         }
 
     });     
@@ -59,13 +60,11 @@ var insertRFIDData = function(rfiddata, summaryCallback){
             return summaryCallback(err, null);
         }
 
-        console.log("RFIDPLATFORM[DEBUG]: RFIDData Inserted. HASH: " + rfiddata.md5hash);
+       // console.log("RFIDPLATFORM[DEBUG]: RFIDData Inserted. HASH: " + rfiddata.md5hash);
         dataCount++;
         if(dataCount == totalDataCount)
             summaryCallback(null,rfiddata.md5hash);
     });
-
-
 }
 
 var existsByHash = function(hash,callback){

@@ -3,6 +3,7 @@ var RFIDDataDao = require('../models/rfiddatadao');
 var ProtocolMessagesController = function(socket){
 
 	var rfiddatadao = new RFIDDataDao();
+	var packCounter = 0;
 
 	this.processMessage = function(message){
 
@@ -56,12 +57,16 @@ var ProtocolMessagesController = function(socket){
 	var handle_DATA = function(message){
 		// console.log("RFIDPLATFORM[DEBUG]: handle_DATA raw message: " + JSON.stringify(message,null,"\t"));
 
-		rfiddatadao.insert(message.data, function(err,md5diggest){
+		rfiddatadao.insert(message.data, function(err,_md5diggest){
 			if (err)
 				console.log("PROTOCOL MESSAGES err : " + err);
 			else{
 				//send back to collecting point an ACK-DATA message.
-				console.log("todo. send back to collecting point an ACK-DATA message."+md5diggest);				
+				console.log("todo. send back to collecting point an ACK-DATA message."+_md5diggest);	
+				// console.log("Response message: " + JSON.stringify(buildMessageObject("ACK-DATA", {md5diggest: [_md5diggest]})));
+				packCounter++;
+				sendObject(buildMessageObject("ACK-DATA", {md5diggest: [_md5diggest]}));			
+				console.log("Sent " + packCounter + " RESPONSES. UNITL NOW");
 			}
 		});
 
