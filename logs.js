@@ -14,24 +14,57 @@ var Logs = function(debugConsole, debugFile, verboseConsole, verboseFile){
 	error: 5
 	*/
 
-	var transpCustom = [];
+	this.checkLogsDir();
+
+	// Default transporters
+	winston.remove(winston.transports.Console);
+	
+	winston.add(
+		winston.transports.DailyRotateFile, 
+		{
+			name: 'dailyinfo',
+			filename: logsDir + 'info.log',
+			level: 'info',
+			datePattern: '.dd',
+			maxsize: 1024 * 1024 * 5,
+			maxFiles: 10, 
+			handleExceptions: true,
+			json: false,
+			colorize: true,
+			silent: true
+		}
+	);
+
+	winston.add(
+		winston.transports.Console, 
+		{
+			name: 'consolewarn',
+			level: 'warn',
+			json: false,
+			colorize: true,
+			silent: false
+		}
+	);
+
 
 	if(debugConsole){
 		console.log("Printing debug messages on Console");
-		transpCustom.push(
-			new (winston.transports.Console)({
+		winston.add(
+			winston.transports.Console, 
+			{
 				name: 'consoledebug',
 				level: 'debug',
 				json: false,
 				colorize: true
-				})
-			);
+			}
+		);
 	}
 
 	if(debugFile){
 		console.log("Printing debug messages on File");
-		transpCustom.push(
-			new (winston.transports.DailyRotateFile)({
+		winston.add(
+			winston.transports.DailyRotateFile, 
+			{
 				name: 'dailydebug',
 				filename: logsDir + 'debug.log',
 				level: 'debug',
@@ -39,27 +72,29 @@ var Logs = function(debugConsole, debugFile, verboseConsole, verboseFile){
 				maxsize: 1024 * 1024 * 5,
 				maxFiles: 10, 
 				json: false,
-				silent: false
-			})
+				silent: true
+			}
 		);
 	}
 
 	if(verboseConsole){
 		console.log("Printing verbose messages on Console");
-		transpCustom.push(
-			new (winston.transports.Console)({
+		winston.add(
+			winston.transports.Console, 
+			{
 				name: 'consoleverbose',
 				level: 'verbose',
 				json: false,
 				colorize: true
-				})
-			);
+			}
+		);
 	}
 
 	if(verboseFile){
 		console.log("Printing verbose messages on File");
-		transpCustom.push(
-			new (winston.transports.DailyRotateFile)({
+		winston.add(
+			winston.transports.DailyRotateFile, 
+			{
 				name: 'dailyverbose',
 				filename: logsDir + 'verbose.log',
 				level: 'verbose',
@@ -68,47 +103,19 @@ var Logs = function(debugConsole, debugFile, verboseConsole, verboseFile){
 				maxFiles: 10, 
 				json: false,
 				silent: false
-			})
+			}
 		);
 	}
 
-	var transp = [];
+	winston.info("Logger started.");
+}
 
-	transp.push(
-		new (winston.transports.DailyRotateFile)({
-    		name: 'dailyinfo',
-			filename: logsDir + 'info.log',
-			level: 'info',
-			datePattern: '.dd',
-			maxsize: 1024 * 1024 * 5,
-			maxFiles: 10, 
-			handleExceptions: true,
-			json: false,
-			colorize: true
-		})
-	);
-	transp.push(
-		new (winston.transports.Console)({
-			name: 'consolewarn',
-			level: 'warn',
-			json: false,
-			colorize: true
-		})
-	);
-
-	var transp = transp.concat(transpCustom);
-
-	winston.loggers.add('rfidplatform', {
-		transports: transp
-	});
-
-
-
+Logs.prototype.checkLogsDir = function(){
 	try{
 		fs.mkdirSync(logsDir);
 	}catch(e){
 		if(e.errno != 47){
-	  		winston.loggers.get('rfidplatform').error("Cannot create logs directory to server directory. Aborting app. Error: " + JSON.stringify(e));
+	  		console.error("Cannot create logs directory to server directory. Aborting app. Error: " + JSON.stringify(e));
 	  		return;
 		}
 		//else OK. The error 47 means the directory already exists. fs.exists is deprecated.
@@ -119,19 +126,10 @@ var Logs = function(debugConsole, debugFile, verboseConsole, verboseFile){
 		fs.writeFileSync(path, 'testtext');
 		fs.unlinkSync(path);
 
-		//Remove old logs
-		// this.removeOldLogs(logsDir, 30, function(err, removedNr){
-		// 	if (err){
-		// 		winston.error("Error while removing old logs.");
-		// 		throw new Error(err);
-		// 	}
-
-		// });
 	}catch(e){
-		winston.loggers.get('rfidplatform').error("Error while using logs directory. Aborting app. Error: " + JSON.stringify(e));
+		console.error("Error while using logs directory. Aborting app. Error: " + JSON.stringify(e));
 		throw e;
 	}
-	winston.loggers.get('rfidplatform').info("Logger started.");
 }
 
 Logs.prototype.removeOldLogs = function(path, daysKeep, callback){
@@ -165,4 +163,3 @@ Logs.prototype.removeOldLogs = function(path, daysKeep, callback){
 }
 
 module.exports.Logs = Logs;
-module.exports.Logger = winston.loggers.get('rfidplatform');

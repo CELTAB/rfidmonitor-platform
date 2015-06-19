@@ -1,7 +1,9 @@
-var Server = require('./server');
+// Keep as firsts requires >>> 
 var Logs = require('./logs').Logs;
-var logger = require('./logs').Logger;
+var logger = require('winston');
+// <<< end of 'keep as first requires'
 
+var Server = require('./server');
 
 var args = process.argv;
 var debugConsole = false;
@@ -28,7 +30,6 @@ if(args.indexOf('--debugAll') > -1){
 
 
 new Logs(debugConsole, debugFile, verboseConsole, verboseFile);
-
 var server = new Server();
 server.startServer();
 

@@ -1,11 +1,7 @@
 var pg = require('pg');
-var logger = require('../logs').Logger;
+var logger = require('winston');
 
 var connectionString = 'postgres://rfidplatform:rfidplatform@localhost:5432/rfidplatform';
-
-if(process.env.OPENSHIFT_POSTGRESQL_DB_HOST){
-  connectionString = process.env.OPENSHIFT_POSTGRESQL_DB_URL;
-}
 
 logger.info("DB connection string: " + connectionString);
 

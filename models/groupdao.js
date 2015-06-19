@@ -1,6 +1,6 @@
 var db = require('./database');
 var Group = require('./group');
-var logger = require('../logs').Logger;
+var logger = require('winston');
 
 var GroupDao = function(){
 
