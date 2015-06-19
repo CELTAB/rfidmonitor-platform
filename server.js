@@ -2,7 +2,7 @@ var CollectorDao = require('./models/collectordao');
 var Collector =  require('./models/collector');
 var ProtocolConnectionController = require('./controllers/protocol-connection');
 var SocketController = require('./controllers/serversocket');
-var logger = require('./logs').Logger;
+var logger = require('winston');
 
 var Server = function(){
 
