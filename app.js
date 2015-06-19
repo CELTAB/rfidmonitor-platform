@@ -6,6 +6,8 @@ var logger = require('./logs').Logger;
 var args = process.argv;
 var debugConsole = false;
 var debugFile = false;
+var verboseConsole = false;
+var verboseFile = false;
 
 if(args.indexOf('--debugAll') > -1){
 	debugConsole = true;
@@ -13,15 +15,19 @@ if(args.indexOf('--debugAll') > -1){
 }else{
 	if(args.indexOf('--debugConsole') > -1){
 		debugConsole = true;
+	}else if (args.indexOf('--verboseConsole') > -1){
+		verboseConsole = true;
 	}
 
 	if(args.indexOf('--debugFile') > -1){
 		debugFile = true;
+	}else if (args.indexOf('--verboseFile') > -1){
+		verboseFile = true;
 	}	
 }
 
 
-new Logs(debugConsole, debugFile);
+new Logs(debugConsole, debugFile, verboseConsole, verboseFile);
 
 var server = new Server();
 server.startServer();

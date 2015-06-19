@@ -3,7 +3,7 @@ var winston = require('winston');
 
 var logsDir = 'logs/';
 
-var Logs = function(debugConsole, debugFile){
+var Logs = function(debugConsole, debugFile, verboseConsole, verboseFile){
 
 	/*
 	silly: 0, -> print all above
@@ -14,11 +14,11 @@ var Logs = function(debugConsole, debugFile){
 	error: 5
 	*/
 
-	var transpDebug = [];
+	var transpCustom = [];
 
 	if(debugConsole){
 		console.log("Printing debug messages on Console");
-		transpDebug.push(
+		transpCustom.push(
 			new (winston.transports.Console)({
 				name: 'consoledebug',
 				level: 'debug',
@@ -30,11 +30,39 @@ var Logs = function(debugConsole, debugFile){
 
 	if(debugFile){
 		console.log("Printing debug messages on File");
-		transpDebug.push(
+		transpCustom.push(
 			new (winston.transports.DailyRotateFile)({
 				name: 'dailydebug',
 				filename: logsDir + 'debug.log',
 				level: 'debug',
+				datePattern: '.dd',
+				maxsize: 1024 * 1024 * 5,
+				maxFiles: 10, 
+				json: false,
+				silent: false
+			})
+		);
+	}
+
+	if(verboseConsole){
+		console.log("Printing verbose messages on Console");
+		transpCustom.push(
+			new (winston.transports.Console)({
+				name: 'consoleverbose',
+				level: 'verbose',
+				json: false,
+				colorize: true
+				})
+			);
+	}
+
+	if(verboseFile){
+		console.log("Printing verbose messages on File");
+		transpCustom.push(
+			new (winston.transports.DailyRotateFile)({
+				name: 'dailyverbose',
+				filename: logsDir + 'verbose.log',
+				level: 'verbose',
 				datePattern: '.dd',
 				maxsize: 1024 * 1024 * 5,
 				maxFiles: 10, 
@@ -68,7 +96,7 @@ var Logs = function(debugConsole, debugFile){
 		})
 	);
 
-	var transp = transp.concat(transpDebug);
+	var transp = transp.concat(transpCustom);
 
 	winston.loggers.add('rfidplatform', {
 		transports: transp
