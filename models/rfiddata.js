@@ -7,12 +7,10 @@ var Rfiddata = function(){
     }
 
     this.id = 0;
-    this.collector_mac = '';
-	this.groupId = 0;
-	this.timestamp = new Date();
-    this.md5hash = '';
+    this.timestamp = new Date();
     this.rfidcode = '';
     this.collector_id = 0;
+	this.package_id = 0;
     this.extra_data = '';
 }
 

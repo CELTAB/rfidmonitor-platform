@@ -1,8 +1,11 @@
 var RFIDDataDao = require('../models/rfiddatadao');
+var CollectorDao = require('../models/collectordao');
+var Collector =  require('../models/collector');
 
-var ProtocolMessagesController = function(socket){
+var ProtocolMessagesController = function(socket, setOnlineCollector){
 
 	var rfiddatadao = new RFIDDataDao();
+	var collectordao =  new CollectorDao();
 	var packCounter = 0;
 
 	this.processMessage = function(message){
@@ -11,10 +14,10 @@ var ProtocolMessagesController = function(socket){
 
 		switch(message.type){
 			case "SYN":
-				handle_SYN();
+				handle_SYN(message);
 				break;
 			case "ACK":
-				handle_ACK();
+				handle_ACK(message);
 				break;
 			case "ACK-ALIVE":
 				handle_ACKALIVE(message);
@@ -27,20 +30,72 @@ var ProtocolMessagesController = function(socket){
 		}
 	}
 
-	var handle_SYN = function(){
-		console.log("RFIDPLATFORM[DEBUG]: handle_SYN");
+	var handle_SYN = function(message){
 
-		sendObject(buildMessageObject("ACK-SYN", {}));
+		var data = message.data;
+		console.log("RFIDPLATFORM[DEBUG]: handle_SYN\n Message: " + JSON.stringify(message));
 
-		/*TODO set collector status to online.
-			- If it exists, just update status;
-			- Else add the new collector.
-		*/
+		collectordao.findByMac(data.macaddress, function(err, collector){
+		if(err){
+			console.log("Error: " + err);
+			return;
+		}
 
+		if(collector != null){
+			
+			console.log("collector found. ID: " + collector.id);
+			collector.status = collector.statusEnum.Online;
+
+			var ackObj = {id:collector.id, macaddress:collector.mac, name:collector.name};
+			sendObject(buildMessageObject("ACK-SYN", {id:collector.id, macaddress:collector.mac, name:collector.name}));
+		}else{
+
+			var newCollector = new Collector();
+			newCollector.group_id = 1; //default
+
+			if(data.name == ""){
+				//if the collector doesn't have a name, set to 'Unknown'.
+				newCollector.name = "Unknown";
+			}
+			else{
+				//Use the name from the collector.
+				newCollector.name = data.name;
+			}
+
+			newCollector.mac = data.macaddress;
+			newCollector.status = new Collector().statusEnum.Online;
+
+			console.log("Collector not found. INSERTING: " + JSON.stringify(newCollector));
+
+			collectordao.insert(newCollector, function(err, collectorId){
+
+				if(err){
+					console.log("Error: " + err);
+					return;
+				}
+
+				console.log("Collector inserted. new ID: " + collectorId);
+				sendObject(buildMessageObject("ACK-SYN", {id:collectorId, macaddress:newCollector.mac, name:newCollector.name}));
+			});
+		}
+	});
 	}
 
-	var handle_ACK = function(){
-		console.log("RFIDPLATFORM[DEBUG]: handle_ACK");
+	// Complete handshake, update the collector status to Online
+	var handle_ACK = function(message){
+		var data = message.data;
+		collectordao.updateStatus(data.id, new Collector().statusEnum.Online, function(err, result){
+			if(err){
+				console.log("Error on handle_ACK: " + err);
+				return;
+			}
+
+			if(result >= 1){
+				//return the mac address for the Server class.
+				setOnlineCollector({id:data.id, macaddress:data.macaddress});
+				console.log("Status atualizado para Online");
+			}
+		});
 	}
 
 	var handle_ACKALIVE = function(message){
@@ -55,43 +110,18 @@ var ProtocolMessagesController = function(socket){
 	}
 
 	var handle_DATA = function(message){
-		// console.log("RFIDPLATFORM[DEBUG]: handle_DATA raw message: " + JSON.stringify(message,null,"\t"));
+		console.log("RFIDPLATFORM[DEBUG]: handle_DATA raw message: " + JSON.stringify(message,null,"\t"));
 
 		rfiddatadao.insert(message.data, function(err,_md5diggest){
 			if (err)
 				console.log("PROTOCOL MESSAGES err : " + err);
 			else{
 				//send back to collecting point an ACK-DATA message.
-				console.log("todo. send back to collecting point an ACK-DATA message."+_md5diggest);	
-				// console.log("Response message: " + JSON.stringify(buildMessageObject("ACK-DATA", {md5diggest: [_md5diggest]})));
 				packCounter++;
 				sendObject(buildMessageObject("ACK-DATA", {md5diggest: [_md5diggest]}));			
 				console.log("Sent " + packCounter + " RESPONSES. UNITL NOW");
 			}
 		});
-
-		/*TODO insert the data on database.
-			- If success on insert: send back to collecting point an ACK-DATA message.
-
-						var collectorMac = message.data.macaddress;
-						var md5hash = message.data.datasummary.md5diggest;
-						console.log("Hash inserted: " + md5hash);
-
-						var ack_data = {
-										type: 'ACK-DATA',
-										data: {
-											md5diggest: [md5hash]
-										},
-										datetime: (new Date).toISOString()
-									   };
-						console.log("Sending ACK-DATA: " + JSON.stringify(ack_data));
-						try{
-							socket.write(buildMessage(JSON.stringify(ack_data)));
-						}catch(e){
-							
-						}
-		*/
-
 	}
 
 	var buildMessage = function(message){

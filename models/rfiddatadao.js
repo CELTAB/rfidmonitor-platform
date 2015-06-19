@@ -38,16 +38,13 @@ var insertSummary = function(rfiddata, collector, summaryCallback){
 
                 insertRFIDData(rfidObject, summaryCallback);
             }            
-            
         }
         else{
             //TODO send ACK-DATA in this situation?
             console.log("RFIDData already has the hash pesisted. ACK-DATA needed.");
             summaryCallback(null, rfiddata.md5diggest);
         }
-
     });     
-
 }
 
 var insertRFIDData = function(rfiddata, summaryCallback){
@@ -81,47 +78,16 @@ var existsByHash = function(hash,callback){
 }
 
 RFIDDataDao.prototype.insert = function(obj, callback){
-
-	//TODO check obj structure?
-
-	/*
-		1) Get collector;
-		 - if not exists save new.
-		2) Insert rfiddata.
-		3) call callback with success or failure.
-	*/
-
 	collectorDao.findByMac(obj.macaddress, function(err,collector){
-
 		if(err){
 			console.log("RFIDDataDao error " + err);
 			return callback(err,null);
 		}
 
-		if(collector === null){
-			var newCollector = new Collector();
-
-           
-			newCollector.groupId = 1;  //set default group.
-			newCollector.name = obj.name;
-			newCollector.mac = obj.macaddress;
-			newCollector.status = newCollector.statusEnum.Online;
-
-			collectorDao.insertOrFindByMacUniqueError(newCollector, function(err, collectorId){
-				if(err){
-					console.log("RFIDDataDao error " + err);
-					return;
-				}
-                newCollector.id =  collectorId;
-                insertSummary(obj.datasummary, newCollector, callback);
-
-            }); 
-        }else{
+        if(collector != null){
             insertSummary(obj.datasummary, collector, callback);
-		}
+        }
 	});
-
-
 }
 
 module.exports = RFIDDataDao;

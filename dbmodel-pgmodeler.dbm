@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.8.1-alpha1" last-position="38,80" last-zoom="1"
+<dbmodel pgmodeler-ver="0.8.1-alpha1" last-position="0,0" last-zoom="1"
 	 default-schema="public" default-owner="postgres">
 <database name="rfidplatform">
 </database>
@@ -14,7 +14,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="collector">
 	<schema name="public"/>
 	<role name="postgres"/>
-	<position x="177" y="327"/>
+	<position x="77" y="59"/>
 	<column name="id" not-null="true">
 		<type name="serial"/>
 	</column>
@@ -48,21 +48,18 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<schema name="public"/>
 	<role name="postgres"/>
 	<comment><![CDATA[Refers to a group of collectors: institution, department, region, etc.]]></comment>
-	<position x="524" y="344"/>
+	<position x="62" y="360"/>
 	<column name="id" not-null="true">
 		<type name="serial"/>
 	</column>
 	<column name="name" not-null="true">
 		<type name="text"/>
 	</column>
-	<column name="lat">
-		<type name="text"/>
-	</column>
-	<column name="lng">
-		<type name="text"/>
-	</column>
 	<column name="creation_date" not-null="true">
 		<type name="timestamp"/>
+	</column>
+	<column name="description">
+		<type name="text"/>
 	</column>
 	<constraint name="pk_group" type="pk-constr" table="public.group">
 		<columns names="id" ref-type="src-columns"/>
@@ -73,21 +70,12 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<schema name="public"/>
 	<role name="postgres"/>
 	<comment><![CDATA[json string containing extra fields]]></comment>
-	<position x="508" y="108"/>
+	<position x="516" y="24"/>
 	<column name="id" not-null="true">
 		<type name="serial"/>
 	</column>
-	<column name="collector_mac" not-null="true">
-		<type name="text"/>
-	</column>
-	<column name="group_id" not-null="true">
-		<type name="integer"/>
-	</column>
 	<column name="timestamp" not-null="true">
 		<type name="timestamp"/>
-	</column>
-	<column name="md5hash" not-null="true">
-		<type name="text"/>
 	</column>
 	<column name="rfidcode" not-null="true">
 		<type name="text"/>
@@ -98,6 +86,9 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="extra_data">
 		<type name="text"/>
 	</column>
+	<column name="package_id" not-null="true">
+		<type name="serial"/>
+	</column>
 	<constraint name="pk_rfiddata" type="pk-constr" table="public.rfiddata">
 		<columns names="id" ref-type="src-columns"/>
 	</constraint>
@@ -106,7 +97,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="user">
 	<schema name="public"/>
 	<role name="postgres"/>
-	<position x="854" y="345"/>
+	<position x="884" y="361"/>
 	<column name="username" not-null="true">
 		<type name="text"/>
 	</column>
@@ -127,7 +118,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="user_session">
 	<schema name="public"/>
 	<role name="postgres"/>
-	<position x="859" y="167"/>
+	<position x="872" y="159"/>
 	<column name="id" not-null="true">
 		<type name="text"/>
 	</column>
@@ -139,14 +130,29 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
+<table name="package">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="510" y="286"/>
+	<column name="id" not-null="true">
+		<type name="serial"/>
+	</column>
+	<column name="package_hash" not-null="true">
+		<type name="varchar" length="128"/>
+	</column>
+	<column name="timestamp">
+		<type name="timestamp"/>
+	</column>
+	<column name="package_size">
+		<type name="int4"/>
+	</column>
+	<constraint name="id" type="pk-constr" table="public.package">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
 <constraint name="fk_group_collector" type="fk-constr" comparison-type="MATCH FULL"
 	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.group" table="public.collector">
-	<columns names="group_id" ref-type="src-columns"/>
-	<columns names="id" ref-type="dst-columns"/>
-</constraint>
-
-<constraint name="fk_group_rfiddata" type="fk-constr" comparison-type="MATCH FULL"
-	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.group" table="public.rfiddata">
 	<columns names="group_id" ref-type="src-columns"/>
 	<columns names="id" ref-type="dst-columns"/>
 </constraint>
@@ -154,6 +160,12 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <constraint name="fk_collector_rfidata" type="fk-constr" comparison-type="MATCH FULL"
 	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.collector" table="public.rfiddata">
 	<columns names="collector_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_package_rfidadata" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.package" table="public.rfiddata">
+	<columns names="package_id" ref-type="src-columns"/>
 	<columns names="id" ref-type="dst-columns"/>
 </constraint>
 
@@ -168,11 +180,6 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 dst-table="public.group"
 	 src-required="false" dst-required="false"/>
 
-<relationship name="rel_rfiddata_group" type="relfk"
-	 src-table="public.rfiddata"
-	 dst-table="public.group"
-	 src-required="false" dst-required="false"/>
-
 <relationship name="rel_rfiddata_collector" type="relfk"
 	 src-table="public.rfiddata"
 	 dst-table="public.collector"
@@ -181,6 +188,11 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <relationship name="rel_user_session_user" type="relfk"
 	 src-table="public.user_session"
 	 dst-table="public.user"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_rfiddata_package" type="relfk"
+	 src-table="public.rfiddata"
+	 dst-table="public.package"
 	 src-required="false" dst-required="false"/>
 
 </dbmodel>

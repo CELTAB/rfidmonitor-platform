@@ -1,12 +1,12 @@
 var ProtocolMessagesController = require('./protocol-messages')
 
-var ProtocolConnectionController = function(socket){
+var ProtocolConnectionController = function(socket, setOnlineCollector){
 	    if (false === (this instanceof ProtocolConnectionController)) {
         	console.warn('Warning: ProtocolConnectionController constructor called without "new" operator');
         	return;
         }
 
-        var protocolmessages =  new ProtocolMessagesController(socket);
+        var protocolmessages =  new ProtocolMessagesController(socket, setOnlineCollector);
         
         permanentDataBuffer = new Buffer(0);
         waitingForRemainingData = false;
@@ -15,9 +15,9 @@ var ProtocolConnectionController = function(socket){
         /*
         TMP
         */
-        var tmp_receivedObjs=0;
-        var tmp_successJsonObjs=0;
-        var tmp_brokenJsonObjs=0;
+        // var tmp_receivedObjs=0;
+        // var tmp_successJsonObjs=0;
+        // var tmp_brokenJsonObjs=0;
 
         // this.getTmpVars = function(){
         // 	return {received : tmp_receivedObjs, success:tmp_successJsonObjs, broken:tmp_brokenJsonObjs};
@@ -49,6 +49,7 @@ var ProtocolConnectionController = function(socket){
         		//normal format. Just process.
         		consumeData(packet);
         	}else{
+        		console.log("WARNING: Wrong message format found");
         		//wrong format found.
         		try{
 	        		packet = JSON.parse("[" + replaceAll(packet, "}\n{","},\n{") + "]");

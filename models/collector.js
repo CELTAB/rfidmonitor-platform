@@ -12,7 +12,7 @@ var Collector = function(){
     };
 
     this.id = 0;
-    this.groupId = 0;
+    this.group_id = 0;
     this.lat = '';
     this.lng = '';
     this.mac = '';

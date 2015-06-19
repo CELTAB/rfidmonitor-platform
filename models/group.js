@@ -6,12 +6,10 @@ var Group = function(){
         console.warn('Warning: Group constructor called without "new" operator');
     }
 
-    this.id = 0;
+    this.id;
 	this.name = '';
-	this.lat = '';
-	this.lng = '';
-	this.creationDate = new Date();
+	this.creation_date = new Date();
+    this.description = '';
 }
-
 
 module.exports = Group;

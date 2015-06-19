@@ -1,8 +1,13 @@
 var db = require('./database');
 var Collector = require('./collector');
+var GroupDao = require('../dao/groupdao');
+
+//Just call the GroupDao constructor to create the default group.
+var gdef = new GroupDao();
 
 var CollectorDao = function(){
-
+	
+	
 }
 
 //Tries to insert, if fails by error of unique constraint, find and return.
@@ -44,7 +49,7 @@ CollectorDao.prototype.insert = function(collector, callback){
 	//console.log("RFIDPLATFORM[DEBUG]: Inserting New Collector");
 	var query = "INSERT INTO collector (description, group_id, lat, lng, mac, name, status) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING ID";
 
-	db.query(query, [collector.description, collector.groupId, collector.lat, collector.lng, collector.mac, collector.name, collector.status], function(err, result){
+	db.query(query, [collector.description, collector.group_id, collector.lat, collector.lng, collector.mac, collector.name, collector.status], function(err, result){
 		if(err){
 			console.log("CollectorDao insert error : " + err);
 			return callback(err,null);
@@ -52,6 +57,21 @@ CollectorDao.prototype.insert = function(collector, callback){
 		var id = result.rows[0].id;		
 		console.log("RFIDPLATFORM[DEBUG]: New Collector Inserted id: " + id);
 		callback(null, id);
+	});
+}
+
+CollectorDao.prototype.updateStatus = function(collectorId, newStatus, callback){
+
+	var query = "UPDATE collector SET status = $2 WHERE id = $1";
+
+	db.query(query, [collectorId, newStatus], function(err, result){
+		if(err){
+			console.log("CollectorDao updateStatus error : " + err);
+			callback(err, null);
+			return;
+		}
+
+		callback(null, result.rowCount);
 	});
 }
 
