@@ -37,49 +37,49 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 		logger.debug("handle_SYN\n Message: " + JSON.stringify(message));
 
 		collectordao.findByMac(data.macaddress, function(err, collector){
-		if(err){
-			logger.error("Error: " + err);
-			return;
-		}
+			if(err){
+				logger.error("Error: " + err);
+				return;
+			}
 
-		if(collector != null){
+			if(collector != null){
 			
-			logger.debug("collector found. ID: " + collector.id);
-			collector.status = collector.statusEnum.Online;
+				logger.debug("collector found. ID: " + collector.id);
+				collector.status = collector.statusEnum.Online;
 
-			var ackObj = {id:collector.id, macaddress:collector.mac, name:collector.name};
-			sendObject(buildMessageObject("ACK-SYN", {id:collector.id, macaddress:collector.mac, name:collector.name}));
-		}else{
+				var ackObj = {id:collector.id, macaddress:collector.mac, name:collector.name};
+				sendObject(buildMessageObject("ACK-SYN", {id:collector.id, macaddress:collector.mac, name:collector.name}));
+			}else{
 
-			var newCollector = new Collector();
-			newCollector.group_id = 1; //default
+				var newCollector = new Collector();
+				newCollector.group_id = 1; //default
 
-			if(data.name == ""){
-				//if the collector doesn't have a name, set to 'Unknown'.
-				newCollector.name = "Unknown";
-			}
-			else{
-				//Use the name from the collector.
-				newCollector.name = data.name;
-			}
-
-			newCollector.mac = data.macaddress;
-			newCollector.status = new Collector().statusEnum.Online;
-
-			logger.debug("Collector not found. INSERTING: " + JSON.stringify(newCollector));
-
-			collectordao.insert(newCollector, function(err, collectorId){
-
-				if(err){
-					logger.error("Error: " + err);
-					return;
+				if(data.name == ""){
+					//if the collector doesn't have a name, set to 'Unknown'.
+					newCollector.name = "Unknown";
+				}
+				else{
+					//Use the name from the collector.
+					newCollector.name = data.name;
 				}
 
-				logger.debug("Collector inserted. new ID: " + collectorId);
-				sendObject(buildMessageObject("ACK-SYN", {id:collectorId, macaddress:newCollector.mac, name:newCollector.name}));
-			});
-		}
-	});
+				newCollector.mac = data.macaddress;
+				newCollector.status = new Collector().statusEnum.Online;
+
+				logger.debug("Collector not found. INSERTING: " + JSON.stringify(newCollector));
+
+				collectordao.insert(newCollector, function(err, collectorId){
+
+					if(err){
+						logger.error("Error: " + err);
+						return;
+					}
+
+					logger.debug("Collector inserted. new ID: " + collectorId);
+					sendObject(buildMessageObject("ACK-SYN", {id:collectorId, macaddress:newCollector.mac, name:newCollector.name}));
+				});
+			}
+		});
 	}
 
 	// Complete handshake, update the collector status to Online

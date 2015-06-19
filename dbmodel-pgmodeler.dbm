@@ -42,13 +42,16 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<constraint name="pk_collector" type="pk-constr" table="public.collector">
 		<columns names="id" ref-type="src-columns"/>
 	</constraint>
+	<constraint name="uq_macaddress" type="uq-constr" table="public.collector">
+		<columns names="mac" ref-type="src-columns"/>
+	</constraint>
 </table>
 
 <table name="group">
 	<schema name="public"/>
 	<role name="postgres"/>
 	<comment><![CDATA[Refers to a group of collectors: institution, department, region, etc.]]></comment>
-	<position x="62" y="360"/>
+	<position x="63" y="360"/>
 	<column name="id" not-null="true">
 		<type name="serial"/>
 	</column>
@@ -63,6 +66,9 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</column>
 	<constraint name="pk_group" type="pk-constr" table="public.group">
 		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="uq_name" type="uq-constr" table="public.group">
+		<columns names="name" ref-type="src-columns"/>
 	</constraint>
 </table>
 
@@ -133,7 +139,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="package">
 	<schema name="public"/>
 	<role name="postgres"/>
-	<position x="510" y="286"/>
+	<position x="510" y="304"/>
 	<column name="id" not-null="true">
 		<type name="serial"/>
 	</column>
@@ -148,6 +154,9 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</column>
 	<constraint name="id" type="pk-constr" table="public.package">
 		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="uq_package_hash" type="uq-constr" table="public.package">
+		<columns names="package_hash" ref-type="src-columns"/>
 	</constraint>
 </table>
 

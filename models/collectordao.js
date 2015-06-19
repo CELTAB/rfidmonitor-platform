@@ -42,6 +42,8 @@ CollectorDao.prototype.insertOrFindByMacUniqueError = function(collector, callba
 
 CollectorDao.prototype.insert = function(collector, callback){
 
+	console.log("INSERTING NEW COLLECTOR>>>> " + JSON.stringify(collector));
+
 	if (false === (collector instanceof Collector)) {
         logger.warn('Warning: CollectorDao : collector constructor called without "new" operator');
         return;
@@ -94,7 +96,6 @@ CollectorDao.prototype.findByMac = function(mac, callback){
 		}catch(e){
 			callback(e, null);
 		}
-
 	});
 }
 

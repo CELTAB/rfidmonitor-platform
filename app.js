@@ -9,22 +9,24 @@ var debugFile = false;
 var verboseConsole = false;
 var verboseFile = false;
 
-if(args.indexOf('--debugAll') > -1){
-	debugConsole = true;
-	debugFile = true;
-}else{
-	if(args.indexOf('--debugConsole') > -1){
-		debugConsole = true;
-	}else if (args.indexOf('--verboseConsole') > -1){
-		verboseConsole = true;
-	}
+logger.silly('haduki');
 
-	if(args.indexOf('--debugFile') > -1){
-		debugFile = true;
-	}else if (args.indexOf('--verboseFile') > -1){
-		verboseFile = true;
-	}	
-}
+// if(args.indexOf('--debugAll') > -1){
+// 	debugConsole = true;
+// 	debugFile = true;
+// }else{
+// 	if(args.indexOf('--debugConsole') > -1){
+// 		debugConsole = true;
+// 	}else if (args.indexOf('--verboseConsole') > -1){
+// 		verboseConsole = true;
+// 	}
+
+// 	if(args.indexOf('--debugFile') > -1){
+// 		debugFile = true;
+// 	}else if (args.indexOf('--verboseFile') > -1){
+// 		verboseFile = true;
+// 	}	
+// }
 
 
 new Logs(debugConsole, debugFile, verboseConsole, verboseFile);
