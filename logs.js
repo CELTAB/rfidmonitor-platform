@@ -30,8 +30,7 @@ var Logs = function(debugConsole, debugFile, verboseConsole, verboseFile){
 			maxFiles: 10, 
 			handleExceptions: true,
 			json: false,
-			colorize: true,
-			silent: true
+			colorize: true
 		}
 	);
 
@@ -71,8 +70,7 @@ var Logs = function(debugConsole, debugFile, verboseConsole, verboseFile){
 				datePattern: '.dd',
 				maxsize: 1024 * 1024 * 5,
 				maxFiles: 10, 
-				json: false,
-				silent: true
+				json: false
 			}
 		);
 	}
@@ -101,8 +99,7 @@ var Logs = function(debugConsole, debugFile, verboseConsole, verboseFile){
 				datePattern: '.dd',
 				maxsize: 1024 * 1024 * 5,
 				maxFiles: 10, 
-				json: false,
-				silent: false
+				json: false
 			}
 		);
 	}

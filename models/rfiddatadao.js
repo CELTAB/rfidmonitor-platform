@@ -1,7 +1,8 @@
 var db = require('./database');
 var CollectorDao = require('./collectordao');
 var Collector = require('./collector');
-var Rfiddata = require('./rfiddata')
+var Rfiddata = require('./rfiddata');
+var logger = require('winston');
 
 var PackageDao = require('../dao/packagedao');
 var Package = require('./package');
@@ -22,7 +23,6 @@ var insertSummary = function(rfiddata, collector, summaryCallback){
         return summaryCallback(null, rfiddata.md5diggest);
     }
 
-    // console.log("RFIDPLATFORM[DEBUG]: Inserting New RFIDData");
     existsByHash(rfiddata.md5diggest, function(err, exists){
         if(!exists){
 
@@ -32,13 +32,13 @@ var insertSummary = function(rfiddata, collector, summaryCallback){
 
             packagedao.insert(pkObj, function(err, pk_id){
                 if(err){
-                    console.log("RFIDATADAO insertSummary. ERROR: " + err);
+                    logger.error("RFIDATADAO insertSummary. ERROR: " + err);
                     //Something bad happend.
                     return;
                 }
 
                 totalDataCount = rfiddata.data.length;
-                dataCount = 0;
+                var dataCount = 0;
 
                 for (i=0; i<totalDataCount; i++){
 
@@ -50,13 +50,24 @@ var insertSummary = function(rfiddata, collector, summaryCallback){
 
                     //Insert the hash to is available in the next function. So it can send and ACK-DATA with the package hash.
                     rfidObject.tmpHash = rfiddata.md5diggest;
+                    rfidObject.dbIndex = i + 1;
+                    rfidObject.totalCount = totalDataCount;
 
-                    insertRFIDData(rfidObject, summaryCallback);
+                    insertRFIDData(rfidObject, function(err){
+                        if(err){
+                            logger.error("Error: " + err);
+                            return;
+                        }
+
+                        dataCount++;
+                        if(dataCount == totalDataCount)
+                            summaryCallback(null, rfiddata.md5diggest);
+                    });
                 }
             });
         }else{
             //TODO send ACK-DATA in this situation?
-            console.log("RFIDData already has the hash pesisted. ACK-DATA needed.");
+            console.log("Package already has the hash pesisted. ACK-DATA needed.");
             summaryCallback(null, rfiddata.md5diggest);
         }
     });     
@@ -69,15 +80,11 @@ var insertRFIDData = function(rfiddata, summaryCallback){
     db.query(query, [rfiddata.timestamp, rfiddata.rfidcode, rfiddata.collector_id, rfiddata.extra_data, rfiddata.package_id], function(err, result){
         
         if(err){
-            return summaryCallback(err, null);
+            logger.error("insertRFIDData error: " + err);
+            return summaryCallback(err);
         }
 
-       // console.log("RFIDPLATFORM[DEBUG]: RFIDData Inserted. HASH: " + rfiddata.md5hash);
-        dataCount++;
-        if(dataCount == totalDataCount){
-            //Temp hash used here to send the package hash to the collector.
-            summaryCallback(null, rfiddata.tmpHash);
-        }
+        summaryCallback(null);
     });
 }
 
@@ -98,7 +105,7 @@ var existsByHash = function(hash,callback){
 
 RFIDDataDao.prototype.insert = function(obj, callback){
 
-	collectorDao.findByMac(obj.macaddress, function(err,collector){
+	collectorDao.findByMac(obj.macaddress, function(err, collector){
 		if(err){
 			console.log("RFIDDataDao error " + err);
 			return callback(err,null);

@@ -17,7 +17,6 @@ CollectorDao.prototype.insertOrFindByMacUniqueError = function(collector, callba
         return;
     } 
 
-	logger.info("Inserting New Collector");
 	var query = "INSERT INTO collector (description, group_id, lat, lng, mac, name, status) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING ID";
 
 	db.query(query, [collector.description, collector.group_id, collector.lat, collector.lng, collector.mac, collector.name, collector.status], function(err, result){
@@ -48,7 +47,6 @@ CollectorDao.prototype.insert = function(collector, callback){
 
     CollectorDao.prototype.prepareCollector(collector, function(collectorOk){
 
-    	logger.debug("Inserting New Collector");
 		var query = "INSERT INTO collector (description, group_id, lat, lng, mac, name, status) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING ID";
 
 		db.query(query, [collectorOk.description, collectorOk.group_id, collectorOk.lat, collectorOk.lng, collectorOk.mac, collectorOk.name, collectorOk.status], function(err, result){

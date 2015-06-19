@@ -35,7 +35,7 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 	var handle_SYN = function(message){
 
 		var data = message.data;
-		logger.debug("handle_SYN\n Message: " + JSON.stringify(message));
+		logger.silly("handle_SYN\n Message: " + JSON.stringify(message));
 
 		collectordao.findByMac(data.macaddress, function(err, collector){
 			if(err){
