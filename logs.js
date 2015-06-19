@@ -17,7 +17,7 @@ var Logs = function(debugConsole, debugFile){
 	var transpDebug = [];
 
 	if(debugConsole){
-		console.log("console");
+		console.log("Printing debug messages on Console");
 		transpDebug.push(
 			new (winston.transports.Console)({
 				name: 'consoledebug',
@@ -29,6 +29,7 @@ var Logs = function(debugConsole, debugFile){
 	}
 
 	if(debugFile){
+		console.log("Printing debug messages on File");
 		transpDebug.push(
 			new (winston.transports.DailyRotateFile)({
 				name: 'dailydebug',

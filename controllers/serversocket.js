@@ -1,4 +1,5 @@
-var ProtocolMessagesController = require('./protocol-messages')
+var ProtocolMessagesController = require('./protocol-messages');
+var logger = require('../logs').Logger;
 
 var SocketController = function() {
 
@@ -8,19 +9,19 @@ var SocketController = function() {
 
 	this.socketTimeout = function() {			
         for(var key in this.socketList){
-        	// console.log("RFIDPLATFORM[DEBUG]: Collector address: " +this.socketList[key].address );
+        	// logger.info("RFIDPLATFORM[DEBUG]: Collector address: " +this.socketList[key].address );
         	var socketInfo = this.socketList[key];
 
         	if(socketInfo.status == 'unknown'){
         		// if the server sent a message and the collector did not answer
         		// the server must close the connection
-    			// console.log("RFIDPLATFORM[DEBUG]: Timeout: collector inactive for too much time, closing connection with: " + socketInfo.address);
+    			// logger.info("RFIDPLATFORM[DEBUG]: Timeout: collector inactive for too much time, closing connection with: " + socketInfo.address);
         		
         		try{	        		
             		socketInfo.socket.emit('end');	
             		socketInfo.socket.end();
         		}catch(e){
-        			console.log("RFIDPLATFORM[DEBUG]: ERROR When trying to close the connection " + e);
+        			logger.info("RFIDPLATFORM[DEBUG]: ERROR When trying to close the connection " + e);
         		}
         		
         		delete this.socketList[socketInfo.address];
@@ -34,7 +35,7 @@ var SocketController = function() {
             		// socketInfo.socket.emit('end');	
             		// socketInfo.socket.end();
         		}catch(e){
-        			console.log("RFIDPLATFORM[DEBUG]: ERROR When trying to send a message " + e);
+        			logger.info("RFIDPLATFORM[DEBUG]: ERROR When trying to send a message " + e);
         		}
         	}
         }
@@ -45,7 +46,7 @@ var SocketController = function() {
     }
 
     this.setAlive = function(macAddress){
-    	// console.log("RFIDPLATFORM[DEBUG]: Collector " + macAddress + " is alive.");
+    	logger.info("RFIDPLATFORM[DEBUG]: Collector " + macAddress + " is alive.");
     	this.socketList[macAddress].status = 'alive';
     }
 

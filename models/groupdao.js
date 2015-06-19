@@ -1,5 +1,6 @@
 var db = require('./database');
 var Group = require('./group');
+var logger = require('../logs').Logger;
 
 var GroupDao = function(){
 
@@ -8,7 +9,7 @@ var GroupDao = function(){
 GroupDao.prototype.insert = function(obj, callback){
 
 	if (false === (obj instanceof Group)) {
-        console.warn('Warning: GroupDao : obj constructor called without "new" operator');
+        logger.warn('Warning: GroupDao : obj constructor called without "new" operator');
         return;
     }
 

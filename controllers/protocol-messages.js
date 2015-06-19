@@ -1,6 +1,7 @@
 var RFIDDataDao = require('../models/rfiddatadao');
 var CollectorDao = require('../models/collectordao');
 var Collector =  require('../models/collector');
+var logger = require('../logs').Logger;
 
 var ProtocolMessagesController = function(socket, setOnlineCollector){
 
@@ -26,24 +27,24 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 				handle_DATA(message);
 				break;
 			default:
-				console.log("RFIDPLATFORM[WARNING]: Unknown message type ["+message.type+"]. Ignoring entire message.");
+				logger.warn("Unknown message type ["+message.type+"]. Ignoring entire message.");
 		}
 	}
 
 	var handle_SYN = function(message){
 
 		var data = message.data;
-		console.log("RFIDPLATFORM[DEBUG]: handle_SYN\n Message: " + JSON.stringify(message));
+		logger.debug("handle_SYN\n Message: " + JSON.stringify(message));
 
 		collectordao.findByMac(data.macaddress, function(err, collector){
 		if(err){
-			console.log("Error: " + err);
+			logger.error("Error: " + err);
 			return;
 		}
 
 		if(collector != null){
 			
-			console.log("collector found. ID: " + collector.id);
+			logger.debug("collector found. ID: " + collector.id);
 			collector.status = collector.statusEnum.Online;
 
 			var ackObj = {id:collector.id, macaddress:collector.mac, name:collector.name};
@@ -65,16 +66,16 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 			newCollector.mac = data.macaddress;
 			newCollector.status = new Collector().statusEnum.Online;
 
-			console.log("Collector not found. INSERTING: " + JSON.stringify(newCollector));
+			logger.debug("Collector not found. INSERTING: " + JSON.stringify(newCollector));
 
 			collectordao.insert(newCollector, function(err, collectorId){
 
 				if(err){
-					console.log("Error: " + err);
+					logger.error("Error: " + err);
 					return;
 				}
 
-				console.log("Collector inserted. new ID: " + collectorId);
+				logger.debug("Collector inserted. new ID: " + collectorId);
 				sendObject(buildMessageObject("ACK-SYN", {id:collectorId, macaddress:newCollector.mac, name:newCollector.name}));
 			});
 		}
@@ -86,40 +87,40 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 		var data = message.data;
 		collectordao.updateStatus(data.id, new Collector().statusEnum.Online, function(err, result){
 			if(err){
-				console.log("Error on handle_ACK: " + err);
+				logger.error("Error on handle_ACK: " + err);
 				return;
 			}
 
 			if(result >= 1){
 				//return the mac address for the Server class.
 				setOnlineCollector({id:data.id, macaddress:data.macaddress});
-				console.log("Status atualizado para Online");
+				logger.debug("Status atualizado para Online");
 			}
 		});
 	}
 
 	var handle_ACKALIVE = function(message){
-		console.log("RFIDPLATFORM[DEBUG]: handle_ACKALIVE");
+		logger.debug("handle_ACKALIVE");
 		try{
 			//TODO reset alive status.
 			var clientInfo = message.data;
 			//socketController.setAlive(clientInfo.macaddress);
 		}catch(e){
-			console.log("RFIDPLATFORM[DEBUG]: handle_ACKALIVE : Invalid MAC Address");
+			logger.error("handle_ACKALIVE : Invalid MAC Address");
 		}
 	}
 
 	var handle_DATA = function(message){
-		console.log("RFIDPLATFORM[DEBUG]: handle_DATA raw message: " + JSON.stringify(message,null,"\t"));
+		logger.debug("handle_DATA raw message: " + JSON.stringify(message,null,"\t"));
 
 		rfiddatadao.insert(message.data, function(err,_md5diggest){
 			if (err)
-				console.log("PROTOCOL MESSAGES err : " + err);
+				logger.error("PROTOCOL MESSAGES err : " + err);
 			else{
 				//send back to collecting point an ACK-DATA message.
 				packCounter++;
 				sendObject(buildMessageObject("ACK-DATA", {md5diggest: [_md5diggest]}));			
-				console.log("Sent " + packCounter + " RESPONSES. UNITL NOW");
+				logger.debug("Sent " + packCounter + " RESPONSES. UNITL NOW");
 			}
 		});
 	}
@@ -137,17 +138,17 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 
 	var sendObject = function(object){
 		if(!socket){
-			console.log("RFIDPLATFORM[ERROR]: sendMessage without socket.")
+			logger.error("sendMessage without socket.")
 			return;
 		}
 
 		try{
 			var message = JSON.stringify(object);
-			console.log("RFIDPLATFORM[DEBUG]: sendMessage : " + message);
+			logger.debug("sendMessage : " + message);
 			socket.write(buildMessage(message));
 
 		}catch(e){
-			console.log("RFIDPLATFORM[DEBUG]: sendObject error: " + e);
+			logger.error("sendObject error: " + e);
 		}
 		
 	}
@@ -162,7 +163,7 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 module.exports = ProtocolMessagesController;
 
 /*
-RFIDPLATFORM[DEBUG]: handle_DATA raw message: {
+handle_DATA raw message: {
 	"data": {
 		"datasummary": {
 			"data": [
