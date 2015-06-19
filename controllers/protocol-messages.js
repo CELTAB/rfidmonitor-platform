@@ -1,7 +1,7 @@
 var RFIDDataDao = require('../models/rfiddatadao');
 var CollectorDao = require('../models/collectordao');
 var Collector =  require('../models/collector');
-var logger = require('../logs').Logger;
+var logger = require('winston');
 
 var ProtocolMessagesController = function(socket, setOnlineCollector){
 

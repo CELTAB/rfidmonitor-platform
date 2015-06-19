@@ -1,5 +1,5 @@
 var ProtocolMessagesController = require('./protocol-messages');
-var logger = require('../logs').Logger;
+var logger = require('winston');
 
 var ProtocolConnectionController = function(socket, setOnlineCollector){
 	    if (false === (this instanceof ProtocolConnectionController)) {
