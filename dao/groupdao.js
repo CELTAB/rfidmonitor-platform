@@ -45,6 +45,19 @@ GroupDao.prototype.findById = function(groupId, callback){
 	});
 }
 
+//return the objetc correspondig to a default group
+GroupDao.prototype.getDefault = function(callback){
+
+	var query = 'SELECT * FROM "group" WHERE id=$1';
+	db.query(query, [1], function(err, result){
+		if(err){
+			throw new Error("GroupDao getDefault error : " + err);
+		}
+
+		callback(null, buildFromSelectResult(result));
+	});
+}
+
 var buildFromSelectResult = function(result){
 	var founds = result.rows;
 	if(founds.length == 0){

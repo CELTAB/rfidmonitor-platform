@@ -8,6 +8,7 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 	var rfiddatadao = new RFIDDataDao();
 	var collectordao =  new CollectorDao();
 	var packCounter = 0;
+	var responses = 0;
 
 	this.processMessage = function(message){
 
@@ -111,16 +112,18 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 	}
 
 	var handle_DATA = function(message){
-		logger.debug("handle_DATA raw message: " + JSON.stringify(message,null,"\t"));
+		// logger.debug("handle_DATA raw message: " + JSON.stringify(message,null,"\t"));
+		packCounter++;
+		logger.debug(">>> Packages Received: " + packCounter);
 
 		rfiddatadao.insert(message.data, function(err,_md5diggest){
 			if (err)
 				logger.error("PROTOCOL MESSAGES err : " + err);
 			else{
 				//send back to collecting point an ACK-DATA message.
-				packCounter++;
+				responses++;
 				sendObject(buildMessageObject("ACK-DATA", {md5diggest: [_md5diggest]}));			
-				logger.debug("Sent " + packCounter + " RESPONSES. UNITL NOW");
+				logger.debug("Sent " + responses + " RESPONSES. UNITL NOW");
 			}
 		});
 	}

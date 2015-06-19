@@ -42,7 +42,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<constraint name="pk_collector" type="pk-constr" table="public.collector">
 		<columns names="id" ref-type="src-columns"/>
 	</constraint>
-	<constraint name="uq_macaddress" type="uq-constr" table="public.collector">
+	<constraint name="uq_collectormac" type="uq-constr" table="public.collector">
 		<columns names="mac" ref-type="src-columns"/>
 	</constraint>
 </table>

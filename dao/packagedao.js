@@ -22,7 +22,6 @@ PackageDao.prototype.insert = function(ObjPackage, callback){
 		}
 
 		var id = result.rows[0].id;		
-		console.log("RFIDPLATFORM[DEBUG]: New Package Inserted with ID: " + id);
 		callback(null, id);
 	});
 }

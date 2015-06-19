@@ -3,11 +3,9 @@ var Collector = require('./collector');
 var GroupDao = require('../dao/groupdao');
 var logger = require('../logs').Logger;
 
-//Just call the GroupDao constructor to create the default group.
-var gdef = new GroupDao();
+var groupdao = new GroupDao();
 
 var CollectorDao = function(){
-	
 	
 }
 
@@ -19,10 +17,10 @@ CollectorDao.prototype.insertOrFindByMacUniqueError = function(collector, callba
         return;
     } 
 
-	//logger.info("Inserting New Collector");
+	logger.info("Inserting New Collector");
 	var query = "INSERT INTO collector (description, group_id, lat, lng, mac, name, status) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING ID";
 
-	db.query(query, [collector.description, collector.groupId, collector.lat, collector.lng, collector.mac, collector.name, collector.status], function(err, result){
+	db.query(query, [collector.description, collector.group_id, collector.lat, collector.lng, collector.mac, collector.name, collector.status], function(err, result){
 		if(err){
 			if(String(err).indexOf("uq_collectormac") > -1){
 				CollectorDao.prototype.findByMac(collector.mac,function(err,col){
@@ -40,27 +38,50 @@ CollectorDao.prototype.insertOrFindByMacUniqueError = function(collector, callba
 	});
 }
 
+//before insert verify if the collector have the group information. If doesn't have, get the defaul group.
 CollectorDao.prototype.insert = function(collector, callback){
-
-	console.log("INSERTING NEW COLLECTOR>>>> " + JSON.stringify(collector));
 
 	if (false === (collector instanceof Collector)) {
         logger.warn('Warning: CollectorDao : collector constructor called without "new" operator');
         return;
-    } 
+    }
 
-	logger.debug("Inserting New Collector");
-	var query = "INSERT INTO collector (description, group_id, lat, lng, mac, name, status) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING ID";
+    CollectorDao.prototype.prepareCollector(collector, function(collectorOk){
 
-	db.query(query, [collector.description, collector.group_id, collector.lat, collector.lng, collector.mac, collector.name, collector.status], function(err, result){
-		if(err){
-			logger.error("CollectorDao insert error : " + err);
-			return callback(err,null);
-		}
-		var id = result.rows[0].id;		
-		logger.debug("New Collector Inserted id: " + id);
-		callback(null, id);
-	});
+    	logger.debug("Inserting New Collector");
+		var query = "INSERT INTO collector (description, group_id, lat, lng, mac, name, status) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING ID";
+
+		db.query(query, [collectorOk.description, collectorOk.group_id, collectorOk.lat, collectorOk.lng, collectorOk.mac, collectorOk.name, collectorOk.status], function(err, result){
+			if(err){
+				logger.error("CollectorDao insert error : " + err);
+				return callback(err,null);
+			}
+			var id = result.rows[0].id;		
+			logger.debug("New Collector Inserted id: " + id);
+			callback(null, id);
+		});
+    });
+}
+
+//Prepare the collector to be inserted
+CollectorDao.prototype.prepareCollector = function(collector, realyInsert){
+	if(collector.group_id == 0){
+    		try{
+    			groupdao.getDefault(function(err, defaultGroup){
+    				if(defaultGroup != null){
+    					collector.group_id = defaultGroup.id;
+    					realyInsert(collector);
+    				}else{
+    					console.log("ERROR: There is no Default Group in the data base.");
+    					return;
+    				}
+    			});
+    		}catch(e){
+    			console.log(e);
+    		}
+    }else{
+		realyInsert(collector);
+    }
 }
 
 CollectorDao.prototype.updateStatus = function(collectorId, newStatus, callback){
@@ -82,7 +103,7 @@ CollectorDao.prototype.findByMac = function(mac, callback){
 	//TODO where mac = x and is active.
 	var query = "SELECT * FROM collector WHERE mac = $1";
 
-	logger.debug("Searching for Collector with MAC " + mac);
+	// logger.debug("Searching for Collector with MAC " + mac);
 
 	db.query(query, [mac], function(err, result){
 		if(err){

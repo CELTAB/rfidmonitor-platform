@@ -17,9 +17,6 @@ var RFIDDataDao = function(){
 
 var insertSummary = function(rfiddata, collector, summaryCallback){
 
-    console.log("RECEIVING RFIDPACKAGE: " + JSON.stringify(rfiddata));
-
-
     if(rfiddata.data.length == 0){
         console.log("Empty package received. send ACK-DATA");
         return summaryCallback(null, rfiddata.md5diggest);
@@ -51,6 +48,9 @@ var insertSummary = function(rfiddata, collector, summaryCallback){
                     rfidObject.collector_id = collector.id;
                     rfidObject.package_id = pk_id;
 
+                    //Insert the hash to is available in the next function. So it can send and ACK-DATA with the package hash.
+                    rfidObject.tmpHash = rfiddata.md5diggest;
+
                     insertRFIDData(rfidObject, summaryCallback);
                 }
             });
@@ -74,8 +74,10 @@ var insertRFIDData = function(rfiddata, summaryCallback){
 
        // console.log("RFIDPLATFORM[DEBUG]: RFIDData Inserted. HASH: " + rfiddata.md5hash);
         dataCount++;
-        if(dataCount == totalDataCount)
-            summaryCallback(null, rfiddata.md5hash);
+        if(dataCount == totalDataCount){
+            //Temp hash used here to send the package hash to the collector.
+            summaryCallback(null, rfiddata.tmpHash);
+        }
     });
 }
 
@@ -96,8 +98,6 @@ var existsByHash = function(hash,callback){
 
 RFIDDataDao.prototype.insert = function(obj, callback){
 
-    console.log("RFIDDATADAO INSERT..." + JSON.stringify(obj));
-
 	collectorDao.findByMac(obj.macaddress, function(err,collector){
 		if(err){
 			console.log("RFIDDataDao error " + err);
@@ -105,12 +105,31 @@ RFIDDataDao.prototype.insert = function(obj, callback){
 		}
 
         if(collector != null){
-            console.log("RFIDDATADAO -- Collector Found...");
+            //console.log("RFIDDATADAO -- Collector Found...");
             insertSummary(obj.datasummary, collector, callback);
         }else{
 
-            
-            console.log("RFIDDATADAO -- Collector NOT Found...");
+            var collectorObj = new Collector();
+            collectorObj.mac = obj.macaddress;
+            collectorObj.name = obj.name;
+
+            //prepare the collector to be inserted into the data base
+            collectorDao.prepareCollector(collectorObj, function(objReady){
+                try{
+                    collectorDao.insertOrFindByMacUniqueError(objReady, function(err, collectorId){
+
+                        if(collectorId == null){
+                            console.log(err);
+                            return;
+                        }
+                        
+                        objReady.id = collectorId;
+                        insertSummary(obj.datasummary, collectorObj, callback);
+                    });
+                }catch(e){
+                    console.log(e);
+                }
+            });
         }
 	});
 }
