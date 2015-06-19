@@ -1,4 +1,4 @@
-var logger = require('../logs').Logger;
+var logger = require('winston');
 
 var Collector = function(){
 

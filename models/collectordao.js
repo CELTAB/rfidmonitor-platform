@@ -1,7 +1,7 @@
 var db = require('./database');
 var Collector = require('./collector');
 var GroupDao = require('../dao/groupdao');
-var logger = require('../logs').Logger;
+var logger = require('winston');
 
 var groupdao = new GroupDao();
 
