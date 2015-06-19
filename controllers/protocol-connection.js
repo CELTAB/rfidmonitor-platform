@@ -15,9 +15,9 @@ var ProtocolConnectionController = function(socket, setOnlineCollector){
         /*
         TMP
         */
-        // var tmp_receivedObjs=0;
-        // var tmp_successJsonObjs=0;
-        // var tmp_brokenJsonObjs=0;
+        var tmp_receivedObjs=0;
+        var tmp_successJsonObjs=0;
+        var tmp_brokenJsonObjs=0;
 
         // this.getTmpVars = function(){
         // 	return {received : tmp_receivedObjs, success:tmp_successJsonObjs, broken:tmp_brokenJsonObjs};
