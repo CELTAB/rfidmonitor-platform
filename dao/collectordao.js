@@ -12,10 +12,12 @@ var CollectorDao = function(){
 //Tries to insert, if fails by error of unique constraint, find and return.
 CollectorDao.prototype.insertOrFindByMacUniqueError = function(collector, callback){
 
-	if (false === (collector instanceof Collector)) {
-        logger.warn('Warning: CollectorDao : collector constructor called without "new" operator');
+    if (false === (collector instanceof Collector)) {
+        var msg = 'CollectorDao : collector constructor called without "new" operator';
+        logger.error(msg);
+        throw new Error(msg);
         return;
-    } 
+    }
 
 	//prepare the collector to be inserted into the data base
 	CollectorDao.prototype.prepareCollector(collector, function(collectorOk){
@@ -44,8 +46,10 @@ CollectorDao.prototype.insertOrFindByMacUniqueError = function(collector, callba
 //before insert verify if the collector have the group information. If doesn't have, get the defaul group.
 CollectorDao.prototype.insert = function(collector, callback){
 
-	if (false === (collector instanceof Collector)) {
-        logger.warn('Warning: CollectorDao : collector constructor called without "new" operator');
+    if (false === (collector instanceof Collector)) {
+        var msg = 'CollectorDao : collector constructor called without "new" operator';
+        logger.error(msg);
+        throw new Error(msg);
         return;
     }
 
@@ -128,9 +132,11 @@ var buildFromSelectResult = function(result){
 	if(founds == 0)
 		return null;
 	else if(founds > 1){
-		throw new Error("Unexpected Bahavior: More than one collector found");
-		return;
-	}
+        var msg = "Unexpected Bahavior: More than one collector found";
+        logger.error(msg);
+        throw new Error(msg);
+        return;
+    }
 
 	var collector = new Collector();
 	collector.id = result.rows[0].id;
