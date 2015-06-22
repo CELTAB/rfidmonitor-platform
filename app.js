@@ -1,9 +1,9 @@
 // Keep as firsts requires >>> 
-var Logs = require('./logs').Logs;
+var Logs = require('./utils/logs').Logs;
 var logger = require('winston');
 // <<< end of 'keep as first requires'
 
-var Server = require('./server');
+var Server = require('./utils/server');
 
 var args = process.argv;
 var debugConsole = false;
@@ -37,7 +37,18 @@ server.startServer();
 /*
 	TODOs
 
-	- Add a default group into sql script.
+	- Function name in logs statements;
+	- Implement the silly debug and verbose;
+	- Implement the entire protocol;
+	- Implement services;
+	- Implement the admin user interface;
+	- Normalize database;
+	- create userDao; 
+	- Service Authentication;
+	- Implement Transactions;
+	- Change group table: add a default column;
+	- 
+
 
 */
 

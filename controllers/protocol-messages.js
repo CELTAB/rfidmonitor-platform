@@ -1,5 +1,5 @@
-var RFIDDataDao = require('../models/rfiddatadao');
-var CollectorDao = require('../models/collectordao');
+var RFIDDataDao = require('../dao/rfiddatadao');
+var CollectorDao = require('../dao/collectordao');
 var Collector =  require('../models/collector');
 var logger = require('winston');
 
@@ -44,8 +44,7 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 			}
 
 			if(collector != null){
-			
-				logger.debug("collector found. ID: " + collector.id);
+				logger.debug("Collector found. ID: " + collector.id);
 				collector.status = collector.statusEnum.Online;
 
 				var ackObj = {id:collector.id, macaddress:collector.mac, name:collector.name};
@@ -53,7 +52,6 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 			}else{
 
 				var newCollector = new Collector();
-				newCollector.group_id = 1; //default
 
 				if(data.name == ""){
 					//if the collector doesn't have a name, set to 'Unknown'.
@@ -65,7 +63,7 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 				}
 
 				newCollector.mac = data.macaddress;
-				newCollector.status = new Collector().statusEnum.Online;
+				newCollector.status = new Collector().statusEnum.Offline;
 
 				logger.debug("Collector not found. INSERTING: " + JSON.stringify(newCollector));
 
@@ -94,8 +92,8 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 
 			if(result >= 1){
 				//return the mac address for the Server class.
+				logger.debug("Update Status to Online");
 				setOnlineCollector({id:data.id, macaddress:data.macaddress});
-				logger.debug("Status atualizado para Online");
 			}
 		});
 	}

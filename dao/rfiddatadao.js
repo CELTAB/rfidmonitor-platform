@@ -1,16 +1,16 @@
-var db = require('./database');
+var db = require('../utils/database');
 var CollectorDao = require('./collectordao');
-var Collector = require('./collector');
-var Rfiddata = require('./rfiddata');
+var Collector = require('../models/collector');
+var Rfiddata = require('../models/rfiddata');
 var logger = require('winston');
 
-var PackageDao = require('../dao/packagedao');
-var Package = require('./package');
+var PackageDao = require('./packagedao');
+var Package = require('../models/package');
 var GroupDao = require('./groupdao');
-var Group = require('./group');
+var Group = require('../models/group');
 
 var RFIDDataDao = function(){
-	//global?
+	//global? sim
 	collectorDao = new CollectorDao();
 	groupDao = new GroupDao();
     packagedao = new PackageDao();
@@ -120,23 +120,28 @@ RFIDDataDao.prototype.insert = function(obj, callback){
             collectorObj.mac = obj.macaddress;
             collectorObj.name = obj.name;
 
-            //prepare the collector to be inserted into the data base
-            collectorDao.prepareCollector(collectorObj, function(objReady){
-                try{
-                    collectorDao.insertOrFindByMacUniqueError(objReady, function(err, collectorId){
+            try{
+                /*
+                    If the collector does not exists, we try to insert it again. 
+                    But if wee receive a uniqueError the collector is search one more time.
 
-                        if(collectorId == null){
-                            console.log(err);
-                            return;
-                        }
+                    It's done this way because when the collector send a LOT of DATA packages with an unknown collector mac, the server will try to insert this collector before save the Rfidadata.
+                    But, the problem happens if a new package arraives with the same collector mac before the insertion of the previous one. 
+                    So, the next instance of this code will try to search but don't find again bacause the insertion is not done yet.
+                */
+                collectorDao.insertOrFindByMacUniqueError(collectorObj, function(err, collectorId){
+
+                    if(collectorId == null){
+                        console.log(err);
+                        return;
+                    }
                         
-                        objReady.id = collectorId;
-                        insertSummary(obj.datasummary, collectorObj, callback);
-                    });
-                }catch(e){
-                    console.log(e);
-                }
-            });
+                    objReady.id = collectorId;
+                    insertSummary(obj.datasummary, collectorObj, callback);
+                });
+            }catch(e){
+                console.log(e);
+            }
         }
 	});
 }

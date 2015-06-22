@@ -1,7 +1,7 @@
-var CollectorDao = require('./models/collectordao');
-var Collector =  require('./models/collector');
-var ProtocolConnectionController = require('./controllers/protocol-connection');
-var SocketController = require('./controllers/serversocket');
+var CollectorDao = require('../dao/collectordao');
+var Collector =  require('../models/collector');
+var ProtocolConnectionController = require('../controllers/protocol-connection');
+var SocketController = require('../controllers/serversocket');
 var logger = require('winston');
 
 var Server = function(){
@@ -43,7 +43,7 @@ var Server = function(){
 				}
 
 				if(result >= 1){
-					logger.debug("Status atualizado para Offline");
+					logger.debug("Update Status to Offline");
 				}
 			});
 		});

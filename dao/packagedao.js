@@ -1,4 +1,4 @@
-var db = require('../models/database');
+var db = require('../utils/database');
 var Package = require('../models/package');
 
 var PackageDao = function(){

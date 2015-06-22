@@ -1,4 +1,4 @@
-var db = require('./models/database');
+var db = require('./database');
 
 var ManipulateDb = function (){}
 

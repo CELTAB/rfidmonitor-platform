@@ -46,18 +46,19 @@ var ProtocolConnectionController = function(socket, setOnlineCollector){
         		//normal format. Just process.
         		consumeData(packet);
         	}else{
-        		logger.warn("Wrong message format found");
-        		//wrong format found.
-        		try{
-	        		packet = JSON.parse("[" + replaceAll(packet, "}\n{","},\n{") + "]");
+                throw new Erro("Wrong message format found");
+        		// logger.warn("Wrong message format found");
+        		// //wrong format found.
+        		// try{
+	        	// 	packet = JSON.parse("[" + replaceAll(packet, "}\n{","},\n{") + "]");
 
-	        		packet.forEach(function(pkt){
-	        			consumeData(JSON.stringify(pkt));
-	        		});
+	        	// 	packet.forEach(function(pkt){
+	        	// 		consumeData(JSON.stringify(pkt));
+	        	// 	});
 
-        		}catch(e){
-        			logger.error("consumeData_unwantedFormat error : " + e);
-        		}        		
+        		// }catch(e){
+        		// 	logger.error("consumeData_unwantedFormat error : " + e);
+        		// }        		
         	}
         }
 

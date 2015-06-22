@@ -1,6 +1,6 @@
-var db = require('./database');
-var Collector = require('./collector');
-var GroupDao = require('../dao/groupdao');
+var db = require('../utils/database');
+var Collector = require('../models/collector');
+var GroupDao = require('./groupdao');
 var logger = require('winston');
 
 var groupdao = new GroupDao();
@@ -17,23 +17,27 @@ CollectorDao.prototype.insertOrFindByMacUniqueError = function(collector, callba
         return;
     } 
 
-	var query = "INSERT INTO collector (description, group_id, lat, lng, mac, name, status) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING ID";
+	//prepare the collector to be inserted into the data base
+	CollectorDao.prototype.prepareCollector(collector, function(collectorOk){
 
-	db.query(query, [collector.description, collector.group_id, collector.lat, collector.lng, collector.mac, collector.name, collector.status], function(err, result){
-		if(err){
-			if(String(err).indexOf("uq_collectormac") > -1){
-				CollectorDao.prototype.findByMac(collector.mac,function(err,col){
-					callback(err,col.id);
-				});
-				return;
-			}else{
-				logger.error("CollectorDao insertOrFindByMacUniqueError error : " + err);
-				return callback(err,null);
+		var query = "INSERT INTO collector (description, group_id, lat, lng, mac, name, status) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING ID";
+
+		db.query(query, [collector.description, collector.group_id, collector.lat, collector.lng, collector.mac, collector.name, collector.status], function(err, result){
+			if(err){
+				if(String(err).indexOf("uq_collectormac") > -1){
+					CollectorDao.prototype.findByMac(collector.mac,function(err,col){
+						callback(err,col.id);
+					});
+					return;
+				}else{
+					logger.error("CollectorDao insertOrFindByMacUniqueError error : " + err);
+					return callback(err,null);
+				}
 			}
-		}
-		var id = result.rows[0].id;		
-		logger.debug("New Collector Inserted id: " + id);
-		callback(null, id);
+			var id = result.rows[0].id;		
+			logger.debug("New Collector Inserted id: " + id);
+			callback(null, id);
+		});
 	});
 }
 
@@ -62,13 +66,13 @@ CollectorDao.prototype.insert = function(collector, callback){
 }
 
 //Prepare the collector to be inserted
-CollectorDao.prototype.prepareCollector = function(collector, realyInsert){
+CollectorDao.prototype.prepareCollector = function(collector, callbackInsert){
 	if(collector.group_id == 0){
     		try{
     			groupdao.getDefault(function(err, defaultGroup){
     				if(defaultGroup != null){
     					collector.group_id = defaultGroup.id;
-    					realyInsert(collector);
+    					callbackInsert(collector);
     				}else{
     					console.log("ERROR: There is no Default Group in the data base.");
     					return;
@@ -78,7 +82,7 @@ CollectorDao.prototype.prepareCollector = function(collector, realyInsert){
     			console.log(e);
     		}
     }else{
-		realyInsert(collector);
+		callbackInsert(collector);
     }
 }
 

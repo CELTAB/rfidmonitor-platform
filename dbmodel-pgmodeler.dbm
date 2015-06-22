@@ -51,7 +51,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<schema name="public"/>
 	<role name="postgres"/>
 	<comment><![CDATA[Refers to a group of collectors: institution, department, region, etc.]]></comment>
-	<position x="63" y="360"/>
+	<position x="71" y="323"/>
 	<column name="id" not-null="true">
 		<type name="serial"/>
 	</column>
@@ -64,11 +64,14 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="description">
 		<type name="text"/>
 	</column>
+	<column name="isdefault">
+		<type name="boolean"/>
+	</column>
 	<constraint name="pk_group" type="pk-constr" table="public.group">
 		<columns names="id" ref-type="src-columns"/>
 	</constraint>
-	<constraint name="uq_name" type="uq-constr" table="public.group">
-		<columns names="name" ref-type="src-columns"/>
+	<constraint name="uq_isdefault" type="uq-constr" table="public.group">
+		<columns names="isdefault" ref-type="src-columns"/>
 	</constraint>
 </table>
 

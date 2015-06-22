@@ -5,7 +5,8 @@ var Collector = function(){
     /* If this constructor is called without the "new" operator, "this" points
      * to the global object. Log a warning and call it correctly. */
     if (false === (this instanceof Collector)) {
-        logger.warn('Warning: Collector constructor called without "new" operator');
+        logger.error('Error: Collector constructor called without "new" operator');
+        throw new Error('Collector constructor called without "new" operator');
     }
 
     this.statusEnum = {
@@ -22,6 +23,5 @@ var Collector = function(){
     this.status = this.statusEnum.Offline;
     this.description = '';
 }
-
 
 module.exports = Collector;
