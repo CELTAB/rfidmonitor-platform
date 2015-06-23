@@ -19,7 +19,7 @@ var RFIDDataDao = function(){
 var insertSummary = function(rfiddata, collector, summaryCallback){
 
     if(rfiddata.data.length == 0){
-        console.log("Empty package received. send ACK-DATA");
+        logger.warn("Empty package received. send ACK-DATA");
         return summaryCallback(null, rfiddata.md5diggest);
     }
 
@@ -66,8 +66,8 @@ var insertSummary = function(rfiddata, collector, summaryCallback){
                 }
             });
         }else{
-            //TODO send ACK-DATA in this situation?
-            console.log("Package already has the hash pesisted. ACK-DATA needed.");
+            //The server already has the package with this hash, so send the ACK-DATA to the collector to confirm persistence.
+            logger.info("Package already has the hash pesisted. ACK-DATA needed.");
             summaryCallback(null, rfiddata.md5diggest);
         }
     });     
@@ -92,7 +92,7 @@ var existsByHash = function(hash,callback){
 
     packagedao.findByHash(hash, function(err, pk){
         if(err){
-            console.log("Error RfiddataDao.existByHahs: " + err);
+            logger.error("Error RfiddataDao.existByHahs: " + err);
             return;
         }
 
@@ -107,12 +107,11 @@ RFIDDataDao.prototype.insert = function(obj, callback){
 
 	collectorDao.findByMac(obj.macaddress, function(err, collector){
 		if(err){
-			console.log("RFIDDataDao error " + err);
+			logger.error("RFIDDataDao error " + err);
 			return callback(err,null);
 		}
 
         if(collector != null){
-            //console.log("RFIDDATADAO -- Collector Found...");
             insertSummary(obj.datasummary, collector, callback);
         }else{
 
@@ -132,7 +131,7 @@ RFIDDataDao.prototype.insert = function(obj, callback){
                 collectorDao.insertOrFindByMacUniqueError(collectorObj, function(err, collectorId){
 
                     if(collectorId == null){
-                        console.log(err);
+                        logger.error(err);
                         return;
                     }
                         
@@ -140,7 +139,7 @@ RFIDDataDao.prototype.insert = function(obj, callback){
                     insertSummary(obj.datasummary, collectorObj, callback);
                 });
             }catch(e){
-                console.log(e);
+                logger.error(e);
             }
         }
 	});

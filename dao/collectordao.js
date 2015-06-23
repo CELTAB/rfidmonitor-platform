@@ -3,6 +3,7 @@ var Collector = require('../models/collector');
 var GroupDao = require('./groupdao');
 var logger = require('winston');
 
+var platformError = require('../utils/platformerror');
 var groupdao = new GroupDao();
 
 var CollectorDao = function(){
@@ -14,8 +15,7 @@ CollectorDao.prototype.insertOrFindByMacUniqueError = function(collector, callba
 
     if (false === (collector instanceof Collector)) {
         var msg = 'CollectorDao : collector constructor called without "new" operator';
-        logger.error(msg);
-        throw new Error(msg);
+		new platformError(msg);
         return;
     }
 
@@ -48,8 +48,7 @@ CollectorDao.prototype.insert = function(collector, callback){
 
     if (false === (collector instanceof Collector)) {
         var msg = 'CollectorDao : collector constructor called without "new" operator';
-        logger.error(msg);
-        throw new Error(msg);
+		new platformError(msg);
         return;
     }
 
@@ -78,12 +77,16 @@ CollectorDao.prototype.prepareCollector = function(collector, callbackInsert){
     					collector.group_id = defaultGroup.id;
     					callbackInsert(collector);
     				}else{
-    					console.log("ERROR: There is no Default Group in the data base.");
-    					return;
+    					/*This probably will never happend, because the getDefault function will return an existing default group 
+    					or insert one and then return it.
+    					*/
+    					var msg = 'ERROR: There is no Default Group in the data base.');
+						new platformError(msg);
+        				return;
     				}
     			});
     		}catch(e){
-    			console.log(e);
+    			logger.error(e);
     		}
     }else{
 		callbackInsert(collector);
@@ -133,8 +136,7 @@ var buildFromSelectResult = function(result){
 		return null;
 	else if(founds > 1){
         var msg = "Unexpected Bahavior: More than one collector found";
-        logger.error(msg);
-        throw new Error(msg);
+		new platformError(msg);
         return;
     }
 

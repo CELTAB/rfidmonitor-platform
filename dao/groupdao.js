@@ -9,7 +9,8 @@ var GroupDao = function(){
 GroupDao.prototype.insert = function(group, callback){
 
 	if (false === (group instanceof Group)) {
-        console.warn('Warning: GroupDao : group constructor called without "new" operator');
+        var msg = 'GroupDao: group constructor called without "new" operator';
+		new platformError(msg);
         return;
     }
 
@@ -17,12 +18,12 @@ GroupDao.prototype.insert = function(group, callback){
 
 	db.query(query, [group.name, group.creation_date, group.description, group.isdefault], function(err, result){
 		if(err){
-			console.log("GroupDao insert error : " + err);
+			logger.error("GroupDao insert error : " + err);
 			return callback(err,null);
 		}
 
 			var id = result.rows[0].id;		
-			console.log("RFIDPLATFORM[DEBUG]: New group Inserted with ID: " + id);
+			logger.info("RFIDPLATFORM[DEBUG]: New group Inserted with ID: " + id);
 			callback(null, id);
 	});
 }
@@ -33,7 +34,7 @@ GroupDao.prototype.findById = function(groupId, callback){
 
 	db.query(query, [groupId], function(err, result){
 		if(err){
-			console.log("GroupDao findById error : " + err);
+			logger.error("GroupDao findById error : " + err);
 			return callback(err,null);
 		}
 
@@ -52,14 +53,16 @@ GroupDao.prototype.getDefault = function(callback){
 	var query = 'SELECT * FROM "group" WHERE isdefault=$1';
 	db.query(query, [true], function(err, result){
 		if(err){
-			throw new Error("GroupDao getDefault error : " + err);
-		}
+        	var msg = 'GroupDao getDefault error : ' + err;
+			new platformError(msg);
+        	return;
+    	}
 
 		var defaultFound = buildFromSelectResult(result);
 
 		if(defaultFound == null){
 
-			console.log(">>>>>>>>>>>>>>>>>> INSERTING DEFAULT GROUP <<<<<<<<<<<<<<<<<<<<<<<<<<");
+			logger.debug("Inserting default group");
 			var defaultGroup = new Group();
 			defaultGroup.name = "Default";
 			defaultGroup.description = "Default group";
@@ -76,7 +79,7 @@ GroupDao.prototype.getDefault = function(callback){
 					callback(null, defaultGroup);
 				});
 			}catch(e){
-				logger.error("INSERT EXCEPTION: " + e);
+				logger.error('ERROR: Default Group insertion exception. ' + e);
 			}
 		}else{
 			callback(null, defaultFound);
@@ -90,9 +93,9 @@ var buildFromSelectResult = function(result){
 		return null;
 	}
 	else if(founds.length > 1){
-		logger.error("Unexpected Bahavior: More than one group found");
-		throw new Error("Unexpected Bahavior: More than one group found");
-		return;
+		var msg = "Unexpected Bahavior: More than one group found";
+		new platformError(msg);
+        return;
 	}
 
 	var group = new Group();
@@ -103,37 +106,5 @@ var buildFromSelectResult = function(result){
 
     return group;
 }
-
-// GroupDao.prototype.insertDefault = function(){
-// 	this.getDefault(function(err, found){
-
-// 		if(err){
-// 			console.log("GroupDao0: FindDefault error.");
-// 			return;
-// 		}
-
-// 		if(found == null){
-
-// 			console.log(">>>>>>>>>>>>>>>>>> INSERTING DEFAULT GROUP <<<<<<<<<<<<<<<<<<<<<<<<<<");
-// 			var defaultGroup = new Group();
-// 			defaultGroup.name = "Default";
-// 			defaultGroup.description = "Default group";
-// 			defaultGroup.isdefault = true;
-
-// 			try{
-// 				GroupDao.prototype.insert(defaultGroup, function(err, id){
-// 					if(err){
-// 						logger.error("GroupDao1: InsertDefault error.");
-// 						return;
-// 					}
-// 					logger.debug("Default group inserted with ID " + id);
-// 				});
-
-// 			}catch(e){
-// 				logger.error("INSERT EXCEPTION: " + e);
-// 			}
-// 		}
-// 	});
-// }
 
 module.exports = GroupDao;
