@@ -37,17 +37,25 @@ server.startServer();
 /*
 	TODOs
 
-	- Function name in logs statements;
 	- Implement the silly debug and verbose;
 	- Implement the entire protocol;
-	- Implement services;
 	- Implement the admin user interface;
 	- Normalize database;
 	- create userDao; 
-	- Service Authentication;
 	- Implement Transactions;
 	- Change group table: add a default column;
-	- 
+	- Study this : socket.setTimeout(timeout[, callback]);
+	- protocol-connection : check packet size is a integer to avoid this 'debug: processDataBuffer : New pkt found with size : NaN'
+	- RESTFUL
+		- Authentication using oauth2. (every single thing following should be authenticated.)
+		- Access Permissions. (every single service must have access permissions)
+		- Services:
+			- Show to the requester how to make a request (service documentation pattern).
+				Like: collector/get -> collector/get/how
+			- Validate every single service request:
+				Like: max_resuts, date_range, etc
+			- Only after authentication and validation, process request and return json object with the response.
+			- Any error in any place must respond with a default error object with explantory message.
 
 
 */

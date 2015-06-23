@@ -1,5 +1,6 @@
 var ProtocolMessagesController = require('./protocol-messages');
 var logger = require('winston');
+var PlatformError = require('../utils/platformerror');
 
 var ProtocolConnectionController = function(socket, setOnlineCollector){
 	    if (false === (this instanceof ProtocolConnectionController)) {
@@ -16,10 +17,6 @@ var ProtocolConnectionController = function(socket, setOnlineCollector){
         var debug_receivedObjs=0;
         var debug_successJsonObjs=0;
         var debug_brokenJsonObjs=0;
-
-        // this.getTmpVars = function(){
-        // 	return {received : debug_receivedObjs, success:debug_successJsonObjs, broken:debug_brokenJsonObjs};
-        // }
 
         //##
         //start of temporary code below.
@@ -46,7 +43,7 @@ var ProtocolConnectionController = function(socket, setOnlineCollector){
         		//normal format. Just process.
         		consumeData(packet);
         	}else{
-                throw new Erro("Wrong message format found");
+                throw new PlatformError("Wrong message format found");
         		// logger.warn("Wrong message format found");
         		// //wrong format found.
         		// try{

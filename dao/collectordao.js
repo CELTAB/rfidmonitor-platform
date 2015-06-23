@@ -80,8 +80,7 @@ CollectorDao.prototype.prepareCollector = function(collector, callbackInsert){
     					/*This probably will never happend, because the getDefault function will return an existing default group 
     					or insert one and then return it.
     					*/
-    					var msg = 'ERROR: There is no Default Group in the data base.');
-						new platformError(msg);
+						new platformError('ERROR: There is no Default Group in the data base.');
         				return;
     				}
     			});

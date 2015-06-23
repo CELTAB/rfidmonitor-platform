@@ -2,6 +2,7 @@ var RFIDDataDao = require('../dao/rfiddatadao');
 var CollectorDao = require('../dao/collectordao');
 var Collector =  require('../models/collector');
 var logger = require('winston');
+var PlatformError = require('../utils/platformerror');
 
 var ProtocolMessagesController = function(socket, setOnlineCollector){
 
@@ -9,6 +10,8 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 	var collectordao =  new CollectorDao();
 	var packCounter = 0;
 	var responses = 0;
+
+	var socketTimeout = null;
 
 	this.processMessage = function(message){
 
@@ -94,18 +97,19 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 				//return the mac address for the Server class.
 				logger.debug("Update Status to Online");
 				setOnlineCollector({id:data.id, macaddress:data.macaddress});
+				
+				//Socket timeout initialized first time.
+				resetSocket();
 			}
 		});
 	}
 
 	var handle_ACKALIVE = function(message){
 		logger.debug("handle_ACKALIVE");
-		try{
-			//TODO reset alive status.
-			var clientInfo = message.data;
-			//socketController.setAlive(clientInfo.macaddress);
-		}catch(e){
-			logger.error("handle_ACKALIVE : Invalid MAC Address");
+		if(socketTimeout){
+			resetSocket();
+		}else{
+			new PlatformError("No timeout defined for a alive socket.");
 		}
 	}
 
@@ -159,6 +163,15 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 		return buildMessage(syn_alive);
 	}
 
+	var socketInactive = function(){
+		socket.emmit('end');
+		socket.end();
+	}
+
+	var resetSocket = function(){
+		clearTimeout(socketTimeout);
+		socketTimeout = setTimeout(socketInactive, 5000);
+	}
 };
 
 module.exports = ProtocolMessagesController;
