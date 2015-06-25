@@ -28,6 +28,10 @@ CollectorDao.prototype.insertOrFindByMacUniqueError = function(collector, callba
 			if(err){
 				if(String(err).indexOf("uq_collectormac") > -1){
 					CollectorDao.prototype.findByMac(collector.mac,function(err,col){
+						if(err){
+							logger.error("CollectorDao insertOrFindByMacUniqueError error :" + err);
+							return callback(err, null);
+						}
 						callback(err,col.id);
 					});
 					return;
@@ -123,6 +127,7 @@ CollectorDao.prototype.findByMac = function(mac, callback){
 			var collector = buildFromSelectResult(result);
 			callback(null, collector);
 		}catch(e){
+			logger.error("CollectorDao findByMac: " + e);
 			callback(e, null);
 		}
 	});

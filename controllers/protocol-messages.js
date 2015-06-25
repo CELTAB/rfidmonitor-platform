@@ -16,8 +16,6 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 
 	this.processMessage = function(message){
 
-		//todo should we check message structure?
-
 		switch(message.type){
 			case "SYN":
 				handle_SYN(message);
@@ -120,9 +118,9 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 	}
 
 	var handle_DATA = function(message){
-		// logger.debug("handle_DATA raw message: " + JSON.stringify(message,null,"\t"));
+		logger.debug("handle_DATA raw message: " + JSON.stringify(message,null,"\t"));
 		packCounter++;
-		logger.debug(">>> Packages Received: " + packCounter);
+		logger.debug("Packages Received: " + packCounter);
 
 		rfiddatadao.insert(message.data, function(err,_md5diggest){
 			if (err)
@@ -186,6 +184,8 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 module.exports = ProtocolMessagesController;
 
 /*
+
+OLD FORMAT
 handle_DATA raw message: {
 	"data": {
 		"datasummary": {
@@ -204,6 +204,29 @@ handle_DATA raw message: {
 			"md5diggest": "f9b0941547b464689121e9e80266fde2"
 		},
 		"id": 100,
+		"macaddress": "B8:27:EB:BB:0C:70",
+		"name": "Celtab-Serial"
+	},
+	"datetime": "2015-06-17T14:49:17",
+	"type": "DATA"
+}
+
+NEW FORMAT: 
+
+handle_DATA raw message: {
+	"data": {
+		"datasummary": {
+			"data": [
+				{
+					"datetime": "2014-10-15T15:58:33",
+					"rfidcode": 44332211,
+					"extra_data":{ 
+									"idantena": 1
+								}
+				}
+			],
+			"md5diggest": "f9b0941547b464689121e9e80266fde2"
+		},
 		"macaddress": "B8:27:EB:BB:0C:70",
 		"name": "Celtab-Serial"
 	},

@@ -74,10 +74,10 @@ console.log("PROTOCOL_TEST[DEBUG] : numberOfBrokenPkts: "+numberOfBrokenPkts);
 console.log("PROTOCOL_TEST[DEBUG] : number of sent pkts: " + numberOfPackages);
 
 console.log('\n\n\n################################################');
-if(	numberOfPackages == protocol.getTmpVars()['received']
-	&& numberOfBrokenPkts == protocol.getTmpVars()['broken']
-	&& (numberOfPackages - numberOfBrokenPkts) == protocol.getTmpVars()['success'])
-	console.log('################# TEST SUCCESS #################');
-else
-	console.log('################# FAILLLLLLLLL #################');
-console.log('################################################');
+// if(	numberOfPackages == protocol.getTmpVars()['received']
+// 	&& numberOfBrokenPkts == protocol.getTmpVars()['broken']
+// 	&& (numberOfPackages - numberOfBrokenPkts) == protocol.getTmpVars()['success'])
+// 	console.log('################# TEST SUCCESS #################');
+// else
+// 	console.log('################# FAILLLLLLLLL #################');
+// console.log('################################################');

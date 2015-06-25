@@ -10,7 +10,6 @@ var GroupDao = require('./groupdao');
 var Group = require('../models/group');
 
 var RFIDDataDao = function(){
-	//global? sim
 	collectorDao = new CollectorDao();
 	groupDao = new GroupDao();
     packagedao = new PackageDao();
@@ -33,7 +32,6 @@ var insertSummary = function(rfiddata, collector, summaryCallback){
             packagedao.insert(pkObj, function(err, pk_id){
                 if(err){
                     logger.error("RFIDATADAO insertSummary. ERROR: " + err);
-                    //Something bad happend.
                     return;
                 }
 
@@ -43,7 +41,7 @@ var insertSummary = function(rfiddata, collector, summaryCallback){
                 for (i=0; i<totalDataCount; i++){
 
                     var rfidObject = new Rfiddata();
-                    rfidObject.timestamp = rfiddata.data[i].datetime;
+                    rfidObject.rfidReadDate = rfiddata.data[i].datetime;
                     rfidObject.rfidcode = rfiddata.data[i].identificationcode;
                     rfidObject.collector_id = collector.id;
                     rfidObject.package_id = pk_id;
@@ -75,9 +73,9 @@ var insertSummary = function(rfiddata, collector, summaryCallback){
 
 var insertRFIDData = function(rfiddata, summaryCallback){
 
-    var query = "INSERT INTO rfiddata (timestamp, rfidcode, collector_id, extra_data, package_id) VALUES ($1, $2, $3, $4, $5) RETURNING ID";
+    var query = "INSERT INTO rfiddata (rfid_read_date, rfidcode, collector_id, extra_data, package_id, server_received_date) VALUES ($1, $2, $3, $4, $5, $6) RETURNING ID";
 
-    db.query(query, [rfiddata.timestamp, rfiddata.rfidcode, rfiddata.collector_id, rfiddata.extra_data, rfiddata.package_id], function(err, result){
+    db.query(query, [rfiddata.rfidReadDate, rfiddata.rfidcode, rfiddata.collector_id, rfiddata.extra_data, rfiddata.package_id, rfiddata.serverReceivedDate], function(err, result){
         
         if(err){
             logger.error("insertRFIDData error: " + err);
@@ -135,7 +133,7 @@ RFIDDataDao.prototype.insert = function(obj, callback){
                         return;
                     }
                         
-                    objReady.id = collectorId;
+                    collectorObj.id = collectorId;
                     insertSummary(obj.datasummary, collectorObj, callback);
                 });
             }catch(e){
@@ -146,89 +144,3 @@ RFIDDataDao.prototype.insert = function(obj, callback){
 }
 
 module.exports = RFIDDataDao;
-
-/*
->>>>>>  OBJECT   <<<<<<<< {
-    "datasummary": {
-        "data": [
-            {
-                "applicationcode": 0,
-                "datetime": "2014-10-15T15:58:33",
-                "id": 1282,
-                "idantena": 1,
-                "idcollectorpoint": 100,
-                "identificationcode": 44332211
-            }
-        ],
-        "idbegin": -1273252204,
-        "idend": -1273254596,
-        "md5diggest": "f9b0941547b464689121e9e80266fde2"
-    },
-    "id": 100,
-    "macaddress": "B8:27:EB:BB:0C:70",
-    "name": "Celtab-Serial"
-}
-
-*/
-
-/*
-        "datasummary": {
-            "data": [
-                {
-                    "applicationcode": 0,
-                    "datetime": "2014-10-14T19:52:27",
-                    "id": 13,
-                    "idantena": 1,
-                    "idcollectorpoint": 100,
-                    "identificationcode": 44332233
-                },
-                {
-                    "applicationcode": 0,
-                    "datetime": "2014-10-14T19:52:28",
-                    "id": 14,
-                    "idantena": 1,
-                    "idcollectorpoint": 100,
-                    "identificationcode": 44332233
-                },
-                {
-                    "applicationcode": 0,
-                    "datetime": "2014-10-14T19:52:29",
-                    "id": 15,
-                    "idantena": 1,
-                    "idcollectorpoint": 100,
-                    "identificationcode": 44332233
-                },
-                {
-                    "applicationcode": 0,
-                    "datetime": "2014-10-14T19:52:30",
-                    "id": 16,
-                    "idantena": 1,
-                    "idcollectorpoint": 100,
-                    "identificationcode": 44332233
-                },
-                {
-                    "applicationcode": 0,
-                    "datetime": "2014-10-14T19:52:31",
-                    "id": 17,
-                    "idantena": 1,
-                    "idcollectorpoint": 100,
-                    "identificationcode": 44332233
-                },
-                {
-                    "applicationcode": 0,
-                    "datetime": "2014-10-14T19:52:32",
-                    "id": 18,
-                    "idantena": 1,
-                    "idcollectorpoint": 100,
-                    "identificationcode": 44332233
-                }
-            ],
-            "idbegin": 18219088,
-            "idend": 0,
-            "md5diggest": "0e414979a87245b06cc817b9e837239b"
-        },
-        "id": 100,
-        "macaddress": "78:2B:CB:C0:7B:85",
-        "name": "celtba-tester"
-    }
-*/

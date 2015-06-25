@@ -10,7 +10,8 @@ var Rfiddata = function(){
     }
 
     this.id = 0;
-    this.timestamp = new Date();
+    this.rfidReadDate = null;
+    this.serverReceivedDate = new Date();
     this.rfidcode = '';
     this.collector_id = 0;
 	this.package_id = 0;
