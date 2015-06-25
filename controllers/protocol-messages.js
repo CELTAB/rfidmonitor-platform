@@ -1,6 +1,7 @@
 var RFIDDataDao = require('../dao/rfiddatadao');
 var CollectorDao = require('../dao/collectordao');
 var Collector =  require('../models/collector');
+var CollectorMonitor = require('../controllers/collector-monitor');
 var logger = require('winston');
 var PlatformError = require('../utils/platformerror');
 
@@ -11,7 +12,7 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 	var packCounter = 0;
 	var responses = 0;
 
-	var socketTimeout = null;
+	var collectormonitor = new CollectorMonitor();
 
 	this.processMessage = function(message){
 
@@ -96,21 +97,25 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 			if(result >= 1){
 				//return the mac address for the Server class.
 				logger.debug("Update Status to Online");
-				setOnlineCollector({id:data.id, macaddress:data.macaddress});
 				
-				//Socket timeout initialized first time.
-				resetSocket();
+				var collectorInfo = {id:data.id, macaddress:data.macaddress};
+				setOnlineCollector(collectorInfo);
+				
+				/*Start the function that will monitoring the status of the collector.
+				@Param1: Informations about the collector, as id and macAddress
+				@Param2: A function to send the SYN-ALIVE message to this collector
+				@Param3: A function to close the connection with this socket if is not responding.
+				*/
+				collectormonitor.startMonitor(collectorInfo, sendSynAliveMessage, socketInactive);
 			}
 		});
 	}
 
 	var handle_ACKALIVE = function(message){
 		logger.debug("handle_ACKALIVE");
-		if(socketTimeout){
-			resetSocket();
-		}else{
-			new PlatformError("No timeout defined for a alive socket.");
-		}
+
+		//Update the collector monitor to status alive.
+		collectormonitor.setAlive();
 	}
 
 	var handle_DATA = function(message){
@@ -155,22 +160,19 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 		}catch(e){
 			logger.error("sendObject error: " + e);
 		}
-		
 	}
 
-	this.buildMessageSYNALIVE = function(){
-		var syn_alive = JSON.stringify({ type:"SYN-ALIVE", data: {}, datetime: (new Date()).toISOString() });
-		return buildMessage(syn_alive);
+	//Function passed to collector monitor
+	var sendSynAliveMessage = function(){
+		var syn_alive = { type:"SYN-ALIVE", data: {}, datetime: (new Date()).toISOString() };
+		sendObject(syn_alive);
 	}
 
+	//Function passed to collector monito. Used to close a connection when the collector don't listen to the SYN-ALIVE message
 	var socketInactive = function(){
+		logger.error("Closing the conection!");
 		socket.emmit('end');
 		socket.end();
-	}
-
-	var resetSocket = function(){
-		clearTimeout(socketTimeout);
-		socketTimeout = setTimeout(socketInactive, 5000);
 	}
 };
 

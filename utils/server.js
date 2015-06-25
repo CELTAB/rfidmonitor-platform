@@ -1,21 +1,12 @@
 var CollectorDao = require('../dao/collectordao');
 var Collector =  require('../models/collector');
 var ProtocolConnectionController = require('../controllers/protocol-connection');
-var SocketController = require('../controllers/serversocket');
 var logger = require('winston');
 
 var Server = function(){
 
 	var net = require('net');
 	var server = net.createServer();
-
-	var events = require('events');
-	var serverEmitter = new events.EventEmitter();
-
-
-	var socketController = new SocketController();
-	socketController.socketTimeout();
-
 
 	server.on('connection', function(socket) {
 
@@ -24,6 +15,8 @@ var Server = function(){
 		var collectorId = 0;
 
 		var protocol = new ProtocolConnectionController(socket, function(collectorInfo){
+
+			//Set local variables to use as logger info when the connections is closed.
 			collectorMac = collectorInfo.macaddress;
 			collectorId = collectorInfo.id;
 		});
@@ -36,9 +29,10 @@ var Server = function(){
 			logger.info('RFIDPLATFORM[DEBUG]: Client with MAC ' + collectorMac + ' and ID ' + collectorId + ' Disconnected');
 			var collectordao = new CollectorDao();
 			
+			//And the collector status must be change for Offline.
 			collectordao.updateStatus(collectorId, new Collector().statusEnum.Offline, function(err, result){
 				if(err){
-					logger.error("Error on handle_ACK: " + err);
+					logger.error("Error on close socket connection: " + err);
 					return;
 				}
 

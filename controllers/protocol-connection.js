@@ -98,7 +98,7 @@ var ProtocolConnectionController = function(socket, setOnlineCollector){
             }
 
             logger.debug("processDataBuffer : permanentDataBuffer.length : " + permanentDataBuffer.length);
-            logger.debug("processDataBuffer : permanentDataBuffer string : " + permanentDataBuffer.toString());
+            //logger.debug("processDataBuffer : permanentDataBuffer string : " + permanentDataBuffer.toString());
 
             if(permanentDataBuffer.length < packetSize){
             	logger.debug("processDataBuffer : We dont have all bytes to this packet. wait more.");
