@@ -2,6 +2,7 @@ var CollectorDao = require('../dao/collectordao');
 var Collector =  require('../models/collector');
 var ProtocolConnectionController = require('../controllers/protocol-connection');
 var logger = require('winston');
+var PlatformError = require('./platformerror');
 
 var Server = function(){
 
@@ -13,6 +14,8 @@ var Server = function(){
 		//base infod about the collector
 		var collectorMac = '';
 		var collectorId = 0;
+
+		socket.isConnected = true;
 
 		var protocol = new ProtocolConnectionController(socket, function(collectorInfo){
 
@@ -27,19 +30,26 @@ var Server = function(){
 
 		socket.on('end', function() {
 			logger.info('RFIDPLATFORM[DEBUG]: Client with MAC ' + collectorMac + ' and ID ' + collectorId + ' Disconnected');
+
+			socket.isConnected = false;
+			delete protocol;
+
 			var collectordao = new CollectorDao();
 			
-			//And the collector status must be change for Offline.
-			collectordao.updateStatus(collectorId, new Collector().statusEnum.Offline, function(err, result){
-				if(err){
-					logger.error("Error on close socket connection: " + err);
-					return;
-				}
+				//And the collector status must be change for Offline.
+				collectordao.updateStatus(collectorId, new Collector().statusEnum.Offline, function(err, rowCount){
+					if(err){
+						logger.error("Error on database: Collector Updatestatus: " + err);
+						return;
+					}
+					
+					if(rowCount != 1){
+						logger.error('Error on update collector status.');
+						return;
+					}
 
-				if(result >= 1){
-					logger.debug("Update Status to Offline");
-				}
-			});
+					logger.debug("Updated Status to Offline");
+				});
 		});
 	
 		socket.on('data', function(data) {

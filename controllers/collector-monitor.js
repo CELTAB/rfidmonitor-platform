@@ -20,7 +20,7 @@ CollectorMonitor.prototype.startMonitor = function(collectorInfo, messager, clos
     //Set the first status as alive.
     collector.status = 'alive';
 
-    logger.info("New collector attached. Starting monitoring. " + JSON.stringify(collector));
+    logger.debug("New collector attached. Starting monitoring. ");
 
     timer = setInterval(function() {
         collectorTimeout();
@@ -39,9 +39,9 @@ var collectorTimeout = function(){
             // logger.info("RFIDPLATFORM[DEBUG]: Timeout: collector inactive for too much time, closing connection with: " + socketInfo.address);
                 
             try{                  
+                stopMonitor();
                 //Close the connection with the socket.  
                 closeConnection();
-                CollectorMonitor.prototype.stopMonitor();
             }catch(e){
                 logger.error("RFIDPLATFORM[DEBUG]: ERROR When trying to close the connection " + e);
             }
@@ -60,7 +60,7 @@ var collectorTimeout = function(){
 }
 
 CollectorMonitor.prototype.setAlive = function(){
-    logger.info("RFIDPLATFORM[DEBUG]: Collector " + collector.macaddress + " is alive.");
+    logger.debug("RFIDPLATFORM[DEBUG]: Collector " + collector.macaddress + " is alive.");
     collector.status = 'alive';
 }
 

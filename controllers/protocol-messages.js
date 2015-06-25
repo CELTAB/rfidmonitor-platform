@@ -87,6 +87,7 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 
 	// Complete handshake, update the collector status to Online
 	var handle_ACK = function(message){
+
 		var data = message.data;
 		collectordao.updateStatus(data.id, new Collector().statusEnum.Online, function(err, result){
 			if(err){
@@ -155,8 +156,11 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 		try{
 			var message = JSON.stringify(object);
 			logger.debug("sendMessage : " + message);
-			socket.write(buildMessage(message));
 
+			if(socket.isConnected)
+				socket.write(buildMessage(message));
+			else
+				logger.debug("Socket is already closed");
 		}catch(e){
 			logger.error("sendObject error: " + e);
 		}
@@ -170,9 +174,12 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 
 	//Function passed to collector monito. Used to close a connection when the collector don't listen to the SYN-ALIVE message
 	var socketInactive = function(){
-		logger.error("Closing the conection!");
-		socket.emmit('end');
-		socket.end();
+		logger.debug("Socket inactive.");
+
+		if(socket.isConnected){
+			logger.debug("Close the connection");
+			socket.end();
+		}
 	}
 };
 
