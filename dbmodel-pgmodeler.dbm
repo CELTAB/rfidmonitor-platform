@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.8.1-alpha1" last-position="0,0" last-zoom="1"
+<dbmodel pgmodeler-ver="0.8.1-alpha1" last-position="6,9" last-zoom="1"
 	 default-schema="public" default-owner="postgres">
 <database name="rfidplatform">
 </database>
@@ -83,7 +83,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="id" not-null="true">
 		<type name="serial"/>
 	</column>
-	<column name="timestamp" not-null="true">
+	<column name="rfid_read_date" not-null="true">
 		<type name="timestamp"/>
 	</column>
 	<column name="rfidcode" not-null="true">
@@ -97,6 +97,9 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</column>
 	<column name="package_id" not-null="true">
 		<type name="serial"/>
+	</column>
+	<column name="server_received_date" not-null="true">
+		<type name="timestamp"/>
 	</column>
 	<constraint name="pk_rfiddata" type="pk-constr" table="public.rfiddata">
 		<columns names="id" ref-type="src-columns"/>

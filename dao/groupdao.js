@@ -1,6 +1,7 @@
 var db = require('../utils/database');
 var Group = require('../models/group');
 var logger = require('winston');
+var PlatformError = require('../utils/platformerror');
 
 var GroupDao = function(){
 	//this.insertDefault();
@@ -10,7 +11,7 @@ GroupDao.prototype.insert = function(group, callback){
 
 	if (false === (group instanceof Group)) {
         var msg = 'GroupDao: group constructor called without "new" operator';
-		new platformError(msg);
+		throw new PlatformError(msg);
         return;
     }
 
@@ -18,8 +19,9 @@ GroupDao.prototype.insert = function(group, callback){
 
 	db.query(query, [group.name, group.creation_date, group.description, group.isdefault], function(err, result){
 		if(err){
-			logger.error("GroupDao insert error : " + err);
-			return callback(err,null);
+			var msg = "GroupDao insert " + err;
+			logger.error(msg);
+			return callback(msg,null);
 		}
 
 			var id = result.rows[0].id;		
@@ -54,7 +56,7 @@ GroupDao.prototype.getDefault = function(callback){
 	db.query(query, [true], function(err, result){
 		if(err){
         	var msg = 'GroupDao getDefault error : ' + err;
-			new platformError(msg);
+			throw new PlatformError(msg);
         	return;
     	}
 
@@ -94,7 +96,7 @@ var buildFromSelectResult = function(result){
 	}
 	else if(founds.length > 1){
 		var msg = "Unexpected Bahavior: More than one group found";
-		new platformError(msg);
+		throw new PlatformError(msg);
         return;
 	}
 

@@ -1,6 +1,7 @@
 var db = require('../utils/database');
 var Package = require('../models/package');
 var logger = require('winston');
+var PlatformError = require('../utils/platformerror');
 
 var PackageDao = function(){
 
@@ -10,7 +11,7 @@ PackageDao.prototype.insert = function(ObjPackage, callback){
 
 	if (false === (ObjPackage instanceof Package)) {
         var msg = 'PackageDao : Package constructor called without "new" operator';
-		new platformError(msg);
+		throw new PlatformError(msg);
         return;
     }
 
@@ -55,7 +56,7 @@ var buildFromSelectResult = function(result){
 	}
 	else if(founds.length > 1){
 		var msg = 'Unexpected Bahavior: More than one package found';
-		new platformError(msg);
+		throw new PlatformError(msg);
         return;
 	}
 

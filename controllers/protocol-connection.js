@@ -8,35 +8,36 @@ var ProtocolConnectionController = function(socket, setOnlineCollector){
         	return;
         }
 
-        var protocolmessages =  new ProtocolMessagesController(socket, setOnlineCollector);
+        this.protocolmessages =  new ProtocolMessagesController(socket, setOnlineCollector);
 
-        var resetBuffer = function(){
+        this.resetBuffer = function(){
             permanentDataBuffer = new Buffer(0);
             waitingForRemainingData = false;
             packetSize = 0;
         }
         
-        resetBuffer();
+        this.resetBuffer();
 
-        var debug_receivedObjs=0;
-        var debug_successJsonObjs=0;
-        var debug_brokenJsonObjs=0;
+        this.debug_receivedObjs = 0;
+        this.debug_successJsonObjs = 0;
+        this.debug_brokenJsonObjs = 0;
+        this.debug_ignoredBuffer = 0;
 
-        var consumeData = function(packet){
-        	debug_receivedObjs++;
+        this.consumeData = function(packet){
+        	this.debug_receivedObjs++;
         	try {
 				var message = {};
 				message = JSON.parse(packet);
-				protocolmessages.processMessage(message);
-				debug_successJsonObjs++;
+				this.protocolmessages.processMessage(message);
+				this.debug_successJsonObjs++;
 			}catch(e){
 				logger.error("consumeData error : " +e);
-				debug_brokenJsonObjs++;				
+				this.debug_brokenJsonObjs++;				
 				return;
 			}
         }
 
-        var processDataBuffer = function(){
+        this.processDataBuffer = function(){
             if(!waitingForRemainingData){
                 logger.debug("processDataBuffer : Probably a new pkt.");
                 //new packet.
@@ -50,10 +51,10 @@ var ProtocolConnectionController = function(socket, setOnlineCollector){
                 packetSize = parseInt(buffer);
 
                 if(isNaN(packetSize)){
-
+                    this.debug_ignoredBuffer++;
                     logger.error("Sem Banana no buffer...");
                     // Package error, incorrect size information. Clear buffer and start over
-                    resetBuffer();
+                    this.resetBuffer();
                     return;
                 }
 
@@ -76,11 +77,12 @@ var ProtocolConnectionController = function(socket, setOnlineCollector){
             packetSize = 0;
             waitingForRemainingData = false;
 
-            consumeData(data);
+            this.consumeData(data);
 
-            logger.debug("processDataBuffer : debug_receivedObjs: "+debug_receivedObjs +
-                " debug_successJsonObjs: "+debug_successJsonObjs +
-                " debug_brokenJsonObjs: "+debug_brokenJsonObjs
+            logger.debug("processDataBuffer : debug_receivedObjs: " + this.debug_receivedObjs +
+                " debug_successJsonObjs: " + this.debug_successJsonObjs +
+                " debug_brokenJsonObjs: " + this.debug_brokenJsonObjs +
+                " debug_ignoredBuffer: " + this.debug_ignoredBuffer
             );
         }
 
@@ -91,7 +93,7 @@ var ProtocolConnectionController = function(socket, setOnlineCollector){
 	        permanentDataBuffer = Buffer.concat([permanentDataBuffer, data]);
 
 	        do {
-	        	processDataBuffer();
+	        	this.processDataBuffer();
 	        }while(permanentDataBuffer.length > 8 && !waitingForRemainingData)
         }      
 }
