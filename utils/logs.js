@@ -111,11 +111,11 @@ Logs.prototype.checkLogsDir = function(){
 	try{
 		fs.mkdirSync(logsDir);
 	}catch(e){
-		if(e.errno != 47){
+		if(e.code != 'EEXIST'){
 	  		console.error("Cannot create logs directory to server directory. Aborting app. Error: " + JSON.stringify(e));
 	  		return;
 		}
-		//else OK. The error 47 means the directory already exists. fs.exists is deprecated.
+		//else OK. The error EEXIST means the directory already exists. fs.exists is deprecated.
 	}	
 
 	try{
