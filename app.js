@@ -16,6 +16,8 @@
 			- Only after authentication and validation, process request and return json object with the response.
 			- Any error in any place must respond with a default error object with explantory message.
 
+	- Create user on postgres that not depends of a database
+
 */
 
 
@@ -61,6 +63,16 @@ if(args.indexOf('--debugAll') > -1){
 new Logs(debugConsole, debugFile, verboseConsole, verboseFile);
 var server = new Server();
 server.startServer();
+
+//--------------------
+// Temporary code
+// TODO: Create database on starting app. If exists, just continue
+
+// var ManipulateDb = require('./utils/manipulatedb');
+// var manipulate = new ManipulateDb();
+// manipulate.createDefaultDataBase("rfidplatform");
+
+
 
 /*-------------------------------------------------------------*/
 var app = express();
