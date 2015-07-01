@@ -70,8 +70,19 @@ server.startServer();
 
 // var ManipulateDb = require('./utils/manipulatedb');
 // var manipulate = new ManipulateDb();
-// manipulate.createDefaultDataBase("rfidplatform");
 
+// try{
+// 	manipulate.dropDataBase("rfidplatform_test", function(err){
+// 		if(err) return;
+// 		manipulate.createDefaultDataBase("rfidplatform_test", function(err){
+// 			if(err) return;
+// 			});
+// 		});
+// 	});
+// }catch(error){
+// 	logger.error(error);
+// }
+//--------------------------------------------
 
 
 /*-------------------------------------------------------------*/
