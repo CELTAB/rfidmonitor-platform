@@ -31,9 +31,9 @@ var https = require('https');
 var http = require('http');
 var fs = require('fs');
 // var session = require('express-session');
-// var passport = require('passport');
-// var bodyParser = require('body-parser');
-var services = require('./controllers/services');
+var passport = require('passport');
+var bodyParser = require('body-parser');
+var PlatformRouter = require('./controllers/platformrouter');
 var Server = require('./utils/server');
 
 var args = process.argv;
@@ -75,7 +75,6 @@ manipulate.testConnection();
 
 
 /*-------------------------------------------------------------*/
-var app = express();
 
 /*
 How to generate ssl files. On terminal type:
@@ -88,16 +87,10 @@ var options = {
   cert: fs.readFileSync('ssl/platform-cert.pem')
 };
 
-
-var router = express.Router();
-
-//https://localhost/api/numsei
-router.route('/numsei')
-  .post(services.postA)
-  .get(services.getA);
-
-app.use('/api', router);
-
+var app = express();
+app.use(bodyParser.urlencoded({extended : true}));
+app.use(passport.initialize());
+app.use('/api', new PlatformRouter());
 
 // http.createServer(app).listen(80);
 https.createServer(options, app).listen(443);
