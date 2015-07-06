@@ -5,7 +5,8 @@ var PlatformError = require('./platformerror');
 
 var ManipulateDb = function (){}
 
-var connectionString = 'postgres://rfidplatform:rfidplatform@localhost:5432/rfidplatform';
+var connectionString = 'postgres://rfidplatform:rfidplatform@localhost:5432';
+var defaultDatabase = 'rfidplatform';
 var queries;
 
 var defaultScriptName = "rfidplatform.sql";
@@ -13,8 +14,19 @@ var defaultScriptName = "rfidplatform.sql";
 /*
 	Connect into a database and execute a query.
 */
-ManipulateDb.prototype.query = function(text, values, cb) {
-    pg.connect(connectionString, function(err, client, done) {
+ManipulateDb.prototype.query = function(text, values, cb, dbName) {
+
+	var tmp_connectionString;
+
+	if(dbName){
+		tmp_connectionString = connectionString + "/" + dbName;
+		logger.warn("Using database: " + dbName);
+	}else{
+		tmp_connectionString = connectionString + "/" + defaultDatabase;
+		logger.warn("Using default database: " + defaultDatabase);
+	}
+
+    pg.connect(tmp_connectionString, function(err, client, done) {
       	if (err)
       		cb(err, null);
         else
@@ -25,24 +37,41 @@ ManipulateDb.prototype.query = function(text, values, cb) {
     });
 }
 
+/*
+Test the connection with the default database. If the connection fails, drop the application. it should not continue
+*/
+ManipulateDb.prototype.testConnection = function(){
+
+	var tmp_connectionString = connectionString + "/" + defaultDatabase;
+	pg.connect(tmp_connectionString, function(err, client, done){
+		if(err){
+			logger.debug("Connection test - ERROR");
+			throw new PlatformError(err.toString());
+		}
+
+		logger.debug("Connection test - OK");
+		done();
+		pg.end();
+	});
+}
+
 	/*
 		Recursive function to execute a bunch of queries into the database synchronously. 
 		Will execute the first query then call this function again passing the array with the remaining queries.
 		This way, each query is executed in the right time, so we don't have errors caused by a relation between tables that does not exists yet.
 	*/
-ManipulateDb.prototype.executeStatements = function(queries, cb_done){
+ManipulateDb.prototype.executeStatements = function(queries, cb_done, database){
 
 	//If the queries array is zero length, is the last call of the function. Just return.
 	if(queries.length == 0){
 		cb_done(null); //callback, when done
 		return;
-	}
-	else{
+	}else{
 		//get the first element (query) of the array, and remove it from this.
 		var query = queries.shift();
 		//If the query contains the "--" substring, means to be a comment so, don't need to be executed. Go to next iteration and than return.
 		if(query.indexOf("--") == 0){
-			return ManipulateDb.prototype.executeStatements(queries, cb_done);
+			return ManipulateDb.prototype.executeStatements(queries, cb_done, database);
 		}
 
 		//if the query is not a comment, execute it.
@@ -52,8 +81,8 @@ ManipulateDb.prototype.executeStatements = function(queries, cb_done){
   				return cb_done(err);
   			}
   			//call the next iteration of the function, passing the remainig queries.
-  			ManipulateDb.prototype.executeStatements(queries, cb_done);
-  		});
+  			ManipulateDb.prototype.executeStatements(queries, cb_done, database);
+  		}, database);
 	}
 }
 
@@ -82,17 +111,17 @@ ManipulateDb.prototype.createDefaultDataBase = function(dbName, callback){
 
 		// console.log("Connected to postgreSQL");
 
-		connectionString = 'postgres://rfidplatform:rfidplatform@localhost:5432/' + dbName;
+		//connectionString = 'postgres://rfidplatform:rfidplatform@localhost:5432/' + dbName;
 		logger.debug("Connect to database: " + connectionString);
 		ManipulateDb.prototype.executeStatements(queries, function(err){
 			if(err){
 				logger.error(err);
 				return callback(err);
 			}
-
+			
 			logger.debug("Database created");
 			callback(null);
-		});
+		}, dbName);
 	});
 }
 
@@ -107,10 +136,10 @@ ManipulateDb.prototype.dropDataBase = function(dbName, cb_done){
 	}catch(e){
 		logger.debug(e);
 	}
-	
+
 	var dropQuery = "DROP DATABASE " + dbName + ";";
 	logger.debug("Dropping database with name " + dropQuery);
-	connectionString = 'postgres://rfidplatform:rfidplatform@localhost:5432/rfidplatform';
+	// connectionString = 'postgres://rfidplatform:rfidplatform@localhost:5432/rfidplatform';
 
 	ManipulateDb.prototype.query(dropQuery, [], function(err, result){
 

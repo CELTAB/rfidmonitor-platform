@@ -65,24 +65,13 @@ var server = new Server();
 server.startServer();
 
 //--------------------
-// Temporary code
 // TODO: Create database on starting app. If exists, just continue
 
-// var ManipulateDb = require('./utils/manipulatedb');
-// var manipulate = new ManipulateDb();
+var ManipulateDb = require('./utils/manipulatedb');
+var manipulate = new ManipulateDb();
 
-// try{
-// 	manipulate.dropDataBase("rfidplatform_test", function(err){
-// 		if(err) return;
-// 		manipulate.createDefaultDataBase("rfidplatform_test", function(err){
-// 			if(err) return;
-// 			});
-// 		});
-// 	});
-// }catch(error){
-// 	logger.error(error);
-// }
-//--------------------------------------------
+//if the connection with the database fails, throw error and stop the app.
+manipulate.testConnection();
 
 
 /*-------------------------------------------------------------*/
