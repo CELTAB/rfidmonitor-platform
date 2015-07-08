@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.8.1-alpha1" last-position="0,0" last-zoom="1"
+<dbmodel pgmodeler-ver="0.8.1-alpha1" last-position="0,17" last-zoom="1"
 	 default-schema="public" default-owner="rfidplatform">
 <role name="rfidplatform"
       createdb="true"
@@ -114,11 +114,11 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
-<table name="user">
+<table name="user_platform">
 	<schema name="public"/>
 	<role name="rfidplatform"/>
-	<position x="884" y="361"/>
-	<column name="username" not-null="true">
+	<position x="887" y="353"/>
+	<column name="username">
 		<type name="text"/>
 	</column>
 	<column name="password" not-null="true">
@@ -130,7 +130,13 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="name">
 		<type name="text"/>
 	</column>
-	<constraint name="pk_user" type="pk-constr" table="public.user">
+	<column name="id" not-null="true">
+		<type name="serial"/>
+	</column>
+	<constraint name="pk_user" type="pk-constr" table="public.user_platform">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="uq_user_username" type="uq-constr" table="public.user_platform">
 		<columns names="username" ref-type="src-columns"/>
 	</constraint>
 </table>
@@ -153,7 +159,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="package">
 	<schema name="public"/>
 	<role name="rfidplatform"/>
-	<position x="523" y="302"/>
+	<position x="456" y="204"/>
 	<column name="id" not-null="true">
 		<type name="serial"/>
 	</column>
@@ -172,6 +178,63 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<constraint name="uq_package_hash" type="uq-constr" table="public.package">
 		<columns names="package_hash" ref-type="src-columns"/>
 	</constraint>
+</table>
+
+<table name="app_client">
+	<schema name="public"/>
+	<role name="rfidplatform"/>
+	<position x="550" y="564"/>
+	<column name="id" not-null="true">
+		<type name="serial"/>
+	</column>
+	<column name="oauth_id" not-null="true">
+		<type name="text" length="60"/>
+	</column>
+	<column name="oauth_secret" not-null="true">
+		<type name="text" length="60"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="text" length="60"/>
+	</column>
+	<column name="user_id" not-null="true">
+		<type name="integer" length="60"/>
+	</column>
+</table>
+
+<table name="access_token">
+	<schema name="public"/>
+	<role name="rfidplatform"/>
+	<position x="345" y="463"/>
+	<column name="id" not-null="true">
+		<type name="serial"/>
+	</column>
+	<column name="value" not-null="true">
+		<type name="text" length="60"/>
+	</column>
+	<column name="user_id" not-null="true">
+		<type name="integer" length="60"/>
+	</column>
+	<constraint name="pk_access_token" type="pk-constr" table="public.access_token">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="authorization_code">
+	<schema name="public"/>
+	<role name="rfidplatform"/>
+	<position x="475" y="328"/>
+	<column name="id" not-null="true">
+		<type name="serial"/>
+	</column>
+	<column name="value" not-null="true">
+		<type name="text" length="60"/>
+	</column>
+	<column name="redirect_uri" not-null="true">
+		<type name="text" length="60"/>
+	</column>
+	<column name="user_id" not-null="true">
+		<type name="integer"/>
+	</column>
 </table>
 
 <constraint name="fk_group_collector" type="fk-constr" comparison-type="MATCH FULL"
@@ -193,9 +256,27 @@ CAUTION: Do not modify this file unless you know what you are doing.
 </constraint>
 
 <constraint name="fk_user_usersession" type="fk-constr" comparison-type="MATCH FULL"
-	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.user" table="public.user_session">
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.user_platform" table="public.user_session">
 	<columns names="username" ref-type="src-columns"/>
 	<columns names="username" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_user_platform_app_client" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.user_platform" table="public.app_client">
+	<columns names="user_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_user_platform_access_token" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.user_platform" table="public.access_token">
+	<columns names="user_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_user_platform_auth_code" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.user_platform" table="public.authorization_code">
+	<columns names="user_id" ref-type="src-columns"/>
+	<columns names="id" ref-type="dst-columns"/>
 </constraint>
 
 <relationship name="rel_collectors_group" type="relfk"
@@ -210,12 +291,27 @@ CAUTION: Do not modify this file unless you know what you are doing.
 
 <relationship name="rel_user_session_user" type="relfk"
 	 src-table="public.user_session"
-	 dst-table="public.user"
+	 dst-table="public.user_platform"
 	 src-required="false" dst-required="false"/>
 
 <relationship name="rel_rfiddata_package" type="relfk"
 	 src-table="public.rfiddata"
 	 dst-table="public.package"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_app_client_user_platform" type="relfk"
+	 src-table="public.app_client"
+	 dst-table="public.user_platform"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_authorization_code_user_platform" type="relfk"
+	 src-table="public.authorization_code"
+	 dst-table="public.user_platform"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_access_token_user_platform" type="relfk"
+	 src-table="public.access_token"
+	 dst-table="public.user_platform"
 	 src-required="false" dst-required="false"/>
 
 </dbmodel>
