@@ -21,7 +21,6 @@ describe("Services", function(){
       });
 
       req.end();
-     
     });
 
     it("Should return 'Chapei' object", function(done){

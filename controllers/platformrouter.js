@@ -43,15 +43,28 @@ var routeUsers = function(){
 	  		//use req.authInfo for especific informations
 	  		//use req.user.userId for user id and req.user.username for username
 
-	  		var utils = require('util');
+			var obj = {
+				clientId: req.user.userId,
+				route: "/api/users",
+				methodName: "GET"
+			};
 
-		  	userDao.getAll(function(err, users){
-		  		if(err)
-		  			return res.json(err)
+			var RouterController = require('./routeraccesscontroller');
+			var rCtrl = new RouterController();
 
-	  			// logger.info("RESPONSE>>>>" + utils.inspect(res, {showHidden: false, depth: null}));
-		  		res.json(users);
-		  	});
+			rCtrl.hasAuthorization(obj, function(hasAccess){
+				if(hasAccess){
+						userDao.getAll(function(err, users){
+				  		if(err)
+				  			return res.json(err)
+
+			  			// logger.info("RESPONSE>>>>" + utils.inspect(res, {showHidden: false, depth: null}));
+				  		res.json(users);
+				  	});
+				}else{
+					res.json({error: "Access Denied"});
+				}
+			});
 		})
 
 		.post(function(req, res){
