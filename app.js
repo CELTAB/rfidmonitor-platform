@@ -17,6 +17,7 @@
 			- Any error in any place must respond with a default error object with explantory message.
 
 	- Create user on postgres that not depends of a database
+	- remove ejs.
 
 */
 
@@ -30,7 +31,8 @@ var express = require('express');
 var https = require('https');
 var http = require('http');
 var fs = require('fs');
-// var session = require('express-session');
+var session = require('express-session');
+var ejs = require('ejs');
 var passport = require('passport');
 var bodyParser = require('body-parser');
 var PlatformRouter = require('./controllers/platformrouter');
@@ -88,7 +90,17 @@ var options = {
 };
 
 var app = express();
+app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended : true}));
+
+// Use express session support since OAuth2orize requires it
+// TODO update secret below?
+app.use(session({
+  secret: 'Super Secret Session Key',
+  saveUninitialized: true,
+  resave: true
+}));
+
 app.use(passport.initialize());
 app.use('/api', new PlatformRouter());
 

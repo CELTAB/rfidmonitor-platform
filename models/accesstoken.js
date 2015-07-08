@@ -1,6 +1,6 @@
 var AccessToken = function(){
-	this.value;
+	this.id = null;
+	this.value; //It is the actual token value used when accessing the API on behalf of the user.
 	this.userId;
-	this.clientId;
 }
 module.exports = AccessToken;

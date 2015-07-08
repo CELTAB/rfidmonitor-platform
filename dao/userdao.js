@@ -68,6 +68,26 @@ UserDao.prototype.getByUsername = function(username, callback){
 
 }
 
+UserDao.prototype.getById = function(id, callback){
+
+    var query = "SELECT * FROM user_platform WHERE id = $1";
+
+    db.query(query, [id], function(err, result){
+        
+        if(err){
+            logger.error("UserDao getById error: " + err);
+            return callback(err,null);
+        }
+
+        if(result.rowCount > 1 )
+            return new PlatformError("UserDao : Multiple users with same id");
+
+        //TODO return a User object, insted of a direct from db object.
+        callback(null, result.rows[0]);
+    });
+
+}
+
 var hashPassword = function(user, callback){
     bcrypt.hash(user.password, null, null, function(err, hash) {
         if (err) return callback(err, null);
