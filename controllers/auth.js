@@ -80,8 +80,8 @@ passport.use(new BearerStrategy(
             if (!user) { return callback(null, false); }
 
             // Simple example with no scope
-            logger.debug("BasicStrategy : SUCCESS");
-            callback(null, user, { scope: '*' });
+            logger.debug("BearerStrategy : SUCCESS");
+            callback(null, {userId: user.id, username: user.username}, { scope: '*' });
         });
     });
   }

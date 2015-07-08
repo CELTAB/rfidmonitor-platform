@@ -9,6 +9,34 @@ var AccessTokenDao = function(){
 
 }
 
+var resultToObject = function(result){
+    //client : {"id":10,"oauth_id":"99","oauth_secret":"b","name":"a","user_id":44}
+    if (!result)
+        return null;
+    
+    var token = new AccessToken();
+
+    token.id = result.id;
+    token.value = result.value;
+    token.userId = result.user_id;
+
+    return token;
+}
+
+var resultArrayToObjectArray = function(resultArray){
+    logger.warn("resultArrayToObjectArray : Function not tested.");
+
+    if(resultArray.length == 0)
+        return [];
+
+    var objArray = [];
+    for (var i in resultArray) {
+      val = resultArray[i];
+      objArray.push(resultToObject(val));
+    }
+    return objArray;
+}
+
 AccessTokenDao.prototype.getAll = function(callback){
 
     var query = "SELECT * FROM access_token";
@@ -20,7 +48,7 @@ AccessTokenDao.prototype.getAll = function(callback){
             return callback(err,null);
         }
 
-        callback(null, result.rows);
+        callback(null, resultArrayToObjectArray(result.rows));
     });
 
 }
@@ -36,7 +64,7 @@ AccessTokenDao.prototype.getByValue = function(value, callback){
             return callback(err,null);
         }
 
-        callback(null, result.rows[0]);
+        callback(null, resultToObject(result.rows[0]));
     });
 
 }

@@ -40,13 +40,18 @@ var routeUsers = function(){
 		.get(authController.isAuthenticated, function(req, res){
 	  		//find all users;
 
+	  		//use req.authInfo for especific informations
+	  		//use req.user.userId for user id and req.user.username for username
+
+	  		var utils = require('util');
+
 		  	userDao.getAll(function(err, users){
 		  		if(err)
 		  			return res.json(err)
 
+	  			// logger.info("RESPONSE>>>>" + utils.inspect(res, {showHidden: false, depth: null}));
 		  		res.json(users);
 		  	});
-
 		})
 
 		.post(function(req, res){
@@ -66,7 +71,7 @@ var routeUsers = function(){
 		  		res.json(user);
 			});
 
-			}
+		}
 	);
 }
 
@@ -96,6 +101,7 @@ var routeAppClients = function(){
 			client.name = req.body.name;
 			client.oauthId = req.body.oauthId;
 			client.oauthSecret = req.body.oauthSecret;
+			client.userId = req.user.id;
 			
 			appClientDao.insert(client, function(err, id){
 				if(err)

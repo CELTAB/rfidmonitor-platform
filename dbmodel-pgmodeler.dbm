@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.8.1-alpha1" last-position="0,17" last-zoom="1"
+<dbmodel pgmodeler-ver="0.8.1-alpha1" last-position="253,95" last-zoom="1"
 	 default-schema="public" default-owner="rfidplatform">
 <role name="rfidplatform"
       createdb="true"
@@ -117,7 +117,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="user_platform">
 	<schema name="public"/>
 	<role name="rfidplatform"/>
-	<position x="887" y="353"/>
+	<position x="884" y="351"/>
 	<column name="username">
 		<type name="text"/>
 	</column>
@@ -183,7 +183,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="app_client">
 	<schema name="public"/>
 	<role name="rfidplatform"/>
-	<position x="550" y="564"/>
+	<position x="956" y="578"/>
 	<column name="id" not-null="true">
 		<type name="serial"/>
 	</column>
@@ -204,7 +204,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="access_token">
 	<schema name="public"/>
 	<role name="rfidplatform"/>
-	<position x="345" y="463"/>
+	<position x="521" y="513"/>
 	<column name="id" not-null="true">
 		<type name="serial"/>
 	</column>
@@ -222,7 +222,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="authorization_code">
 	<schema name="public"/>
 	<role name="rfidplatform"/>
-	<position x="475" y="328"/>
+	<position x="518" y="354"/>
 	<column name="id" not-null="true">
 		<type name="serial"/>
 	</column>
