@@ -18,7 +18,7 @@ var resultToObject = function(result){
 
     token.id = result.id;
     token.value = result.value;
-    token.userId = result.user_id;
+    token.appClientId = result.app_client_id;
 
     return token;
 }
@@ -77,9 +77,9 @@ AccessTokenDao.prototype.insert = function(accessToken, callback){
         return;
     }
 
-    var query = 'INSERT INTO access_token (value, user_id) VALUES ($1, $2) RETURNING ID';
+    var query = 'INSERT INTO access_token (value, app_client_id) VALUES ($1, $2) RETURNING ID';
 
-    db.query(query, [accessToken.value, accessToken.userId], function(err, result){
+    db.query(query, [accessToken.value, accessToken.appClientId], function(err, result){
         if(err){
             var msg = "AccessTokenDao insert " + err;
             logger.error(msg);
@@ -92,6 +92,18 @@ AccessTokenDao.prototype.insert = function(accessToken, callback){
         callback(null, id);
 
     });         
+}
+
+AccessTokenDao.prototype.deleteByClientId = function(clientId, callback){
+    var query = 'DELETE FROM access_token WHERE app_client_id = $1';
+
+    db.query(query, [clientId], function(err, result){
+
+        if(err) logger.error(err);
+
+        logger.warn('AccessTokenDao : deleteByClientId >> PLEASE -- Fix this Gambiarra');
+        callback(err, result);
+    });
 }
 
 module.exports = AccessTokenDao;

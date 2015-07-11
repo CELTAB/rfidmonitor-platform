@@ -42,9 +42,11 @@ passport.use(new BasicStrategy(
   }
 ));
 
-
+// TODO: Fix this method... Don't work anymore
 passport.use('client-basic', new BasicStrategy(
     function(username, password, callback) {
+        logger.warn("This Doesn't work anymore... Please, fix it");
+
         logger.debug('BasicStrategy : client-basic : username=' + username + ' pass=' + password);
         // WARNING username and password are arrive as plain text. TODO
         appClientDao.getByOauthId(username, function (err, client) {
@@ -73,15 +75,16 @@ passport.use(new BearerStrategy(
         // No token found
         if (!token) { return callback(null, false); }
 
-        userDao.getById(token.userId , function (err, user) {
+        // TODO: CHANGE FOR APP_CLIENT_DAO
+        appClientDao.getById(token.appClientId , function (err, client) {
             if (err) { return callback(err); }
 
             // No user found
-            if (!user) { return callback(null, false); }
+            if (!client) { return callback(null, false); }
 
             // Simple example with no scope
             logger.debug("BearerStrategy : SUCCESS");
-            callback(null, {userId: user.id, username: user.username}, { scope: '*' });
+            callback(null, {clientId: client.id, clientName: client.clientName}, { scope: '*' });
         });
     });
   }

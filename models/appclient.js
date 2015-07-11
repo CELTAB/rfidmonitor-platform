@@ -6,14 +6,9 @@ var AppClient = function(){
 	this.id = null;
 
 	/*We have a name to help identify the application client.*/
-	this.name; //unique
-
-	/*The oauthId and oauthSecret are used as part of the OAuth2 flow and should always be kept secret.*/
-	this.oauthId;
-	this.oauthSecret; // should be hashed
-
-	/*Finally we have a userId field to identify which user owns this application client.*/
-	this.userId;	
+	this.clientName; //unique
+	this.authSecret; // should be hashed
+	this.description = '';
 }
 
 module.exports = AppClient;

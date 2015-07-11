@@ -16,7 +16,7 @@ var PlatformRouter = function(){
 
 	routeOauth2();
 	routeUsers();
-	routeAppClients();
+	// routeAppClients();
 
 	return router;
 }
@@ -88,44 +88,41 @@ var routeUsers = function(){
 	);
 }
 
-var routeAppClients = function(){
-	/*
-	Get all clients
-	Ex: api/clients
-	*/
-	router.route('/clients')
+// var routeAppClients = function(){
+// 	/*
+// 	Get all clients
+// 	Ex: api/clients
+// 	*/
+// 	router.route('/clients')
 
-		.get(authController.isAuthenticated, function(req, res){
-			//find all users;
+// 		.get(authController.isAuthenticated, function(req, res){
+// 			//find all users;
 
-			appClientDao.getAll(function(err, appClient){
-				if(err)
-					return res.json(err)
+// 			appClientDao.getAll(function(err, appClient){
+// 				if(err)
+// 					return res.json(err)
 
-				res.json(appClient);
-			});
+// 				res.json(appClient);
+// 			});
+// 		})
 
-		})
-
-		.post(authController.isAuthenticated, function(req, res){
-			//insert user;
-
-			var client = new AppClient();
-			client.name = req.body.name;
-			client.oauthId = req.body.oauthId;
-			client.oauthSecret = req.body.oauthSecret;
-			client.userId = req.user.id;
+// 		.post(authController.isAuthenticated, function(req, res){
+// 			//insert user;
+// 			var client = new AppClient();
+// 			client.name = req.body.name;
+// 			client.oauthId = req.body.oauthId;
+// 			client.oauthSecret = req.body.oauthSecret;
+// 			client.userId = req.user.id;
 			
-			appClientDao.insert(client, function(err, id){
-				if(err)
-						return res.json(err)
+// 			appClientDao.insert(client, function(err, id){
+// 				if(err)
+// 						return res.json(err)
 
-					client.id = id;
-					res.json(client);
-			});
-
-		}
-	);
+// 					client.id = id;
+// 					res.json(client);
+// 			});
+// 		}
+// 	);
 
 	// /*
 	// get a client by id
@@ -145,6 +142,6 @@ var routeAppClients = function(){
 
 	// 	})
 	// );
-}
+//}
 
 module.exports = PlatformRouter;

@@ -36,6 +36,7 @@ var ejs = require('ejs');
 var passport = require('passport');
 var bodyParser = require('body-parser');
 var PlatformRouter = require('./controllers/platformrouter');
+var AdminRouter = require('./controllers/adminrouter');
 var Server = require('./utils/server');
 
 var args = process.argv;
@@ -76,7 +77,53 @@ var manipulate = new ManipulateDb();
 manipulate.testConnection();
 
 
+//-----------------------
+// TMP - DON'T REMOVE
+
+var AppClient = require('./models/appclient');
+var AppClientDao = require('./dao/appclientdao');
+
+var AccessToken = require('./models/accesstoken');
+var AccessTokenDao = require('./dao/accesstokendao');
+
+var client = new AppClient();
+
+appClientDao =  new AppClientDao();
+
+appClientDao.getByName("Default Client", function(err, defaultClient){
+
+	if(err) return;
+
+	if(defaultClient) return logger.info("Default appClient already exists");
+
+	client.clientName = "Default Client";
+	client.authSecret = "defaultsecret";
+	client.description = "Default client inserted on every start-up";
+
+	appClientDao.insert(client, function(err, clientId){
+		if(err){
+			return;// logger.error("Error on create Default appClient");
+		}
+
+		// Create a new access token
+		var token = new AccessToken();
+		token.value = "defaulttokenaccess";
+		token.appClientId = clientId;
+
+		logger.info("Default appClient created with ID " + clientId);
+
+		var tokenDao = new AccessTokenDao();
+		tokenDao.insert(token, function(err, tokenId){
+
+			if(err) return logger.error("Error on create token for default appClient");
+			
+			logger.info("Default token for appClient: " + token.value);
+		});
+	});
+});
+
 /*-------------------------------------------------------------*/
+
 
 /*
 How to generate ssl files. On terminal type:
@@ -90,8 +137,10 @@ var options = {
 };
 
 var app = express();
-app.set('view engine', 'ejs');
-app.use(bodyParser.urlencoded({extended : true}));
+// app.set('view engine', 'ejs');
+// app.use(bodyParser.urlencoded({extended : true}));
+app.use(bodyParser.json());
+
 
 // Use express session support since OAuth2orize requires it
 // TODO update secret below?
@@ -101,8 +150,22 @@ app.use(session({
   resave: true
 }));
 
-app.use(passport.initialize());
-app.use('/api', new PlatformRouter());
+app.all('*', function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  next();
+});
 
-// http.createServer(app).listen(80);
+app.use(passport.initialize());
+
+app.use('/api', new PlatformRouter());
+app.use('/admin', new AdminRouter());
+
+/* serves main page - Prototype porpouse*/
+app.use('/', express.static('views'));
+ app.get("/", function(req, res) {
+    res.sendfile('views/prototype.html');
+ });
+
 https.createServer(options, app).listen(443);

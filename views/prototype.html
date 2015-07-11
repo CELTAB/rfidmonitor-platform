@@ -1,0 +1,130 @@
+<html ng-app="rfidplatform">
+<head>
+	<meta charset="UTF-8">
+	<title>RFIDMonitor Platform - Admin</title>
+	<link rel="stylesheet" type="text/css" href="lib/bootstrap/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="css/app.css">
+
+	<script src="lib/angular/angular.js"></script>
+	<script src="lib/angular/angular-locale_pt-br.js"></script>
+	<script src="lib/angular/angular-messages.js"></script>
+	<script>
+
+		angular.module("rfidplatform", ["ngMessages"]).run(function($http) {
+  			$http.defaults.headers.common.Authorization = 'Bearer defaulttokenaccess'
+		});
+
+		angular.module("rfidplatform").controller("createClientCtrl", function($scope, $http){
+			$scope.app = "Cadastrar cliente";
+			$scope.webInfo = "Primeiro Protótipo - Rascunho";
+
+			var accessError = function(data, status){
+
+				if(status == 401){
+					$scope.noaccess = "Sem autorização de acesso";
+					return;
+				}
+
+				$scope.error = data;
+			}
+
+			$scope.addClient = function(client){
+
+				console.log(JSON.stringify(client));
+
+				$http.post("https://localhost:443/admin/clients", client).success(function(data, status){
+					$scope.success = data;
+					loadClients();
+				}).error(accessError);
+			};
+
+			var loadClients = function(){
+				$http.get("https://localhost:443/admin/clients").success(function(data, status){
+					$scope.clients = data;
+				}).error(accessError);
+			}
+
+			$scope.removerCliente = function(clients){
+				$scope.clients = clients.filter(function(cl) {
+					if(!cl.selecionado) return cl; 
+					else{
+						$http.delete("https://localhost:443/admin/clients", {params: cl}).success(function(data, status){
+							$scope.removido = data;
+						});
+					}
+				});
+			};
+
+			$scope.isClienteSelecionado = function(clientes){
+				if(clientes)
+					return clientes.some(function (cliente){
+						return cliente.selecionado;
+					});
+
+				return false;
+			};
+
+			loadClients();
+		});
+
+	</script>
+
+</head>
+	<body ng-controller="createClientCtrl">
+
+		<div class="jumbotron">
+			<h3>{{webInfo}}</h3>
+			<br /> <hr />
+			<h3>{{app}}</h3>
+
+			<hr />
+			<form name="clientForm">
+				<input class="form-control" type="text" ng-model="client.clientName" name="nome" placeholder="Nome do Cliente" ng-required="true" ng-minlength="3"/>
+				<input class="form-control" type="text" ng-model="client.authSecret" name="secret" placeholder="Secret/Senha" ng-required="true" ng-minlength="6"/>
+				<input class="form-control" ng-model="client.description" name="description" placeholder="Descrição" ng-maxlength="120"/>
+			</form>
+
+			<div ng-class="{'alert alert-danger': clientForm.nome.$error.required || clientForm.nome.$error.minlength}" ng-show="clientForm.nome.$dirty" ng-messages="clientForm.nome.$error">
+				<div ng-message="required">
+					Por favor, preencha o campo Nome do Cliente!
+				</div>
+				<div ng-message="minlength">
+					O campo Nome do Cliente deve ter no mínimo 3 caracteres!
+				</div>
+			</div>
+
+			<div ng-class="{'alert alert-danger': clientForm.secret.$error.required || clientForm.secret.$error.minlength}" ng-show="clientForm.secret.$dirty" ng-messages="clientForm.secret.$error">
+				<div ng-message="required">
+					Por favor, preencha o campo Secret!
+				</div>
+				<div ng-message="minlength">
+					O campo Nome do Secret deve ter no mínimo 6 caracteres!
+				</div>
+			</div>
+
+			<button class="btn btn-primary btn-block" ng-click="addClient(client)" ng-disabled="clientForm.$invalid">Adicionar Cliente</button>
+
+			<hr />
+			<h3>Clientes Cadastrados</h3>
+			<table class="table" ng-show="clients.length > 0">
+				<tr>
+					<th></th>
+					<th>Nome do Cliente</th>
+					<th>Secret</th>
+					<th>Descrição</th>
+				</tr>
+				<tr ng-repeat="client in clients">
+					<td><input type="checkbox" ng-model="client.selecionado" /></td>
+					<td>{{client.clientName}}</td>
+					<td>{{client.authSecret}}</td>
+					<td>{{client.description}}</td>
+				</tr>
+			</table>
+			
+			<button class="btn btn-danger btn-block" ng-click="removerCliente(clients)" ng-show="isClienteSelecionado(clients)">Remover Cliente</button>
+
+			{{noaccess}}
+
+		</div>
+	</body>
+</html>

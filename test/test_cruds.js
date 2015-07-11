@@ -83,29 +83,39 @@ describe("Data Acces Object - DAO", function(){
 
 		var inserterId;
 
-		// describe("#insert()", function(){
-		// 	it("should insert an GET Method record", function(done){
+		describe("#insert()", function(){
+			it("should insert an appClient", function(done){
 
-		// 		mDao.insert("GET", function(err, methodId){
+				var appC = require('../models/appclient');
 
-		// 			inserterId = methodId;
-		// 			expect(inserterId).to.be.int;
+				var client = new appC();
 
-		// 			g_routerAccess.methodId = inserterId;
-		// 			done();
-		// 		});
-		// 	});
-		// });
+				client.authSecret = "mySecret";
+				client.clientName = "thiago";
 
-		// describe("#getMethodById()", function(){
-		// 	it("should find the GET method", function(done){
+				aDao.insert(client, function(err, clientId){
 
-		// 		mDao.getMethodById(inserterId, function(err, foundMethod){
-		// 			expect(foundMethod.id).to.equal(inserterId);
-		// 			done();
-		// 		});
-		// 	});
-		// });
+					inserterId = clientId;
+					expect(inserterId).to.be.int;
+
+					g_routerAccess.clientId = inserterId;
+					done();
+				});
+			});
+		});
+
+		describe("#insertToken", function(){
+			it("should insert an token", function(done){
+
+				var TokenDao = require('../dao/accesstokendao');
+				var tDao = new TokenDao();
+
+				tDao.insert({value: "thiagoaccesstoken", appClientId: g_routerAccess.clientId}, function(err, tokenId){
+					expect(tokenId).to.be.int;
+					done();
+				});
+			});
+		});
 	});
 
 
@@ -119,7 +129,7 @@ describe("Data Acces Object - DAO", function(){
 		describe("#insert()", function(){
 			it("should insert an URIRouter record", function(done){
 
-				rDao.insert("/api/users", function(err, routeId){
+				rDao.insert("/admin/clients", function(err, routeId){
 
 					inserterId = routeId;
 					expect(inserterId).to.be.int;
@@ -131,7 +141,7 @@ describe("Data Acces Object - DAO", function(){
 		});
 
 		describe("#getRouteById()", function(){
-			it("should find the /api/users/ route", function(done){
+			it("should find the /admin/clients route", function(done){
 
 				rDao.getRouteById(inserterId, function(err, foundRoute){
 					expect(foundRoute.id).to.equal(inserterId);
@@ -156,16 +166,28 @@ describe("Data Acces Object - DAO", function(){
 					inserterId = methodId;
 					expect(inserterId).to.be.int;
 
-					g_routerAccess.methodId = inserterId;
+					g_routerAccess.methodGetId = inserterId;
+					done();
+				});
+			});
+
+			it("should insert an POST Method record", function(done){
+
+				mDao.insert("POST", function(err, methodId){
+
+					inserterId = methodId;
+					expect(inserterId).to.be.int;
+
+					g_routerAccess.methodPostId = inserterId;
 					done();
 				});
 			});
 		});
 
 		describe("#getMethodById()", function(){
-			it("should find the GET method", function(done){
+			it("should find the POST method", function(done){
 
-				mDao.getMethodById(inserterId, function(err, foundMethod){
+				mDao.getMethodById(g_routerAccess.methodPostId, function(err, foundMethod){
 					expect(foundMethod.id).to.equal(inserterId);
 					done();
 				});
@@ -178,12 +200,55 @@ describe("Data Acces Object - DAO", function(){
 		var RouterAccessDAO = require('../dao/routeraccessdao');
 
 		var rDao = new RouterAccessDAO();
+
+		describe("#insert()", function(){
+			it("should insert permission for router /admin/clients for access with GET", function(done){
+
+				var RouterAccess = require('../models/routeraccess');
+				var ra = new RouterAccess();
+
+				ra.appClientId = 1;
+				ra.accessMethodId = 1;
+				ra.uriRouterId = g_routerAccess.uriId;
+
+				console.log("AQUII GENTE >>>>>> " + JSON.stringify(ra, null, '\t'));
+
+				rDao.insert(ra, function(err, accessId){
+
+					inserterId = accessId;
+					expect(accessId).to.be.int;
+
+					g_routerAccess.accessId = accessId;
+					done();
+				});
+			});
+
+			it("should insert permission for router /admin/clients for access with POST", function(done){
+
+				var RouterAccess = require('../models/routeraccess');
+				var ra = new RouterAccess();
+
+				ra.appClientId = 1;
+				ra.accessMethodId = 2;
+				ra.uriRouterId = g_routerAccess.uriId;
+
+				rDao.insert(ra, function(err, accessId){
+
+					inserterId = accessId;
+					expect(accessId).to.be.int;
+
+					g_routerAccess.accessId = accessId;
+					done();
+				});
+			});
+		});
+
 		describe("#getAccess()", function(){
-			it("should get access to the rout /api/users with GET method", function(done){
+			it("should get access to the rout /admin/clients with GET method", function(done){
 
 				var obj = {
-					clientId: 1,
-					route: "/api/users",
+					clientId: g_routerAccess.clientId,
+					route: "/admin/clients",
 					methodName: "GET"
 				};
 
@@ -193,11 +258,11 @@ describe("Data Acces Object - DAO", function(){
 				});
 			});
 
-			it("should not get access to the rout /api/users with POST method", function(done){
+			it("should get access to the rout /admin/clients with POST method", function(done){
 
 				var obj = {
 					clientId: 1,
-					route: "/api/users",
+					route: "/admin/clients",
 					methodName: "POST"
 				};
 

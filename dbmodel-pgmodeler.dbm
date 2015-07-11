@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.8.1-alpha1" last-position="662,0" last-zoom="1"
+<dbmodel pgmodeler-ver="0.8.1-alpha1" last-position="784,106" last-zoom="1"
 	 default-schema="public" default-owner="rfidplatform">
 <role name="rfidplatform"
       createdb="true"
@@ -117,7 +117,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="user_platform">
 	<schema name="public"/>
 	<role name="rfidplatform"/>
-	<position x="866" y="135"/>
+	<position x="881" y="149"/>
 	<column name="username">
 		<type name="text"/>
 	</column>
@@ -138,21 +138,6 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 	<constraint name="uq_user_username" type="uq-constr" table="public.user_platform">
 		<columns names="username" ref-type="src-columns"/>
-	</constraint>
-</table>
-
-<table name="user_session">
-	<schema name="public"/>
-	<role name="rfidplatform"/>
-	<position x="1164" y="177"/>
-	<column name="id" not-null="true">
-		<type name="text"/>
-	</column>
-	<column name="username" not-null="true">
-		<type name="text"/>
-	</column>
-	<constraint name="pk_usersession" type="pk-constr" table="public.user_session">
-		<columns names="id" ref-type="src-columns"/>
 	</constraint>
 </table>
 
@@ -183,39 +168,39 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="app_client">
 	<schema name="public"/>
 	<role name="rfidplatform"/>
-	<position x="1161" y="446"/>
+	<position x="1174" y="317"/>
 	<column name="id" not-null="true">
 		<type name="serial"/>
 	</column>
-	<column name="oauth_id" not-null="true">
+	<column name="auth_secret" not-null="true">
 		<type name="text" length="60"/>
 	</column>
-	<column name="oauth_secret" not-null="true">
+	<column name="client_name" not-null="true">
 		<type name="text" length="60"/>
 	</column>
-	<column name="name" not-null="true">
-		<type name="text" length="60"/>
-	</column>
-	<column name="user_id" not-null="true">
-		<type name="integer" length="60"/>
+	<column name="description">
+		<type name="text"/>
 	</column>
 	<constraint name="pk_id_app_client" type="pk-constr" table="public.app_client">
 		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="uq_client_name" type="uq-constr" table="public.app_client">
+		<columns names="client_name" ref-type="src-columns"/>
 	</constraint>
 </table>
 
 <table name="access_token">
 	<schema name="public"/>
 	<role name="rfidplatform"/>
-	<position x="1171" y="312"/>
+	<position x="1174" y="154"/>
 	<column name="id" not-null="true">
 		<type name="serial"/>
 	</column>
 	<column name="value" not-null="true">
 		<type name="text" length="60"/>
 	</column>
-	<column name="user_id" not-null="true">
-		<type name="integer" length="60"/>
+	<column name="app_client_id" not-null="true">
+		<type name="serial"/>
 	</column>
 	<constraint name="pk_access_token" type="pk-constr" table="public.access_token">
 		<columns names="id" ref-type="src-columns"/>
@@ -225,7 +210,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="authorization_code">
 	<schema name="public"/>
 	<role name="rfidplatform"/>
-	<position x="866" y="461"/>
+	<position x="881" y="327"/>
 	<column name="id" not-null="true">
 		<type name="serial"/>
 	</column>
@@ -246,7 +231,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="access_methods">
 	<schema name="public"/>
 	<role name="rfidplatform"/>
-	<position x="1446" y="472"/>
+	<position x="1440" y="476"/>
 	<column name="id" not-null="true">
 		<type name="serial"/>
 	</column>
@@ -256,12 +241,15 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<constraint name="pk_id_access_methods" type="pk-constr" table="public.access_methods">
 		<columns names="id" ref-type="src-columns"/>
 	</constraint>
+	<constraint name="uq_method_name" type="uq-constr" table="public.access_methods">
+		<columns names="method_name" ref-type="src-columns"/>
+	</constraint>
 </table>
 
 <table name="uri_routers">
 	<schema name="public"/>
 	<role name="rfidplatform"/>
-	<position x="1503" y="117"/>
+	<position x="1492" y="139"/>
 	<column name="id" not-null="true">
 		<type name="serial"/>
 	</column>
@@ -271,12 +259,15 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<constraint name="pk_id_uri_routers" type="pk-constr" table="public.uri_routers">
 		<columns names="id" ref-type="src-columns"/>
 	</constraint>
+	<constraint name="uq_route" type="uq-constr" table="public.uri_routers">
+		<columns names="route" ref-type="src-columns"/>
+	</constraint>
 </table>
 
 <table name="router_access">
 	<schema name="public"/>
 	<role name="rfidplatform"/>
-	<position x="1403" y="298"/>
+	<position x="1412" y="301"/>
 	<column name="id" not-null="true">
 		<type name="serial"/>
 	</column>
@@ -312,21 +303,9 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<columns names="id" ref-type="dst-columns"/>
 </constraint>
 
-<constraint name="fk_user_usersession" type="fk-constr" comparison-type="MATCH FULL"
-	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.user_platform" table="public.user_session">
-	<columns names="username" ref-type="src-columns"/>
-	<columns names="username" ref-type="dst-columns"/>
-</constraint>
-
-<constraint name="fk_user_platform_app_client" type="fk-constr" comparison-type="MATCH FULL"
-	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.user_platform" table="public.app_client">
-	<columns names="user_id" ref-type="src-columns"/>
-	<columns names="id" ref-type="dst-columns"/>
-</constraint>
-
-<constraint name="fk_user_platform_access_token" type="fk-constr" comparison-type="MATCH FULL"
-	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.user_platform" table="public.access_token">
-	<columns names="user_id" ref-type="src-columns"/>
+<constraint name="fk_app_client_id" type="fk-constr" comparison-type="MATCH FULL"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.app_client" table="public.access_token">
+	<columns names="app_client_id" ref-type="src-columns"/>
 	<columns names="id" ref-type="dst-columns"/>
 </constraint>
 
@@ -364,28 +343,13 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	 dst-table="public.collector"
 	 src-required="false" dst-required="false"/>
 
-<relationship name="rel_user_session_user" type="relfk"
-	 src-table="public.user_session"
-	 dst-table="public.user_platform"
-	 src-required="false" dst-required="false"/>
-
 <relationship name="rel_rfiddata_package" type="relfk"
 	 src-table="public.rfiddata"
 	 dst-table="public.package"
 	 src-required="false" dst-required="false"/>
 
-<relationship name="rel_app_client_user_platform" type="relfk"
-	 src-table="public.app_client"
-	 dst-table="public.user_platform"
-	 src-required="false" dst-required="false"/>
-
 <relationship name="rel_authorization_code_user_platform" type="relfk"
 	 src-table="public.authorization_code"
-	 dst-table="public.user_platform"
-	 src-required="false" dst-required="false"/>
-
-<relationship name="rel_access_token_user_platform" type="relfk"
-	 src-table="public.access_token"
 	 dst-table="public.user_platform"
 	 src-required="false" dst-required="false"/>
 
@@ -402,6 +366,11 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <relationship name="rel_router_access_access_methods" type="relfk"
 	 src-table="public.router_access"
 	 dst-table="public.access_methods"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_access_token_app_client" type="relfk"
+	 src-table="public.access_token"
+	 dst-table="public.app_client"
 	 src-required="false" dst-required="false"/>
 
 </dbmodel>

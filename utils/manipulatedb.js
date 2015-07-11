@@ -49,7 +49,7 @@ ManipulateDb.prototype.testConnection = function(){
 			throw new PlatformError(err.toString());
 		}
 
-		logger.debug("Connection test - OK");
+		logger.debug("Data base Connection test - OK");
 		done();
 		pg.end();
 	});

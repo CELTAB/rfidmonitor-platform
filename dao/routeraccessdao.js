@@ -87,4 +87,17 @@ RouterAccessDao.prototype.getAccess = function(accessInfo, callback){
     });
 }
 
+RouterAccessDao.prototype.deleteByClientId = function(clientId, callback){
+
+    var query = 'DELETE FROM router_access WHERE app_client_id = $1';
+
+    db.query(query, [clientId], function(err, result){
+
+        if(err) logger.error(err);
+
+        logger.warn('RouterAccessDao : deleteByClientId >> PLEASE -- Fix this Gambiarra');
+        callback(err, result);
+    });
+}
+
 module.exports = RouterAccessDao;
