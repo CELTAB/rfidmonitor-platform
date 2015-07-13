@@ -19,20 +19,6 @@ var resultToObject = function(result){
     return uri;
 }
 
-var resultArrayToObjectArray = function(resultArray){
-    logger.warn("resultArrayToObjectArray : Function not tested.");
-
-    if(resultArray.length == 0)
-        return [];
-
-    var objArray = [];
-    for (var i in resultArray) {
-      val = resultArray[i];
-      objArray.push(resultToObject(val));
-    }
-    return objArray;
-}
-
 UriRoutersDao.prototype.insert = function(uriroute, callback){
 
 	var query = "INSERT INTO uri_routers (route) VALUES ($1) RETURNING ID";
@@ -74,7 +60,8 @@ UriRoutersDao.prototype.getAll = function(callback){
             return callback(err,null);
         }
 
-		callback(null, resultArrayToObjectArray(result.rows));
+        var resultToArray = require('../utils/baseutils').resultToArray;
+        callback(null, resultToArray.toArray(resultToObject, result.rows));
 	});
 }
 

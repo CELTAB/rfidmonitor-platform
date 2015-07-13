@@ -30,10 +30,15 @@
 
 			$scope.addClient = function(client){
 
-				console.log(JSON.stringify(client));
-
 				$http.post("https://localhost:443/admin/clients", client).success(function(data, status){
 					$scope.success = data;
+
+					$scope.client.clientName = "";
+      				$scope.client.authSecret = "";
+      				$scope.client.description = "";
+
+					$scope.clientForm.$setPristine();
+
 					loadClients();
 				}).error(accessError);
 			};
@@ -124,6 +129,8 @@
 			<button class="btn btn-danger btn-block" ng-click="removerCliente(clients)" ng-show="isClienteSelecionado(clients)">Remover Cliente</button>
 
 			{{noaccess}}
+
+			{{success | json}}
 
 		</div>
 	</body>

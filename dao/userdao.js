@@ -33,7 +33,11 @@ var UserDao = function(){
 }
 
 var resultToObject = function(result){
-    //client : {"id":10,"oauth_id":"99","oauth_secret":"b","name":"a","user_id":44}
+    /*
+    Use it like this: 
+        var resultToArray = require('../utils/baseutils').resultToArray;
+        callback(null, resultToArray.toArray(resultToObject, result.rows));
+    */
     if (!result)
         return null;
     
@@ -46,20 +50,6 @@ var resultToObject = function(result){
     user.password = result.password;
 
     return user;
-}
-
-var resultArrayToObjectArray = function(resultArray){
-    logger.warn("resultArrayToObjectArray : Function not tested.");
-
-    if(resultArray.length == 0)
-        return [];
-
-    var objArray = [];
-    for (var i in resultArray) {
-      val = resultArray[i];
-      objArray.push(resultToObject(val));
-    }
-    return objArray;
 }
 
 UserDao.prototype.getAll = function(callback){

@@ -11,7 +11,6 @@ var AppClientDao = function(){
 }
 
 var resultToObject = function(result){
-    //client : {"id":10,"oauth_id":"99","oauth_secret":"b","name":"a","user_id":44}
     if (!result)
         return null;
     
@@ -25,20 +24,6 @@ var resultToObject = function(result){
     return client;
 }
 
-var resultArrayToObjectArray = function(resultArray){
-    logger.warn("resultArrayToObjectArray : Function not tested.");
-
-    if(resultArray.length == 0)
-        return [];
-
-    var objArray = [];
-    for (var i in resultArray) {
-      val = resultArray[i];
-      objArray.push(resultToObject(val));
-    }
-    return objArray;
-}
-
 AppClientDao.prototype.getAll = function(callback){
 
     var query = "SELECT * FROM app_client";
@@ -50,7 +35,8 @@ AppClientDao.prototype.getAll = function(callback){
             return callback(err,null);
         }
 
-        callback(null, resultArrayToObjectArray(result.rows));
+        var resultToArray = require('../utils/baseutils').resultToArray;
+        callback(null, resultToArray.toArray(resultToObject, result.rows));
     });
 
 }
@@ -85,18 +71,6 @@ AppClientDao.prototype.getByName = function(clientName, callback){
         callback(null, resultToObject(result.rows[0]));
     });
 }
-
-// //Don't have an OauthId anymore
-// AppClientDao.prototype.getByOauthId = function(id, callback){
-//     var query = "SELECT * FROM app_client where oauth_id = $1";
-//     db.query(query, [id], function(err, result){
-//         if(err){
-//             logger.error("AppClientDao getByOauthId error: " + err);
-//             return callback(err,null);
-//         }
-//         callback(null, resultToObject(result.rows[0]));
-//     });
-// }
 
 AppClientDao.prototype.insert = function(appclient, callback){
 

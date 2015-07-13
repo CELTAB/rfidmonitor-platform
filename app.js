@@ -68,61 +68,10 @@ var server = new Server();
 server.startServer();
 
 //--------------------
-// TODO: Create database on starting app. If exists, just continue
+// Verify database and default user creation
+require('./utils/baseutils').InitiateDb.start();
 
-var ManipulateDb = require('./utils/manipulatedb');
-var manipulate = new ManipulateDb();
-
-//if the connection with the database fails, throw error and stop the app.
-manipulate.testConnection();
-
-
-//-----------------------
-// TMP - DON'T REMOVE
-
-var AppClient = require('./models/appclient');
-var AppClientDao = require('./dao/appclientdao');
-
-var AccessToken = require('./models/accesstoken');
-var AccessTokenDao = require('./dao/accesstokendao');
-
-var client = new AppClient();
-
-appClientDao =  new AppClientDao();
-
-appClientDao.getByName("Default Client", function(err, defaultClient){
-
-	if(err) return;
-
-	if(defaultClient) return logger.info("Default appClient already exists");
-
-	client.clientName = "Default Client";
-	client.authSecret = "defaultsecret";
-	client.description = "Default client inserted on every start-up";
-
-	appClientDao.insert(client, function(err, clientId){
-		if(err){
-			return;// logger.error("Error on create Default appClient");
-		}
-
-		// Create a new access token
-		var token = new AccessToken();
-		token.value = "defaulttokenaccess";
-		token.appClientId = clientId;
-
-		logger.info("Default appClient created with ID " + clientId);
-
-		var tokenDao = new AccessTokenDao();
-		tokenDao.insert(token, function(err, tokenId){
-
-			if(err) return logger.error("Error on create token for default appClient");
-			
-			logger.info("Default token for appClient: " + token.value);
-		});
-	});
-});
-
-/*-------------------------------------------------------------*/
+//--------------------
 
 
 /*
@@ -150,12 +99,22 @@ app.use(session({
   resave: true
 }));
 
+//Necessary headers to clients acces.
 app.all('*', function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   next();
 });
+
+// var authController = require('./controllers/auth');
+
+// app.use('/api', function(req, res, next) {
+//   logger.debug('1');
+
+//   res.status(401).send({error: "Unauthorized"});
+//   next();
+// });
 
 app.use(passport.initialize());
 

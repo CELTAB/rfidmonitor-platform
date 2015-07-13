@@ -40,7 +40,7 @@ ManipulateDb.prototype.query = function(text, values, cb, dbName) {
 /*
 Test the connection with the default database. If the connection fails, drop the application. it should not continue
 */
-ManipulateDb.prototype.testConnection = function(){
+ManipulateDb.prototype.testConnection = function(callback){
 
 	var tmp_connectionString = connectionString + "/" + defaultDatabase;
 	pg.connect(tmp_connectionString, function(err, client, done){
@@ -52,6 +52,7 @@ ManipulateDb.prototype.testConnection = function(){
 		logger.debug("Data base Connection test - OK");
 		done();
 		pg.end();
+		callback();
 	});
 }
 

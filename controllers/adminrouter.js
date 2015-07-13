@@ -16,12 +16,7 @@ var AdminRouter = function(){
 }
 
 var routeAppClients = function(){
-	/*
-		Get all clients
-		Ex: api/clients
-	*/
 	router.route('/clients')
-
 		.get(authController.isBearerAuthenticated, function(req, res){
 			//find all users;
 			logger.info("Connection from client " + req.user.clientName);
@@ -32,7 +27,7 @@ var routeAppClients = function(){
 				res.json(appClient);
 			});
 		})
-		.post(authController.isAuthenticated, function(req, res){
+		.post(authController.isBearerAuthenticated, function(req, res){
 			//insert client;
 			var client = new AppClient();
 
@@ -49,9 +44,11 @@ var routeAppClients = function(){
 				if(err)
 					return res.json({error: "Could not save app client user"});
 
+				var random = require('../utils/baseutils').randomChars;
+
 				// Create a new access token
 				var token = new AccessToken();
-				token.value = uid(16);
+				token.value = random.uid(16);
 				token.appClientId = clientId;
 
 				var tokenDao = new AccessTokenDao();
@@ -64,35 +61,18 @@ var routeAppClients = function(){
 					res.json(client);
 				});
 			});
-		}).delete(authController.isAuthenticated, function(req, res){
+		}).delete(authController.isBearerAuthenticated, function(req, res){
 
 			var client = new AppClient();
-
 			appClientDao.deleteByNameAndId(req.query.clientName, req.query.id, function(err, result){
 
 				if(err) {
 					return res.json({error: "Not able to remove client"});
 				}
 
-				res.json({message: "Usuario removido!"});
+				res.json({message: "User successfuly removed!"});
 			});
 		});
-}
-
-function uid (len) {
-  var buf = []
-    , chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-    , charlen = chars.length;
-
-  for (var i = 0; i < len; ++i) {
-    buf.push(chars[getRandomInt(0, charlen - 1)]);
-  }
-
-  return buf.join('');
-};
-
-function getRandomInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 module.exports = AdminRouter;
