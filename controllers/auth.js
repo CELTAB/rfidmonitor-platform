@@ -65,9 +65,8 @@ passport.use('client-basic', new BasicStrategy(
     }
 ));
 
-
 var bearerAuth = function(accessTokenValue, callback) {
-    logger.debug('BearerStrategy : ' + accessTokenValue);
+    logger.debug('BearerStrategy');
     accessTokenDao.getByValue(accessTokenValue, function (err, token) {
 
         if (err) { return callback(err); }
@@ -90,10 +89,9 @@ var bearerAuth = function(accessTokenValue, callback) {
   }
 
 passport.use(new BearerStrategy(bearerAuth));
-
 // exports.isAuthenticated = passport.authenticate('basic', { session : false });
-exports.isAuthenticated = passport.authenticate(['basic', 'bearer'], { session : false });
-exports.isClientAuthenticated = passport.authenticate('client-basic', { session : false });
+// exports.isAuthenticated = passport.authenticate(['basic', 'bearer'], { session : false });
+// exports.isClientAuthenticated = passport.authenticate('client-basic', { session : false });
 exports.isBearerAuthenticated = passport.authenticate('bearer', { session: false });
 
 

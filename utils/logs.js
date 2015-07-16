@@ -41,7 +41,7 @@ var Logs = function(debugConsole, debugFile, verboseConsole, verboseFile){
 			level: 'warn',
 			json: false,
 			colorize: true,
-			silent: false
+			silent: false,
 		}
 	);
 
@@ -54,7 +54,8 @@ var Logs = function(debugConsole, debugFile, verboseConsole, verboseFile){
 				name: 'consoledebug',
 				level: 'debug',
 				json: false,
-				colorize: true
+				colorize: true,
+				handleExceptions: true,
 			}
 		);
 	}
@@ -70,7 +71,8 @@ var Logs = function(debugConsole, debugFile, verboseConsole, verboseFile){
 				datePattern: '.dd',
 				maxsize: 1024 * 1024 * 5,
 				maxFiles: 10, 
-				json: false
+				json: false,
+				handleExceptions: true,
 			}
 		);
 	}

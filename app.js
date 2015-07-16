@@ -36,7 +36,6 @@ var ejs = require('ejs');
 var passport = require('passport');
 var bodyParser = require('body-parser');
 var PlatformRouter = require('./controllers/platformrouter');
-var AdminRouter = require('./controllers/adminrouter');
 var Server = require('./utils/server');
 
 var args = process.argv;
@@ -88,15 +87,15 @@ var options = {
 var app = express();
 // app.use(bodyParser.urlencoded({extended : true}));
 app.use(bodyParser.json());
+app.use(passport.initialize());
 
 
 // Use express session support since OAuth2orize requires it
 // TODO update secret below?
 app.use(session({
   secret: 'Super Secret Session Key',
-  cookie: {maxAge: 60000},
-  saveUninitialized: true,
-  resave: true
+  resave : true, 
+  saveUninitialized : true
 }));
 
 //Necessary headers to clients access.
@@ -124,18 +123,10 @@ app.get("/", function(req, res) {
 	res.status(200).sendfile('web/public/index.html');
 });
 
+// '/api' requires auth
 app.use('/api', new PlatformRouter());
-app.use('/admin', new AdminRouter());
 
-// TMP - THIS MAY BE USEFUL, SOME TIME: 
-/*
-app.use('/admin', function(req, res, next) {
-  // GET 'http://www.example.com/admin/new'
-  console.log(req.originalUrl); // '/admin/new'
-  console.log(req.baseUrl); // '/admin'
-  console.log(req.path); // '/new'
-  next();
-});
-*/
+var AdminRouter = require('./controllers/adminrouter');
+app.use('/admin', new AdminRouter());
 
 https.createServer(options, app).listen(443);

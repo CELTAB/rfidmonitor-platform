@@ -1,6 +1,5 @@
 var express = require('express');
 var authController = require('./auth');
-var oauth2Controller = require('./oauth2');
 var logger = require('winston');
 
 var AccessToken = require('../models/accesstoken');
