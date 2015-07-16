@@ -10,27 +10,25 @@ angularConfig.config(function($routeProvider, $locationProvider, $httpProvider) 
 	$httpProvider.interceptors.push('httpInterceptor');
 
 	$routeProvider.when("/home", {
-		templateUrl: "view/home.html",
+		templateUrl: "web/home.html",
 		controller: "homeCtrl",
 	});
 	$routeProvider.when("/noAccess", {
-		templateUrl: "view/noAccess.html"
+		templateUrl: "web/noAccess.html"
 	});
 	$routeProvider.when("/clients", {
-		templateUrl: "view/clients.html",
+		templateUrl: "web/clients.html",
 		controller: "clientsCtrl",
 		resolve: {
 			clients: function(clientService){
+				console.log("Resolving clients");
 				return clientService.getClients();
 			}
 		}
 	});
 	$routeProvider.when("/login", {
-		templateUrl: "view/login.html",
+		templateUrl: "web/login.html",
 		controller: "loginCtrl"
-	});
-	$routeProvider.when("/", {
-		redirectTo: "/login"
 	});
 	$routeProvider.otherwise({redirectTo: "/"});
 });

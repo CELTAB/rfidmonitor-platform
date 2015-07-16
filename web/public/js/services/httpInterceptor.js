@@ -6,8 +6,12 @@ angular.module("rfidplatform").factory('httpInterceptor', function httpIntercept
         If the response came with an Unauthorized code the user will se an message telling the he doesn't have acces permission for the resource/path he's trying to access.
       */
       if (rejection.status === 401) {
+        console.log("Status 401");
+        $rootScope.$broadcast('unauthorized');
         //Redirect the user fot the /noAccess message.
-        return $location.path('/noAccess');
+      }else if(rejection.status === 403){
+        console.log("Status 403");
+        $rootScope.$broadcast('forbidden');
       }
       return( $q.reject( rejection ) );
     },

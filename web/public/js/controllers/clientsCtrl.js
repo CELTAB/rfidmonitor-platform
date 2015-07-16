@@ -1,8 +1,10 @@
 angular.module("rfidplatform").controller("clientsCtrl", function($scope, clientService, config, clients){
-	$scope.app = "Cadastrar cliente";
-	$scope.webInfo = "Primeiro Protótipo - Rascunho";
 
+	$scope.app = "Cadastrar clientess";
+	$scope.webInfo = " Primeiro Protótipo - Rascunho";
 	$scope.clients = clients.data;
+
+	console.log($scope.clients);
 
 	var accessError = function(data, status){
 
@@ -57,6 +59,4 @@ angular.module("rfidplatform").controller("clientsCtrl", function($scope, client
 
 		return false;
 	};
-
-	loadClients();
 });

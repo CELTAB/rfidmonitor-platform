@@ -1,4 +1,4 @@
-angular.module("rfidplatform").controller("loginCtrl", function($scope, $window, loginService, $location, apiHeader, $rootScope){
+angular.module("rfidplatform").controller("loginCtrl", function($scope, $window, loginService, $location, $rootScope, UserService){
   
   $scope.tittle = "Tela de Login";
 
@@ -9,15 +9,19 @@ angular.module("rfidplatform").controller("loginCtrl", function($scope, $window,
           console.log(JSON.stringify(data));
           var token = data.token;
 
-          apiHeader.init(token);
-          $rootScope.token = token;
+          login.token = data.token;
+          UserService.setCurrentUser(login);
+
+          $rootScope.$broadcast('authorized');
           $location.path('/home');
         }
       };
 
       var error = function(data){
+        $scope.login.username = '';
+        $scope.login.password = '';
+        $scope.loginForm.$setPristine();
         $scope.error = data.error;
-        $window.history.back();
       };
 
       loginService.login(login).success(suc).error(error);

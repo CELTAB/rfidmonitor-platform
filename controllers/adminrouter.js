@@ -19,7 +19,7 @@ var AdminRouter = function(){
 
 		var username = req.body.username;
 		var password = req.body.password;
-		var token = "defaultaccesstoken";
+		var token = "defaulttokenaccess";
 
 		if(username != "thiago" || password != "thiago")
 			return res.status(401).json({error: "You don't have access to this page"});
@@ -43,7 +43,7 @@ var routeAppClients = function(){
 			logger.info("Connection from client " + req.user.clientName);
 			appClientDao.getAll(function(err, appClient){
 				if(err)
-					return res.json(err)
+					return res.status(501).json(err)
 
 				res.json(appClient);
 			});

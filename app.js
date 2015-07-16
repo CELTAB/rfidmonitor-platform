@@ -109,74 +109,23 @@ app.all('*', function(req, res, next) {
 
 app.use(passport.initialize());
 
-logger.debug("1");
-
-/* serves main page - Prototype porpouse*/
-
-logger.debug("3");
-
-app.get("/", 
-
-function(req, res, next){
-	var authToken = req.headers.authorization;
-
-	logger.debug("<<<<< HERE >>>>>>>");
-	logger.debug(authToken);
-	if(authToken){
-		logger.debug(" >>>>>> REDIRECT <<<<<<<<");
-		res.redirect('view/home.html');
-	}
+app.all('*', function(req, res, next){
+	logger.debug("Method " + req.method + " for URL " + req.url);
 	next();
-},
-
-function(req, res) {
-	logger.debug("index");
-	res.sendfile('public/index.html');
-}
-
-);
-
-app.use(express.static('public'));
-
-logger.debug("4");
-
-app.get('/view/login.html', function(req, res, next){
-
-	// console.log("view/*");
-	// var authToken = req.headers.authorization;
-
-	// logger.debug("<<<<< HERE >>>>>>>");
-	// logger.debug(authToken);
-
-	// if(!authToken)
-	// 	return res.status(401);
-
-	// authController.bearerAuth();
-	res.sendfile('public/view/login.html');
-	// next();
 });
 
-logger.debug("2.1");
+var WebRouter = require('./controllers/webrouter');
+app.use('/web', new WebRouter());
 
+app.use(express.static('web/public'));
 
+/* serves main page - Prototype porpouse*/
+app.get("/", function(req, res) {
+	res.status(200).sendfile('web/public/index.html');
+});
 
 app.use('/api', new PlatformRouter());
 app.use('/admin', new AdminRouter());
-
-logger.debug("2");
-
-// app.all('/view/login.html', function(req, res, next){
-// 	logger.info("Sending back login page");
-// 	return res.sendfile('login.html');
-// 	// next();
-// });
-
-// app.all('/view/noAccess.html', function(req, res, next){
-// 	logger.info("Sending back noAccess page");
-// 	return res.sendfile('view/noAccess.html');
-// 	// next();
-// });
-
 
 // TMP - THIS MAY BE USEFUL, SOME TIME: 
 /*
@@ -188,6 +137,5 @@ app.use('/admin', function(req, res, next) {
   next();
 });
 */
-
 
 https.createServer(options, app).listen(443);

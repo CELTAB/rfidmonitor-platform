@@ -40,20 +40,3 @@ apiService.factory("clientService", function($http, config){
 		removeClient: _removeClient
 	}
 });
-
-apiService.factory("apiHeader", function($http){
-	var _token;
-
-	var _hasToken = function(){
-		return _token? true: false;
-	}
-
-	return {
-		init: function(token){
-			console.log("setting token to : " + token);
-			_token = token;
-			$http.defaults.headers.common['Authorization'] = 'Bearer ' + token;
-		},
-		hasToken: _hasToken
-	}
-});

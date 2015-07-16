@@ -67,7 +67,7 @@ passport.use('client-basic', new BasicStrategy(
 
 
 var bearerAuth = function(accessTokenValue, callback) {
-    logger.debug('BearerStrategy');
+    logger.debug('BearerStrategy : ' + accessTokenValue);
     accessTokenDao.getByValue(accessTokenValue, function (err, token) {
 
         if (err) { return callback(err); }

@@ -1,0 +1,41 @@
+<html ng-app="rfidplatform">
+	<head>
+		<meta charset="UTF-8">
+		<title>RFIDMonitor Platform - Admin</title>
+		<link rel="stylesheet" type="text/css" href="lib/bootstrap/bootstrap.css">
+		<link rel="stylesheet" type="text/css" href="css/app.css">
+
+		<script src="lib/angular/angular.js"></script>
+		<script src="lib/angular/angular-locale_pt-br.js"></script>
+		<script src="lib/angular/angular-messages.js"></script>
+		<script src="lib/angular/angular-route.js"></script>
+		
+		<script src="js/angularapp.js"></script>
+		<script src="js/rfidmonitorAngularConfig.js"></script>
+
+		<script src="js/services/httpInterceptor.js"></script> 
+		<script src="js/services/apiservice.js"></script>
+		<script src="js/services/userService.js"></script>
+
+		<script src="js/controllers/loginCtrl.js"></script>
+		<script src="js/controllers/homeCtrl.js"></script>
+		<script src="js/controllers/clientsCtrl.js"></script>
+		<script src="js/controllers/mainCtrl.js"></script>
+
+	</head>
+	<body>
+		<nav class="navbar navbar-default" ng-controller="mainCtrl">
+            <button ng-if="currentUser" class="btn btn-default navbar-btn" 
+               ng-click="goToClients()">Clients</button>
+            <button ng-if="currentUser" class="btn btn-default navbar-btn" 
+               ng-click="goToRfiddata()">RFIDData</button>
+
+            <button ng-if="currentUser" class="btn btn-default navbar-btn" 
+               ng-click="logout()">Logout <strong>{{currentUser.username}}</strong></button>
+            <button ng-if="!currentUser" class="btn btn-default navbar-btn" 
+               ng-click="login()">Login</button>
+    	</nav>
+		<div ng-view></div>
+		<div>Hello from index</div>
+	</body>
+</html>
