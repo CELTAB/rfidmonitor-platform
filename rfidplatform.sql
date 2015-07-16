@@ -79,30 +79,20 @@ COMMENT ON TABLE public.rfiddata IS 'json string containing extra fields';
 ALTER TABLE public.rfiddata OWNER TO rfidplatform;
 -- ddl-end --
 
--- object: public.user | type: TABLE --
--- DROP TABLE IF EXISTS public.user CASCADE;
-CREATE TABLE public.user(
-	username text NOT NULL,
+-- object: public.user_platform | type: TABLE --
+-- DROP TABLE IF EXISTS public.user_platform CASCADE;
+CREATE TABLE public.user_platform(
+	username text,
 	password text NOT NULL,
 	email text,
 	name text,
-	CONSTRAINT pk_user PRIMARY KEY (username)
+	id serial NOT NULL,
+	CONSTRAINT pk_user PRIMARY KEY (id),
+	CONSTRAINT uq_user_username UNIQUE (username)
 
 );
 -- ddl-end --
-ALTER TABLE public.user OWNER TO rfidplatform;
--- ddl-end --
-
--- object: public.user_session | type: TABLE --
--- DROP TABLE IF EXISTS public.user_session CASCADE;
-CREATE TABLE public.user_session(
-	id text NOT NULL,
-	username text NOT NULL,
-	CONSTRAINT pk_usersession PRIMARY KEY (id)
-
-);
--- ddl-end --
-ALTER TABLE public.user_session OWNER TO rfidplatform;
+ALTER TABLE public.user_platform OWNER TO rfidplatform;
 -- ddl-end --
 
 -- object: public.package | type: TABLE --
@@ -118,6 +108,88 @@ CREATE TABLE public.package(
 );
 -- ddl-end --
 ALTER TABLE public.package OWNER TO rfidplatform;
+-- ddl-end --
+
+-- object: public.app_client | type: TABLE --
+-- DROP TABLE IF EXISTS public.app_client CASCADE;
+CREATE TABLE public.app_client(
+	id serial NOT NULL,
+	auth_secret text NOT NULL,
+	client_name text NOT NULL,
+	description text,
+	CONSTRAINT pk_id_app_client PRIMARY KEY (id),
+	CONSTRAINT uq_client_name UNIQUE (client_name)
+
+);
+-- ddl-end --
+ALTER TABLE public.app_client OWNER TO rfidplatform;
+-- ddl-end --
+
+-- object: public.access_token | type: TABLE --
+-- DROP TABLE IF EXISTS public.access_token CASCADE;
+CREATE TABLE public.access_token(
+	id serial NOT NULL,
+	value text NOT NULL,
+	app_client_id serial NOT NULL,
+	CONSTRAINT pk_access_token PRIMARY KEY (id)
+
+);
+-- ddl-end --
+ALTER TABLE public.access_token OWNER TO rfidplatform;
+-- ddl-end --
+
+-- object: public.authorization_code | type: TABLE --
+-- DROP TABLE IF EXISTS public.authorization_code CASCADE;
+CREATE TABLE public.authorization_code(
+	id serial NOT NULL,
+	value text NOT NULL,
+	redirect_uri text NOT NULL,
+	user_id integer NOT NULL,
+	CONSTRAINT pk_id_authorization_code PRIMARY KEY (id)
+
+);
+-- ddl-end --
+ALTER TABLE public.authorization_code OWNER TO rfidplatform;
+-- ddl-end --
+
+-- object: public.access_methods | type: TABLE --
+-- DROP TABLE IF EXISTS public.access_methods CASCADE;
+CREATE TABLE public.access_methods(
+	id serial NOT NULL,
+	method_name text NOT NULL,
+	CONSTRAINT pk_id_access_methods PRIMARY KEY (id),
+	CONSTRAINT uq_method_name UNIQUE (method_name)
+
+);
+-- ddl-end --
+ALTER TABLE public.access_methods OWNER TO rfidplatform;
+-- ddl-end --
+
+-- object: public.uri_routers | type: TABLE --
+-- DROP TABLE IF EXISTS public.uri_routers CASCADE;
+CREATE TABLE public.uri_routers(
+	id serial NOT NULL,
+	route text NOT NULL,
+	CONSTRAINT pk_id_uri_routers PRIMARY KEY (id),
+	CONSTRAINT uq_route UNIQUE (route)
+
+);
+-- ddl-end --
+ALTER TABLE public.uri_routers OWNER TO rfidplatform;
+-- ddl-end --
+
+-- object: public.router_access | type: TABLE --
+-- DROP TABLE IF EXISTS public.router_access CASCADE;
+CREATE TABLE public.router_access(
+	id serial NOT NULL,
+	app_client_id serial NOT NULL,
+	uri_routers_id serial NOT NULL,
+	access_methods_id serial NOT NULL,
+	CONSTRAINT pk_id_router_access PRIMARY KEY (id)
+
+);
+-- ddl-end --
+ALTER TABLE public.router_access OWNER TO rfidplatform;
 -- ddl-end --
 
 -- object: fk_group_collector | type: CONSTRAINT --
@@ -141,10 +213,38 @@ REFERENCES public.package (id) MATCH FULL
 ON DELETE NO ACTION ON UPDATE NO ACTION;
 -- ddl-end --
 
--- object: fk_user_usersession | type: CONSTRAINT --
--- ALTER TABLE public.user_session DROP CONSTRAINT IF EXISTS fk_user_usersession CASCADE;
-ALTER TABLE public.user_session ADD CONSTRAINT fk_user_usersession FOREIGN KEY (username)
-REFERENCES public.user (username) MATCH FULL
+-- object: fk_app_client_id | type: CONSTRAINT --
+-- ALTER TABLE public.access_token DROP CONSTRAINT IF EXISTS fk_app_client_id CASCADE;
+ALTER TABLE public.access_token ADD CONSTRAINT fk_app_client_id FOREIGN KEY (app_client_id)
+REFERENCES public.app_client (id) MATCH FULL
+ON DELETE NO ACTION ON UPDATE NO ACTION;
+-- ddl-end --
+
+-- object: fk_user_platform_auth_code | type: CONSTRAINT --
+-- ALTER TABLE public.authorization_code DROP CONSTRAINT IF EXISTS fk_user_platform_auth_code CASCADE;
+ALTER TABLE public.authorization_code ADD CONSTRAINT fk_user_platform_auth_code FOREIGN KEY (user_id)
+REFERENCES public.user_platform (id) MATCH FULL
+ON DELETE NO ACTION ON UPDATE NO ACTION;
+-- ddl-end --
+
+-- object: fk_app_client_id | type: CONSTRAINT --
+-- ALTER TABLE public.router_access DROP CONSTRAINT IF EXISTS fk_app_client_id CASCADE;
+ALTER TABLE public.router_access ADD CONSTRAINT fk_app_client_id FOREIGN KEY (app_client_id)
+REFERENCES public.app_client (id) MATCH FULL
+ON DELETE NO ACTION ON UPDATE NO ACTION;
+-- ddl-end --
+
+-- object: fk_uri_routers_id | type: CONSTRAINT --
+-- ALTER TABLE public.router_access DROP CONSTRAINT IF EXISTS fk_uri_routers_id CASCADE;
+ALTER TABLE public.router_access ADD CONSTRAINT fk_uri_routers_id FOREIGN KEY (uri_routers_id)
+REFERENCES public.uri_routers (id) MATCH FULL
+ON DELETE NO ACTION ON UPDATE NO ACTION;
+-- ddl-end --
+
+-- object: fk_access_method_id | type: CONSTRAINT --
+-- ALTER TABLE public.router_access DROP CONSTRAINT IF EXISTS fk_access_method_id CASCADE;
+ALTER TABLE public.router_access ADD CONSTRAINT fk_access_method_id FOREIGN KEY (access_methods_id)
+REFERENCES public.access_methods (id) MATCH FULL
 ON DELETE NO ACTION ON UPDATE NO ACTION;
 -- ddl-end --
 

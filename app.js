@@ -86,7 +86,6 @@ var options = {
 };
 
 var app = express();
-// app.set('view engine', 'ejs');
 // app.use(bodyParser.urlencoded({extended : true}));
 app.use(bodyParser.json());
 
@@ -95,11 +94,12 @@ app.use(bodyParser.json());
 // TODO update secret below?
 app.use(session({
   secret: 'Super Secret Session Key',
+  cookie: {maxAge: 60000},
   saveUninitialized: true,
   resave: true
 }));
 
-//Necessary headers to clients acces.
+//Necessary headers to clients access.
 app.all('*', function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
@@ -107,24 +107,87 @@ app.all('*', function(req, res, next) {
   next();
 });
 
-// var authController = require('./controllers/auth');
-
-// app.use('/api', function(req, res, next) {
-//   logger.debug('1');
-
-//   res.status(401).send({error: "Unauthorized"});
-//   next();
-// });
-
 app.use(passport.initialize());
+
+logger.debug("1");
+
+/* serves main page - Prototype porpouse*/
+
+logger.debug("3");
+
+app.get("/", 
+
+function(req, res, next){
+	var authToken = req.headers.authorization;
+
+	logger.debug("<<<<< HERE >>>>>>>");
+	logger.debug(authToken);
+	if(authToken){
+		logger.debug(" >>>>>> REDIRECT <<<<<<<<");
+		res.redirect('view/home.html');
+	}
+	next();
+},
+
+function(req, res) {
+	logger.debug("index");
+	res.sendfile('public/index.html');
+}
+
+);
+
+app.use(express.static('public'));
+
+logger.debug("4");
+
+app.get('/view/login.html', function(req, res, next){
+
+	// console.log("view/*");
+	// var authToken = req.headers.authorization;
+
+	// logger.debug("<<<<< HERE >>>>>>>");
+	// logger.debug(authToken);
+
+	// if(!authToken)
+	// 	return res.status(401);
+
+	// authController.bearerAuth();
+	res.sendfile('public/view/login.html');
+	// next();
+});
+
+logger.debug("2.1");
+
+
 
 app.use('/api', new PlatformRouter());
 app.use('/admin', new AdminRouter());
 
-/* serves main page - Prototype porpouse*/
-app.use('/', express.static('views'));
- app.get("/", function(req, res) {
-    res.sendfile('views/prototype.html');
- });
+logger.debug("2");
+
+// app.all('/view/login.html', function(req, res, next){
+// 	logger.info("Sending back login page");
+// 	return res.sendfile('login.html');
+// 	// next();
+// });
+
+// app.all('/view/noAccess.html', function(req, res, next){
+// 	logger.info("Sending back noAccess page");
+// 	return res.sendfile('view/noAccess.html');
+// 	// next();
+// });
+
+
+// TMP - THIS MAY BE USEFUL, SOME TIME: 
+/*
+app.use('/admin', function(req, res, next) {
+  // GET 'http://www.example.com/admin/new'
+  console.log(req.originalUrl); // '/admin/new'
+  console.log(req.baseUrl); // '/admin'
+  console.log(req.path); // '/new'
+  next();
+});
+*/
+
 
 https.createServer(options, app).listen(443);

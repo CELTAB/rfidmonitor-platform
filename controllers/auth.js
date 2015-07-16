@@ -49,14 +49,14 @@ passport.use('client-basic', new BasicStrategy(
 
         logger.debug('BasicStrategy : client-basic : username=' + username + ' pass=' + password);
         // WARNING username and password are arrive as plain text. TODO
-        appClientDao.getByOauthId(username, function (err, client) {
+        appClientDao.getByName(username, function (err, client) {
 
             if (err) { return callback(err); }
 
             logger.debug("BasicStrategy : client : " +JSON.stringify(client)); 
 
             // No client found with that id or bad password
-            if (!client || client.oauthSecret !== password) { return callback(null, false); }
+            if (!client || client.authSecret !== password) { return callback(null, false); }
 
             // Success
             logger.debug("BasicStrategy : client-basic : SUCCESS");
@@ -65,8 +65,8 @@ passport.use('client-basic', new BasicStrategy(
     }
 ));
 
-passport.use(new BearerStrategy(
-  function(accessTokenValue, callback) {
+
+var bearerAuth = function(accessTokenValue, callback) {
     logger.debug('BearerStrategy');
     accessTokenDao.getByValue(accessTokenValue, function (err, token) {
 
@@ -88,7 +88,8 @@ passport.use(new BearerStrategy(
         });
     });
   }
-));
+
+passport.use(new BearerStrategy(bearerAuth));
 
 // exports.isAuthenticated = passport.authenticate('basic', { session : false });
 exports.isAuthenticated = passport.authenticate(['basic', 'bearer'], { session : false });

@@ -12,6 +12,27 @@ var AppClient = require('../models/appclient');
 var AdminRouter = function(){
 	router = express.Router();
 	routeAppClients();
+
+	router.route('/login').post(function(req, res){
+
+		logger.debug(JSON.stringify(req.body));
+
+		var username = req.body.username;
+		var password = req.body.password;
+		var token = "defaultaccesstoken";
+
+		if(username != "thiago" || password != "thiago")
+			return res.status(401).json({error: "You don't have access to this page"});
+
+		req.headers.Authorization = "Bearer " + token;
+		// logger.warn(JSON.stringify(req.headers));
+
+		res.send({token: token, nextUrl: '/admin/home'});
+
+	});
+
+	// router.route('/home').
+
 	return router;
 }
 
