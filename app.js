@@ -36,7 +36,6 @@ var ejs = require('ejs');
 var passport = require('passport');
 var bodyParser = require('body-parser');
 var PlatformRouter = require('./controllers/platformrouter');
-var AdminRouter = require('./controllers/adminrouter');
 var Server = require('./utils/server');
 
 var args = process.argv;
@@ -88,15 +87,15 @@ var options = {
 var app = express();
 // app.use(bodyParser.urlencoded({extended : true}));
 app.use(bodyParser.json());
+app.use(passport.initialize());
 
 
 // Use express session support since OAuth2orize requires it
 // TODO update secret below?
 app.use(session({
   secret: 'Super Secret Session Key',
-  cookie: {maxAge: 60000},
-  saveUninitialized: true,
-  resave: true
+  resave : true, 
+  saveUninitialized : true
 }));
 
 //Necessary headers to clients access.
@@ -107,87 +106,18 @@ app.all('*', function(req, res, next) {
   next();
 });
 
-app.use(passport.initialize());
-
-logger.debug("1");
-
-/* serves main page - Prototype porpouse*/
-
-logger.debug("3");
-
-app.get("/", 
-
-function(req, res, next){
-	var authToken = req.headers.authorization;
-
-	logger.debug("<<<<< HERE >>>>>>>");
-	logger.debug(authToken);
-	if(authToken){
-		logger.debug(" >>>>>> REDIRECT <<<<<<<<");
-		res.redirect('view/home.html');
-	}
-	next();
-},
-
-function(req, res) {
-	logger.debug("index");
-	res.sendfile('public/index.html');
-}
-
-);
-
-app.use(express.static('public'));
-
-logger.debug("4");
-
-app.get('/view/login.html', function(req, res, next){
-
-	// console.log("view/*");
-	// var authToken = req.headers.authorization;
-
-	// logger.debug("<<<<< HERE >>>>>>>");
-	// logger.debug(authToken);
-
-	// if(!authToken)
-	// 	return res.status(401);
-
-	// authController.bearerAuth();
-	res.sendfile('public/view/login.html');
-	// next();
+// '/' public returns index.
+app.get('/',function(req,res,next){
+	res.json({ oi: "index" });
 });
 
-logger.debug("2.1");
+// '/login' public
+app.post('/login',function(req,res,next){
+	res.json({ oi: "login post" });
+});
 
-
-
+// '/api' requires auth
 app.use('/api', new PlatformRouter());
-app.use('/admin', new AdminRouter());
-
-logger.debug("2");
-
-// app.all('/view/login.html', function(req, res, next){
-// 	logger.info("Sending back login page");
-// 	return res.sendfile('login.html');
-// 	// next();
-// });
-
-// app.all('/view/noAccess.html', function(req, res, next){
-// 	logger.info("Sending back noAccess page");
-// 	return res.sendfile('view/noAccess.html');
-// 	// next();
-// });
-
-
-// TMP - THIS MAY BE USEFUL, SOME TIME: 
-/*
-app.use('/admin', function(req, res, next) {
-  // GET 'http://www.example.com/admin/new'
-  console.log(req.originalUrl); // '/admin/new'
-  console.log(req.baseUrl); // '/admin'
-  console.log(req.path); // '/new'
-  next();
-});
-*/
 
 
 https.createServer(options, app).listen(443);
