@@ -152,44 +152,50 @@ CREATE TABLE public.authorization_code(
 ALTER TABLE public.authorization_code OWNER TO rfidplatform;
 -- ddl-end --
 
--- object: public.access_methods | type: TABLE --
--- DROP TABLE IF EXISTS public.access_methods CASCADE;
-CREATE TABLE public.access_methods(
-	id serial NOT NULL,
-	method_name text NOT NULL,
-	CONSTRAINT pk_id_access_methods PRIMARY KEY (id),
-	CONSTRAINT uq_method_name UNIQUE (method_name)
-
-);
--- ddl-end --
-ALTER TABLE public.access_methods OWNER TO rfidplatform;
--- ddl-end --
-
--- object: public.uri_routers | type: TABLE --
--- DROP TABLE IF EXISTS public.uri_routers CASCADE;
-CREATE TABLE public.uri_routers(
-	id serial NOT NULL,
-	route text NOT NULL,
-	CONSTRAINT pk_id_uri_routers PRIMARY KEY (id),
-	CONSTRAINT uq_route UNIQUE (route)
-
-);
--- ddl-end --
-ALTER TABLE public.uri_routers OWNER TO rfidplatform;
--- ddl-end --
-
 -- object: public.router_access | type: TABLE --
 -- DROP TABLE IF EXISTS public.router_access CASCADE;
 CREATE TABLE public.router_access(
 	id serial NOT NULL,
 	app_client_id serial NOT NULL,
 	uri_routers_id serial NOT NULL,
-	access_methods_id serial NOT NULL,
 	CONSTRAINT pk_id_router_access PRIMARY KEY (id)
 
 );
 -- ddl-end --
 ALTER TABLE public.router_access OWNER TO rfidplatform;
+-- ddl-end --
+
+-- -- object: public.http_methods | type: TYPE --
+-- -- DROP TYPE IF EXISTS public.http_methods CASCADE;
+-- CREATE TYPE public.http_methods AS
+--  ENUM ('GET','POST','PUT','DELETE','ANY');
+-- -- ddl-end --
+-- ALTER TYPE public.http_methods OWNER TO rfidplatform;
+-- -- ddl-end --
+-- 
+-- object: public.uri_routers | type: TABLE --
+-- DROP TABLE IF EXISTS public.uri_routers CASCADE;
+
+-- Prepended SQL commands --
+-- object: public.http_methods | type: TYPE --
+-- DROP TYPE IF EXISTS public.http_methods CASCADE;
+CREATE TYPE public.http_methods AS
+ ENUM ('GET','POST','PUT','DELETE','ANY');
+-- ddl-end --
+ALTER TYPE public.http_methods OWNER TO rfidplatform;
+-- ddl-end --
+-- ddl-end --
+
+CREATE TABLE public.uri_routers(
+	id serial NOT NULL,
+	path text NOT NULL,
+	method public.http_methods NOT NULL,
+	CONSTRAINT pk_uri_routers PRIMARY KEY (id),
+	CONSTRAINT uq_uri_routers_method_path UNIQUE (path,method)
+
+);
+-- ddl-end --
+ALTER TABLE public.uri_routers OWNER TO rfidplatform;
 -- ddl-end --
 
 -- object: fk_group_collector | type: CONSTRAINT --
@@ -234,17 +240,10 @@ REFERENCES public.app_client (id) MATCH FULL
 ON DELETE NO ACTION ON UPDATE NO ACTION;
 -- ddl-end --
 
--- object: fk_uri_routers_id | type: CONSTRAINT --
--- ALTER TABLE public.router_access DROP CONSTRAINT IF EXISTS fk_uri_routers_id CASCADE;
-ALTER TABLE public.router_access ADD CONSTRAINT fk_uri_routers_id FOREIGN KEY (uri_routers_id)
+-- object: fk_uri_routers_router_access | type: CONSTRAINT --
+-- ALTER TABLE public.router_access DROP CONSTRAINT IF EXISTS fk_uri_routers_router_access CASCADE;
+ALTER TABLE public.router_access ADD CONSTRAINT fk_uri_routers_router_access FOREIGN KEY (uri_routers_id)
 REFERENCES public.uri_routers (id) MATCH FULL
-ON DELETE NO ACTION ON UPDATE NO ACTION;
--- ddl-end --
-
--- object: fk_access_method_id | type: CONSTRAINT --
--- ALTER TABLE public.router_access DROP CONSTRAINT IF EXISTS fk_access_method_id CASCADE;
-ALTER TABLE public.router_access ADD CONSTRAINT fk_access_method_id FOREIGN KEY (access_methods_id)
-REFERENCES public.access_methods (id) MATCH FULL
 ON DELETE NO ACTION ON UPDATE NO ACTION;
 -- ddl-end --
 
