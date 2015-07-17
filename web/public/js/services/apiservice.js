@@ -9,7 +9,7 @@ apiService.factory("loginService", function($http, config){
 	};
 
 	var _postLogin = function(credentials){
-		return $http.post(config.baseAdminUrl + "/login", credentials);
+		return $http.post(config.baseWebUrl + "/login", credentials);
 	};
 
 	return {
@@ -20,7 +20,7 @@ apiService.factory("loginService", function($http, config){
 
 apiService.factory("clientService", function($http, config){
 
-	var clientUrl = config.baseAdminUrl + "/clients";
+	var clientUrl = config.baseApiUrl + "/clients";
 
 	var _getClients = function(){
 		return $http.get(clientUrl);

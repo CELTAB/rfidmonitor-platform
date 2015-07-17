@@ -1,7 +1,7 @@
 var angularConfig = angular.module("rfidplatform");
 
 angularConfig.value("config", {
-	baseAdminUrl: "https://localhost:443/admin",
+	baseWebUrl: "https://localhost:443/web",
 	baseApiUrl: "https://localhost:443/api"
 });
 

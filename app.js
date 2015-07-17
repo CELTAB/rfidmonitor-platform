@@ -116,17 +116,12 @@ app.all('*', function(req, res, next){
 var WebRouter = require('./controllers/webrouter');
 app.use('/web', new WebRouter());
 
-app.use(express.static('web/public'));
-
-/* serves main page - Prototype porpouse*/
-app.get("/", function(req, res) {
-	res.status(200).sendfile('web/public/index.html');
-});
+app.use('/', express.static('web/public'));
 
 // '/api' requires auth
 app.use('/api', new PlatformRouter());
 
-var AdminRouter = require('./controllers/adminrouter');
-app.use('/admin', new AdminRouter());
+// var AdminRouter = require('./controllers/adminrouter');
+// app.use('/admin', new AdminRouter());
 
 https.createServer(options, app).listen(443);

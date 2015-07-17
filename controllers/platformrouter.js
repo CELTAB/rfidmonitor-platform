@@ -32,6 +32,7 @@ var PlatformRouter = function(){
 	setAuthorization();
 
 	setRouteUsers();
+	setRouteAppClients();
 
 	return router;
 }
@@ -138,60 +139,73 @@ var setRouteUsers = function(){
 
 }
 
-// var routeAppClients = function(){
-// 	/*
-// 	Get all clients
-// 	Ex: api/clients
-// 	*/
-// 	router.route('/clients')
+var setRouteAppClients = function (){
 
-// 		.get(authController.isAuthenticated, function(req, res){
-// 			//find all users;
+	var route = '/clients';
 
-// 			appClientDao.getAll(function(err, appClient){
-// 				if(err)
-// 					return res.json(err)
+	routes.register('/api' + route, 'GET');
+	router.get(route, function(req, res){
+		//find all users;
+		logger.info("Connection from client " + req.user.clientName);
+		appClientDao.getAll(function(err, appClient){
+			if(err)
+				return res.status(501).json(err)
 
-// 				res.json(appClient);
-// 			});
-// 		})
+			res.json(appClient);
+		});
+	});
 
-// 		.post(authController.isAuthenticated, function(req, res){
-// 			//insert user;
-// 			var client = new AppClient();
-// 			client.name = req.body.name;
-// 			client.oauthId = req.body.oauthId;
-// 			client.oauthSecret = req.body.oauthSecret;
-// 			client.userId = req.user.id;
-			
-// 			appClientDao.insert(client, function(err, id){
-// 				if(err)
-// 						return res.json(err)
+	routes.register('/api' + route, 'POST');
+	router.post(route, function(req, res){
+		//insert client;
+		var client = new AppClient();
 
-// 					client.id = id;
-// 					res.json(client);
-// 			});
-// 		}
-// 	);
+		logger.info(JSON.stringify(req.body, null, "\t"));
 
-	// /*
-	// get a client by id
-	// Ex: api/clients/45
-	// */
-	// router.route('/clients/:client_id')
+		client.clientName = req.body.clientName;
+		client.authSecret = req.body.authSecret;
+		
+		//The description is not required. it's optional
+		if(req.body.description)
+			client.description = req.body.description;
+		
+		appClientDao.insert(client, function(err, clientId){
+			if(err)
+				return res.json({error: "Could not save app client user"});
 
-	// 	.get(authController.isAuthenticated, function(req, res){
-	// 		//find all users;
+			var random = require('../utils/baseutils').randomChars;
 
-	// 		appClientDao.getById(req.params.client_id, function(err, appClient){
-	// 			if(err)
-	// 				return res.json(err)
+			// Create a new access token
+			var token = new AccessToken();
+			token.value = random.uid(16);
+			token.appClientId = clientId;
 
-	// 			res.json(appClient);
-	// 		});
+			var tokenDao = new AccessTokenDao();
+			tokenDao.insert(token, function(err, tokenId){
+	
+				if(err) return res.json({error: "could not create an access token"});
+				
+				client.id = clientId;
+				client.token = token.value;
+				res.json(client);
+			});
+		});
+	});
 
-	// 	})
-	// );
-//}
+	routes.register('/api' + route, 'DELETE');
+	router.delete(route, function(req, res){
+
+		var client = new AppClient();
+		appClientDao.deleteByNameAndId(req.query.clientName, req.query.id, function(err, result){
+
+			if(err) {
+				return res.json({error: "Not able to remove client"});
+			}
+
+			res.json({message: "User successfuly removed!"});
+		});
+	});
+
+}
 
 module.exports = PlatformRouter;

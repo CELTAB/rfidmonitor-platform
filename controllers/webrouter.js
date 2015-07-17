@@ -4,7 +4,9 @@ var logger = require('winston');
 var WebRouter = function(){
 
 	router = express.Router();
-	routeTemplates();
+
+	setRouteTemplates();
+	setRouteLogin();
 
 	return router;
 }
@@ -24,7 +26,7 @@ var isAuthorized = function(req, res, next){
 		}
 }
 
-var routeTemplates = function(){
+var setRouteTemplates = function(){
 	
 	var templateRoute = "web/template";
 
@@ -51,6 +53,23 @@ var routeTemplates = function(){
 			return res.status(200).sendfile(templateRoute + '/clients.html');
 		}
 	);
+}
+
+var setRouteLogin = function(){
+	router.route('/login').post(function(req, res){
+
+		logger.debug(JSON.stringify(req.body));
+
+		var username = req.body.username;
+		var password = req.body.password;
+		var token = "defaulttokenaccess";
+
+		if(username != "thiago" || password != "thiago")
+			return res.status(401).json({error: "You don't have access to this page"});
+
+		res.send({token: token});
+
+	});
 }
 
 module.exports = WebRouter;
