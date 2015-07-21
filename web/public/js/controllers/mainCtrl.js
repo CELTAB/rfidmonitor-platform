@@ -1,7 +1,19 @@
-angular.module("rfidplatform").controller('mainCtrl', function ($scope, $rootScope, $location, loginService, UserService) {
+angular.module("rfidplatform").controller('mainCtrl', function ($scope, $rootScope, $location, loginService, UserService, $cookies) {
+    
+    // var cookiesUser = $cookies.getObject('user');
+    var cookiesUser = $cookies.getAll();
+
+    if(!cookiesUser.user){
+      console.log("No user found -- Need to login");
+    }else{
+      console.log("AQUI Ó: User found -- " + cookiesUser.user);
+      UserService.setCurrentUser(cookiesUser.user);
+    }
+
     $scope.currentUser = UserService.getCurrentUser();
 
     $scope.logout = function() {
+      $cookies.remove('user');
       $scope.currentUser = UserService.setCurrentUser(null);
       $location.path('/login');
     }
@@ -32,5 +44,7 @@ angular.module("rfidplatform").controller('mainCtrl', function ($scope, $rootSco
 
     if(!$scope.currentUser){
       $location.path('/login');
+    }else{
+      $location.path('/home');
     }
 });

@@ -30,6 +30,6 @@ angularConfig.config(function($routeProvider, $locationProvider, $httpProvider) 
 		templateUrl: "web/login.html",
 		controller: "loginCtrl"
 	});
-	$routeProvider.otherwise({redirectTo: "/"});
+	// $routeProvider.otherwise({redirectTo: "/"});
 });
 

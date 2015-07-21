@@ -65,9 +65,11 @@ var setAuthorization = function(){
 		'*', 
 		passport.authenticate('api-bearer', { session: false }), 
 		function(req, res, next){
+
+			// req._parsedOriginalUrl.pathname 
 			var requestInfo = {
 				clientId: req.user.clientId,
-				route: req._parsedOriginalUrl.pathname,
+				route: req.originalUrl,
 				methodName: req.method
 			};
 			routerAccessDao.getAccess(requestInfo, function(err, result){

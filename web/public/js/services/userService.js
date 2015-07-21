@@ -12,7 +12,7 @@ angular.module("rfidplatform").service('UserService', function($rootScope, $http
             currentUser.password = '';
 
         }else{
-            $http.defaults.headers.common['Authorization'] = null;
+            delete $http.defaults.headers.common['Authorization'];
             console.log("Removing access token!");
         }
 

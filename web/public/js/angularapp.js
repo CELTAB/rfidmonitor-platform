@@ -1,1 +1,1 @@
-angular.module("rfidplatform", ["ngMessages", "ngRoute"]);
+angular.module("rfidplatform", ["ngMessages", "ngRoute", "ngCookies"]);
