@@ -12,9 +12,14 @@ apiService.factory("loginService", function($http, config){
 		return $http.post(config.baseWebUrl + "/login", credentials);
 	};
 
+	var _postLogout = function(){
+		return $http.post(config.baseWebUrl + "/logout");
+	}
+
 	return {
 		login: _postLogin,
-		setToken: _setToken
+		setToken: _setToken,
+		logout: _postLogout
 	};
 });
 

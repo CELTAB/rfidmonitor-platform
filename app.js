@@ -90,18 +90,9 @@ app.use(bodyParser.urlencoded({extended : true}));
 app.use(bodyParser.json());
 app.use(passport.initialize());
 
-
-// Use express session support since OAuth2orize requires it
-// TODO update secret below?
-// app.use(session({
-//   secret: 'Super Secret Session Key',
-//   resave : true, 
-//   saveUninitialized : true
-// }));
-
 // Use this configuration.
 app.use(session({
-  cookieName: 'session',
+  cookieName: 'appSession',
   secret: 'eg[isfd-8yF9-7w2315df{}+Ijsli;;to8',
   duration: 30 * 60 * 1000,
   activeDuration: 5 * 60 * 1000
@@ -110,24 +101,10 @@ app.use(session({
   // ephemeral: true
 }));
 
-app.use(function(req, res, next){
-	if (req.session && req.session.user) {
-		//TODO: Find user in database
-		
-		// logger.info("HAS SESSION");
-	    req.user = req.session.user;
-
-	    // finishing processing the middleware and run the route
-	    next();
-	}else{
-		// logger.info("NO SESSION FOUND");
-		next();
-	}
-});
-
 //Necessary headers to clients access.
 app.all('*', function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Credentials', 'true');
   res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   next();
@@ -141,22 +118,16 @@ app.all('*', function(req, res, next){
 });
 
 app.get('/', function(req, res){
-
-	// logger.info("URL: " + req._parsedOriginalUrl.pathname);
-	logger.info('REDIRECTING...');
+	//Redirect to /web when the GET request to / arrives
 	res.redirect('/web');
 });
 
 var WebRouter = require('./controllers/webrouter');
 app.use('/web', new WebRouter());
 
+//Serve as static all files inside web/public folder
 app.use('/web/public', express.static('web/public'));
 
-
-// '/api' requires auth
 app.use('/api', new PlatformRouter());
-
-// var AdminRouter = require('./controllers/adminrouter');
-// app.use('/admin', new AdminRouter());
 
 https.createServer(options, app).listen(443);

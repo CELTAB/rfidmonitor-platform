@@ -33,8 +33,6 @@
 
             <button ng-if="currentUser" class="btn btn-default navbar-btn" 
                ng-click="logout()">Logout <strong>{{currentUser.username}}</strong></button>
-            <button ng-if="!currentUser" class="btn btn-default navbar-btn" 
-               ng-click="login()">Login</button>
     	</nav>
 		<div ng-view></div>
 		<div>Hello from index</div>
