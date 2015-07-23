@@ -13,9 +13,9 @@ var Rfiddata = function(){
     this.rfidReadDate = null;
     this.serverReceivedDate = new Date();
     this.rfidcode = '';
-    this.collector_id = 0;
-	this.package_id = 0;
-    this.extra_data = '';
+    this.collectorId = 0;
+	this.packageId = 0;
+    this.extraData = '';
 }
 
 module.exports = Rfiddata;

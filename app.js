@@ -85,7 +85,7 @@ var options = {
 };
 
 var app = express();
-// app.use(bodyParser.urlencoded({extended : true}));
+app.use(bodyParser.urlencoded({extended : true}));
 app.use(bodyParser.json());
 app.use(passport.initialize());
 
@@ -112,6 +112,17 @@ app.all('*', function(req, res, next){
 	logger.debug("Method " + req.method + " for URL " + req.url);
 	next();
 });
+
+app.use(function(err, req, res, next) {
+	//This functions gets some erros like 'bodyParser errors'.
+	//To check if it is bodyparser error, remove the response below and just call next().
+	if(err){
+		logger.error('Error got from app.js handler. Maybe bodyparser error: ' + err);
+		return res.status(err.status).json(err);
+	}
+	
+	next();
+})
 
 var WebRouter = require('./controllers/webrouter');
 app.use('/web', new WebRouter());

@@ -27,27 +27,23 @@ var db = require('../utils/database');
 var bcrypt = require('bcrypt-nodejs');
 
 var User = require('../models/user');
+var resultToArray = require('../utils/baseutils').resultToArray;
 
 var UserDao = function(){
 
 }
 
-var resultToObject = function(result){
-    /*
-    Use it like this: 
-        var resultToArray = require('../utils/baseutils').resultToArray;
-        callback(null, resultToArray.toArray(resultToObject, result.rows));
-    */
-    if (!result)
+var fromDbObj = function(dbObj){
+    if (!dbObj)
         return null;
     
     var user = new User();
 
-    user.id = result.id;
-    user.name = result.name;
-    user.email = result.email;
-    user.username = result.username;
-    user.password = result.password;
+    user.id = dbObj.id;
+    user.name = dbObj.name;
+    user.email = dbObj.email;
+    user.username = dbObj.username;
+    user.password = dbObj.password;
 
     return user;
 }
@@ -63,7 +59,7 @@ UserDao.prototype.getAll = function(callback){
             return callback(err,null);
         }
 
-        callback(null, result.rows);
+        callback(null, resultToArray.toArray(fromDbObj, result.rows));
     });
 
 }
@@ -83,7 +79,7 @@ UserDao.prototype.getByUsername = function(username, callback){
             return new PlatformError("UserDao : Multiple users with same username");
 
         //TODO return a User object, insted of a direct from db object.
-        callback(null, result.rows[0]);
+        callback(null, fromDbObj(result.rows[0]));
     });
 
 }
@@ -103,7 +99,7 @@ UserDao.prototype.getById = function(id, callback){
             return new PlatformError("UserDao : Multiple users with same id");
 
         //TODO return a User object, insted of a direct from db object.
-        callback(null, result.rows[0]);
+        callback(null, fromDbObj(result.rows[0]));
     });
 
 }

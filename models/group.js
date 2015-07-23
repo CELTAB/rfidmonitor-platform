@@ -1,12 +1,21 @@
 var logger = require('winston');
 
-var Group = function(){
+var Group = function(obj){
 
-    this.id = 0;
-	this.name = '';
-	this.creation_date = new Date();
-    this.description = '';
-    this.isdefault = null;
+	if(obj){
+		this.id = obj.id;
+		this.name = obj.name;
+		this.creationDate = obj.creationDate;
+	    this.description = obj.description;
+	    this.isDefault = obj.isDefault;
+	}else{
+	    this.id = 0;
+		this.name = '';
+		this.creationDate = new Date();
+	    this.description = '';
+	    this.isDefault = null;		
+	}
+
 }
 
 module.exports = Group;

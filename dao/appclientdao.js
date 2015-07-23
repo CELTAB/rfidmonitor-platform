@@ -10,16 +10,17 @@ var AppClientDao = function(){
 
 }
 
-var resultToObject = function(result){
-    if (!result)
+var fromDbObj = function(dbObj){
+    
+    if (!dbObj)
         return null;
     
     var client = new AppClient();
 
-    client.id = result.id;
-    client.authSecret = result.auth_secret;
-    client.clientName = result.client_name;
-    client.description = result.description;
+    client.id = dbObj.id;
+    client.authSecret = dbObj.auth_secret;
+    client.clientName = dbObj.client_name;
+    client.description = dbObj.description;
 
     return client;
 }
@@ -36,7 +37,7 @@ AppClientDao.prototype.getAll = function(callback){
         }
 
         var resultToArray = require('../utils/baseutils').resultToArray;
-        callback(null, resultToArray.toArray(resultToObject, result.rows));
+        callback(null, resultToArray.toArray(fromDbObj, result.rows));
     });
 
 }
@@ -52,7 +53,7 @@ AppClientDao.prototype.getById = function(id, callback){
             return callback(err,null);
         }
 
-        callback(null, resultToObject(result.rows[0]));
+        callback(null, fromDbObj(result.rows[0]));
     });
 
 }
@@ -68,7 +69,7 @@ AppClientDao.prototype.getByName = function(clientName, callback){
             return callback(err,null);
         }
 
-        callback(null, resultToObject(result.rows[0]));
+        callback(null, fromDbObj(result.rows[0]));
     });
 }
 

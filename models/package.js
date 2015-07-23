@@ -10,9 +10,9 @@ var Package = function(){
     }
 
     this.id = 0;
-	this.package_hash = '';
+	this.packageHash = '';
 	this.timestamp = new Date();
-    this.package_size = '';
+    this.packageSize = '';
 }
 
 module.exports = Package;

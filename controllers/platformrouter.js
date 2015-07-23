@@ -16,6 +16,12 @@ var AccessTokenDao = require('../dao/accesstokendao');
 var RouterAccess = require('../models/routeraccess');
 var RouterAccessDao = require('../dao/routeraccessdao');
 
+var Collector = require('../models/collector');
+var CollectorDao = require('../dao/collectordao');
+
+var Group = require('../models/group');
+var GroupDao = require('../dao/groupdao');
+
 var routes = require('../utils/routes');
 
 
@@ -27,12 +33,18 @@ var PlatformRouter = function(){
 	appClientDao = new AppClientDao();
 	accessTokenDao = new AccessTokenDao();
 	routerAccessDao = new RouterAccessDao();
+	collectorDao = new CollectorDao();
+	groupDao = new GroupDao();
 
 	passport.use('api-bearer', new BearerStrategy({}, validateBearer));
 	setAuthorization();
 
 	setRouteUsers();
 	setRouteAppClients();
+	setRouteCollectors();
+	setRouteGroups();
+	setRouteRfiddata();
+	setRoutePermissions();
 
 	return router;
 }
@@ -65,23 +77,58 @@ var setAuthorization = function(){
 		'*', 
 		passport.authenticate('api-bearer', { session: false }), 
 		function(req, res, next){
+			var finalRoute = null;
+
+			if(!req._parsedOriginalUrl || !req._parsedOriginalUrl.pathname){
+				logger.warn("_parsedOriginalUrl not found");
+				return res.status(400).json({'message':'_parsedOriginalUrl not found'});
+			}
+			
+			var uriArray = req._parsedOriginalUrl.pathname.split('/');
+
+			/*
+			//Example: /api/collectors/1/2/3
+				For this uri 'https://localhost/api/collectors/1/2'
+				The uriArray will be  '0=, 1=api, 2=collectors, 3=1, 4=2'
+				
+				More examples:
+				https://localhost/api/collectors
+				0=, 1=api, 2=collectors
+
+				https://localhost/api
+				0=, 1=api
+
+				https://localhost/api/
+				0=, 1=api, 2=
+			*/
+
+			if(uriArray.length < 3 || uriArray[2] === undefined || uriArray[2] == '')
+				return res.status(400).json({'message':'What a such bad request...'});
+
+
+			//Lets get the position 1 and 2 always.
+			finalRoute = '/'+uriArray[1]+'/'+uriArray[2];
+
+			logger.debug('Searching on authorization table for this uri: ' + finalRoute);
+
 			var requestInfo = {
 				clientId: req.user.clientId,
-				route: req._parsedOriginalUrl.pathname,
+				route: finalRoute,
 				methodName: req.method
 			};
+
 			routerAccessDao.getAccess(requestInfo, function(err, result){
 
                 if(err) {
                 	logger.error("setAuthorization routerAccessDao ");
-                	return res.status(501).send("INTERNAL ERROR");
+                	return res.status(500).json({'message' : "INTERNAL ERROR"});
 				}
 
                 if(result){
                 	//ACCESS GRANTED.
                     next();
                 }else{
-                    res.status(403).send("YOU DONT HAVE THE AUTH. GET OUT DOG....");
+                    res.status(403).json({'message' : 'Get out dog.'});
                 }
        		});			
 			
@@ -149,7 +196,7 @@ var setRouteAppClients = function (){
 		logger.info("Connection from client " + req.user.clientName);
 		appClientDao.getAll(function(err, appClient){
 			if(err)
-				return res.status(501).json(err)
+				return res.status(500).json(err)
 
 			res.json(appClient);
 		});
@@ -204,6 +251,240 @@ var setRouteAppClients = function (){
 
 			res.json({message: "User successfuly removed!"});
 		});
+	});
+
+}
+
+var setRouteCollectors = function(){
+	var dbRoute = '/api/collectors';
+	var expressRouteSimple = '/collectors';
+	var expressRouteId = expressRouteSimple + '/:id';
+
+	routes.register(dbRoute, 'GET');
+
+	router.get(expressRouteSimple, function(req, res){
+		collectorDao.findAll(null, null, function(err, collectors){
+			if(err)
+				return res.status(500).json({'error' : err.toString()}); 
+
+			return res.status(200).json({'result' : collectors});
+		});
+	});
+
+	router.get(expressRouteId, function(req, res){
+
+		if(!req.params.id || isNaN(req.params.id)){
+			var validationError = {'object' : 'collector', 'action' : 'find by id'};
+			validationError.errorMessage = 'id not a number';
+			return res.status(400).json(validationError);
+		}
+
+		collectorDao.findById(req.params.id, function(err, collector){
+			if(err)
+				return res.status(500).json({'error' : err.toString()}); 
+
+			return res.status(200).json({'result' : collector});
+		});
+	});
+
+	var validateCollectorsPost = function(obj, callback){
+
+		logger.debug('Validating json body: ' + JSON.stringify(obj));
+		var validationError = {'object' : 'collector', 'action' : 'inserting'};
+
+		if (Object.keys(obj).length === 0){
+			validationError.errorMessage = 'Empty object';
+		}else if(obj.id){
+			validationError.errorMessage = 'id attribute found. should not contain it.';
+		}else if(!obj.groupId || isNaN(obj.groupId) ){
+			validationError.errorMessage = 'groupId not found or not a number';
+		}else if(!obj.lat){
+			validationError.errorMessage = 'lat not found.';
+		}else if(!obj.lng){
+			validationError.errorMessage = 'lng not found.';
+		}else if(!obj.mac){
+			validationError.errorMessage = 'mac not found.';
+		}else if(!obj.name){
+			validationError.errorMessage = 'name not found.';
+		}else if(!obj.status){
+			validationError.errorMessage = 'status not found.';
+		}else if(!obj.description){
+			validationError.errorMessage = 'description not found.';
+		}
+
+		if(validationError.errorMessage)
+			return callback(validationError, null);
+
+		callback(null, new Collector(obj));
+	}
+
+	routes.register(dbRoute, 'POST');
+	router.post(expressRouteSimple, function(req, res){
+		
+		validateCollectorsPost(req.body, function(err, collector){
+			if(err)
+				return res.status(400).json(err);		
+
+			collectorDao.insert(collector, function(err, id){
+				if(err)
+					return res.status(500).json({'error' : err.toString()}); 
+
+				return res.status(200).json({'id' : id});
+			});	
+		});		
+	});
+
+	var validateCollectorsPut = function(obj, callback){
+
+		logger.debug('Validating json body: ' + JSON.stringify(obj));
+		var validationError = {'object' : 'collector', 'action' : 'updating'};
+
+		if (Object.keys(obj).length === 0){
+			validationError.errorMessage = 'Empty object';
+		}else if(!obj.id || isNaN(obj.id) ){
+			validationError.errorMessage = 'id not found or not a number';
+		}else if(!obj.groupId || isNaN(obj.groupId) ){
+			validationError.errorMessage = 'groupId not found or not a number';
+		}else if(!obj.lat){
+			validationError.errorMessage = 'lat not found.';
+		}else if(!obj.lng){
+			validationError.errorMessage = 'lng not found.';
+		}else if(!obj.mac){
+			validationError.errorMessage = 'mac not found.';
+		}else if(!obj.name){
+			validationError.errorMessage = 'name not found.';
+		}else if(!obj.status){
+			validationError.errorMessage = 'status not found.';
+		}else if(!obj.description){
+			validationError.errorMessage = 'description not found.';
+		}
+
+		if(validationError.errorMessage)
+			return callback(validationError, null);
+
+		callback(null, new Collector(obj));
+	}
+
+	routes.register(dbRoute, 'PUT');
+	router.put(expressRouteSimple, function(req, res){
+
+		validateCollectorsPut(req.body, function(err, collector){
+			if(err)
+				return res.status(400).json(err);		
+
+			collectorDao.updateCollector(collector, function(err, rowCount){
+				if(err)
+					return res.status(500).json({'error' : err.toString()});
+
+				if(rowCount > 0)
+					return res.status(200).json({'message' : "updated count " + rowCount});
+
+				return res.status(200).json({'error' : "The update didn't accur. The given ID doesn't exist on database."});
+			});
+		});			
+	});
+
+	routes.register(dbRoute, 'DELETE');
+	router.delete(expressRouteId, function(req, res){
+
+		if(!req.params.id || isNaN(req.params.id)){
+			var validationError = {'object' : 'collector', 'action' : 'find by id'};
+			validationError.errorMessage = 'id parameter not informed or not a number';
+			return res.status(400).json(validationError);
+		}
+
+		collectorDao.deleteById(req.params.id, function(err, rowCount){
+			if(err)
+				return res.status(500).json({'error' : err}); 
+
+			if(rowCount > 0)
+				return res.status(200).json({'message' : "deleted count " + rowCount});
+
+			return res.status(200).json({'error' : "The delete didn't accur. The given ID doesn't exist on database."});
+		});
+	});
+}
+
+var setRouteGroups = function(){
+	var dbRoute = '/api/groups';
+	var expressRouteSimple = '/groups';
+	var expressRouteId = expressRouteSimple + '/:id';
+
+	routes.register(dbRoute, 'GET');
+
+	router.get(expressRouteSimple, function(req, res){
+		groupDao.findAll(null, null, function(err, groups){
+			if(err)
+				return res.status(500).json({'error' : err.toString()}); 
+
+			return res.status(200).json({'result' : groups});
+		});		
+	});
+	router.get(expressRouteId, function(req, res){
+		res.status(501).json({"message" : "This is not implemented yet. Come back in few years. Cya."});		
+	});
+
+	routes.register(dbRoute, 'POST');
+
+	router.post(expressRouteSimple, function(req, res){
+		res.status(501).json({"message" : "This is not implemented yet. Come back in few years. Cya."});		
+	});
+
+	routes.register(dbRoute, 'PUT');
+
+	router.put(expressRouteId, function(req, res){
+		res.status(501).json({"message" : "This is not implemented yet. Come back in few years. Cya."});
+	});
+
+	routes.register(dbRoute, 'DELETE');
+	
+	router.delete(expressRouteId, function(req, res){
+		res.status(501).json({"message" : "This is not implemented yet. Come back in few years. Cya."});
+	});
+}
+
+var setRouteRfiddata = function(){
+	var dbRoute = '/api/rfiddata';
+	var expressRouteSimple = '/rfiddata';
+	var expressRouteId = expressRouteSimple + '/:id';
+
+	routes.register(dbRoute, 'GET');
+
+	router.get(expressRouteSimple, function(req, res){
+		res.status(501).json({"message" : "This is not implemented yet. Come back in few years. Cya."});		
+	});
+	router.get(expressRouteId, function(req, res){
+		res.status(501).json({"message" : "This is not implemented yet. Come back in few years. Cya."});		
+	});
+
+	routes.register(dbRoute, 'POST');
+
+	router.post(expressRouteSimple, function(req, res){
+		res.status(501).json({"message" : "This is not implemented yet. Come back in few years. Cya."});		
+	});
+
+	routes.register(dbRoute, 'PUT');
+
+	router.put(expressRouteId, function(req, res){
+		res.status(501).json({"message" : "This is not implemented yet. Come back in few years. Cya."});
+	});
+
+	routes.register(dbRoute, 'DELETE');
+	
+	router.delete(expressRouteId, function(req, res){
+		res.status(501).json({"message" : "This is not implemented yet. Come back in few years. Cya."});
+	});
+}
+
+var setRoutePermissions = function(){
+	var dbRoute = '/api/permissions';
+	var expressRouteSimple = '/permissions';
+	var expressRouteId = expressRouteSimple + '/:id';
+
+	routes.register(dbRoute, 'GET');
+
+	router.get(expressRouteSimple, function(req, res){
+		res.status(501).json({"message" : "This is not implemented yet. Come back in few years. Cya."});		
 	});
 
 }
