@@ -4,6 +4,7 @@ var Collector =  require('../models/collector');
 var CollectorMonitor = require('../controllers/collector-monitor');
 var logger = require('winston');
 var PlatformError = require('../utils/platformerror');
+var collectorPool = require('./collectorpool');
 
 var ProtocolMessagesController = function(socket, setOnlineCollector){
 
@@ -47,7 +48,8 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 
 			if(collector != null){
 				logger.debug("Collector found. ID: " + collector.id);
-				collector.status = collector.statusEnum.Online;
+
+				collectorPool.updateStatusByMac(collector, collector.statusEnum.ONLINE);
 
 				var ackObj = {id:collector.id, macaddress:collector.mac, name:collector.name};
 				sendObject(buildMessageObject("ACK-SYN", {id:collector.id, macaddress:collector.mac, name:collector.name}));
@@ -65,7 +67,6 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 				}
 
 				newCollector.mac = data.macaddress;
-				newCollector.status = new Collector().statusEnum.Offline;
 
 				logger.debug("Collector not found. INSERTING: " + JSON.stringify(newCollector));
 
@@ -77,6 +78,7 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 					}
 
 					logger.debug("Collector inserted. new ID: " + collectorId);
+					collectorPool.updateStatusByMac(collector, collector.statusEnum.OFFLINE);
 					sendObject(buildMessageObject("ACK-SYN", {id:collectorId, macaddress:newCollector.mac, name:newCollector.name}));
 				});
 			}
@@ -87,27 +89,24 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 	var handle_ACK = function(message){
 
 		var data = message.data;
-		collectordao.updateStatus(data.id, new Collector().statusEnum.Online, function(err, result){
-			if(err){
-				logger.error("Error on handle_ACK: " + err);
-				return;
-			}
 
-			if(result >= 1){
-				//return the mac address for the Server class.
-				logger.debug("Update Status to Online");
-				
-				var collectorInfo = {id:data.id, macaddress:data.macaddress};
-				setOnlineCollector(collectorInfo);
-				
-				/*Start the function that will monitoring the status of the collector.
-				@Param1: Informations about the collector, as id and macAddress
-				@Param2: A function to send the SYN-ALIVE message to this collector
-				@Param3: A function to close the connection with this socket if is not responding.
-				*/
-				collectormonitor.startMonitor(collectorInfo, sendSynAliveMessage, socketInactive);
-			}
-		});
+		if(collectorPool.updateStatusByMac(data, collector.statusEnum.ONLINE)){
+			//return the mac address for the Server class.
+			logger.debug("Update Status to Online");
+			
+			var collectorInfo = {id:data.id, macaddress:data.macaddress};
+
+			setOnlineCollector(collectorInfo);
+			
+			/*Start the function that will monitoring the status of the collector.
+			@Param1: Informations about the collector, as id and macAddress
+			@Param2: A function to send the SYN-ALIVE message to this collector
+			@Param3: A function to close the connection with this socket if is not responding.
+			*/
+			collectormonitor.startMonitor(collectorInfo, sendSynAliveMessage, socketInactive);
+		}else{
+			logger.error("Collector not found. Cannot update status to ONLINE");
+		}
 	}
 
 	var handle_ACKALIVE = function(message){

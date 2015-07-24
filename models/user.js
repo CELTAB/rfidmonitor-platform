@@ -1,19 +1,22 @@
 var logger = require('winston');
 
-var User = function(){
+var User = function(obj){
 
-    /* If this constructor is called without the "new" operator, "this" points
-     * to the global object. Log a warning and call it correctly. */
-    if (false === (this instanceof User)) {
-        logger.error('Error: User constructor called without "new" operator');
-        throw new Error('User constructor called without "new" operator');
+    if(obj){
+        this.id = obj.id;
+        this.name = obj.name;
+        this.password = obj.password;
+        this.email = obj.email;
+        this.username = obj.username;
+
+    }else{
+        this.id = 0;
+    	this.name = '';
+    	this.password = '';
+    	this.email = '';
+        this.username = '';
     }
 
-    this.id = 0;
-	this.name = '';
-	this.password = '';
-	this.email = '';
-    this.username = '';
 }
 
 module.exports = User;

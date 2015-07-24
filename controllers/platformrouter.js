@@ -22,7 +22,11 @@ var CollectorDao = require('../dao/collectordao');
 var Group = require('../models/group');
 var GroupDao = require('../dao/groupdao');
 
+var Rfiddata = require('../models/rfiddata');
+var RfiddataDao = require('../dao/rfiddatadao');
+
 var routes = require('../utils/routes');
+var permissions = require('../utils/permissions');
 
 
 
@@ -35,12 +39,13 @@ var PlatformRouter = function(){
 	routerAccessDao = new RouterAccessDao();
 	collectorDao = new CollectorDao();
 	groupDao = new GroupDao();
+	rfiddataDao = new RfiddataDao();
 
 	passport.use('api-bearer', new BearerStrategy({}, validateBearer));
 	setAuthorization();
 
 	setRouteUsers();
-	setRouteAppClients();
+	// setRouteAppClients();
 	setRouteCollectors();
 	setRouteGroups();
 	setRouteRfiddata();
@@ -80,8 +85,8 @@ var setAuthorization = function(){
 			var finalRoute = null;
 
 			if(!req._parsedOriginalUrl || !req._parsedOriginalUrl.pathname){
-				logger.warn("_parsedOriginalUrl not found");
-				return res.status(400).json({'message':'_parsedOriginalUrl not found'});
+				logger.warn("_parsedOriginalUrl missing");
+				return res.status(400).json({'error':'_parsedOriginalUrl missing'});
 			}
 			
 			var uriArray = req._parsedOriginalUrl.pathname.split('/');
@@ -103,7 +108,7 @@ var setAuthorization = function(){
 			*/
 
 			if(uriArray.length < 3 || uriArray[2] === undefined || uriArray[2] == '')
-				return res.status(400).json({'message':'What a such bad request...'});
+				return res.status(400).json({'error':'What a such bad request...'});
 
 
 			//Lets get the position 1 and 2 always.
@@ -121,14 +126,14 @@ var setAuthorization = function(){
 
                 if(err) {
                 	logger.error("setAuthorization routerAccessDao ");
-                	return res.status(500).json({'message' : "INTERNAL ERROR"});
+                	return res.status(500).json({'error' : "INTERNAL ERROR"});
 				}
 
                 if(result){
                 	//ACCESS GRANTED.
                     next();
                 }else{
-                    res.status(403).json({'message' : 'Get out dog.'});
+                    res.status(403).json({'error' : 'Get out dog.'});
                 }
        		});			
 			
@@ -137,121 +142,146 @@ var setAuthorization = function(){
 }
 
 var setRouteUsers = function(){
-	// api/users
-	var route = '/users';
-	routes.register('/api' + route, 'GET');
 
-	router.get(route, 
-		function(req, res, next){
-			//VALIDATION OF THE REQUEST
+	var dbRoute = '/api/users';
+	var expressRouteSimple = '/users';
+	var expressRouteId = expressRouteSimple + '/:id';
 
-			logger.debug('validateUsersGet');
+	logger.warn("DEVELOPMENT ROUTE IN ACTION. SHOULD NOT BE AVAILABLE ON PRODUCTION." + dbRoute);
 
-			next();
-		},
-		function(req, res){
-	  		//PROCESS REQUEST
+	/* OBJECT EXAMPLE
+	{
+		"username" : "jaime",
+		"password" : "ab#5",
+		"name" : "jaime bomber man",
+		"email" : "jaime@jaime.com"
+	}
+	*/
 
-	  		//find all users.
+	routes.register(dbRoute, routes.getMethods().GET);
 
-			userDao.getAll(function(err, users){
-	  		if(err)
-	  			return res.json(err)
+	router.get(expressRouteSimple,function(req, res){
+		logger.warn("DEVELOPMENT ROUTE IN ACTION. SHOULD NOT BE AVAILABLE ON PRODUCTION." + dbRoute);
+		userDao.getAll(function(err, users){
+			if(err)
+				return res.status(500).json({'error' : err.toString()}); 
 
-	  		res.json(users);
-
-			});
-		}
-	);
-
-	routes.register('/api' + route, 'POST');
-	router.post(route, function(req, res){
-	  	//insert user;
-
-			var user = new User();
-			user.username = req.body.username;
-			user.password = req.body.password;
-			user.name = req.body.name;
-			user.email = req.body.email;
-
-			userDao.insert(user, function(err, id){
-				if(err)
-		  			return res.json(err)
-
-		  		user.id = id;
-		  		res.json(user);
-			});
+			return res.status(200).json({'result' : users});
 
 		});
+	});
+	router.get(expressRouteId,function(req, res){
+		logger.warn("DEVELOPMENT ROUTE IN ACTION. SHOULD NOT BE AVAILABLE ON PRODUCTION." + dbRoute);
+		userDao.findById(req.params.id, function(err, user){
+			if(err)
+				return res.status(500).json({'error' : err.toString()}); 
+
+			return res.status(200).json({'result' : user});
+		});
+
+	});
+
+	routes.register(dbRoute, routes.getMethods().POST);
+	router.post(expressRouteSimple, function(req, res){
+		logger.warn("DEVELOPMENT ROUTE IN ACTION. SHOULD NOT BE AVAILABLE ON PRODUCTION." + dbRoute);
+
+		req.checkBody('username', 'missing or invalid').isAlphanumeric();
+		req.checkBody('password', 'missing or invalid').notEmpty();
+		req.checkBody('password', 'too short').isLength(3);
+		req.checkBody('name', 'missing').notEmpty();
+		req.checkBody('email', 'missing or invalid').isEmail();
+
+		var errors = req.validationErrors();
+
+		if(errors)
+			return res.status(400).json(erros);
+
+		userDao.insert(new User(req.body), function(err, id){
+			if(err)
+				return res.status(500).json({'error' : err.toString()}); 
+
+			return res.status(200).json({'id' : id});
+		});
+
+	});
 
 }
 
 var setRouteAppClients = function (){
 
-	var route = '/clients';
+	// var route = '/clients';
 
-	routes.register('/api' + route, 'GET');
-	router.get(route, function(req, res){
-		//find all users;
-		logger.info("Connection from client " + req.user.clientName);
-		appClientDao.getAll(function(err, appClient){
-			if(err)
-				return res.status(500).json(err)
+	// /* OBJECT EXAMPLE
+	// {
+	// 	"username" : "jaime",
+	// 	"password" : "ab#5",
+	// 	"name" : "jaime bomber man",
+	// 	"email" : "jaime@jaime.com"
+	// }
+	// */
 
-			res.json(appClient);
-		});
-	});
+	// routes.register('/api' + route, routes.getMethods().GET);
+	// router.get(route, function(req, res){
+	// 	//find all users;
+	// 	logger.info("Connection from client " + req.user.clientName);
+	// 	appClientDao.getAll(function(err, appClient){
+	// 		if(err)
+	// 			return res.status(500).json(err)
 
-	routes.register('/api' + route, 'POST');
-	router.post(route, function(req, res){
-		//insert client;
-		var client = new AppClient();
+	// 		res.json(appClient);
+	// 	});
+	// });
 
-		logger.info(JSON.stringify(req.body, null, "\t"));
+	// routes.register('/api' + route, routes.getMethods().POST);
+	// router.post(route, function(req, res){
+	// 	//insert client;
+	// 	var client = new AppClient();
 
-		client.clientName = req.body.clientName;
-		client.authSecret = req.body.authSecret;
+	// 	logger.info(JSON.stringify(req.body, null, "\t"));
+
+	// 	client.clientName = req.body.clientName;
+	// 	client.authSecret = req.body.authSecret;
 		
-		//The description is not required. it's optional
-		if(req.body.description)
-			client.description = req.body.description;
+	// 	//The description is not required. it's optional
+	// 	if(req.body.description)
+	// 		client.description = req.body.description;
 		
-		appClientDao.insert(client, function(err, clientId){
-			if(err)
-				return res.json({error: "Could not save app client user"});
+	// 	appClientDao.insert(client, function(err, clientId){
+	// 		if(err)
+	// 			return res.json({error: "Could not save app client user"});
 
-			var random = require('../utils/baseutils').randomChars;
+	// 		var random = require('../utils/baseutils').randomChars;
 
-			// Create a new access token
-			var token = new AccessToken();
-			token.value = random.uid(16);
-			token.appClientId = clientId;
+	// 		// Create a new access token
+	// 		var token = new AccessToken();
+	// 		token.value = random.uid(16);
+	// 		token.appClientId = clientId;
 
-			var tokenDao = new AccessTokenDao();
-			tokenDao.insert(token, function(err, tokenId){
+	// 		var tokenDao = new AccessTokenDao();
+	// 		tokenDao.insert(token, function(err, tokenId){
 	
-				if(err) return res.json({error: "could not create an access token"});
+	// 			if(err) return res.json({error: "could not create an access token"});
 				
-				client.id = clientId;
-				client.token = token.value;
-				res.json(client);
-			});
-		});
-	});
+	// 			client.id = clientId;
+	// 			client.token = token.value;
+	// 			res.json(client);
+	// 		});
+	// 	});
+	// });
 
-	routes.register('/api' + route, 'DELETE');
-	router.delete(route, function(req, res){
+	// routes.register('/api' + route, routes.getMethods().DELETE);
+	// router.delete(route, function(req, res){
 
-		var client = new AppClient();
-		appClientDao.deleteByNameAndId(req.query.clientName, req.query.id, function(err, result){
+	// 	var client = new AppClient();
+	// 	appClientDao.deleteByNameAndId(req.query.clientName, req.query.id, function(err, result){
 
-			if(err) {
-				return res.json({error: "Not able to remove client"});
-			}
+	// 		if(err) {
+	// 			return res.json({error: "Not able to remove client"});
+	// 		}
 
-			res.json({message: "User successfuly removed!"});
-		});
-	});
+	// 		res.json({message: "User successfuly removed!"});
+	// 	});
+	// });
 
 }
 
@@ -260,10 +290,40 @@ var setRouteCollectors = function(){
 	var expressRouteSimple = '/collectors';
 	var expressRouteId = expressRouteSimple + '/:id';
 
-	routes.register(dbRoute, 'GET');
+	/* OBJECT EXAMPLE
+	{
+	"id":"1",
+	"groupId":"1",
+	"lat":"a1",
+	"lng":"a",
+	"mac":"AA:AA:11:AA:AA:aa",
+	"name":"a",
+	"status":"ONLINE",
+	"description":"a"
+	}
+	*/
+
+	routes.register(dbRoute, routes.getMethods().GET);
 
 	router.get(expressRouteSimple, function(req, res){
-		collectorDao.findAll(null, null, function(err, collectors){
+		var limit = null;
+		var offset = null;
+		if(req.query.limit){
+			limit = req.query.limit;
+			req.checkQuery('limit', 'invalid or out of boundaries').isInt({ min: 1, max: 50});
+		}
+		if(req.query.offset){
+			offset = req.query.offset;
+			req.checkQuery('offset', 'invalid or out of boundaries').isInt({ min: 1, max: 50});
+		}
+
+		logger.warn(dbRoute + "GET : Cound generate offset db error if bigger than rows available?");
+
+		var errors = req.validationErrors();
+		if (errors)
+			return res.status(400).json(errors);
+
+		collectorDao.findAll(limit, offset, function(err, collectors){
 			if(err)
 				return res.status(500).json({'error' : err.toString()}); 
 
@@ -273,11 +333,11 @@ var setRouteCollectors = function(){
 
 	router.get(expressRouteId, function(req, res){
 
-		if(!req.params.id || isNaN(req.params.id)){
-			var validationError = {'object' : 'collector', 'action' : 'find by id'};
-			validationError.errorMessage = 'id not a number';
-			return res.status(400).json(validationError);
-		}
+		req.checkParams('id', 'missing or invalid').isInt();
+
+		var errors = req.validationErrors();
+		if(errors)
+			return res.status(400).json(errors);
 
 		collectorDao.findById(req.params.id, function(err, collector){
 			if(err)
@@ -287,111 +347,79 @@ var setRouteCollectors = function(){
 		});
 	});
 
-	var validateCollectorsPost = function(obj, callback){
-
-		logger.debug('Validating json body: ' + JSON.stringify(obj));
-		var validationError = {'object' : 'collector', 'action' : 'inserting'};
-
-		if (Object.keys(obj).length === 0){
-			validationError.errorMessage = 'Empty object';
-		}else if(obj.id){
-			validationError.errorMessage = 'id attribute found. should not contain it.';
-		}else if(!obj.groupId || isNaN(obj.groupId) ){
-			validationError.errorMessage = 'groupId not found or not a number';
-		}else if(!obj.lat){
-			validationError.errorMessage = 'lat not found.';
-		}else if(!obj.lng){
-			validationError.errorMessage = 'lng not found.';
-		}else if(!obj.mac){
-			validationError.errorMessage = 'mac not found.';
-		}else if(!obj.name){
-			validationError.errorMessage = 'name not found.';
-		}else if(!obj.status){
-			validationError.errorMessage = 'status not found.';
-		}else if(!obj.description){
-			validationError.errorMessage = 'description not found.';
-		}
-
-		if(validationError.errorMessage)
-			return callback(validationError, null);
-
-		callback(null, new Collector(obj));
-	}
-
-	routes.register(dbRoute, 'POST');
+	routes.register(dbRoute, routes.getMethods().POST);
 	router.post(expressRouteSimple, function(req, res){
+
+		req.checkBody('id', 'should not be defined.').isNull();
+		req.checkBody('groupId', 'missing or not a integer.').isInt();
+		req.checkBody('lat', 'missing.').notEmpty();
+		req.checkBody('lng', 'missing.').notEmpty();
+		req.checkBody('mac', 'missing or not a valid mac address.').isMac();
+		req.checkBody('name', 'missing.').notEmpty();
+		req.checkBody('status', 'missing or invalid status.').isCollectorStatus();
+		req.checkBody('description', 'missing.').notEmpty();
+
+		req.sanitizeBody('lat').trim();
+		req.sanitizeBody('lng').trim();
+		req.sanitizeBody('mac').toString();
+		req.sanitizeBody('name').toString();
+		req.sanitizeBody('description').toString();
+
+		var errors = req.validationErrors();
 		
-		validateCollectorsPost(req.body, function(err, collector){
+		if(errors)
+			return res.status(400).json(errors);		
+
+		collectorDao.insert(new Collector(req.body), function(err, id){
 			if(err)
-				return res.status(400).json(err);		
+				return res.status(500).json({'error' : err.toString()}); 
 
-			collectorDao.insert(collector, function(err, id){
-				if(err)
-					return res.status(500).json({'error' : err.toString()}); 
-
-				return res.status(200).json({'id' : id});
-			});	
-		});		
+			return res.status(200).json({'id' : id});
+		});	
 	});
 
-	var validateCollectorsPut = function(obj, callback){
-
-		logger.debug('Validating json body: ' + JSON.stringify(obj));
-		var validationError = {'object' : 'collector', 'action' : 'updating'};
-
-		if (Object.keys(obj).length === 0){
-			validationError.errorMessage = 'Empty object';
-		}else if(!obj.id || isNaN(obj.id) ){
-			validationError.errorMessage = 'id not found or not a number';
-		}else if(!obj.groupId || isNaN(obj.groupId) ){
-			validationError.errorMessage = 'groupId not found or not a number';
-		}else if(!obj.lat){
-			validationError.errorMessage = 'lat not found.';
-		}else if(!obj.lng){
-			validationError.errorMessage = 'lng not found.';
-		}else if(!obj.mac){
-			validationError.errorMessage = 'mac not found.';
-		}else if(!obj.name){
-			validationError.errorMessage = 'name not found.';
-		}else if(!obj.status){
-			validationError.errorMessage = 'status not found.';
-		}else if(!obj.description){
-			validationError.errorMessage = 'description not found.';
-		}
-
-		if(validationError.errorMessage)
-			return callback(validationError, null);
-
-		callback(null, new Collector(obj));
-	}
-
-	routes.register(dbRoute, 'PUT');
+	routes.register(dbRoute, routes.getMethods().PUT);
 	router.put(expressRouteSimple, function(req, res){
 
-		validateCollectorsPut(req.body, function(err, collector){
+		req.checkBody('id', 'missing or not a integer.').isInt();
+		req.checkBody('groupId', 'missing or not a integer.').isInt();
+		req.checkBody('lat', 'missing.').notEmpty();
+		req.checkBody('lng', 'missing.').notEmpty();
+		req.checkBody('mac', 'missing or not a valid mac address.').isMac();
+		req.checkBody('name', 'missing.').notEmpty();
+		req.checkBody('status', 'missing or a invalid status').isCollectorStatus();
+		req.checkBody('description', 'missing.').notEmpty();
+
+		req.sanitizeBody('lat').trim();
+		req.sanitizeBody('lng').trim();
+		req.sanitizeBody('mac').toString();
+		req.sanitizeBody('name').toString();
+		req.sanitizeBody('description').toString();
+
+		var errors = req.validationErrors();
+
+		if(errors)
+			return res.status(400).json(errors);		
+
+		collectorDao.updateCollector(new Collector(req.body), function(err, rowCount){
 			if(err)
-				return res.status(400).json(err);		
+				return res.status(500).json({'error' : err.toString()});
 
-			collectorDao.updateCollector(collector, function(err, rowCount){
-				if(err)
-					return res.status(500).json({'error' : err.toString()});
+			if(rowCount > 0)
+				return res.status(200).json({'message' : "updated count " + rowCount});
 
-				if(rowCount > 0)
-					return res.status(200).json({'message' : "updated count " + rowCount});
-
-				return res.status(200).json({'error' : "The update didn't accur. The given ID doesn't exist on database."});
-			});
-		});			
+			return res.status(200).json({'error' : "The update didn't accur. The given ID doesn't exist on database."});
+		});
 	});
 
-	routes.register(dbRoute, 'DELETE');
+	routes.register(dbRoute, routes.getMethods().DELETE);
 	router.delete(expressRouteId, function(req, res){
 
-		if(!req.params.id || isNaN(req.params.id)){
-			var validationError = {'object' : 'collector', 'action' : 'find by id'};
-			validationError.errorMessage = 'id parameter not informed or not a number';
-			return res.status(400).json(validationError);
-		}
+		req.checkParams('id', 'missing or not a integer').isInt();
+
+		var errors = req.validationErrors();
+		if(errors)
+			return res.status(400).json(errors);
 
 		collectorDao.deleteById(req.params.id, function(err, rowCount){
 			if(err)
@@ -410,81 +438,225 @@ var setRouteGroups = function(){
 	var expressRouteSimple = '/groups';
 	var expressRouteId = expressRouteSimple + '/:id';
 
-	routes.register(dbRoute, 'GET');
+	/*
+	{ OBJECT EXAMPLE
+		"id" = 0;
+		"name" = "fsfsdfd";
+		"creationDate" = "probably error here";
+	    "description" = "sadfasfsa";
+	    "isDefault" = null;
+	}
+	*/
+
+	routes.register(dbRoute, routes.getMethods().GET);
 
 	router.get(expressRouteSimple, function(req, res){
-		groupDao.findAll(null, null, function(err, groups){
+		var limit = null;
+		var offset = null;
+		if(req.query.limit){
+			limit = req.query.limit;
+			req.checkQuery('limit', 'invalid or out of boundaries').isInt({ min: 1, max: 50});
+		}
+		if(req.query.offset){
+			offset = req.query.offset;
+			req.checkQuery('offset', 'invalid or out of boundaries').isInt({ min: 1, max: 50});
+		}
+
+		logger.warn(dbRoute + "GET : Cound generate offset db error if bigger than rows available?");
+
+		groupDao.findAll(limit, offset, function(err, groups){
 			if(err)
 				return res.status(500).json({'error' : err.toString()}); 
 
 			return res.status(200).json({'result' : groups});
 		});		
 	});
+
 	router.get(expressRouteId, function(req, res){
-		res.status(501).json({"message" : "This is not implemented yet. Come back in few years. Cya."});		
+		req.checkParams('id', 'missing or invalid').isInt();
+
+		var errors = req.validationErrors();
+		if(errors)
+			return res.status(400).json(errors);
+
+		groupDao.findById(req.params.id, function(err, group){
+			if(err)
+				return res.status(500).json({'error' : err.toString()}); 
+
+			return res.status(200).json({'result' : group});
+		});	
 	});
 
-	routes.register(dbRoute, 'POST');
+	routes.register(dbRoute, routes.getMethods().POST);
 
 	router.post(expressRouteSimple, function(req, res){
-		res.status(501).json({"message" : "This is not implemented yet. Come back in few years. Cya."});		
+
+		req.checkBody('id', 'missing or invalid int.').isInt();
+		req.checkBody('name', 'missing.').notEmpty();
+		req.checkBody('creationDate', 'missing  or invalid date.').isDate();
+		req.checkBody('description', 'missing.').notEmpty();
+		req.checkBody('isDefault', 'missing or invalid boolean.').isBoolean();
+
+		req.sanitizeBody('name').toString();
+		req.sanitizeBody('description').toString();
+
+		var errors = req.validationErrors();
+		
+		if(errors)
+			return res.status(400).json(errors);		
+
+		groupDao.insert(new Group(req.body), function(err, id){
+			if(err)
+				return res.status(500).json({'error' : err.toString()}); 
+
+			return res.status(200).json({'id' : id});
+		});			
 	});
 
-	routes.register(dbRoute, 'PUT');
+	routes.register(dbRoute, routes.getMethods().PUT);
 
 	router.put(expressRouteId, function(req, res){
-		res.status(501).json({"message" : "This is not implemented yet. Come back in few years. Cya."});
+		
+		req.checkBody('id', 'missing or invalid int.').isInt();
+		req.checkBody('name', 'missing.').notEmpty();
+		req.checkBody('creationDate', 'missing  or invalid date.').isDate();
+		req.checkBody('description', 'missing.').notEmpty();
+		req.checkBody('isDefault', 'missing or invalid boolean.').isBoolean();
+
+		req.sanitizeBody('name').toString();
+		req.sanitizeBody('description').toString();
+
+		var errors = req.validationErrors();
+
+		if(errors)
+			return res.status(400).json(errors);		
+
+		groupDao.updateGroup(new Group(req.body), function(err, rowCount){
+			if(err)
+				return res.status(500).json({'error' : err.toString()});
+
+			if(rowCount > 0)
+				return res.status(200).json({'message' : "updated count " + rowCount});
+
+			return res.status(200).json({'error' : "The update didn't accur. The given ID doesn't exist on database."});
+		});
 	});
 
-	routes.register(dbRoute, 'DELETE');
+	routes.register(dbRoute, routes.getMethods().DELETE);
 	
 	router.delete(expressRouteId, function(req, res){
-		res.status(501).json({"message" : "This is not implemented yet. Come back in few years. Cya."});
+		req.checkParams('id', 'missing or not a integer').isInt();
+
+		var errors = req.validationErrors();
+		if(errors)
+			return res.status(400).json(errors);
+
+		groupDao.deleteById(req.params.id, function(err, rowCount){
+			if(err)
+				return res.status(500).json({'error' : err}); 
+
+			if(rowCount > 0)
+				return res.status(200).json({'message' : "deleted count " + rowCount});
+
+			return res.status(200).json({'error' : "The delete didn't accur. The given ID doesn't exist on database."});
+		});
 	});
 }
 
 var setRouteRfiddata = function(){
 	var dbRoute = '/api/rfiddata';
 	var expressRouteSimple = '/rfiddata';
-	var expressRouteId = expressRouteSimple + '/:id';
+	var expressRouteId = expressRouteSimple + '/:rfidcode';
 
-	routes.register(dbRoute, 'GET');
+	/* OBJECT EXAMPLE
+	    "id" = 0;
+	    "rfidReadDate" = "error here";
+	    "serverReceivedDate" = "error here";
+	    "rfidcode" = 23423423;
+	    "collectorId" = 1;
+		"packageId" = 1;
+	    "extraData" = "{}";
+	*/
+
+	routes.register(dbRoute, routes.getMethods().GET);
 
 	router.get(expressRouteSimple, function(req, res){
-		res.status(501).json({"message" : "This is not implemented yet. Come back in few years. Cya."});		
+		var limit = null;
+		var offset = null;
+		if(req.query.limit){
+			limit = req.query.limit;
+			req.checkQuery('limit', 'invalid or out of boundaries').isInt({ min: 1, max: 50});
+		}
+		if(req.query.offset){
+			offset = req.query.offset;
+			req.checkQuery('offset', 'invalid or out of boundaries').isInt({ min: 1, max: 50});
+		}
+
+		logger.warn(dbRoute + "GET : Cound generate offset db error if bigger than rows available?");
+
+		rfiddataDao.findAll(limit, offset, function(err, rfiddatas){
+			if(err)
+				return res.status(500).json({'error' : err.toString()}); 
+
+			return res.status(200).json({'result' : rfiddatas});
+		});			
 	});
+
 	router.get(expressRouteId, function(req, res){
-		res.status(501).json({"message" : "This is not implemented yet. Come back in few years. Cya."});		
-	});
+		req.checkParams('rfidcode', 'missing or invalid').isInt();
 
-	routes.register(dbRoute, 'POST');
+		var limit = null;
+		var offset = null;
+		
+		if(req.query.limit){
+			limit = req.query.limit;
+			req.checkQuery('limit', 'invalid or out of boundaries').isInt({ min: 1, max: 50});
+		}
+		if(req.query.offset){
+			offset = req.query.offset;
+			req.checkQuery('offset', 'invalid or out of boundaries').isInt({ min: 1, max: 50});
+		}
 
-	router.post(expressRouteSimple, function(req, res){
-		res.status(501).json({"message" : "This is not implemented yet. Come back in few years. Cya."});		
-	});
+		var errors = req.validationErrors();
+		if(errors)
+			return res.status(400).json(errors);
 
-	routes.register(dbRoute, 'PUT');
+		rfiddataDao.findByRfidcode(req.params.rfidcode, limit, offset, function(err, rfiddatas){
+			if(err)
+				return res.status(500).json({'error' : err.toString()}); 
 
-	router.put(expressRouteId, function(req, res){
-		res.status(501).json({"message" : "This is not implemented yet. Come back in few years. Cya."});
-	});
-
-	routes.register(dbRoute, 'DELETE');
-	
-	router.delete(expressRouteId, function(req, res){
-		res.status(501).json({"message" : "This is not implemented yet. Come back in few years. Cya."});
+			return res.status(200).json({'result' : rfiddatas});
+		});		
 	});
 }
 
 var setRoutePermissions = function(){
 	var dbRoute = '/api/permissions';
 	var expressRouteSimple = '/permissions';
-	var expressRouteId = expressRouteSimple + '/:id';
+	var expressRouteId = expressRouteSimple + '/:token';
 
-	routes.register(dbRoute, 'GET');
+	routes.register(dbRoute, routes.getMethods().GET);
 
 	router.get(expressRouteSimple, function(req, res){
-		res.status(501).json({"message" : "This is not implemented yet. Come back in few years. Cya."});		
+		if(!req.headers.authorization)
+			return res.status(401).json({"error" : "Where is your token sir? How have you got here? Better you start running..."});
+
+		var array = req.headers.authorization.split(' ');
+
+		var token = null;
+
+		if(array[0] && array[0] == 'Bearer' && array[1]){
+			token = array[1];
+		}else{
+			return res.status(401).json({"error" : "What a mess with your token sir. How have you got here? Better you start running..."});
+		}
+
+		permissions.findByToken(token, function(err, permissions){
+			if(err)
+				return res.status(500).json({'error' : err.toString()}); 
+
+			return res.status(200).json({'result' : permissions});				
+		});	
 	});
 
 }

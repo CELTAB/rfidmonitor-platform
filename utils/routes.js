@@ -5,8 +5,48 @@ var db = require('../utils/database');
 var Routes = function Routes(){
 
 	var routesList = [];
+
+	var methods = {
+		GET: "GET",
+		POST: "POST",
+		PUT: "PUT",
+		DELETE: "DELETE",
+		ANY : "ANY"
+	};
+
+	this.getMethods = function(){
+		return methods;
+	}
+
+	this.getRoutesList = function(){
+		return routesList;
+	}
+
+	this.isMethodValid = function(method){
+		if(!method)
+			return false;
+
+		switch(method){
+			case methods.GET:
+				return true;
+			case methods.POST:
+				return true;
+			case methods.PUT:
+				return true;
+			case methods.DELETE:
+				return true;
+			case methods.ANY:
+				return true;
+			default:
+				return false;
+		}
+	}
     
     this.register = function(path, method){
+    	if(!this.isMethodValid(method))
+    		return new PlatformError("Routes: Invalid method ["+method+"] to register on database.");
+
+    	logger.debug("Registering route: [" + path + "] - [" + method + "]");
 
 		var query = 'SELECT * FROM uri_routers WHERE path = $1 AND method = $2';
 
@@ -22,7 +62,7 @@ var Routes = function Routes(){
 			}
 
 			if(result.rowCount == 1 ){
-				logger.debug("Route already on database.");
+				logger.debug("Route already on database: [" + path + "] - [" + method + "]");
 				routesList.push({id : result.rows[0].id, "path" : path , "method" : method });
 				return;
 			}
@@ -38,7 +78,7 @@ var Routes = function Routes(){
 					return ;
 				}
 				var id = result.rows[0].id;
-				logger.info("Route inserted with ID: " + id);
+				logger.debug("Route inserted on database: [" + path + "] - [" + method + "]");
 				routesList.push({"id" : id, "path" : path , "method" : method });
 			});
 		});
@@ -48,6 +88,9 @@ var Routes = function Routes(){
 	this.getRoutes = function(){
 		return routesList;
 	}
+
+	logger.warn("Registering route path [ANY] method [ANY]");
+	this.register('ANY','ANY');
  
     if(Routes.caller != Routes.getInstance){
         throw new PlatformError("This object cannot be instanciated");

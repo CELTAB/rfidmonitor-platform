@@ -192,4 +192,37 @@ RFIDDataDao.prototype.findAll = function(limit, offset, callback){
     });
 }
 
+RFIDDataDao.prototype.findByRfidcode = function(rfidcode, imit, offset, callback){
+
+    var query = 'SELECT * FROM rfiddata WHERE rfidcode = $1';
+
+    var parameters = [];
+
+    parameters.push(rfidcode);
+
+    if(limit){
+        query += ' LIMIT $1';
+        parameters.push(limit);
+    }
+
+    if(offset){
+        query += ' OFFSET $2';
+        parameters.push(offset);
+    }
+
+    db.query(query, parameters, function(err, result){
+        if(err){
+            logger.error("RFIDDataDao findByRfidcode error : " + err);
+            return callback(err,null);
+        }
+
+        try{
+            callback(null, resultToArray.toArray(fromDbObj, result.rows));
+        }catch(e){
+            callback(e, null);
+        }
+    });
+}
+
+
 module.exports = RFIDDataDao;

@@ -5,9 +5,9 @@ var logger = require('winston');
 
 var PlatformError = require('../utils/platformerror');
 var resultToArray = require('../utils/baseutils').resultToArray;
-var groupdao = new GroupDao();
 
 var CollectorDao = function(){
+	
 	
 }
 
@@ -23,9 +23,9 @@ CollectorDao.prototype.insertOrFindByMacUniqueError = function(collector, callba
 	//prepare the collector to be inserted into the data base
 	CollectorDao.prototype.prepareCollector(collector, function(collectorOk){
 
-		var query = "INSERT INTO collector (description, group_id, lat, lng, mac, name, status) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING ID";
+		var query = "INSERT INTO collector (description, group_id, lat, lng, mac, name) VALUES ($1, $2, $3, $4, $5, $6) RETURNING ID";
 
-		db.query(query, [collector.description, collector.groupId, collector.lat, collector.lng, collector.mac, collector.name, collector.status], function(err, result){
+		db.query(query, [collector.description, collector.groupId, collector.lat, collector.lng, collector.mac, collector.name], function(err, result){
 			if(err){
 				if(String(err).indexOf("uq_collectormac") > -1){
 					CollectorDao.prototype.findByMac(collector.mac,function(err,col){
@@ -43,6 +43,9 @@ CollectorDao.prototype.insertOrFindByMacUniqueError = function(collector, callba
 			}
 			var id = result.rows[0].id;		
 			logger.debug("New Collector Inserted id: " + id);
+			collector.id = id;
+			collector.status = collector.statusEnum.UNKNOWN;
+			require('../controllers/collectorpool').push(collector);
 			callback(null, id);
 		});
 	});
@@ -58,14 +61,17 @@ CollectorDao.prototype.insert = function(collector, callback){
     }
     CollectorDao.prototype.prepareCollector(collector, function(collectorOk){
 
-		var query = "INSERT INTO collector (description, group_id, lat, lng, mac, name, status) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING ID";
-		db.query(query, [collector.description, collector.groupId, collector.lat, collector.lng, collector.mac, collector.name, collector.status], function(err, result){
+		var query = "INSERT INTO collector (description, group_id, lat, lng, mac, name) VALUES ($1, $2, $3, $4, $5, $6) RETURNING ID";
+		db.query(query, [collector.description, collector.groupId, collector.lat, collector.lng, collector.mac, collector.name], function(err, result){
 			if(err){
 				logger.error("CollectorDao insert error : " + err);
 				return callback(err,null);
 			}
 			var id = result.rows[0].id;		
 			logger.debug("New Collector Inserted id: " + id);
+			collector.id = id;
+			collector.status = collector.statusEnum.UNKNOWN;
+			require('../controllers/collectorpool').push(collector);
 			callback(null, id);
 		});
     });
@@ -75,7 +81,7 @@ CollectorDao.prototype.insert = function(collector, callback){
 CollectorDao.prototype.prepareCollector = function(collector, callbackInsert){
 	if(collector.groupId == 0){
     		try{
-    			groupdao.getDefault(function(err, defaultGroup){
+    			new GroupDao().getDefault(function(err, defaultGroup){
     				if(defaultGroup != null){
     					collector.group_id = defaultGroup.id;
     					callbackInsert(collector);
@@ -95,26 +101,26 @@ CollectorDao.prototype.prepareCollector = function(collector, callbackInsert){
     }
 }
 
-CollectorDao.prototype.updateStatus = function(collectorId, newStatus, callback){
+// CollectorDao.prototype.updateStatus = function(collectorId, newStatus, callback){
 
-	var query = "UPDATE collector SET status = $2 WHERE id = $1";
+// 	var query = "UPDATE collector SET status = $2 WHERE id = $1";
 
-	db.query(query, [collectorId, newStatus], function(err, result){
-		if(err){
-			logger.error("CollectorDao updateStatus error : " + err);
-			callback(err, null);
-			return;
-		}
+// 	db.query(query, [collectorId, newStatus], function(err, result){
+// 		if(err){
+// 			logger.error("CollectorDao updateStatus error : " + err);
+// 			callback(err, null);
+// 			return;
+// 		}
 
-		callback(null, result.rowCount);
-	});
-}
+// 		callback(null, result.rowCount);
+// 	});
+// }
 
 CollectorDao.prototype.updateCollector = function(c, callback){
-// id | group_id | name | mac | description | lat | lng | status
-	var query = "UPDATE collector SET group_id = $1, name = $2, mac = $3, description = $4, lat = $5, lng = $6, status = $7 WHERE id = $8";
+// id | group_id | name | mac | description | lat | lng
+	var query = "UPDATE collector SET group_id = $1, name = $2, mac = $3, description = $4, lat = $5, lng = $6, WHERE id = $7";
 
-	db.query(query, [c.groupId, c.name, c.mac, c.description, c.lat, c.lng, c.status, c.id], function(err, result){
+	db.query(query, [c.groupId, c.name, c.mac, c.description, c.lat, c.lng, c.id], function(err, result){
 		if(err){
 			logger.error("CollectorDao updateCollector error : " + err);
 			callback(err, null);
@@ -195,7 +201,7 @@ var fromDbObj = function(dbObj){
 	collector.description = dbObj.description;
 	collector.lat = dbObj.lat;
 	collector.lng = dbObj.lng;
-	collector.status = dbObj.status;
+	collector.status = collector.statusEnum.UNKNOWN;
 
     return collector;
 }

@@ -48,7 +48,7 @@ RouterAccessDao.prototype.insert = function(routeraccess, callback){
 
 RouterAccessDao.prototype.getAccess = function(accessInfo, callback){
 
-	var query = "select * from router_access as r, uri_routers as u where r.app_client_id = $1 and r.uri_routers_id = u.id and u.path = $2 and u.method = $3";
+	var query = "select * from router_access as r, uri_routers as u where r.app_client_id = $1 and r.uri_routers_id = u.id and u.path IN ('ANY', $2) and u.method IN('ANY', $3)";
 
 	db.query(query, [accessInfo.clientId, accessInfo.route, accessInfo.methodName], function(err, result){
         if(err){

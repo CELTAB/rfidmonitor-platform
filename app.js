@@ -35,8 +35,11 @@ var session = require('express-session');
 var ejs = require('ejs');
 var passport = require('passport');
 var bodyParser = require('body-parser');
+var expressValidator = require('express-validator');
+
 var PlatformRouter = require('./controllers/platformrouter');
 var Server = require('./utils/server');
+var Collector = require('./models/collector');
 
 var args = process.argv;
 var debugConsole = false;
@@ -85,8 +88,29 @@ var options = {
 };
 
 var app = express();
-app.use(bodyParser.urlencoded({extended : true}));
+// app.use(bodyParser.urlencoded({extended : true}));
 app.use(bodyParser.json());
+app.use(expressValidator({
+  	customValidators: {
+	    isArray: function(value) {
+	        return Array.isArray(value);
+	    },
+	    gte: function(param, num) {
+	        return param >= num;
+	    },
+	    isCollectorStatus: function(status){
+	    	return new Collector().setStatusEnum(status) != 'UNKNOWN';
+	    },
+	    isMac: function(mac){
+	    	var regex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
+	    	return regex.test(mac);
+	    },
+	    isUndefined: function(field){
+	    	return (typeof field === "undefined");
+	    }
+    }
+}));// this line must be immediately after express.bodyParser()!
+
 app.use(passport.initialize());
 
 
@@ -117,8 +141,8 @@ app.use(function(err, req, res, next) {
 	//This functions gets some erros like 'bodyParser errors'.
 	//To check if it is bodyparser error, remove the response below and just call next().
 	if(err){
-		logger.error('Error got from app.js handler. Maybe bodyparser error: ' + err);
-		return res.status(err.status).json(err);
+
+		logger.error('Error catch on app.js handler. Maybe bodyparser error:  ' + err);
 	}
 	
 	next();

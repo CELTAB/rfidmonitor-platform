@@ -35,21 +35,7 @@ GroupDao.prototype.findById = function(groupId, callback){
 
 	var query = 'SELECT * FROM "group" WHERE id = $1';
 
-	var parameters = [];
-    
-    parameters.push(groupId);
-
-	if(limit){
-        query += ' LIMIT $1';
-        parameters.push(limit);
-    }
-
-    if(offset){
-        query += ' OFFSET $2';
-        parameters.push(offset);
-    }
-
-	db.query(query, parameters, function(err, result){
+	db.query(query, [groupId], function(err, result){
 		if(err){
 			logger.error("GroupDao findById error : " + err);
 			return callback(err,null);
