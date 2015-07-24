@@ -36,5 +36,9 @@
     "passport-http-bearer": "^1.0.1",
     "pg": "~4.3.0",
     "winston": "^1.0.0"
+  },
+  "apidoc": {
+    "title": "Custom apiDoc browser title",
+    "url" : "https://api.github.com/v1",
   }
 }

@@ -152,6 +152,7 @@ var WebRouter = require('./controllers/webrouter');
 app.use('/web', new WebRouter());
 
 app.use('/', express.static('web/public'));
+app.use('/api/doc', express.static('apidoc'));
 
 // '/api' requires auth
 app.use('/api', new PlatformRouter());
