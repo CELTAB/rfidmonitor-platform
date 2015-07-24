@@ -48,6 +48,7 @@ var Logs = function(debugConsole, debugFile, verboseConsole, verboseFile){
 
 	if(debugConsole){
 		console.log("Printing debug messages on Console");
+		winston.remove('consolewarn');
 		winston.add(
 			winston.transports.Console, 
 			{
@@ -73,12 +74,16 @@ var Logs = function(debugConsole, debugFile, verboseConsole, verboseFile){
 				maxFiles: 10, 
 				json: false,
 				handleExceptions: true,
+				colorize: true,
 			}
 		);
 	}
 
 	if(verboseConsole){
 		console.log("Printing verbose messages on Console");
+
+		winston.remove('consoledebug');
+		
 		winston.add(
 			winston.transports.Console, 
 			{
