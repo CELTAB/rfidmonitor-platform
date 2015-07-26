@@ -303,49 +303,7 @@ var setRouteCollectors = function(){
 	}
 	*/
 
-	/**
-	* @apiDefine CustomAccess Access defined by an Admin 
-	*/
-
-	/**
-	* @api {get} /api/collectors Get array of Collectors
-	* @apiVersion 0.0.1
-	* @apiName GetCollectors
-	* @apiGroup Collectors
-	* @apiPermission CustomAccess
-	*
-	* @apiDescription Search on platform for Collectors that match the given restrictions. 
-	*
-	* @apiParam (Query) {String='ONLINE','OFFLINE'} testParam This is a mega test param.
-	* @apiParam (Query) {Number={1-50}} limit=50 Defines the maximum number of register to return.
-	* @apiParam (Query) {Number={1-50}} offset=0 Defines the offset of register result to return.
-	*
-	* @apiExample Example usage:
-	* curl -i https://example.com/api/collectors
-	*
-	* @apiSuccess {Object[]} collector       List of user Collectors.
-	* @apiSuccess {Number}   collector.id   ID of the Collector.
-	* @apiSuccess {Number}   collector.groupId   Group ID of the Collector.
-	* @apiSuccess {String}   collector.mac   MAC address of the Collector.
-	* @apiSuccess {String}   collector.name   Name of the Collector.
-	* @apiSuccess {String}   collector.description   Brief description of the Collector.
-	* @apiSuccess {String}   collector.status   Status the Collector.
-	* @apiSuccess {String}   collector.lat   Geolocation of the Collector - Latitude.
-	* @apiSuccess {String}   collector.lng   Geolocation of the Collector - Longitude.
-	*
-	* @apiError Unauthorized The client is not authenticated and can't use the API.
-	* @apiError Forbidden The client is authenticated but has not authorization to the requested resource.
-	*
-	* @apiErrorExample String UnauthorizedError:
-	*     HTTP/1.1 401 Unauthorized
-	*		"Unauthorized"
-	*
-	* @apiErrorExample json ForbiddenError:
-	*     HTTP/1.1 403 Forbidden
-	*		{
-	*			"error" : "Get out dog..."
-	*		}
-	*/
+	
 
 	routes.register(dbRoute, routes.getMethods().GET);
 
@@ -375,6 +333,8 @@ var setRouteCollectors = function(){
 		});
 	});
 
+	
+
 	router.get(expressRouteId, function(req, res){
 
 		req.checkParams('id', 'missing or invalid').isInt();
@@ -391,45 +351,7 @@ var setRouteCollectors = function(){
 		});
 	});
 
-	/**
-	* @api {post} /api/collectors Insert Collectors
-	* @apiVersion 0.0.1
-	* @apiName PostCollectors
-	* @apiGroup Collectors
-	* @apiPermission CustomAccess
-	*
-	* @apiDescription Insert a new Collector. 
-	*
-	* @apiParam (Body) {Object} collector Collector object to be inserted.
-	* @apiParam (Body) {Number={1-50}} collector.groupId Group ID the collector is related.
-	* @apiParam (Query) {Number={1-50}} offset=0 Defines the offset of register result to return.
-	*
-	* @apiExample Example usage:
-	* curl -i https://example.com/api/collectors
-	*
-	* @apiSuccess {Object[]} collector       List of user Collectors.
-	* @apiSuccess {Number}   collector.id   ID of the Collector.
-	* @apiSuccess {Number}   collector.groupId   Group ID of the Collector.
-	* @apiSuccess {String}   collector.mac   MAC address of the Collector.
-	* @apiSuccess {String}   collector.name   Name of the Collector.
-	* @apiSuccess {String}   collector.description   Brief description of the Collector.
-	* @apiSuccess {String}   collector.status   Status the Collector.
-	* @apiSuccess {String}   collector.lat   Geolocation of the Collector - Latitude.
-	* @apiSuccess {String}   collector.lng   Geolocation of the Collector - Longitude.
-	*
-	* @apiError Unauthorized The client is not authenticated and can't use the API.
-	* @apiError Forbidden The client is authenticated but has not authorization to the requested resource.
-	*
-	* @apiErrorExample String UnauthorizedError:
-	*     HTTP/1.1 401 Unauthorized
-	*		"Unauthorized"
-	*
-	* @apiErrorExample json ForbiddenError:
-	*     HTTP/1.1 403 Forbidden
-	*		{
-	*			"error" : "Get out dog..."
-	*		}
-	*/
+	
 
 	routes.register(dbRoute, routes.getMethods().POST);
 	router.post(expressRouteSimple, function(req, res){
@@ -461,6 +383,8 @@ var setRouteCollectors = function(){
 			return res.status(200).json({'id' : id});
 		});	
 	});
+
+	
 
 	routes.register(dbRoute, routes.getMethods().PUT);
 	router.put(expressRouteSimple, function(req, res){
@@ -495,6 +419,8 @@ var setRouteCollectors = function(){
 			return res.status(200).json({'error' : "The update didn't accur. The given ID doesn't exist on database."});
 		});
 	});
+
+	
 
 	routes.register(dbRoute, routes.getMethods().DELETE);
 	router.delete(expressRouteId, function(req, res){
