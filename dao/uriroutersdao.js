@@ -2,19 +2,20 @@ var logger = require('winston');
 var PlatformError = require('../utils/platformerror');
 var db = require('../utils/database');
 var uriRouter = require('../models/urirouter');
+var resultToArray = require('../utils/baseutils').resultToArray;
 
 var UriRoutersDao = function(){
 
 }
 
-var resultToObject = function(result){
-    if (!result)
+var fromDbObj = function(dbObj){
+    if (!dbObj)
         return null;
     
     var uri = new uriRouter();
 
-    uri.id = result.id;
-    uri.route = result.route;
+    uri.id = dbObj.id;
+    uri.route = dbObj.route;
 
     return uri;
 }
@@ -46,7 +47,7 @@ UriRoutersDao.prototype.getRouteById = function(routeId, callback){
 			return;
 		}
 
-		callback(null, resultToObject(result.rows[0]));
+		callback(null, fromDbObj(result.rows[0]));
 	});
 }
 
@@ -61,7 +62,7 @@ UriRoutersDao.prototype.getAll = function(callback){
         }
 
         var resultToArray = require('../utils/baseutils').resultToArray;
-        callback(null, resultToArray.toArray(resultToObject, result.rows));
+        callback(null, resultToArray.toArray(fromDbObj, result.rows));
 	});
 }
 

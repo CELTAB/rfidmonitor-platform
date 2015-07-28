@@ -9,11 +9,30 @@ var Package = require('../models/package');
 var GroupDao = require('./groupdao');
 var Group = require('../models/group');
 
+var resultToArray = require('../utils/baseutils').resultToArray;
+
 var RFIDDataDao = function(){
 	collectorDao = new CollectorDao();
 	groupDao = new GroupDao();
     packagedao = new PackageDao();
 }
+
+var fromDbObj = function(dbObj){
+    if(!dbObj)
+        return null;
+
+    var r = new Rfiddata();
+
+    r.id = dbObj.id;
+    r.rfidReadDate = dbObj.rfid_read_date;
+    r.serverReceivedDate = dbObj.server_received_date ;
+    r.rfidcode = dbObj.rfidcode;
+    r.collectorId = dbObj.collector_id;
+    r.packageId = dbObj.package_id;
+    r.extraData = dbObj.extra_data;
+
+    return r;
+} 
 
 var insertSummary = function(rfiddata, collector, summaryCallback){
 
@@ -43,8 +62,8 @@ var insertSummary = function(rfiddata, collector, summaryCallback){
                     var rfidObject = new Rfiddata();
                     rfidObject.rfidReadDate = rfiddata.data[i].datetime;
                     rfidObject.rfidcode = rfiddata.data[i].identificationcode;
-                    rfidObject.collector_id = collector.id;
-                    rfidObject.package_id = pk_id;
+                    rfidObject.collectorId = collector.id;
+                    rfidObject.packageId = pk_id;
 
                     //Insert the hash to is available in the next function. So it can send and ACK-DATA with the package hash.
                     rfidObject.tmpHash = rfiddata.md5diggest;
@@ -75,7 +94,7 @@ var insertRFIDData = function(rfiddata, summaryCallback){
 
     var query = "INSERT INTO rfiddata (rfid_read_date, rfidcode, collector_id, extra_data, package_id, server_received_date) VALUES ($1, $2, $3, $4, $5, $6) RETURNING ID";
 
-    db.query(query, [rfiddata.rfidReadDate, rfiddata.rfidcode, rfiddata.collector_id, rfiddata.extra_data, rfiddata.package_id, rfiddata.serverReceivedDate], function(err, result){
+    db.query(query, [rfiddata.rfidReadDate, rfiddata.rfidcode, rfiddata.collectorId, rfiddata.extraData, rfiddata.packageId, rfiddata.serverReceivedDate], function(err, result){
         
         if(err){
             logger.error("insertRFIDData error: " + err);
@@ -142,5 +161,68 @@ RFIDDataDao.prototype.insert = function(obj, callback){
         }
 	});
 }
+
+RFIDDataDao.prototype.findAll = function(limit, offset, callback){
+
+    var query = 'SELECT * FROM rfiddata';
+
+    var parameters = [];
+
+    if(limit){
+        query += ' LIMIT $1';
+        parameters.push(limit);
+    }
+
+    if(offset){
+        query += ' OFFSET $2';
+        parameters.push(offset);
+    }
+
+    db.query(query, parameters, function(err, result){
+        if(err){
+            logger.error("RFIDDataDao findByAll error : " + err);
+            return callback(err,null);
+        }
+
+        try{
+            callback(null, resultToArray.toArray(fromDbObj, result.rows));
+        }catch(e){
+            callback(e, null);
+        }
+    });
+}
+
+RFIDDataDao.prototype.findByRfidcode = function(rfidcode, imit, offset, callback){
+
+    var query = 'SELECT * FROM rfiddata WHERE rfidcode = $1';
+
+    var parameters = [];
+
+    parameters.push(rfidcode);
+
+    if(limit){
+        query += ' LIMIT $1';
+        parameters.push(limit);
+    }
+
+    if(offset){
+        query += ' OFFSET $2';
+        parameters.push(offset);
+    }
+
+    db.query(query, parameters, function(err, result){
+        if(err){
+            logger.error("RFIDDataDao findByRfidcode error : " + err);
+            return callback(err,null);
+        }
+
+        try{
+            callback(null, resultToArray.toArray(fromDbObj, result.rows));
+        }catch(e){
+            callback(e, null);
+        }
+    });
+}
+
 
 module.exports = RFIDDataDao;

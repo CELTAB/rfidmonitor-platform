@@ -66,6 +66,7 @@ var resultToArray = function(){
 	      val = resultArray[i];
 	      objArray.push(toSpecificObject(val));
 	    }
+	    logger.debug(objArray);
 	    return objArray;
 	}
 

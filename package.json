@@ -29,11 +29,16 @@
     "ejs": "^2.3.2",
     "express": "4.1.1",
     "express-session": "^1.11.3",
+    "express-validator": "^2.13.0",
     "oauth2orize": "^1.0.1",
     "passport": "^0.2.2",
     "passport-http": "^0.2.2",
     "passport-http-bearer": "^1.0.1",
     "pg": "~4.3.0",
     "winston": "^1.0.0"
+  },
+  "apidoc": {
+    "title": "Custom apiDoc browser title",
+    "url" : "https://api.github.com/v1"
   }
 }

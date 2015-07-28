@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.8.1-alpha1" last-position="789,125" last-zoom="1"
+<dbmodel pgmodeler-ver="0.8.1-beta1" last-position="0,0" last-zoom="1"
 	 default-schema="public" default-owner="rfidplatform">
 <role name="rfidplatform"
       createdb="true"
@@ -44,9 +44,6 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="lng">
 		<type name="text"/>
 	</column>
-	<column name="status" not-null="true">
-		<type name="integer"/>
-	</column>
 	<constraint name="pk_collector" type="pk-constr" table="public.collector">
 		<columns names="id" ref-type="src-columns"/>
 	</constraint>
@@ -59,7 +56,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<schema name="public"/>
 	<role name="rfidplatform"/>
 	<comment><![CDATA[Refers to a group of collectors: institution, department, region, etc.]]></comment>
-	<position x="71" y="323"/>
+	<position x="65" y="215"/>
 	<column name="id" not-null="true">
 		<type name="serial"/>
 	</column>
@@ -75,10 +72,10 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="isdefault">
 		<type name="boolean"/>
 	</column>
-	<constraint name="pk_group" type="pk-constr" table="public.group">
+	<constraint name="pk_group" type="pk-constr" table="public.&quot;group&quot;">
 		<columns names="id" ref-type="src-columns"/>
 	</constraint>
-	<constraint name="uq_isdefault" type="uq-constr" table="public.group">
+	<constraint name="uq_isdefault" type="uq-constr" table="public.&quot;group&quot;">
 		<columns names="isdefault" ref-type="src-columns"/>
 	</constraint>
 </table>
@@ -87,7 +84,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<schema name="public"/>
 	<role name="rfidplatform"/>
 	<comment><![CDATA[json string containing extra fields]]></comment>
-	<position x="516" y="24"/>
+	<position x="428" y="20"/>
 	<column name="id" not-null="true">
 		<type name="serial"/>
 	</column>
@@ -117,7 +114,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="user_platform">
 	<schema name="public"/>
 	<role name="rfidplatform"/>
-	<position x="881" y="149"/>
+	<position x="795" y="23"/>
 	<column name="username">
 		<type name="text"/>
 	</column>
@@ -144,7 +141,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="package">
 	<schema name="public"/>
 	<role name="rfidplatform"/>
-	<position x="456" y="204"/>
+	<position x="427" y="182"/>
 	<column name="id" not-null="true">
 		<type name="serial"/>
 	</column>
@@ -168,7 +165,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="app_client">
 	<schema name="public"/>
 	<role name="rfidplatform"/>
-	<position x="1174" y="317"/>
+	<position x="1052" y="273"/>
 	<column name="id" not-null="true">
 		<type name="serial"/>
 	</column>
@@ -192,7 +189,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="access_token">
 	<schema name="public"/>
 	<role name="rfidplatform"/>
-	<position x="1176" y="146"/>
+	<position x="1045" y="33"/>
 	<column name="id" not-null="true">
 		<type name="serial"/>
 	</column>
@@ -210,7 +207,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="authorization_code">
 	<schema name="public"/>
 	<role name="rfidplatform"/>
-	<position x="881" y="327"/>
+	<position x="853" y="161"/>
 	<column name="id" not-null="true">
 		<type name="serial"/>
 	</column>
@@ -231,7 +228,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="router_access">
 	<schema name="public"/>
 	<role name="rfidplatform"/>
-	<position x="1464" y="302"/>
+	<position x="1331" y="27"/>
 	<column name="id" not-null="true">
 		<type name="serial"/>
 	</column>
@@ -262,7 +259,7 @@ CREATE TYPE public.http_methods AS
 -- ddl-end --
 ALTER TYPE public.http_methods OWNER TO rfidplatform;
 -- ddl-end --]]></prepended-sql>
-	<position x="1156" y="481"/>
+	<position x="1390" y="163"/>
 	<column name="id" not-null="true">
 		<type name="serial"/>
 	</column>
@@ -270,7 +267,7 @@ ALTER TYPE public.http_methods OWNER TO rfidplatform;
 		<type name="text"/>
 	</column>
 	<column name="method" not-null="true">
-		<type name="public.http_methods"/>
+		<type name="public.http_methods" precision="32573"/>
 	</column>
 	<constraint name="pk_uri_routers" type="pk-constr" table="public.uri_routers">
 		<columns names="id" ref-type="src-columns"/>
@@ -281,7 +278,7 @@ ALTER TYPE public.http_methods OWNER TO rfidplatform;
 </table>
 
 <constraint name="fk_group_collector" type="fk-constr" comparison-type="MATCH FULL"
-	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.group" table="public.collector">
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="public.&quot;group&quot;" table="public.collector">
 	<columns names="group_id" ref-type="src-columns"/>
 	<columns names="id" ref-type="dst-columns"/>
 </constraint>
@@ -324,7 +321,7 @@ ALTER TYPE public.http_methods OWNER TO rfidplatform;
 
 <relationship name="rel_collectors_group" type="relfk"
 	 src-table="public.collector"
-	 dst-table="public.group"
+	 dst-table="public.&quot;group&quot;"
 	 src-required="false" dst-required="false"/>
 
 <relationship name="rel_rfiddata_collector" type="relfk"
@@ -340,7 +337,11 @@ ALTER TYPE public.http_methods OWNER TO rfidplatform;
 <relationship name="rel_authorization_code_user_platform" type="relfk"
 	 src-table="public.authorization_code"
 	 dst-table="public.user_platform"
-	 src-required="false" dst-required="false"/>
+	 src-required="false" dst-required="false">
+	<label ref-type="name-label">
+		<position x="0" y="0"/>
+	</label>
+</relationship>
 
 <relationship name="rel_router_access_app_client" type="relfk"
 	 src-table="public.router_access"

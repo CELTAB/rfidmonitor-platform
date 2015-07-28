@@ -36,8 +36,11 @@ var session = require('client-sessions');
 var ejs = require('ejs');
 var passport = require('passport');
 var bodyParser = require('body-parser');
+var expressValidator = require('express-validator');
+
 var PlatformRouter = require('./controllers/platformrouter');
 var Server = require('./utils/server');
+var Collector = require('./models/collector');
 
 var args = process.argv;
 var debugConsole = false;
@@ -88,6 +91,27 @@ var options = {
 var app = express();
 app.use(bodyParser.urlencoded({extended : true}));
 app.use(bodyParser.json());
+app.use(expressValidator({
+  	customValidators: {
+	    isArray: function(value) {
+	        return Array.isArray(value);
+	    },
+	    gte: function(param, num) {
+	        return param >= num;
+	    },
+	    isCollectorStatus: function(status){
+	    	return new Collector().setStatusEnum(status) != 'UNKNOWN';
+	    },
+	    isMac: function(mac){
+	    	var regex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
+	    	return regex.test(mac);
+	    },
+	    isUndefined: function(field){
+	    	return (typeof field === "undefined");
+	    }
+    }
+}));// this line must be immediately after express.bodyParser()!
+
 app.use(passport.initialize());
 
 // Use this configuration.
@@ -110,12 +134,19 @@ app.all('*', function(req, res, next) {
   next();
 });
 
-app.use(passport.initialize());
-
 app.all('*', function(req, res, next){
 	logger.debug("Method " + req.method + " for URL " + req.url);
 	next();
 });
+
+app.use(function(err, req, res, next) {
+	//This functions gets some erros like 'bodyParser errors'.
+	//To check if it is bodyparser error, remove the response below and just call next().
+	if(err){
+		return res.status(400).json({"error" : "Error catch on app.js handler. Maybe bodyparser error: " + err});
+	}	
+	next();
+})
 
 app.get('/', function(req, res){
 	//Redirect to /web when the GET request to / arrives
@@ -127,6 +158,8 @@ app.use('/web', new WebRouter());
 
 //Serve as static all files inside web/public folder
 app.use('/web/public', express.static('web/public'));
+
+app.use('/api/doc', express.static('apidoc'));
 
 app.use('/api', new PlatformRouter());
 

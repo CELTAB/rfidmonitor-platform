@@ -4,28 +4,21 @@ var db = require('../utils/database');
 var RouterAccess = require('../models/routeraccess.js');
 var AccessMethodsDAO = require('./accessmethodsdao');
 var UriRoutersDAO = require('./uriroutersdao');
+var resultToArray = require('../utils/baseutils').resultToArray;
 
 var RouterAccessDao = function(){
 
 }
 
-var resultToObject = function(result){
-    
-    /*
-    Use like this: 
-        var resultToArray = require('../utils/baseutils').resultToArray;
-        callback(null, resultToArray.toArray(resultToObject, result.rows));
-    */
-
-    if (!result)
+var fromDbObj = function(dbObj){ 
+    if (!dbObj)
         return null;
     
     var access = new RouterAccess();
 
-    access.id = result.id;
-    access.appClient = result.app_client_id;
-    access.uriRoute = result.uri_routers_id;
-    access.accessMethod = result.access_methods_id;
+    access.id = dbObj.id;
+    access.appClientId = dbObj.app_client_id;
+    access.uriRoutersId = dbObj.uri_routers_id;
 
     return access;
 }
@@ -55,7 +48,7 @@ RouterAccessDao.prototype.insert = function(routeraccess, callback){
 
 RouterAccessDao.prototype.getAccess = function(accessInfo, callback){
 
-	var query = "select * from router_access as r, uri_routers as u where r.app_client_id = $1 and r.uri_routers_id = u.id and u.path = $2 and u.method = $3";
+	var query = "select * from router_access as r, uri_routers as u where r.app_client_id = $1 and r.uri_routers_id = u.id and u.path IN ('ANY', $2) and u.method IN('ANY', $3)";
 
 	db.query(query, [accessInfo.clientId, accessInfo.route, accessInfo.methodName], function(err, result){
         if(err){
@@ -67,13 +60,9 @@ RouterAccessDao.prototype.getAccess = function(accessInfo, callback){
         var access = {};
 
         if(result.rows[0]){
-			access.clientId = result.rows[0].app_client_id;
-			access.route = result.rows[0].route;
-			access.methodName = result.rows[0].method_name;
-
-			callback(null, access);
-			
+			callback(null, fromDbObj(result.rows[0]));			
         }else{
+            //Auth not found.
         	callback(null, null);
         }
     });
@@ -83,12 +72,13 @@ RouterAccessDao.prototype.deleteByClientId = function(clientId, callback){
 
     var query = 'DELETE FROM router_access WHERE app_client_id = $1';
 
-    db.query(query, [clientId], function(err, result){
-
-        if(err) logger.error(err);
-
-        logger.warn('RouterAccessDao : deleteByClientId >> PLEASE -- Fix this Gambiarra');
-        callback(err, result);
+    db.query(query, [id], function(err, result){
+        if(err){
+            logger.error("RouterAccessDao deleteById error : " + err);
+            callback(err, null);
+            return;
+        }
+        callback(null, result.rowCount);
     });
 }
 

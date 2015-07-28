@@ -4,9 +4,10 @@ var GroupDao = require('./groupdao');
 var logger = require('winston');
 
 var PlatformError = require('../utils/platformerror');
-var groupdao = new GroupDao();
+var resultToArray = require('../utils/baseutils').resultToArray;
 
 var CollectorDao = function(){
+	
 	
 }
 
@@ -22,9 +23,9 @@ CollectorDao.prototype.insertOrFindByMacUniqueError = function(collector, callba
 	//prepare the collector to be inserted into the data base
 	CollectorDao.prototype.prepareCollector(collector, function(collectorOk){
 
-		var query = "INSERT INTO collector (description, group_id, lat, lng, mac, name, status) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING ID";
+		var query = "INSERT INTO collector (description, group_id, lat, lng, mac, name) VALUES ($1, $2, $3, $4, $5, $6) RETURNING ID";
 
-		db.query(query, [collector.description, collector.group_id, collector.lat, collector.lng, collector.mac, collector.name, collector.status], function(err, result){
+		db.query(query, [collector.description, collector.groupId, collector.lat, collector.lng, collector.mac, collector.name], function(err, result){
 			if(err){
 				if(String(err).indexOf("uq_collectormac") > -1){
 					CollectorDao.prototype.findByMac(collector.mac,function(err,col){
@@ -42,6 +43,9 @@ CollectorDao.prototype.insertOrFindByMacUniqueError = function(collector, callba
 			}
 			var id = result.rows[0].id;		
 			logger.debug("New Collector Inserted id: " + id);
+			collector.id = id;
+			collector.status = collector.statusEnum.UNKNOWN;
+			require('../controllers/collectorpool').push(collector);
 			callback(null, id);
 		});
 	});
@@ -55,18 +59,19 @@ CollectorDao.prototype.insert = function(collector, callback){
 		throw new PlatformError(msg);
         return;
     }
-
     CollectorDao.prototype.prepareCollector(collector, function(collectorOk){
 
-		var query = "INSERT INTO collector (description, group_id, lat, lng, mac, name, status) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING ID";
-
-		db.query(query, [collectorOk.description, collectorOk.group_id, collectorOk.lat, collectorOk.lng, collectorOk.mac, collectorOk.name, collectorOk.status], function(err, result){
+		var query = "INSERT INTO collector (description, group_id, lat, lng, mac, name) VALUES ($1, $2, $3, $4, $5, $6) RETURNING ID";
+		db.query(query, [collector.description, collector.groupId, collector.lat, collector.lng, collector.mac, collector.name], function(err, result){
 			if(err){
 				logger.error("CollectorDao insert error : " + err);
 				return callback(err,null);
 			}
 			var id = result.rows[0].id;		
 			logger.debug("New Collector Inserted id: " + id);
+			collector.id = id;
+			collector.status = collector.statusEnum.UNKNOWN;
+			require('../controllers/collectorpool').push(collector);
 			callback(null, id);
 		});
     });
@@ -74,9 +79,9 @@ CollectorDao.prototype.insert = function(collector, callback){
 
 //Prepare the collector to be inserted
 CollectorDao.prototype.prepareCollector = function(collector, callbackInsert){
-	if(collector.group_id == 0){
+	if(collector.groupId == 0){
     		try{
-    			groupdao.getDefault(function(err, defaultGroup){
+    			new GroupDao().getDefault(function(err, defaultGroup){
     				if(defaultGroup != null){
     					collector.group_id = defaultGroup.id;
     					callbackInsert(collector);
@@ -96,13 +101,28 @@ CollectorDao.prototype.prepareCollector = function(collector, callbackInsert){
     }
 }
 
-CollectorDao.prototype.updateStatus = function(collectorId, newStatus, callback){
+// CollectorDao.prototype.updateStatus = function(collectorId, newStatus, callback){
 
-	var query = "UPDATE collector SET status = $2 WHERE id = $1";
+// 	var query = "UPDATE collector SET status = $2 WHERE id = $1";
 
-	db.query(query, [collectorId, newStatus], function(err, result){
+// 	db.query(query, [collectorId, newStatus], function(err, result){
+// 		if(err){
+// 			logger.error("CollectorDao updateStatus error : " + err);
+// 			callback(err, null);
+// 			return;
+// 		}
+
+// 		callback(null, result.rowCount);
+// 	});
+// }
+
+CollectorDao.prototype.updateCollector = function(c, callback){
+// id | group_id | name | mac | description | lat | lng
+	var query = "UPDATE collector SET group_id = $1, name = $2, mac = $3, description = $4, lat = $5, lng = $6, WHERE id = $7";
+
+	db.query(query, [c.groupId, c.name, c.mac, c.description, c.lat, c.lng, c.id], function(err, result){
 		if(err){
-			logger.error("CollectorDao updateStatus error : " + err);
+			logger.error("CollectorDao updateCollector error : " + err);
 			callback(err, null);
 			return;
 		}
@@ -123,8 +143,15 @@ CollectorDao.prototype.findByMac = function(mac, callback){
 			callback(err, null);
 			return;
 		}
+
+		if(result.rowCount > 1){
+	        var msg = "Unexpected Bahavior: More than one collector found";
+			throw new PlatformError(msg);
+	        return;
+	    }
+
 		try{
-			var collector = buildFromSelectResult(result);
+			var collector = fromDbObj(result);
 			callback(null, collector);
 		}catch(e){
 			logger.error("CollectorDao findByMac: " + e);
@@ -133,28 +160,95 @@ CollectorDao.prototype.findByMac = function(mac, callback){
 	});
 }
 
-var buildFromSelectResult = function(result){
+CollectorDao.prototype.findById = function(id, callback){
+	//TODO where mac = x and is active.
+	var query = "SELECT * FROM collector WHERE id = $1";
 
-	var founds = result.rows;
-	if(founds == 0)
+	// logger.debug("Searching for Collector with MAC " + mac);
+
+	db.query(query, [id], function(err, result){
+		if(err){
+			logger.error("CollectorDao findById error : " + err);
+			callback(err, null);
+			return;
+		}
+
+		if(result.rowCount > 1){
+	        var msg = "Unexpected Bahavior: More than one collector found";
+			throw new PlatformError(msg);
+	        return;
+	    }
+
+		try{
+			callback(null, fromDbObj(result));
+		}catch(e){
+			logger.error("CollectorDao findById: " + e);
+			callback(e, null);
+		}
+	});
+}
+
+var fromDbObj = function(dbObj){
+
+	if(!dbObj)
 		return null;
-	else if(founds > 1){
-        var msg = "Unexpected Bahavior: More than one collector found";
-		throw new PlatformError(msg);
-        return;
-    }
 
 	var collector = new Collector();
-	collector.id = result.rows[0].id;
-	collector.groupId = result.rows[0].group_id;
-	collector.name = result.rows[0].name;
-	collector.mac = result.rows[0].mac;
-	collector.description = result.rows[0].description;
-	collector.lat = result.rows[0].lat;
-	collector.lng = result.rows[0].lng;
-	collector.status = result.rows[0].status;
+	collector.id = dbObj.id;
+	collector.groupId = dbObj.group_id;
+	collector.name = dbObj.name;
+	collector.mac = dbObj.mac;
+	collector.description = dbObj.description;
+	collector.lat = dbObj.lat;
+	collector.lng = dbObj.lng;
+	collector.status = collector.statusEnum.UNKNOWN;
 
     return collector;
 }
+
+CollectorDao.prototype.findAll = function(limit, offset, callback){
+	//TODO where mac = x and is active.
+	var query = "SELECT * FROM collector";
+	var parameters = [];
+
+	if(limit){
+        query += ' LIMIT $1';
+        parameters.push(limit);
+    }
+
+    if(offset){
+        query += ' OFFSET $2';
+        parameters.push(offset);
+    }
+
+	db.query(query, parameters, function(err, result){
+		if(err){
+			logger.error("CollectorDao findAll error : " + err);
+			callback(err, null);
+			return;
+		}
+		try{
+			callback(null, resultToArray.toArray(fromDbObj, result.rows));
+		}catch(e){
+			logger.error("CollectorDao findAll: " + e);
+			callback(e, null);
+		}
+	});
+}
+
+CollectorDao.prototype.deleteById = function(id, callback){
+	//TODO where mac = x and is active.
+	var query = "DELETE FROM collector where id = $1";
+
+	db.query(query, [id], function(err, result){
+		if(err){
+			logger.error("CollectorDao deleteById error : " + err);
+			callback(err, null);
+			return;
+		}
+		callback(null, result.rowCount);
+	});
+}
+
 
 module.exports = CollectorDao;

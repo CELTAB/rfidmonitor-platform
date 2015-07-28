@@ -27,7 +27,7 @@ describe("GroupDao", function(){
 			var dao = new GroupDao();
 			var group = new Group();
 
-			group.isdefault = true;
+			group.isDefault = true;
 
 			dao.insert(group, function(err, insertedId){
 

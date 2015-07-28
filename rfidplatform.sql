@@ -1,5 +1,5 @@
 -- Database generated with pgModeler (PostgreSQL Database Modeler).
--- pgModeler  version: 0.8.1-alpha1
+-- pgModeler  version: 0.8.1-beta1
 -- PostgreSQL version: 9.4
 -- Project Site: pgmodeler.com.br
 -- Model Author: ---
@@ -33,7 +33,6 @@ CREATE TABLE public.collector(
 	description text,
 	lat text,
 	lng text,
-	status integer NOT NULL,
 	CONSTRAINT pk_collector PRIMARY KEY (id),
 	CONSTRAINT uq_collectormac UNIQUE (mac)
 
@@ -42,9 +41,9 @@ CREATE TABLE public.collector(
 ALTER TABLE public.collector OWNER TO rfidplatform;
 -- ddl-end --
 
--- object: public.group | type: TABLE --
--- DROP TABLE IF EXISTS public.group CASCADE;
-CREATE TABLE public.group(
+-- object: public."group" | type: TABLE --
+-- DROP TABLE IF EXISTS public."group" CASCADE;
+CREATE TABLE public."group"(
 	id serial NOT NULL,
 	name text NOT NULL,
 	creation_date timestamp NOT NULL,
@@ -55,9 +54,9 @@ CREATE TABLE public.group(
 
 );
 -- ddl-end --
-COMMENT ON TABLE public.group IS 'Refers to a group of collectors: institution, department, region, etc.';
+COMMENT ON TABLE public."group" IS 'Refers to a group of collectors: institution, department, region, etc.';
 -- ddl-end --
-ALTER TABLE public.group OWNER TO rfidplatform;
+ALTER TABLE public."group" OWNER TO rfidplatform;
 -- ddl-end --
 
 -- object: public.rfiddata | type: TABLE --
@@ -100,7 +99,7 @@ ALTER TABLE public.user_platform OWNER TO rfidplatform;
 CREATE TABLE public.package(
 	id serial NOT NULL,
 	package_hash varchar(128) NOT NULL,
-	timestamp timestamp,
+	"timestamp" timestamp,
 	package_size int4,
 	CONSTRAINT id PRIMARY KEY (id),
 	CONSTRAINT uq_package_hash UNIQUE (package_hash)
@@ -201,7 +200,7 @@ ALTER TABLE public.uri_routers OWNER TO rfidplatform;
 -- object: fk_group_collector | type: CONSTRAINT --
 -- ALTER TABLE public.collector DROP CONSTRAINT IF EXISTS fk_group_collector CASCADE;
 ALTER TABLE public.collector ADD CONSTRAINT fk_group_collector FOREIGN KEY (group_id)
-REFERENCES public.group (id) MATCH FULL
+REFERENCES public."group" (id) MATCH FULL
 ON DELETE NO ACTION ON UPDATE NO ACTION;
 -- ddl-end --
 

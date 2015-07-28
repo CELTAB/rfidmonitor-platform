@@ -17,7 +17,7 @@ PackageDao.prototype.insert = function(ObjPackage, callback){
 
 	var query = 'INSERT INTO "package" (package_hash, timestamp, package_size) VALUES ($1, $2, $3) RETURNING ID';
 	
-	db.query(query, [ObjPackage.package_hash, ObjPackage.timestamp, ObjPackage.package_size], function(err, result){
+	db.query(query, [ObjPackage.packageHash, ObjPackage.timestamp, ObjPackage.packageSize], function(err, result){
 
 		if(err){
 			logger.error("PackageDao insert error : " + err);
@@ -29,19 +29,25 @@ PackageDao.prototype.insert = function(ObjPackage, callback){
 	});
 }
 
-PackageDao.prototype.findByHash = function(package_hash, callback){
+PackageDao.prototype.findByHash = function(packageHash, callback){
 
 	var queryFind = 'SELECT * FROM "package" WHERE package_hash = $1';
 
-	db.query(queryFind, [package_hash], function(err, result){
+	db.query(queryFind, [packageHash], function(err, result){
 
 		if(err){
 			logger.error("PackageDao findByHash error : " + err);
 			return callback(err,null);
 		}
 
+		if(result.rows.length > 1){
+			var msg = 'Unexpected Bahavior: More than one package found';
+			throw new PlatformError(msg);
+	        return;
+		}
+
 		try{
-			var pkObj = buildFromSelectResult(result);
+			var pkObj = fromDbObj(result.rows[0]);
 			callback(null, pkObj);
 		}catch(e){
 			callback(e, null);
@@ -49,22 +55,16 @@ PackageDao.prototype.findByHash = function(package_hash, callback){
 	});
 }
 
-var buildFromSelectResult = function(result){
-	var founds = result.rows;
-	if(founds.length == 0){
+var fromDbObj = function(dbObj){
+
+	if(!dbObj)
 		return null;
-	}
-	else if(founds.length > 1){
-		var msg = 'Unexpected Bahavior: More than one package found';
-		throw new PlatformError(msg);
-        return;
-	}
 
 	var pk = new Package();
-	pk.id = result.rows[0].id;
-	pk.package_hash = result.rows[0].package_hash;
-	pk.timestamp = result.rows[0].timestamp;
-    pk.package_size = result.rows[0].package_size;
+	pk.id = dbObj.id;
+	pk.packageHash = dbObj.package_hash;
+	pk.timestamp = dbObj.timestamp;
+    pk.packageSize = dbObj.package_size;
 
     return pk;
 }

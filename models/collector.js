@@ -1,6 +1,6 @@
 var logger = require('winston');
 
-var Collector = function(){
+var Collector = function(obj){
 
     /* If this constructor is called without the "new" operator, "this" points
      * to the global object. Log a warning and call it correctly. */
@@ -9,19 +9,38 @@ var Collector = function(){
         throw new Error('Collector constructor called without "new" operator');
     }
 
-    this.statusEnum = {
-        Online: 0,
-        Offline: 1
-    };
+    if(obj){
+        this.groupId = obj.groupId;
+        this.lat = obj.lat;
+        this.lng = obj.lng;
+        this.mac = obj.mac;
+        this.name = obj.name;
+        this.status = Collector.prototype.setStatusEnum(obj.status);
+        this.description = obj.description;
+    }else{
+        this.id = 0;
+        this.groupId = 0;
+        this.lat = '';
+        this.lng = '';
+        this.mac = '';
+        this.name = '';
+        this.status = Collector.prototype.statusEnum.UNKNOWN;
+        this.description = '';
+    }
 
-    this.id = 0;
-    this.group_id = 0;
-    this.lat = '';
-    this.lng = '';
-    this.mac = '';
-    this.name = '';
-    this.status = this.statusEnum.Offline;
-    this.description = '';
 }
+
+Collector.prototype.setStatusEnum = function(status){
+    switch(status){
+        case Collector.prototype.statusEnum.ONLINE:
+            return status;
+        case Collector.prototype.statusEnum.OFFLINE:
+            return status;
+        default:
+            return Collector.prototype.statusEnum.UNKNOWN;        
+    }
+}
+
+Collector.prototype.statusEnum = {ONLINE : "ONLINE", OFFLINE : "OFFLINE", UNKNOWN : "UNKNOWN"}
 
 module.exports = Collector;

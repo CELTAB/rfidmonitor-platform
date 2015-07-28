@@ -9,7 +9,7 @@ var AccessTokenDao = function(){
 
 }
 
-var resultToObject = function(result){
+var fromDbObj = function(result){
     //client : {"id":10,"oauth_id":"99","oauth_secret":"b","name":"a","user_id":44}
     if (!result)
         return null;
@@ -35,7 +35,7 @@ AccessTokenDao.prototype.getAll = function(callback){
         }
 
         var resultToArray = require('../utils/baseutils').resultToArray;
-        callback(null, resultToArray.toArray(resultToObject, result.rows));
+        callback(null, resultToArray.toArray(fromDbObj, result.rows));
     });
 }
 
@@ -50,7 +50,7 @@ AccessTokenDao.prototype.getByValue = function(value, callback){
             return callback(err,null);
         }
 
-        callback(null, resultToObject(result.rows[0]));
+        callback(null, fromDbObj(result.rows[0]));
     });
 
 }
