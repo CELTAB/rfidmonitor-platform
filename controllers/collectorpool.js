@@ -15,7 +15,7 @@ var CollectorPool = function CollectorPool(){
 
 		pool = collectors;
 
-		logger.debug("CollectorPool : pool populated from database : " + JSON.stringify(pool));1
+		logger.debug("CollectorPool : pool populated from database : " + JSON.stringify(pool));
 	});
 
 	this.getAll = function(){

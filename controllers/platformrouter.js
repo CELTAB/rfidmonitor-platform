@@ -509,6 +509,7 @@ var setRouteGroups = function(){
 
 		req.sanitizeBody('name').toString();
 		req.sanitizeBody('description').toString();
+		req.sanitizeBody('isDefault').toBoolean();
 
 		var errors = req.validationErrors();
 		
@@ -535,6 +536,7 @@ var setRouteGroups = function(){
 
 		req.sanitizeBody('name').toString();
 		req.sanitizeBody('description').toString();
+		req.sanitizeBody('isDefault').toBoolean();
 
 		var errors = req.validationErrors();
 

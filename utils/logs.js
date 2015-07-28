@@ -18,6 +18,46 @@ var Logs = function(debugConsole, debugFile, verboseConsole, verboseFile){
 
 	// Default transporters
 	winston.remove(winston.transports.Console);
+
+	//CONSOLE
+
+	if(verboseConsole){
+		console.log("Printing verbose messages on Console");
+		winston.add(
+			winston.transports.Console, 
+			{
+				name: 'consoleverbose',
+				level: 'verbose',
+				json: false,
+				colorize: true
+			}
+		);
+	}else if(debugConsole){
+		console.log("Printing debug messages on Console");
+		winston.add(
+			winston.transports.Console, 
+			{
+				name: 'consoledebug',
+				level: 'debug',
+				json: false,
+				colorize: true,
+				handleExceptions: true,
+			}
+		);
+	}else{
+		winston.add(
+			winston.transports.Console, 
+			{
+				name: 'consolewarn',
+				level: 'warn',
+				json: false,
+				colorize: true,
+				silent: false,
+			}
+		);
+	}
+
+	//FILE
 	
 	winston.add(
 		winston.transports.DailyRotateFile, 
@@ -32,34 +72,7 @@ var Logs = function(debugConsole, debugFile, verboseConsole, verboseFile){
 			json: false,
 			colorize: true
 		}
-	);
-
-	winston.add(
-		winston.transports.Console, 
-		{
-			name: 'consolewarn',
-			level: 'warn',
-			json: false,
-			colorize: true,
-			silent: false,
-		}
-	);
-
-
-	if(debugConsole){
-		console.log("Printing debug messages on Console");
-		winston.remove('consolewarn');
-		winston.add(
-			winston.transports.Console, 
-			{
-				name: 'consoledebug',
-				level: 'debug',
-				json: false,
-				colorize: true,
-				handleExceptions: true,
-			}
-		);
-	}
+	);	
 
 	if(debugFile){
 		console.log("Printing debug messages on File");
@@ -77,23 +90,7 @@ var Logs = function(debugConsole, debugFile, verboseConsole, verboseFile){
 				colorize: true,
 			}
 		);
-	}
-
-	if(verboseConsole){
-		console.log("Printing verbose messages on Console");
-
-		winston.remove('consoledebug');
-		
-		winston.add(
-			winston.transports.Console, 
-			{
-				name: 'consoleverbose',
-				level: 'verbose',
-				json: false,
-				colorize: true
-			}
-		);
-	}
+	}	
 
 	if(verboseFile){
 		console.log("Printing verbose messages on File");

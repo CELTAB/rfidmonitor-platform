@@ -16,6 +16,11 @@ GroupDao.prototype.insert = function(group, callback){
         return;
     }
 
+    if(group.isDefault === false)
+    	group.isDefault = null;
+
+    logger.debug(group.isDefault);
+
     var query = 'INSERT INTO "group" (name, creation_date, description, isdefault) VALUES ($1, $2, $3, $4) RETURNING ID';
 
 	db.query(query, [group.name, group.creationDate, group.description, group.isDefault], function(err, result){
@@ -144,6 +149,9 @@ GroupDao.prototype.updateGroup = function(c, callback){
 // id |  name   |      creation_date      |  description  | isdefault 
 	var query = 'UPDATE "group" SET name = $1, creation_date = $2, description = $3, isdefault = $4 WHERE id = $8';
 
+	if(c.isDefault === false)
+    	c.isDefault = null;
+
 	db.query(query, [c.name, c.creationDate, c.description, c.isDefault, c.id], function(err, result){
 		if(err){
 			logger.error("GroupDao updateGroup error : " + err);
@@ -165,6 +173,12 @@ var fromDbObj = function(dbObj){
 	group.name = dbObj.name;
 	group.creationDate = dbObj.creation_date;
     group.description = dbObj.description;
+
+    if(dbObj.isDefault === null)
+    	group.isDefault = false;
+    else{
+    	group.isDefault = dbObj.isdefault;
+    }
 
     return group;
 }
