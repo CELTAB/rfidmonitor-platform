@@ -6,14 +6,16 @@ var CollectorDao = require('../dao/collectordao');
 
 var CollectorPool = function CollectorPool(){
 
-	var pool = [];
+	var pool = {};
 	var collectorDao = new CollectorDao();
 
 	collectorDao.findAll(null, null, function(err, collectors){
 		if(err)
 			return new PlatformError("CollectorPool : Cannot get all collectors from database. Error: " + err); 
 
-		pool = collectors;
+		for(var i in collectors){
+			pool[collectors[i].mac] = collectors[i];
+		}
 
 		logger.debug("CollectorPool : pool populated from database : " + JSON.stringify(pool));
 	});
@@ -23,40 +25,46 @@ var CollectorPool = function CollectorPool(){
 	}
 
 	this.updateStatusByMac = function(collector, status){
-		for (var i in pool) {
-			if(pool[i].mac == mac){
-				pool[i].status = status;
-				logger.debug("CollectorPool " + mac + " updated to " + status);
-				return true;
-			}
-		}
-		logger.debug("CollectorPool: " + mac + " not found on pool.");
 		
-		if(collector.id){
-			//This is a known collector receiving the ONLINE status for the first time. This collector was added to database on fly by this it was not on the pool already.
-			pool.push(collector);
+		if(this.isCollectorValid(collector)){
+			pool[collector.mac].status = status;
 			return true;
 		}
-		//the collector was not in the pool and is not on the database. Not reason to update a unknown collector.
+
+		logger.error("CollectorPool : updateStatusByMac : invalid collector");
 		return false;
 	}
     
     this.push = function(collector){
-    	logger.debug("CollectorPool: pushed : " + JSON.stringify(collector));
-    	pool.push(collector);
+
+    	if(this.isCollectorValid(collector)){
+			pool[collector.mac] = collector;
+			logger.error("CollectorPool : pushed");
+			return true;
+		}
+
+		logger.error("CollectorPool : push : invalid collector");
+		return false;
 	}
 
 	this.removeByMac = function(mac){
-		for (var i in pool) {
-			if(pool[i].mac == mac){
-				pool.splice(i, 1);
-				logger.debug("Collector " + mac + " removed.");
-				return true;
-			}
+
+		if(pool[mac]){
+			delete pool[mac];
+			logger.debug("Collector " + mac + " removed.");
+			return true;
 		}
-		logger.debug("CollectorPool: " + mac + " removed.");
+		logger.debug("Collector " + mac + " not found.");
 		return false;
 
+	}
+
+	this.isCollectorValid = function(collector){
+		var regex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
+		if(collector.mac && regex.test(collector.mac)){
+			return true;
+		}
+		return false;
 	}
  
     if(CollectorPool.caller != CollectorPool.getInstance){

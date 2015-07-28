@@ -135,16 +135,14 @@ app.use(passport.initialize());
 app.all('*', function(req, res, next){
 	logger.debug("Method " + req.method + " for URL " + req.url);
 	next();
-});
+});1
 
 app.use(function(err, req, res, next) {
 	//This functions gets some erros like 'bodyParser errors'.
 	//To check if it is bodyparser error, remove the response below and just call next().
 	if(err){
-
-		logger.error('Error catch on app.js handler. Maybe bodyparser error:  ' + err);
-	}
-	
+		return res.status(400).json({"error" : "Error catch on app.js handler. Maybe bodyparser error: " + err});
+	}	
 	next();
 })
 
@@ -160,4 +158,4 @@ app.use('/api', new PlatformRouter());
 // var AdminRouter = require('./controllers/adminrouter');
 // app.use('/admin', new AdminRouter());
 
-https.createServer(options, app).listen(2227);
+https.createServer(options, app).listen(443);
