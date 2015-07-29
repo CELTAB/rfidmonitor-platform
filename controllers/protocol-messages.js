@@ -77,8 +77,10 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 						return;
 					}
 
+					newCollector.id = collectorId;
+
 					logger.debug("Collector inserted. new ID: " + collectorId);
-					collectorPool.updateStatusByMac(collector, collector.statusEnum.OFFLINE);
+					collectorPool.updateStatusByMac(newCollector, newCollector.statusEnum.OFFLINE);
 					sendObject(buildMessageObject("ACK-SYN", {id:collectorId, macaddress:newCollector.mac, name:newCollector.name}));
 				});
 			}
@@ -90,7 +92,13 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 
 		var data = message.data;
 
-		if(collectorPool.updateStatusByMac(data, collector.statusEnum.ONLINE)){
+		var collector = new Collector();
+
+		collector.id = data.id;
+		collector.mac = data.macaddress;
+		collector.name = data.name; 
+
+		if(collectorPool.updateStatusByMac(collector, collector.statusEnum.ONLINE)){
 			//return the mac address for the Server class.
 			logger.debug("Update Status to Online");
 			

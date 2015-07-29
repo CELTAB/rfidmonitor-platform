@@ -102,7 +102,7 @@ GroupDao.prototype.getDefault = function(callback){
         	return;
     	}
 
-		var defaultFound = fromDbObj(result);
+		var defaultFound = fromDbObj(result.rows[0]);
 
 		if(defaultFound == null){
 

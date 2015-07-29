@@ -61,17 +61,19 @@ CollectorDao.prototype.insert = function(collector, callback){
     }
     CollectorDao.prototype.prepareCollector(collector, function(collectorOk){
 
+    	logger.debug(collectorOk);
+
 		var query = "INSERT INTO collector (description, group_id, lat, lng, mac, name) VALUES ($1, $2, $3, $4, $5, $6) RETURNING ID";
-		db.query(query, [collector.description, collector.groupId, collector.lat, collector.lng, collector.mac, collector.name], function(err, result){
+		db.query(query, [collectorOk.description, collectorOk.groupId, collectorOk.lat, collectorOk.lng, collectorOk.mac, collectorOk.name], function(err, result){
 			if(err){
-				logger.error("CollectorDao insert error : " + err);
+				logger.error("collectorOkDao insert error : " + err);
 				return callback(err,null);
 			}
 			var id = result.rows[0].id;		
-			logger.debug("New Collector Inserted id: " + id);
-			collector.id = id;
-			collector.status = collector.statusEnum.UNKNOWN;
-			require('../controllers/collectorpool').push(collector);
+			logger.debug("New collector Inserted id: " + id);
+			collectorOk.id = id;
+			collectorOk.status = collectorOk.statusEnum.UNKNOWN;
+			require('../controllers/collectorpool').push(collectorOk);
 			callback(null, id);
 		});
     });
@@ -83,7 +85,7 @@ CollectorDao.prototype.prepareCollector = function(collector, callbackInsert){
     		try{
     			new GroupDao().getDefault(function(err, defaultGroup){
     				if(defaultGroup != null){
-    					collector.group_id = defaultGroup.id;
+    					collector.groupId = defaultGroup.id;
     					callbackInsert(collector);
     				}else{
     					/*This probably will never happend, because the getDefault function will return an existing default group 
@@ -151,7 +153,7 @@ CollectorDao.prototype.findByMac = function(mac, callback){
 	    }
 
 		try{
-			var collector = fromDbObj(result);
+			var collector = fromDbObj(result.rows[0]);
 			callback(null, collector);
 		}catch(e){
 			logger.error("CollectorDao findByMac: " + e);
@@ -180,7 +182,7 @@ CollectorDao.prototype.findById = function(id, callback){
 	    }
 
 		try{
-			callback(null, fromDbObj(result));
+			callback(null, fromDbObj(result.rows[0]));
 		}catch(e){
 			logger.error("CollectorDao findById: " + e);
 			callback(e, null);
