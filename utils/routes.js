@@ -23,23 +23,7 @@ var Routes = function Routes(){
 	}
 
 	this.isMethodValid = function(method){
-		if(!method)
-			return false;
-
-		switch(method){
-			case methods.GET:
-				return true;
-			case methods.POST:
-				return true;
-			case methods.PUT:
-				return true;
-			case methods.DELETE:
-				return true;
-			case methods.ANY:
-				return true;
-			default:
-				return false;
-		}
+		return methods[method] ? true : false;
 	}
     
     this.register = function(path, method){

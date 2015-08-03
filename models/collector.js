@@ -31,14 +31,7 @@ var Collector = function(obj){
 }
 
 Collector.prototype.setStatusEnum = function(status){
-    switch(status){
-        case Collector.prototype.statusEnum.ONLINE:
-            return status;
-        case Collector.prototype.statusEnum.OFFLINE:
-            return status;
-        default:
-            return Collector.prototype.statusEnum.UNKNOWN;        
-    }
+    return Collector.prototype.statusEnum[status] ? status : Collector.prototype.statusEnum.UNKNOWN;
 }
 
 Collector.prototype.statusEnum = {ONLINE : "ONLINE", OFFLINE : "OFFLINE", UNKNOWN : "UNKNOWN"}
