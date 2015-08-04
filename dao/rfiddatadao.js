@@ -45,8 +45,8 @@ var insertSummary = function(rfiddata, collector, summaryCallback){
         if(!exists){
 
             var pkObj = new Package();
-            pkObj.package_hash = rfiddata.md5diggest;
-            pkObj.package_size = rfiddata.data.length;
+            pkObj.packageHash = rfiddata.md5diggest;
+            pkObj.packageSize = rfiddata.data.length;
 
             packagedao.insert(pkObj, function(err, pk_id){
                 if(err){
@@ -192,7 +192,7 @@ RFIDDataDao.prototype.findAll = function(limit, offset, callback){
     });
 }
 
-RFIDDataDao.prototype.findByRfidcode = function(rfidcode, imit, offset, callback){
+RFIDDataDao.prototype.findByRfidcode = function(rfidcode, limit, offset, callback){
 
     var query = 'SELECT * FROM rfiddata WHERE rfidcode = $1';
 

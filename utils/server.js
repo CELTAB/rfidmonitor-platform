@@ -24,9 +24,12 @@ var Server = function(){
 			collector.id = collectorInfo.id;
 		});
 
-		var address = socket.address();
+		var address = {};
+		address.address = socket.remoteAddress;
+		address.port = socket.remotePort;
 
-    	logger.info("New connection from " + address.address + ":" + address.port);    	 	
+
+    	logger.info("New connection from " + address.address);
 
 		socket.on('end', function() {
 			logger.info('Client with MAC ' + collector.mac + ' and ID ' + collector.id + ' Disconnected');
@@ -42,6 +45,11 @@ var Server = function(){
 			logger.debug('Server : data received.');
 			protocol.processData(data);
 		});
+
+		 socket.on("error", function(err) {
+    		console.log("Caught flash policy server socket error: ");
+    		console.log(err.stack);
+  		});
 	});
 
 	this.startServer = function(){

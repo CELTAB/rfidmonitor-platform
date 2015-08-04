@@ -25,6 +25,7 @@
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "~1.12.3",
     "chai": "~3.0.0",
+    "client-sessions": "^0.7.0",
     "cors": "~2.6.0",
     "ejs": "^2.3.2",
     "express": "4.1.1",
@@ -39,6 +40,6 @@
   },
   "apidoc": {
     "title": "Custom apiDoc browser title",
-    "url" : "https://api.github.com/v1"
+    "url": "https://api.github.com/v1"
   }
 }
