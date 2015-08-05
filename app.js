@@ -37,6 +37,7 @@ var ejs = require('ejs');
 var passport = require('passport');
 var bodyParser = require('body-parser');
 var expressValidator = require('express-validator');
+var Cors = require('cors');
 
 var PlatformRouter = require('./controllers/platformrouter');
 var Server = require('./utils/server');
@@ -89,6 +90,9 @@ var options = {
 };
 
 var app = express();
+
+app.use(Cors());
+
 app.use(bodyParser.urlencoded({extended : true}));
 app.use(bodyParser.json());
 app.use(expressValidator({
