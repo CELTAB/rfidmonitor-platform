@@ -53,7 +53,7 @@ var Server = function(){
 	});
 
 	this.startServer = function(){
-		server.listen(8124, function() { //'listening' listener
+		server.listen(8125, function() { //'listening' listener
 		  logger.info('RT Server bound on port 8124');
 		});	
 	}
