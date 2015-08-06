@@ -15,6 +15,7 @@ DynamicEntities.prototype.typesEnum = {
 	IMAGE : "IMAGE",
 	DATETIME : "DATETIME",
 	STATUS : "STATUS",
+	ID : "ID",
 	UNKNOWN : null
 }
 
@@ -34,6 +35,9 @@ DynamicEntities.prototype.typesEnumToPostgres = function(type){
 			break;
 		case DynamicEntities.prototype.typesEnum.DATETIME:
 			return 'TIMESTAMP';
+			break;
+		case DynamicEntities.prototype.typesEnum.ID:
+			return 'SERIAL';
 			break;
 		default:
 			throw new PlatformError("UNKNOWN DynamicEntities type to POSTGRES convertion ["+type+"]");
@@ -130,6 +134,23 @@ DynamicEntities.prototype.validateEntityCreateObject = function(json, callback){
 	return callback(null);
 }
 
+
+var findFieldByNameAndType = function(field, name, type){
+/*
+	Search on the current field for name and type combination, and recursive for fields under a possible 
+	structureList if the current field an entity.
+*/
+	for (var i in field.structureList){
+		var f = field.structureList[i];
+		if ((f['field'] && f['field'] == name ) && (f['type'] && f['type'] == type))
+			return true;
+		else if(f['structureList'])
+			return findFieldByNameAndType(f, name, type);
+	}
+	return false;
+
+}
+
 var createFieldMeta = function(field){
 	var meta = {};
 
@@ -137,13 +158,30 @@ var createFieldMeta = function(field){
 	meta.identifier = normalizeString(field.field); 
 	
 	if(field.type == DynamicEntities.prototype.typesEnum.ENTITY){
+
+		var idObj = {};
+		idObj.field = "_id";
+		idObj.type = "ID";
+		idObj.notNull = true; //serial 
+		idObj.description = "Default id inserted by platform.";
+		field.structureList.push(idObj);
+
 		for(var iunq in field.unique){
 			for(var iunqb in field.unique[iunq]){
+
+				/*
+				If the unique key here refers to an entity, then we need to change its name adding _id, because it will be a foreign key.
+				Changing for example, 'cars' to 'cars_id', because it is an entity and a table 'tb_cars' will be created later, and this field 
+				cannot be named just as 'cars' but 'cars_id' correctly being a foreign key pattern.
+				*/
+				if(findFieldByNameAndType(field, field.unique[iunq][iunqb], DynamicEntities.prototype.typesEnum.ENTITY)){
+					field.unique[iunq][iunqb] += '_id';
+				}
+
 				field.unique[iunq][iunqb] = normalizeString(field.unique[iunq][iunqb]);
 			}
 
 		}
-
 
 		meta.dbPk = '_id';
 		meta.dbTableName = 'tb_' + meta.identifier;
@@ -175,7 +213,7 @@ var createTableEntity = function(entityObj) {
 	if(!entityObj)
 		throw new PlatformError("Undefined entityObj on createTableEntity");
 
-	var createTableQuery = 'CREATE TABLE PUBLIC.$tableName ($attr)';
+	var createTableQuery = 'CREATE TABLE PUBLIC.$tableName ($attr);';
 	createTableQuery = createTableQuery.replace('$tableName', entityObj.meta.dbTableName);
 
 	var finalAttrStr = '';
@@ -188,6 +226,7 @@ var createTableEntity = function(entityObj) {
 
 
 		if(attr.type == DynamicEntities.prototype.typesEnum.ENTITY){
+
 
 			var foreignQuery = ', CONSTRAINT $constraintName FOREIGN KEY ($localField) REFERENCES public.$foreignTable ($foreignFieldId) MATCH FULL';
 
@@ -203,7 +242,7 @@ var createTableEntity = function(entityObj) {
 			if(iatt != 0)
 				attrQuery = ', ';
 
-			attrQuery += attr.meta.identifier + '_id NOT NULL';
+			attrQuery += attr.meta.identifier + '_id INTEGER NOT NULL';
 			
 
 
@@ -212,7 +251,7 @@ var createTableEntity = function(entityObj) {
 				attrQuery = ', ';
 
 			attrQuery += attr.meta.identifier + ' ' + DynamicEntities.prototype.typesEnumToPostgres(attr.type);
-			if(attr.notNull){
+			if(attr.notNull && attr.type != DynamicEntities.prototype.typesEnum.ID){
 				attrQuery += attrQuery + ' NOT NULL';
 			}
 		}
@@ -264,11 +303,20 @@ var createTableEntity = function(entityObj) {
 
 
 	createTableQuery = createTableQuery.replace("$attr", finalAttrStr+finalConstraints);
-	console.log(createTableQuery);
+	
+	// var ma = require('../utils/manipulatedb');
+	// var m = new ma();
+
+	// m.executeStatements([createTableQuery], function(err){
+	// 	if(err)
+	// 		console.log(err);
+	// }, 'rfidplatform');
+
+	// console.log(createTableQuery);
 	
 	var entityComment = null;
 	if(entityObj.description){
-		var entityComment = "COMMENT ON TABLE public."+entityObj.meta.dbTableName+ " IS '"+ entityObj.description +"'";
+		var entityComment = "COMMENT ON TABLE public."+entityObj.meta.dbTableName+ " IS '"+ entityObj.description +"';";
 		console.log(entityComment);
 	}
 }
