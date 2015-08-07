@@ -24,6 +24,14 @@ var CollectorPool = function CollectorPool(){
 		return pool;
 	}
 
+	this.getStatusByMac = function(mac){
+        if(pool[mac]){
+            return pool[mac].status;
+        }
+        logger.debug("Collector pool getStatusByMac" + mac + " not found.");
+        return Collector.prototype.statusEnum.UNKNOWN;
+    }
+
 	this.updateStatusByMac = function(collector, status){
 		
 		if(this.isCollectorValid(collector)){
