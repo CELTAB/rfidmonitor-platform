@@ -388,11 +388,12 @@ var setRouteCollectors = function(){
 			return res.status(200).send(collector);
 		});	
 	});
-
 	
 
 	routes.register(dbRoute, routes.getMethods().PUT);
-	router.put(expressRouteSimple, function(req, res){
+	router.put(expressRouteId, function(req, res){
+
+		req.checkParams('id', 'missing or not a integer.').isInt();
 
 		req.checkBody('id', 'missing or not a integer.').isInt();
 		req.checkBody('groupId', 'missing or not a integer.').isInt();
@@ -537,6 +538,8 @@ var setRouteGroups = function(){
 
 	router.put(expressRouteId, function(req, res){
 		
+		req.checkParams('id', 'missing or invalid int.').isInt();
+
 		req.checkBody('id', 'missing or invalid int.').isInt();
 		req.checkBody('name', 'missing.').notEmpty();
 		req.checkBody('creationDate', 'missing  or invalid date.').isDate();
