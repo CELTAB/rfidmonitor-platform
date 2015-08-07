@@ -6,8 +6,6 @@ var logger = require('winston');
 var PlatformError = require('../utils/platformerror');
 var resultToArray = require('../utils/baseutils').resultToArray;
 
-var collectorpool = require('../controllers/collectorpool');
-
 var CollectorDao = function(){
 	
 	
@@ -197,6 +195,8 @@ var fromDbObj = function(dbObj){
 	if(!dbObj)
 		return null;
 
+	var collectorpool = require('../controllers/collectorpool');
+
 	var collector = new Collector();
 	collector.id = dbObj.id;
 	collector.groupId = dbObj.group_id;
@@ -205,7 +205,7 @@ var fromDbObj = function(dbObj){
 	collector.description = dbObj.description;
 	collector.lat = dbObj.lat;
 	collector.lng = dbObj.lng;
-	collector.status = collectorpool.getStatusByMac(dbObj.mac);//collector.statusEnum.UNKNOWN;
+	collector.status = collectorpool.getStatusByMac(dbObj.mac);
 
     return collector;
 }

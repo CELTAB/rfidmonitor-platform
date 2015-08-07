@@ -10,6 +10,7 @@ var Collector = function(obj){
     }
 
     if(obj){
+        this.id = obj.id;
         this.groupId = obj.groupId;
         this.lat = obj.lat;
         this.lng = obj.lng;
