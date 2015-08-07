@@ -87,7 +87,7 @@ var setAuthorization = function(){
 
 			if(!req.originalUrl){
 				logger.warn("originalUrl missing");
-				return res.status(400).json({'error':'originalUrl missing'});
+				return res.status(400).send({'message':'originalUrl missing'});
 			}
 			
 			var uriArray = req.originalUrl.split('/');
@@ -109,7 +109,7 @@ var setAuthorization = function(){
 			*/
 
 			if(uriArray.length < 3 || uriArray[2] === undefined || uriArray[2] == '')
-				return res.status(400).json({'error':'What a such bad request...'});
+				return res.status(400).send({'message':'What a such bad request...'});
 
 
 			//Lets get the position 1 and 2 always.
@@ -127,14 +127,14 @@ var setAuthorization = function(){
 
                 if(err) {
                 	logger.error("setAuthorization routerAccessDao ");
-                	return res.status(500).json({'error' : "INTERNAL ERROR"});
+                	return res.status(500).send({'message' : "INTERNAL ERROR"});
 				}
 
                 if(result){
                 	//ACCESS GRANTED.
                     next();
                 }else{
-                    res.status(403).json({'error' : 'Get out dog.'});
+                    res.status(403).send({'message' : 'Get out dog.'});
                 }
        		});			
 			
@@ -165,9 +165,9 @@ var setRouteUsers = function(){
 		logger.warn("DEVELOPMENT ROUTE IN ACTION. SHOULD NOT BE AVAILABLE ON PRODUCTION." + dbRoute);
 		userDao.getAll(function(err, users){
 			if(err)
-				return res.status(500).json({'error' : err.toString()}); 
+				return res.status(500).send({'message' : err.toString()}); 
 
-			return res.status(200).json({'result' : users});
+			return res.status(200).send(users);
 
 		});
 	});
@@ -175,9 +175,9 @@ var setRouteUsers = function(){
 		logger.warn("DEVELOPMENT ROUTE IN ACTION. SHOULD NOT BE AVAILABLE ON PRODUCTION." + dbRoute);
 		userDao.findById(req.params.id, function(err, user){
 			if(err)
-				return res.status(500).json({'error' : err.toString()}); 
+				return res.status(500).send({'message' : err.toString()}); 
 
-			return res.status(200).json({'result' : user});
+			return res.status(200).send(user);
 		});
 
 	});
@@ -197,11 +197,13 @@ var setRouteUsers = function(){
 		if(errors)
 			return res.status(400).json(erros);
 
-		userDao.insert(new User(req.body), function(err, id){
+		var user = new User(req.body);
+		userDao.insert(user, function(err, id){
 			if(err)
-				return res.status(500).json({'error' : err.toString()}); 
+				return res.status(500).send({'message' : err.toString()}); 
 
-			return res.status(200).json({'id' : id});
+			user.id = id;
+			return res.status(200).send(user);
 		});
 
 	});
@@ -324,13 +326,13 @@ var setRouteCollectors = function(){
 
 		var errors = req.validationErrors();
 		if (errors)
-			return res.status(400).json(errors);
+			return res.status(400).send(errors);
 
 		collectorDao.findAll(limit, offset, function(err, collectors){
 			if(err)
-				return res.status(500).json({'error' : err.toString()}); 
+				return res.status(500).send(err.toString()); 
 
-			return res.status(200).json({'result' : collectors});
+			return res.status(200).send(collectors);
 		});
 	});
 
@@ -346,9 +348,9 @@ var setRouteCollectors = function(){
 
 		collectorDao.findById(req.params.id, function(err, collector){
 			if(err)
-				return res.status(500).json({'error' : err.toString()}); 
+				return res.status(500).send(err.toString()); 
 
-			return res.status(200).json({'result' : collector});
+			return res.status(200).send(collector);
 		});
 	});
 
@@ -375,13 +377,15 @@ var setRouteCollectors = function(){
 		var errors = req.validationErrors();
 		
 		if(errors)
-			return res.status(400).json(errors);		
+			return res.status(400).send(errors);		
 
-		collectorDao.insert(new Collector(req.body), function(err, id){
+		var collector = new Collector(req.body)
+		collectorDao.insert(collector, function(err, id){
 			if(err)
-				return res.status(500).json({'error' : err.toString()}); 
+				return res.status(500).send(err.toString()); 
 
-			return res.status(200).json({'id' : id});
+			collector.id = id;
+			return res.status(200).send(collector);
 		});	
 	});
 
@@ -408,16 +412,18 @@ var setRouteCollectors = function(){
 		var errors = req.validationErrors();
 
 		if(errors)
-			return res.status(400).json(errors);		
+			return res.status(400).send(errors);		
 
-		collectorDao.updateCollector(new Collector(req.body), function(err, rowCount){
+		var collector = new Collector(req.body);
+		collectorDao.updateCollector(collector, function(err, rowCount){
 			if(err)
-				return res.status(500).json({'error' : err.toString()});
+				return res.status(500).send(err.toString());
 
-			if(rowCount > 0)
-				return res.status(200).json({'message' : "updated count " + rowCount});
+			if(rowCount > 0){
+				return res.status(200).send(collector);
+			}
 
-			return res.status(200).json({'error' : "The update didn't accur. The given ID doesn't exist on database."});
+			return res.status(400).send({"message":"The update did not occur. The given ID doesn't exist on database."});
 		});
 	});
 
@@ -434,12 +440,12 @@ var setRouteCollectors = function(){
 
 		collectorDao.deleteById(req.params.id, function(err, rowCount){
 			if(err)
-				return res.status(500).json({'error' : err}); 
+				return res.status(500).send(err.toString()); 
 
 			if(rowCount > 0)
-				return res.status(200).json({'message' : "deleted count " + rowCount});
+				return res.status(200).send();
 
-			return res.status(200).json({'error' : "The delete didn't accur. The given ID doesn't exist on database."});
+			return res.status(400).send({"message":"The delete didn't accur. The given ID doesn't exist on database."});
 		});
 	});
 }
@@ -477,9 +483,9 @@ var setRouteGroups = function(){
 
 		groupDao.findAll(limit, offset, function(err, groups){
 			if(err)
-				return res.status(500).json({'error' : err.toString()}); 
+				return res.status(500).send(err.toString()); 
 
-			return res.status(200).json({'result' : groups});
+			return res.status(200).send(groups);
 		});		
 	});
 
@@ -488,13 +494,13 @@ var setRouteGroups = function(){
 
 		var errors = req.validationErrors();
 		if(errors)
-			return res.status(400).json(errors);
+			return res.status(400).send(errors);
 
 		groupDao.findById(req.params.id, function(err, group){
 			if(err)
-				return res.status(500).json({'error' : err.toString()}); 
+				return res.status(500).send(err.toString()); 
 
-			return res.status(200).json({'result' : group});
+			return res.status(200).send(group);
 		});	
 	});
 
@@ -517,11 +523,13 @@ var setRouteGroups = function(){
 		if(errors)
 			return res.status(400).json(errors);		
 
-		groupDao.insert(new Group(req.body), function(err, id){
+		var group = new Group(req.body);
+		groupDao.insert(group, function(err, id){
 			if(err)
-				return res.status(500).json({'error' : err.toString()}); 
+				return res.status(500).send(err.toString()); 
 
-			return res.status(200).json({'id' : id});
+			group.id = id;
+			return res.status(200).send(group);
 		});			
 	});
 
@@ -542,16 +550,17 @@ var setRouteGroups = function(){
 		var errors = req.validationErrors();
 
 		if(errors)
-			return res.status(400).json(errors);		
+			return res.status(400).send(errors);		
 
-		groupDao.updateGroup(new Group(req.body), function(err, rowCount){
+		var group = new Group(req.body);
+		groupDao.updateGroup(group, function(err, rowCount){
 			if(err)
-				return res.status(500).json({'error' : err.toString()});
+				return res.status(500).send(err.toString());
 
 			if(rowCount > 0)
-				return res.status(200).json({'message' : "updated count " + rowCount});
+				return res.status(200).send();
 
-			return res.status(200).json({'error' : "The update didn't accur. The given ID doesn't exist on database."});
+			return res.status(400).send({"message": "The update didn't occur. The given ID doesn't exist on database."});
 		});
 	});
 
@@ -562,16 +571,16 @@ var setRouteGroups = function(){
 
 		var errors = req.validationErrors();
 		if(errors)
-			return res.status(400).json(errors);
+			return res.status(400).send(errors);
 
 		groupDao.deleteById(req.params.id, function(err, rowCount){
 			if(err)
-				return res.status(500).json({'error' : err}); 
+				return res.status(500).send(err.toStrin()); 
 
 			if(rowCount > 0)
-				return res.status(200).json({'message' : "deleted count " + rowCount});
+				return res.status(200).send();
 
-			return res.status(200).json({'error' : "The delete didn't accur. The given ID doesn't exist on database."});
+			return res.status(400).send({"message" : "The delete didn't occur. The given ID doesn't exist on database."});
 		});
 	});
 }
@@ -609,9 +618,9 @@ var setRouteRfiddata = function(){
 
 		rfiddataDao.findAll(limit, offset, function(err, rfiddatas){
 			if(err)
-				return res.status(500).json({'error' : err.toString()}); 
+				return res.status(500).send({"message" : err.toString()}); 
 
-			return res.status(200).json({'result' : rfiddatas});
+			return res.status(200).json(rfiddatas);
 		});			
 	});
 
@@ -632,13 +641,13 @@ var setRouteRfiddata = function(){
 
 		var errors = req.validationErrors();
 		if(errors)
-			return res.status(400).json(errors);
+			return res.status(400).send(errors);
 
 		rfiddataDao.findByRfidcode(req.params.rfidcode, limit, offset, function(err, rfiddatas){
 			if(err)
-				return res.status(500).json({'error' : err.toString()}); 
+				return res.status(500).send({"message" : err.toString()}); 
 
-			return res.status(200).json({'result' : rfiddatas});
+			return res.status(200).send(rfiddatas);
 		});		
 	});
 }
@@ -652,7 +661,7 @@ var setRoutePermissions = function(){
 
 	router.get(expressRouteSimple, function(req, res){
 		if(!req.headers.authorization)
-			return res.status(401).json({"error" : "Where is your token sir? How have you got here? Better you start running..."});
+			return res.status(401).send({"message" : "Where is your token sir? How have you got here? Better you start running..."});
 
 		var array = req.headers.authorization.split(' ');
 
@@ -661,17 +670,16 @@ var setRoutePermissions = function(){
 		if(array[0] && array[0] == 'Bearer' && array[1]){
 			token = array[1];
 		}else{
-			return res.status(401).json({"error" : "What a mess with your token sir. How have you got here? Better you start running..."});
+			return res.status(401).send({"message" : "What a mess with your token sir. How have you got here? Better you start running..."});
 		}
 
 		permissions.findByToken(token, function(err, permissions){
 			if(err)
-				return res.status(500).json({'error' : err.toString()}); 
+				return res.status(500).send({"message" : err.toString()}); 
 
-			return res.status(200).json({'result' : permissions});				
+			return res.status(200).send(permissions);				
 		});	
 	});
-
 }
 
 module.exports = PlatformRouter;
