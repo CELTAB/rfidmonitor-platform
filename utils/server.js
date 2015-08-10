@@ -31,29 +31,38 @@ var Server = function(){
 
     	logger.info("New connection from " + address.address);
 
-		socket.on('end', function() {
+
+    	var lostCollector = function(){
 			logger.info('Client with MAC ' + collector.mac + ' and ID ' + collector.id + ' Disconnected');
 
 			socket.isConnected = false;
 			delete protocol;
 
 			collectorPool.updateStatusByMac(collector, collector.statusEnum.OFFLINE);
-			
-		});
+    	}
+
+		socket.on('end', lostCollector);
+		socket.on('close', lostCollector);
 	
 		socket.on('data', function(data) {
 			logger.debug('Server : data received.');
 			protocol.processData(data);
 		});
 
-		 socket.on("error", function(err) {
-    		console.log("Caught flash policy server socket error: ");
-    		console.log(err.stack);
+		socket.on("error", function(err) {
+		 	socket.destroy();
+    		logger.error(err.stack);
+  		});
+
+  		socket.setTimeout(13000, function(){
+  			logger.warn("Socket Timeout");
+  			socket.end();
+  			socket.destroy();
   		});
 	});
 
 	this.startServer = function(){
-		server.listen(8125, function() { //'listening' listener
+		server.listen(8124, function() { //'listening' listener
 		  logger.info('RT Server bound on port 8124');
 		});	
 	}

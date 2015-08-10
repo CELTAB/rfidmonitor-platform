@@ -47,7 +47,7 @@ var CollectorPool = function CollectorPool(){
 
     	if(this.isCollectorValid(collector)){
 			pool[collector.mac] = collector;
-			logger.error("CollectorPool : pushed");
+			logger.debug("CollectorPool : pushed");
 			return true;
 		}
 
