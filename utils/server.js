@@ -24,24 +24,41 @@ var Server = function(){
 			collector.id = collectorInfo.id;
 		});
 
-		var address = socket.address();
+		var address = {};
+		address.address = socket.remoteAddress;
+		address.port = socket.remotePort;
 
-    	logger.info("New connection from " + address.address + ":" + address.port);    	 	
 
-		socket.on('end', function() {
+    	logger.info("New connection from " + address.address);
+
+
+    	var lostCollector = function(){
 			logger.info('Client with MAC ' + collector.mac + ' and ID ' + collector.id + ' Disconnected');
 
 			socket.isConnected = false;
 			delete protocol;
 
 			collectorPool.updateStatusByMac(collector, collector.statusEnum.OFFLINE);
-			
-		});
+    	}
+
+		socket.on('end', lostCollector);
+		socket.on('close', lostCollector);
 	
 		socket.on('data', function(data) {
 			logger.debug('Server : data received.');
 			protocol.processData(data);
 		});
+
+		socket.on("error", function(err) {
+		 	socket.destroy();
+    		logger.error(err.stack);
+  		});
+
+  		socket.setTimeout(13000, function(){
+  			logger.warn("Socket Timeout");
+  			socket.end();
+  			socket.destroy();
+  		});
 	});
 
 	this.startServer = function(){

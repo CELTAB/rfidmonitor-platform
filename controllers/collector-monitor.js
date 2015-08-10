@@ -42,6 +42,7 @@ var collectorTimeout = function(){
                 stopMonitor();
                 //Close the connection with the socket.  
                 closeConnection();
+                stopMonitor();
             }catch(e){
                 logger.error("RFIDPLATFORM[DEBUG]: ERROR When trying to close the connection " + e);
             }

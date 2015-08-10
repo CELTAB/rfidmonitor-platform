@@ -120,7 +120,7 @@ CollectorDao.prototype.prepareCollector = function(collector, callbackInsert){
 
 CollectorDao.prototype.updateCollector = function(c, callback){
 // id | group_id | name | mac | description | lat | lng
-	var query = "UPDATE collector SET group_id = $1, name = $2, mac = $3, description = $4, lat = $5, lng = $6, WHERE id = $7";
+	var query = "UPDATE collector SET group_id = $1, name = $2, mac = $3, description = $4, lat = $5, lng = $6 WHERE id = $7";
 
 	db.query(query, [c.groupId, c.name, c.mac, c.description, c.lat, c.lng, c.id], function(err, result){
 		if(err){
@@ -195,6 +195,8 @@ var fromDbObj = function(dbObj){
 	if(!dbObj)
 		return null;
 
+	var collectorpool = require('../controllers/collectorpool');
+
 	var collector = new Collector();
 	collector.id = dbObj.id;
 	collector.groupId = dbObj.group_id;
@@ -203,7 +205,7 @@ var fromDbObj = function(dbObj){
 	collector.description = dbObj.description;
 	collector.lat = dbObj.lat;
 	collector.lng = dbObj.lng;
-	collector.status = collector.statusEnum.UNKNOWN;
+	collector.status = collectorpool.getStatusByMac(dbObj.mac);
 
     return collector;
 }

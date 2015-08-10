@@ -184,6 +184,8 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 		if(socket.isConnected){
 			logger.debug("Close the connection");
 			socket.end();
+			// socket.close();
+			socket.destroy();
 		}
 	}
 };
