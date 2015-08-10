@@ -1,8 +1,11 @@
 var logger = require('winston');
 var validator = require('validator');
 var PlatformError = require('../utils/platformerror');
+var DynamicEntitiesDao = require('../dao/dynamicentitiesdao');
 
 var DynamicEntities = function (){
+
+	deDao = new DynamicEntitiesDao();
 
 }
 
@@ -304,21 +307,20 @@ var createTableEntity = function(entityObj) {
 
 	createTableQuery = createTableQuery.replace("$attr", finalAttrStr+finalConstraints);
 	
-	// var ma = require('../utils/manipulatedb');
-	// var m = new ma();
+	deDao.createTable(createTableQuery, function(err){
+		if(err)
+			return err;
+		
+		var entityComment = null;
+		if(entityObj.description){
+			var entityComment = "COMMENT ON TABLE public."+entityObj.meta.dbTableName+ " IS '"+ entityObj.description +"';";
+			console.log(entityComment);
+		}
 
-	// m.executeStatements([createTableQuery], function(err){
-	// 	if(err)
-	// 		console.log(err);
-	// }, 'rfidplatform');
-
-	// console.log(createTableQuery);
+		//no errors
+		return false;
+	});
 	
-	var entityComment = null;
-	if(entityObj.description){
-		var entityComment = "COMMENT ON TABLE public."+entityObj.meta.dbTableName+ " IS '"+ entityObj.description +"';";
-		console.log(entityComment);
-	}
 }
 
 //TODO remove from public.
