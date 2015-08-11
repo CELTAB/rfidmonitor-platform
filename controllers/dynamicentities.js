@@ -24,27 +24,17 @@ var DynamicEntities = function (){
 DynamicEntities.prototype.registerEntity = function(json, callback){
 
 	//Checks each object integrity
-	var errors = deValidator.validateClientRootArray(json);
-	if(errors)
+	var errors = deValidator.validateClientRootArray(json, function(errors){
+		if(errors)
+			return callback(errors);
+
+		for (var i in json){
+			var clientObj = json[i];
+
+		}
+
 		return callback(errors);
-
-	for (var i in json){
-		var clientObj = json[i];
-
-		var strObj = JSON.stringify(clientObj);
-
-		logger.debug("DynamicEntities.prototype.registerEntity : ClientObjRaw " + strObj);
-		
-		ClientObjRaw.create({obj : strObj})
-		.then(function(c){
-			logger.debug('ClientObjRaw OK');
-		})
-		.catch(function(e){
-			errors.push(e);
-		});
-	}
-
-	return callback(errors);
+	});
 }
 
 var isObject = function(a) {

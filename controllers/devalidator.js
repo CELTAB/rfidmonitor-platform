@@ -98,6 +98,18 @@ var validateEntityField = function(field){
 
 var searchForRepeatedIdentifiers = function(pool){
 
+	var controller = {};
+
+	for (var i in pool){
+
+		if(controller[pool[i].identifier])
+			return {"message" : "Error: entity name ["+pool[i].field+"] already in use"};
+
+		//Add the valid identifier to the controller obj to further checking.
+		controller[pool[i].identifier] = true;
+
+	}
+
 	//Repetition not found. Everything ok.
 	return null;
 }
@@ -130,7 +142,7 @@ var splitAndUpdateRootObj = function(json){
 		}
 		//Add an identifier to the object.
 		rootObj.identifier = normalizeString(rootObj.field);
-		
+
 		//Add the current obj udpated.
 		newEntitiesSplit.push(rootObj);		
 	}
@@ -139,7 +151,7 @@ var splitAndUpdateRootObj = function(json){
 }
 
 
-DEValidator.prototype.validateClientRootArray = function(json){
+DEValidator.prototype.validateClientRootArray = function(json, callback){
 
 	/*
 	Verifica integridade do obj:
@@ -148,20 +160,20 @@ DEValidator.prototype.validateClientRootArray = function(json){
 	*/
 
 	if(!json)
-		return {"message" : "Null object"};
+		return callback({"message" : "Null object"});
 
 	if (!isArray(json))
-		return {"message" : "Not an Array"};
+		return callback({"message" : "Not an Array"});
 
 	if (json.length == 0)
-		return {"message" : "Empty Array"};
+		return callback({"message" : "Empty Array"});
 
 	for (var i in json){
 
 		var rootObj = json[i];
 		var errors = validateEntityField(rootObj);
 		if(errors)
-			return errors;
+			return callback(errors);
 	}
 
 
@@ -173,27 +185,53 @@ DEValidator.prototype.validateClientRootArray = function(json){
 	... Guarda no banco cada entidade nova em tuplas.
 	*/
 	
-	var entitiesPool = [];
+	
 
 	var newEntities = splitAndUpdateRootObj(json);
-	logger.debug("##" +JSON.stringify(newEntities, null , '\t'));
+	// logger.debug("##" +JSON.stringify(newEntities, null , '\t'));
+
+	if(newEntities.length == 0){
+		return callback({ "message" : "Unexpected behavior: newEntities list is empty after splitAndUpdateRootObj"});
+	}
+
+	var entitiesPool = [];
 	entitiesPool = entitiesPool.concat(newEntities);
 
 
-	ClientEntitiesRaw.findAll().then(function(entities){
-		logger.debug("Current Entities from ClientEntitiesRaw " + JSON.stringify(entities));
-		
-		if(entities)
-			entitiesPool.push(entities);
+	ClientEntitiesRaw.findAll({attributes : ['entity']}).then(function(entities){
+
+		// The entities from database are raw strings. The must be parsed.
+		for(var icer in entities){
+			entitiesPool.push(JSON.parse(entities[icer].entity));
+		}
+
+		// logger.debug("##" +JSON.stringify(entitiesPool, null , '\t'));
 		
 		//Find repeated names. Return errors if so.
-		var errors = searchForRepeatedIdentifiers(entitiesPool);
-		if(errors)
-			return errors;		
+		var error = searchForRepeatedIdentifiers(entitiesPool);
+		if(error)
+			return callback(error);
 
-		//No errors
-		return null;
-	}); //TODO catch errors 	
+		//Persist the new entities as they are ok.
+		var bulkArray = []
+		for (var j in newEntities){
+			bulkArray.push({entity : JSON.stringify(newEntities[j])});
+		}
+
+		ClientEntitiesRaw.bulkCreate(bulkArray).then(function(){
+
+			//No errors on validateClientRootArray
+			return callback(null);
+
+		}).catch(function(e){
+			logger.error(e);
+			return callback(e);
+		});	
+
+	}).catch(function(e){
+		logger.error(e);
+		return callback(e);
+	});
 }
 
 
