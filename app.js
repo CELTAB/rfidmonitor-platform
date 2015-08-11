@@ -40,6 +40,7 @@ var expressValidator = require('express-validator');
 var Cors = require('cors');
 
 var PlatformRouter = require('./controllers/platformrouter');
+var DERouter = require('./controllers/derouter');
 var Server = require('./utils/server');
 var Collector = require('./models/collector');
 
@@ -166,5 +167,6 @@ app.use('/web/public', express.static('web/public'));
 app.use('/api/doc', express.static('apidoc'));
 
 app.use('/api', new PlatformRouter());
+app.use('/api', new DERouter());
 
 https.createServer(options, app).listen(443);
