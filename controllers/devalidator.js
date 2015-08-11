@@ -104,15 +104,38 @@ var searchForRepeatedIdentifiers = function(pool){
 
 var splitAndUpdateRootObj = function(json){
 	//... Sub entidades sao recortadas da entidades pai, e no lugar fica o nome e o tipo apenas.
-	var newEntities = [];
+
+	var newEntitiesSplit = [];
 
 	for (var i in json ){
-		var obj = json[i];
 		//TODO look into structureList for entities and do the magic.
+		//remove structureList e unique.
+		var rootObj = json[i];
+		for (var is in rootObj.structureList){
+			rootObj.structureList[is];
+
+			//if the field is a entity
+			if(rootObj.structureList[is].type == DEValidator.prototype.typesEnum.ENTITY){
+				//copy the entity
+				//I know, it is ugly but is what I have for today.
+				var cpEntity = JSON.parse(JSON.stringify(rootObj.structureList[is]));
+
+				//remove useless for a field, but keep on the copy that will  be the entity itself.
+				delete rootObj.structureList[is].unique;
+				delete rootObj.structureList[is].structureList;
+
+				//check inside the entity found for another entities.
+				newEntitiesSplit = newEntitiesSplit.concat(splitAndUpdateRootObj([cpEntity]));
+			}
+		}
+		//Add an identifier to the object.
+		rootObj.identifier = normalizeString(rootObj.field);
 		
+		//Add the current obj udpated.
+		newEntitiesSplit.push(rootObj);		
 	}
 
-	return newEntities;
+	return newEntitiesSplit;
 }
 
 
@@ -153,7 +176,8 @@ DEValidator.prototype.validateClientRootArray = function(json){
 	var entitiesPool = [];
 
 	var newEntities = splitAndUpdateRootObj(json);
-	entitiesPool.push(newEntities);
+	logger.debug("##" +JSON.stringify(newEntities, null , '\t'));
+	entitiesPool = entitiesPool.concat(newEntities);
 
 
 	ClientEntitiesRaw.findAll().then(function(entities){
