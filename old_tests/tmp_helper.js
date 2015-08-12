@@ -417,3 +417,18 @@ var testObj_complexValidObject = [
     ] 
   }
 ]
+
+
+[
+  {
+    "field" : "Carro",
+    "type" : "ENTITY",
+    "structureList" : [
+      {
+        "field" : "teste",
+        "type" : "TEXT",
+        "notNull" : true
+      }
+    ] 
+  }
+]

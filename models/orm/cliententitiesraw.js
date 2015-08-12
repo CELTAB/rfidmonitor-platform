@@ -1,9 +1,6 @@
 var SequelizeClass = require('sequelize');
+var sequelize = require('../../dao/platformsequelize');
 
-var ClientEntitiesRaw = function(sequelize) {
-  return sequelize.define("ClientEntitiesRaw", {
-    entity: SequelizeClass.TEXT
-  })	
-}
-
-module.exports = ClientEntitiesRaw;
+module.exports = sequelize.define("ClientEntitiesRaw", {
+	entity: SequelizeClass.TEXT
+})

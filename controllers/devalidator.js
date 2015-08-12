@@ -4,7 +4,7 @@ var PlatformError = require('../utils/platformerror');
 
 var DEValidator = function (sequelize){
 
-	ClientEntitiesRaw = require('../models/orm/cliententitiesraw')(sequelize);
+	ClientEntitiesRaw = require('../models/orm/cliententitiesraw');
 
 }
 
@@ -160,20 +160,20 @@ DEValidator.prototype.validateClientRootArray = function(json, callback){
 	*/
 
 	if(!json)
-		return callback({"message" : "Null object"});
+		return callback({"message" : "Null object"}, null);
 
 	if (!isArray(json))
-		return callback({"message" : "Not an Array"});
+		return callback({"message" : "Not an Array"}, null);
 
 	if (json.length == 0)
-		return callback({"message" : "Empty Array"});
+		return callback({"message" : "Empty Array"}, null);
 
 	for (var i in json){
 
 		var rootObj = json[i];
 		var errors = validateEntityField(rootObj);
 		if(errors)
-			return callback(errors);
+			return callback(errors, null);
 	}
 
 
@@ -191,7 +191,7 @@ DEValidator.prototype.validateClientRootArray = function(json, callback){
 	// logger.debug("##" +JSON.stringify(newEntities, null , '\t'));
 
 	if(newEntities.length == 0){
-		return callback({ "message" : "Unexpected behavior: newEntities list is empty after splitAndUpdateRootObj"});
+		return callback({ "message" : "Unexpected behavior: newEntities list is empty after splitAndUpdateRootObj"}, null);
 	}
 
 	var entitiesPool = [];
@@ -210,7 +210,7 @@ DEValidator.prototype.validateClientRootArray = function(json, callback){
 		//Find repeated names. Return errors if so.
 		var error = searchForRepeatedIdentifiers(entitiesPool);
 		if(error)
-			return callback(error);
+			return callback(error, null);
 
 		//Persist the new entities as they are ok.
 		var bulkArray = []
@@ -221,20 +221,20 @@ DEValidator.prototype.validateClientRootArray = function(json, callback){
 		ClientEntitiesRaw.bulkCreate(bulkArray).then(function(){
 
 			//No errors on validateClientRootArray
-			return callback(null);
+			return callback(null, newEntities);
 
 		}).catch(function(e){
 			logger.error(e);
-			return callback(e);
+			return callback(e, null);
 		});	
 
 	}).catch(function(e){
 		logger.error(e);
-		return callback(e);
+		return callback(e, null);
 	});
 }
 
-
+//not used anymore
 var findFieldByNameAndType = function(field, name, type){
 /*
 	Search on the current field for name and type combination, and recursive for fields under a possible 
@@ -250,7 +250,7 @@ var findFieldByNameAndType = function(field, name, type){
 	return false;
 
 }
-
+//not used anymore
 var createFieldMeta = function(field){
 	var meta = {};
 
@@ -293,19 +293,6 @@ var createFieldMeta = function(field){
 
 	field.meta = meta;
 	return field;
-}
-
-//TODO remove from public.
-DEValidator.prototype.createMeta = function(json, callback){
-
-	var metaObj = [];
-
-	for(var i in json){
-		console.warn("createMeta is not returning errors if they exist");
-		metaObj.push(createFieldMeta(json[i]));
-	}
-
-	callback(null, metaObj);
 }
 
 var isObject = function(a) {
@@ -446,21 +433,3 @@ var isObjectEmpty = function(a){
     }
 
 module.exports = DEValidator;
-
-/*
-
-[
-	{
-		"field" : "Carro",
-		"type" : "ENTITY",
-		"structureList" : [
-			{
-				"field" : "teste",
-				"type" : "TEXT",
-				"notNull" : true
-			}
-		] 
-	}
-]
-
-*/
