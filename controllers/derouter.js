@@ -14,6 +14,9 @@ var RouterAccessDao = require('../dao/routeraccessdao');
 
 var routes = require('../utils/routes');
 var DynamicEntities = require('./dynamicentities');
+var deModelPool = require('./demodelpool');
+
+var ClientEntitiesRaw = require('../models/orm/cliententitiesraw');
 
 var DERouter = function(){
 
@@ -29,6 +32,7 @@ var DERouter = function(){
 
 	setRouteMetaInfo();
 	setRouteRegisterEntity();
+	setRouteDeDao();
 
 	return router;
 }
@@ -131,21 +135,33 @@ var setRouteMetaInfo = function(){
 
 	router.get(expressRouteSimple,function(req, res){
 
-		return res.status(200).send({});
+		ClientEntitiesRaw.findAll()
+		.then(function(entities){
+			return res.status(200).send(entities);
+		})
+		.catch(function(e){
+			return res.status(500).send(e);
+		});		
 
 	});
 
 	router.get(expressRouteId,function(req, res){
 
-		return res.status(200).send(req.params);
+		ClientEntitiesRaw.findAll({where : { identifier : req.params.entity }})
+		.then(function(entities){
+			return res.status(200).send(entities);
+		})
+		.catch(function(e){
+			return res.status(500).send(e);
+		});	
 
 	});
 }
 
 var setRouteRegisterEntity = function(){
 
-	var dbRoute = '/api/de';
-	var expressRouteSimple = '/de';
+	var dbRoute = '/api/de/register';
+	var expressRouteSimple = '/de/register';
 	var expressRouteId = expressRouteSimple + '/:entity';
 
 	routes.register(dbRoute, routes.getMethods().POST);
@@ -162,6 +178,101 @@ var setRouteRegisterEntity = function(){
 
 	});
 
+}
+
+var checkEntity = function(req, res, next){
+	logger.debug("api/de/dao/ checking for valid model of " + req.params.entity);
+	
+	if(deModelPool.getModel(req.params.entity))
+		return next();
+
+	res.status(400).send("NOT A VALID ENTITY");
+}
+
+var setRouteDeDao = function(){
+
+	//TODO specify new kind of authorization for dynamic routes.
+	//Example: /api/de/dao/car , /api/de/dao/person/4
+
+	var dbRoute = '/api/de/dao';
+	var expressRouteSimple = '/de/dao/:entity';
+	var expressRouteId = expressRouteSimple + '/:id';
+
+	routes.register(dbRoute, routes.getMethods().GET);
+
+
+	router.get(expressRouteSimple, checkEntity, function(req, res){
+		
+		deModelPool.getModel(req.params.entity).findAll()
+		.then(function(entities){
+			return res.status(200).send(entities);
+		})
+		.catch(function(e){
+			return res.status(500).send(e);
+		});	
+	});
+
+	router.get(expressRouteId, checkEntity, function(req, res){
+		
+		deModelPool.getModel(req.params.entity).findAll({where : { id : req.params.id }})
+		.then(function(entities){
+			return res.status(200).send(entities);
+		})
+		.catch(function(e){
+			return res.status(500).send(e);
+		});	
+
+	});
+
+	router.post(expressRouteSimple, checkEntity, function(req, res){
+		
+		deModelPool.getModel(req.params.entity).create(req.body)
+		.then(function(entity){
+			return res.status(200).send(entity);
+		})
+		.catch(function(e){
+			return res.status(500).send(e);
+		});	
+
+	});
+
+	router.put(expressRouteId, checkEntity, function(req, res){
+		
+		deModelPool.getModel(req.params.entity).findById(req.body.id)
+		.then(function(entity){
+
+			entity.update(req.body)
+				.then(function(entity){					
+					return res.status(200).send(entities);
+				})
+				.catch(function(e){
+					return res.status(500).send(e);
+				});	
+		})
+		.catch(function(e){
+			return res.status(500).send(e);
+		});	
+
+	});
+
+	router.delete(expressRouteId, checkEntity, function(req, res){
+		
+		deModelPool.getModel(req.params.entity).findById(req.body.id)
+		.then(function(entity){
+
+			entity.destroy()
+				.then(function(entity){					
+					return res.status(200).send(entities);
+				})
+				.catch(function(e){
+					return res.status(500).send(e);
+				});	
+		})
+		.catch(function(e){
+			return res.status(500).send(e);
+		});	
+
+	});
 }
 
 module.exports = DERouter;

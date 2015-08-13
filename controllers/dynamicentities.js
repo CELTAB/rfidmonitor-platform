@@ -19,8 +19,6 @@ var DynamicEntities = function (){
 	// modelsORMPath = path.join(__dirname, '../models/orm');
 	// ClientObjRaw = sequelize.import(path.join(modelsORMPath, '/clientobjraw'));
 
-	sequelize.sync({force : true});
-
 }
 
 
@@ -35,6 +33,21 @@ DynamicEntities.prototype.registerEntity = function(json, callback){
 	});
 }
 
+var buildDefinition = function(entity){
+	var definition = { identifier : entity.identifier, model : {} };
+	for (var i in entity.structureList){
+		var field = entity.structureList[i];
+
+		definition.model[field.identifier] = {
+			type : deValidator.typesEnumToPostgres(field.type) ,
+			allowNull : field.allowNull
+		}
+	}
+
+	//error
+	return definition;
+}
+
 var buildSequelizeModels = function(entities, callback){
 
 	if(entities.length == 0)
@@ -42,10 +55,11 @@ var buildSequelizeModels = function(entities, callback){
 
 	for (var i in entities){
 		var entity = entities[i];
-		var definition = {identifier : entity.identifier, model : {teste : SequelizeClass.TEXT}};
+		var definition = null;
 
-
-
+		definition = buildDefinition(entity);
+		if(!definition)
+			return callback({"message" : "Error : cannot build definitions"});
 
 		logger.warn(JSON.stringify(definition, null, '\t'));
 

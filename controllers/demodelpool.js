@@ -13,6 +13,7 @@ var DEModelPool = function DEModelPool(){
             //Load all models from database and set it into the pool
             for(var i in models){
                 pool[models[i].identifier] = sequelize.define(models[i].identifier, JSON.parse(models[i].model));            
+                pool[models[i].identifier].sync();
                 logger.debug("Dynamic model loaded into DEModelPool: " + models[i].identifier);
             }
 
@@ -35,14 +36,18 @@ var DEModelPool = function DEModelPool(){
             logger.error(error);
             return callback(error);
         }
-        
-        //TODO handle define errors
-        var deModel = sequelize.define(modelDefinition.identifier, modelDefinition.model);
 
-        SequelizeModel.create({identifier : modelDefinition.identifier, model : JSON.stringify(modelDefinition.model)})
+        
+
+        SequelizeModel.create({identifier : modelDefinition.identifier, model : JSON.stringify(modelDefinition.model, null, null)})
         .then(function(m){
+            //TODO handle define errors
+            var deModel = sequelize.define(modelDefinition.identifier, modelDefinition.model);
             pool[modelDefinition.identifier] = deModel;
             logger.debug("Dynamic model persisted into database: " + modelDefinition.identifier);
+            
+            logger.warn("TODO deModel.sync() necessário? pool.registerModel");
+            deModel.sync();
             //NO ERRORS
             return callback(null);
         })

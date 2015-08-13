@@ -88,8 +88,8 @@ var validateEntityField = function(field){
 			}
 		}
 	}else{
-		if(!validator.isBoolean(field["notNull"])){
-			errors.push({field : field.field, error : "notNull not found or invalid"});
+		if(!validator.isBoolean(field["allowNull"])){
+			errors.push({field : field.field, error : "allowNull not found or invalid"});
 		}
 	}
 
@@ -124,7 +124,7 @@ var splitAndUpdateRootObj = function(json){
 		//remove structureList e unique.
 		var rootObj = json[i];
 		for (var is in rootObj.structureList){
-			rootObj.structureList[is];
+			rootObj.structureList[is].identifier = normalizeString(rootObj.structureList[is].field);
 
 			//if the field is a entity
 			if(rootObj.structureList[is].type == DEValidator.prototype.typesEnum.ENTITY){
@@ -215,7 +215,7 @@ DEValidator.prototype.validateClientRootArray = function(json, callback){
 		//Persist the new entities as they are ok.
 		var bulkArray = []
 		for (var j in newEntities){
-			bulkArray.push({entity : JSON.stringify(newEntities[j])});
+			bulkArray.push({identifier : newEntities[j].identifier, entity : JSON.stringify(newEntities[j], null, null)});
 		}
 
 		ClientEntitiesRaw.bulkCreate(bulkArray).then(function(){
@@ -262,7 +262,7 @@ var createFieldMeta = function(field){
 		var idObj = {};
 		idObj.field = "_id";
 		idObj.type = "ID";
-		idObj.notNull = true; //serial 
+		idObj.allowNull = true; //serial 
 		idObj.description = "Default id inserted by platform.";
 		field.structureList.push(idObj);
 

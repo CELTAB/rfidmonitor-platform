@@ -225,7 +225,7 @@ var testObj_complexFiveDeep = [
                 "field" : "Test",
                 "type" : "TEXT",
                 "description" : "NOTHING",
-                "notNull" : false
+                "allowNull" : false
             },
             {
                 "field" : "Two",
@@ -236,7 +236,7 @@ var testObj_complexFiveDeep = [
                         "field" : "Test",
                         "type" : "TEXT",
                         "description" : "NOTHING",
-                        "notNull" : false
+                        "allowNull" : false
                     },
                     {
                         "field" : "Three",
@@ -247,7 +247,7 @@ var testObj_complexFiveDeep = [
                                 "field" : "Test",
                                 "type" : "TEXT",
                                 "description" : "NOTHING",
-                                "notNull" : false
+                                "allowNull" : false
                             },
                             {
                                 "field" : "Four",
@@ -258,7 +258,7 @@ var testObj_complexFiveDeep = [
                                         "field" : "Test",
                                         "type" : "TEXT",
                                         "description" : "NOTHING",
-                                        "notNull" : false
+                                        "allowNull" : false
                                     },
                                     {
                                         "field" : "Five",
@@ -269,7 +269,7 @@ var testObj_complexFiveDeep = [
                                                 "field" : "Test",
                                                 "type" : "TEXT",
                                                 "description" : "NOTHING",
-                                                "notNull" : false
+                                                "allowNull" : false
                                             }
                                         ]
                                     }
@@ -296,7 +296,7 @@ var testObj_complexValidObject = [
                 "field" : "Código RFID",
                 "type" : "RFIDCODE",
                 "description" : "teste",
-                "notNull" : false
+                "allowNull" : false
             },
             {
                 "field" : "Espécie",
@@ -308,13 +308,13 @@ var testObj_complexValidObject = [
                         "field" : "Nome",
                         "type" : "TEXT",
                         "description" : "",
-                        "notNull" : false
+                        "allowNull" : false
                     },
                     {
                         "field" : "Foto",
                         "type" : "IMAGE",
                         "description" : "",
-                        "notNull" : false
+                        "allowNull" : false
                     }
                 ]
             },
@@ -322,31 +322,31 @@ var testObj_complexValidObject = [
                 "field" : "Instituição",
                 "type" : "TEXT",
                 "description" : "",
-                "notNull" : false
+                "allowNull" : false
             },
             {
                 "field" : "Local de Captura",
                 "type" : "TEXT",
                 "description" : "",
-                "notNull" : false
+                "allowNull" : false
             },
             {
                 "field" : "Local de Soltura",
                 "type" : "TEXT",
                 "description" : "",
-                "notNull" : false
+                "allowNull" : false
             },
             {
                 "field" : "Comprimento total do peixe",
                 "type" : "NUMBER",
                 "description" : "",
-                "notNull" : false
+                "allowNull" : false
             },
             {
                 "field" : "Data de Captura",
                 "type" : "DATETIME",
                 "description" : "",
-                "notNull" : false
+                "allowNull" : false
             }
         ]
     },
@@ -359,13 +359,13 @@ var testObj_complexValidObject = [
                 "field" : "Código RFID",
                 "type" : "RFIDCODE",
                 "description" : "",
-                "notNull" : false
+                "allowNull" : false
             },
             {
                 "field" : "Ano de Fabricação",
                 "type" : "DATETIME",
                 "description" : "",
-                "notNull" : false
+                "allowNull" : false
             },
             {
                 "field" : "Motorista",
@@ -376,13 +376,13 @@ var testObj_complexValidObject = [
                         "field" : "Nome Completo",
                         "type" : "TEXT",
                         "description" : "",
-                        "notNull" : false
+                        "allowNull" : false
                     },
                     {
                         "field" : "Idade",
                         "type" : "NUMBER",
                         "description" : "",
-                        "notNull" : false
+                        "allowNull" : false
                     }
                 ]
             }
@@ -401,7 +401,7 @@ var testObj_complexValidObject = [
       {
         "field" : "teste",
         "type" : "TEXT",
-        "notNull" : true
+        "allowNull" : true
       }
     ] 
   },
@@ -412,7 +412,7 @@ var testObj_complexValidObject = [
       {
         "field" : "teste",
         "type" : "TEXT",
-        "notNull" : true
+        "allowNull" : true
       }
     ] 
   }
@@ -427,7 +427,12 @@ var testObj_complexValidObject = [
       {
         "field" : "teste",
         "type" : "TEXT",
-        "notNull" : true
+        "allowNull" : true
+      },
+      {
+        "field" : "teste2",
+        "type" : "TEXT",
+        "allowNull" : false
       }
     ] 
   }
