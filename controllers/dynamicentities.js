@@ -35,18 +35,36 @@ DynamicEntities.prototype.registerEntity = function(json, callback){
 }
 
 var buildDefinition = function(entity){
-	var definition = { identifier : entity.identifier, model : {} };
+	var definition = { identifier : entity.identifier, model : {} , options : {}};
+	
+	definition.options = {
+		paranoid : true,
+		freezeTableName: true,
+  		tableName: 'de_' + entity.identifier
+	}
+
 	for (var i in entity.structureList){
 		var field = entity.structureList[i];
 
-		definition.model[field.identifier] = {
-			type : deValidator.typesEnumToPostgres(field.type) ,
-			allowNull : field.allowNull			
-		}
-		
-		definition.options = {
-			paranoid : true
-		}
+		if(field.type == DEValidator.prototype.typesEnum.ENTITY){
+
+			var fieldName = field.identifier + '_id';
+
+			definition.model[fieldName] = {
+				type: 'INTEGER',
+				references: {
+					model: 'de_' + field.identifier, // Can be both a string representing the table name, or a reference to the model
+					key:   "id"
+					//, deferrable: Sequelize.Deferrable.INITIALLY_IMMEDIATE
+				}
+			}
+
+		}else{
+			definition.model[field.identifier] = {
+				type : deValidator.typesEnumToPostgres(field.type) ,
+				allowNull : field.allowNull			
+			}
+		}		
 	}
 
 	//error

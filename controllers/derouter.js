@@ -204,24 +204,28 @@ var setRouteDeDao = function(){
 
 
 	router.get(expressRouteSimple, checkEntity, function(req, res){
+		//https://localhost:443/api/de/dao/teste?q={"where":{"id":{"$lt":10}},"limit":4}
 
 		var model = deModelPool.getModel(req.params.entity);
 		if(!model)
 			return res.status(400).send("Invalid model.");
 
 		var query = null;
-		if(req.query && req.query.q)
+		if(req.query && req.query.q){
 			query = req.query.q;
-
-		logger.debug(query);
-
-		//https://localhost:443/api/de/dao/teste?q={"where":{"id":{"$lt":10}},"limit":4}
-
-		try{
-			query = JSON.parse(query);
-		}catch(e){
-			return res.status(400).send("Query parse error: " +e);
+			logger.debug(query);
+			
+			try{
+				query = JSON.parse(query);
+			}catch(e){
+				return res.status(400).send("Query parse error: " +e);
+			}
 		}
+
+
+
+		if(!query)
+			query = {};
 
 		model.findAll(query)
 		.then(function(entities){

@@ -13,8 +13,14 @@ var DEModelPool = function DEModelPool(){
         .then(function(models){
             //Load all models from database and set it into the pool
             for(var i in models){
-                pool[models[i].identifier] = sequelize.define(models[i].identifier, JSON.parse(models[i].model));            
+                pool[models[i].identifier] = sequelize.define(
+                    models[i].identifier, 
+                    JSON.parse(models[i].model),
+                    JSON.parse(models[i].options)
+                ); 
+
                 pool[models[i].identifier].sync();
+
                 logger.debug("Dynamic model loaded into DEModelPool: " + models[i].identifier);
             }
 
@@ -48,7 +54,7 @@ var DEModelPool = function DEModelPool(){
             {
                 identifier : modelDefinition.identifier, 
                 model : JSON.stringify(modelDefinition.model, null, null),
-                options : JSON.stringify(modelDefinition.model, null, null),
+                options : JSON.stringify(modelDefinition.options, null, null),
             })
         .then(function(m){
             //TODO handle define errors

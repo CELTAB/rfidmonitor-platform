@@ -23,6 +23,7 @@ DEValidator.prototype.typesEnum = {
 }
 
 DEValidator.prototype.typesEnumToPostgres = function(type){
+	logger.warn('fix this translate to Sequelize.Type');
 	switch(type){
 		case DEValidator.prototype.typesEnum.RFIDCODE :
 			return 'TEXT';
