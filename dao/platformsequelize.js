@@ -6,7 +6,9 @@ var PlatformSequelize = function PlatformSequelize(){
 	var connectionString = 'postgres://rfidplatform:rfidplatform@localhost:5432/rfidplatform';
 	var sequelize = new Sequelize(connectionString);
 
-    sequelize.sync({force: true});
+    // sequelize.sync({force : true}).catch(function(e){
+    //      logger.error("Error while syncing sequelize on PlatformSequelize: " + e);
+    // });
 
 	this.getSequelize = function(){
 		return sequelize;

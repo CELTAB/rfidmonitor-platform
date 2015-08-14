@@ -96,6 +96,7 @@ var setAuthorization = function(){
 
 
 			//Lets get the position 1 and 2 always.
+			logger.warn("fix this on derouter");
 			finalRoute = '/'+uriArray[1]+'/'+uriArray[2];
 
 			logger.debug('Searching on authorization table for this uri: ' + finalRoute);
@@ -115,6 +116,7 @@ var setAuthorization = function(){
 
                 if(result){
                 	//ACCESS GRANTED.
+                	logger.debug("ACCESS GRANTED.");
                     next();
                 }else{
                     res.status(403).send({'message' : 'Get out dog.'});
@@ -202,8 +204,26 @@ var setRouteDeDao = function(){
 
 
 	router.get(expressRouteSimple, checkEntity, function(req, res){
-		
-		deModelPool.getModel(req.params.entity).findAll()
+
+		var model = deModelPool.getModel(req.params.entity);
+		if(!model)
+			return res.status(400).send("Invalid model.");
+
+		var query = null;
+		if(req.query && req.query.q)
+			query = req.query.q;
+
+		logger.debug(query);
+
+		//https://localhost:443/api/de/dao/teste?q={"where":{"id":{"$lt":10}},"limit":4}
+
+		try{
+			query = JSON.parse(query);
+		}catch(e){
+			return res.status(400).send("Query parse error: " +e);
+		}
+
+		model.findAll(query)
 		.then(function(entities){
 			return res.status(200).send(entities);
 		})
@@ -213,8 +233,12 @@ var setRouteDeDao = function(){
 	});
 
 	router.get(expressRouteId, checkEntity, function(req, res){
+
+		var model = deModelPool.getModel(req.params.entity);
+		if(!model)
+			return res.status(400).send("Invalid model.");
 		
-		deModelPool.getModel(req.params.entity).findAll({where : { id : req.params.id }})
+		model.findAll({where : { id : req.params.id }})
 		.then(function(entities){
 			return res.status(200).send(entities);
 		})
@@ -225,8 +249,12 @@ var setRouteDeDao = function(){
 	});
 
 	router.post(expressRouteSimple, checkEntity, function(req, res){
+
+		var model = deModelPool.getModel(req.params.entity);
+		if(!model)
+			return res.status(400).send("Invalid model.");
 		
-		deModelPool.getModel(req.params.entity).create(req.body)
+		model.create(req.body)
 		.then(function(entity){
 			return res.status(200).send(entity);
 		})
@@ -237,39 +265,59 @@ var setRouteDeDao = function(){
 	});
 
 	router.put(expressRouteId, checkEntity, function(req, res){
+
+		var model = deModelPool.getModel(req.params.entity);
+		if(!model)
+			return res.status(400).send("Invalid model.");
+
+		if(!req.params.id || !req.body.id)
+			return res.status(400).send("Missing param ID or body ID");
+
+		if(req.params.id != req.body.id)
+			return res.status(400).send("Divergent param ID & body ID");
 		
-		deModelPool.getModel(req.params.entity).findById(req.body.id)
+		model.findById(req.body.id)
 		.then(function(entity){
+
+			if(!entity)
+				return res.status(500).send("That register does not exit");
 
 			entity.update(req.body)
 				.then(function(entity){					
-					return res.status(200).send(entities);
+					return res.status(200).send(entity);
 				})
 				.catch(function(e){
-					return res.status(500).send(e);
+					return res.status(500).send("update error " +e);
 				});	
 		})
 		.catch(function(e){
-			return res.status(500).send(e);
+			return res.status(500).send("Find to update error " +e);
 		});	
 
 	});
 
 	router.delete(expressRouteId, checkEntity, function(req, res){
+
+		var model = deModelPool.getModel(req.params.entity);
+		if(!model)
+			return res.status(400).send("Invalid model.");
 		
-		deModelPool.getModel(req.params.entity).findById(req.body.id)
+		model.findById(req.params.id)
 		.then(function(entity){
+
+			if(!entity)
+				return res.status(500).send("That register does not exit");
 
 			entity.destroy()
 				.then(function(entity){					
-					return res.status(200).send(entities);
+					return res.status(200).send({"message" : "deleted"});
 				})
 				.catch(function(e){
-					return res.status(500).send(e);
+					return res.status(500).send("Delete error "+e);
 				});	
 		})
 		.catch(function(e){
-			return res.status(500).send(e);
+			return res.status(500).send("Find to delete error "+e);
 		});	
 
 	});

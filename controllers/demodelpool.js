@@ -8,7 +8,8 @@ var DEModelPool = function DEModelPool(){
 
     var pool = {};
 
-    SequelizeModel.findAll()
+    SequelizeModel.sync().then(function(){
+        SequelizeModel.findAll()
         .then(function(models){
             //Load all models from database and set it into the pool
             for(var i in models){
@@ -21,7 +22,11 @@ var DEModelPool = function DEModelPool(){
         .catch(function(e){
              logger.warn("ASSYNC SequelizeModel.findAll");
              logger.error(e);
-        });
+        });        
+    }).catch(function(e){
+         logger.error("Error while syncing SequelizeModel on pool" + e);
+    });
+
 
 	this.getModel = function(modelIdentifier){
 		return pool[modelIdentifier];
@@ -39,10 +44,20 @@ var DEModelPool = function DEModelPool(){
 
         
 
-        SequelizeModel.create({identifier : modelDefinition.identifier, model : JSON.stringify(modelDefinition.model, null, null)})
+        SequelizeModel.create(
+            {
+                identifier : modelDefinition.identifier, 
+                model : JSON.stringify(modelDefinition.model, null, null),
+                options : JSON.stringify(modelDefinition.model, null, null),
+            })
         .then(function(m){
             //TODO handle define errors
-            var deModel = sequelize.define(modelDefinition.identifier, modelDefinition.model);
+            var deModel = sequelize.define(
+                modelDefinition.identifier, 
+                modelDefinition.model,
+                modelDefinition.options
+                );
+
             pool[modelDefinition.identifier] = deModel;
             logger.debug("Dynamic model persisted into database: " + modelDefinition.identifier);
             

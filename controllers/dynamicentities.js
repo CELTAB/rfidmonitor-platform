@@ -40,7 +40,11 @@ var buildDefinition = function(entity){
 
 		definition.model[field.identifier] = {
 			type : deValidator.typesEnumToPostgres(field.type) ,
-			allowNull : field.allowNull
+			allowNull : field.allowNull			
+		}
+		
+		definition.options = {
+			paranoid : true
 		}
 	}
 
