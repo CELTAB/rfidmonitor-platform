@@ -15,6 +15,7 @@ var DynamicEntities = function (){
 	
 	deValidator = new DEValidator(sequelize);
 	SequelizeModel = require('../models/orm/sequelizemodel');
+	SequelizeModel.sync();
 	
 	// modelsORMPath = path.join(__dirname, '../models/orm');
 	// ClientObjRaw = sequelize.import(path.join(modelsORMPath, '/clientobjraw'));

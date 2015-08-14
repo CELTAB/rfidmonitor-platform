@@ -5,6 +5,7 @@ var PlatformError = require('../utils/platformerror');
 var DEValidator = function (sequelize){
 
 	ClientEntitiesRaw = require('../models/orm/cliententitiesraw');
+	ClientEntitiesRaw.sync();
 
 }
 
