@@ -283,123 +283,123 @@ var testObj_complexFiveDeep = [
     }
 ]
 
-var testObj_complexValidObject = [
-    {
-        "field" : "Peixes Marcados",
-        "type" : "ENTITY",
-        "description" : "São os carros que trafegam no parque",
-        "unique" : [
-            ["Código RFID" ,"Espécie"]
-        ],
-        "structureList" : [
-            {
-                "field" : "Código RFID",
-                "type" : "RFIDCODE",
-                "description" : "teste",
-                "allowNull" : false
-            },
-            {
-                "field" : "Espécie",
-                "type" : "ENTITY",
-                "description" : "Alguma descrição sobre os Especies.",
-                "unique" : [],
-                "structureList" : [
-                    {
-                        "field" : "Nome",
-                        "type" : "TEXT",
-                        "description" : "",
-                        "allowNull" : false
-                    },
-                    {
-                        "field" : "Foto",
-                        "type" : "IMAGE",
-                        "description" : "",
-                        "allowNull" : false
-                    }
-                ]
-            },
-            {
-                "field" : "Instituição",
-                "type" : "TEXT",
-                "description" : "",
-                "allowNull" : false
-            },
-            {
-                "field" : "Local de Captura",
-                "type" : "TEXT",
-                "description" : "",
-                "allowNull" : false
-            },
-            {
-                "field" : "Local de Soltura",
-                "type" : "TEXT",
-                "description" : "",
-                "allowNull" : false
-            },
-            {
-                "field" : "Comprimento total do peixe",
-                "type" : "NUMBER",
-                "description" : "",
-                "allowNull" : false
-            },
-            {
-                "field" : "Data de Captura",
-                "type" : "DATETIME",
-                "description" : "",
-                "allowNull" : false
-            }
-        ]
-    },
-    {
-        "field" : "Carros",
-        "type" : "ENTITY",
-        "unique" : [],
-        "structureList" : [
-            {
-                "field" : "Código RFID",
-                "type" : "RFIDCODE",
-                "description" : "",
-                "allowNull" : false
-            },
-            {
-                "field" : "Ano de Fabricação",
-                "type" : "DATETIME",
-                "description" : "",
-                "allowNull" : false
-            },
-            {
-                "field" : "Motorista",
-                "type" : "ENTITY",
-                "unique" : [],
-                "structureList" : [
-                    {
-                        "field" : "Nome Completo",
-                        "type" : "TEXT",
-                        "description" : "",
-                        "allowNull" : false
-                    },
-                    {
-                        "field" : "Idade",
-                        "type" : "NUMBER",
-                        "description" : "",
-                        "allowNull" : false
-                    }
-                ]
-            }
-        ]
-    }
-]
+  var testObj_complexValidObject = [
+      {
+          "field" : "Peixes Marcados",
+          "type" : "ENTITY",
+          "description" : "São os carros que trafegam no parque",
+          "unique" : [
+              ["Código RFID" ,"Espécie"]
+          ],
+          "structureList" : [
+              {
+                  "field" : "Código RFID",
+                  "type" : "RFIDCODE",
+                  "description" : "teste",
+                  "allowNull" : false
+              },
+              {
+                  "field" : "Espécie",
+                  "type" : "ENTITY",
+                  "description" : "Alguma descrição sobre os Especies.",
+                  "unique" : [],
+                  "structureList" : [
+                      {
+                          "field" : "Nome",
+                          "type" : "TEXT",
+                          "description" : "",
+                          "allowNull" : false
+                      },
+                      {
+                          "field" : "Foto",
+                          "type" : "IMAGE",
+                          "description" : "",
+                          "allowNull" : false
+                      }
+                  ]
+              },
+              {
+                  "field" : "Instituição",
+                  "type" : "TEXT",
+                  "description" : "",
+                  "allowNull" : false
+              },
+              {
+                  "field" : "Local de Captura",
+                  "type" : "TEXT",
+                  "description" : "",
+                  "allowNull" : false
+              },
+              {
+                  "field" : "Local de Soltura",
+                  "type" : "TEXT",
+                  "description" : "",
+                  "allowNull" : false
+              },
+              {
+                  "field" : "Comprimento total do peixe",
+                  "type" : "DOUBLE",
+                  "description" : "",
+                  "allowNull" : false
+              },
+              {
+                  "field" : "Data de Captura",
+                  "type" : "DATETIME",
+                  "description" : "",
+                  "allowNull" : false
+              }
+          ]
+      },
+      {
+          "field" : "Carros",
+          "type" : "ENTITY",
+          "unique" : [["Código RFID"]],
+          "structureList" : [
+              {
+                  "field" : "Código RFID",
+                  "type" : "RFIDCODE",
+                  "description" : "",
+                  "allowNull" : false
+              },
+              {
+                  "field" : "Ano de Fabricação",
+                  "type" : "DATETIME",
+                  "description" : "",
+                  "allowNull" : false
+              },
+              {
+                  "field" : "Motorista",
+                  "type" : "ENTITY",
+                  "unique" : [],
+                  "structureList" : [
+                      {
+                          "field" : "Nome Completo",
+                          "type" : "TEXT",
+                          "description" : "",
+                          "allowNull" : false
+                      },
+                      {
+                          "field" : "Idade",
+                          "type" : "INTEGER",
+                          "description" : "",
+                          "allowNull" : false
+                      }
+                  ]
+              }
+          ]
+      }
+  ]
 
 
 
 
 [
   {
-    "field" : "Carro",
+    "field" : "Carro1",
     "type" : "ENTITY",
     "structureList" : [
       {
-        "field" : "teste",
+        "field" : "teste1",
         "type" : "TEXT",
         "allowNull" : true
       }
@@ -410,7 +410,7 @@ var testObj_complexValidObject = [
     "type" : "ENTITY",
     "structureList" : [
       {
-        "field" : "teste",
+        "field" : "teste2",
         "type" : "TEXT",
         "allowNull" : true
       }
@@ -430,9 +430,33 @@ var testObj_complexValidObject = [
         "allowNull" : true
       },
       {
-        "field" : "teste2",
+        "field" : "Minha Imagem né",
+        "type" : "IMAGE",
+        "allowNull" : true
+      }
+    ] 
+  }
+]
+
+[
+  {
+    "field" : "teste1",
+    "type" : "ENTITY",
+    "structureList" : [
+      {
+        "field" : "teste",
         "type" : "TEXT",
-        "allowNull" : false
+        "allowNull" : true
+      },
+      {
+        "field" : "Minha Imagem né",
+        "type" : "IMAGE",
+        "allowNull" : true
+      },
+      {
+        "field" : "óia os grupo ae gente",
+        "type" : "GROUP",
+        "allowNull" : true
       }
     ] 
   }

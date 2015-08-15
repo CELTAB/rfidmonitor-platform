@@ -1,36 +1,45 @@
 var logger = require('winston');
-var SequelizeModel = require('../models/orm/sequelizemodel');
-
-var sequelize = require('../dao/platformsequelize');
 var SequelizeClass = require('sequelize');
+var sequelize = require('../dao/platformsequelize');
+
+var DynamicEntity = require('../models/orm/dynamicentity');
+var PlatformMedia = require('../models/orm/platformmedia'); // here just for early sync
+
 
 var DEModelPool = function DEModelPool(){
 
+    PlatformMedia.sync().catch(function(e){
+        logger.error("DeRouter sync error : " +e );
+    });
+
     var pool = {};
 
-    SequelizeModel.sync().then(function(){
-        SequelizeModel.findAll()
+    DynamicEntity.sync().then(function(){
+        logger.warn('redundant with dynamicentities');
+        DynamicEntity.findAll()
         .then(function(models){
             //Load all models from database and set it into the pool
             for(var i in models){
                 pool[models[i].identifier] = sequelize.define(
                     models[i].identifier, 
-                    JSON.parse(models[i].model),
-                    JSON.parse(models[i].options)
+                    JSON.parse(models[i].sequelizeModel),
+                    JSON.parse(models[i].sequelizeOptions)
                 ); 
 
-                pool[models[i].identifier].sync();
+                // pool[models[i].identifier].sync();
 
                 logger.debug("Dynamic model loaded into DEModelPool: " + models[i].identifier);
             }
+            //todo maybe doind sync with sequelize instead of each model, it will try to order its creation in cases of dependecy
+            sequelize.sync();
 
         })
         .catch(function(e){
-             logger.warn("ASSYNC SequelizeModel.findAll");
+             logger.warn("ASSYNC DynamicEntity.findAll");
              logger.error(e);
         });        
     }).catch(function(e){
-         logger.error("Error while syncing SequelizeModel on pool" + e);
+         logger.error("Error while syncing DynamicEntity on pool" + e);
     });
 
 
@@ -38,45 +47,53 @@ var DEModelPool = function DEModelPool(){
 		return pool[modelIdentifier];
 	}
 
-    this.registerModel = function(modelDefinition, callback){
-        // {identifier : "", model : {} }
+    this.registerModel = function(modelDefinitions, callback){
         
-        if(pool[modelDefinition.identifier]){
-            //model already loaded.
-            var error = {"message" : "model already loaded into pool. cannot register again or another entity with same identifier"};
-            logger.error(error);
-            return callback(error);
-        }
+        var countTotal = modelDefinitions.length;
+        var done = 0;
 
-        
+        // for (var abc in modelDefinitions){
+        //         logger.warn(JSON.stringify(modelDefinitions[abc]));
+        //     }
 
-        SequelizeModel.create(
-            {
-                identifier : modelDefinition.identifier, 
-                model : JSON.stringify(modelDefinition.model, null, null),
-                options : JSON.stringify(modelDefinition.options, null, null),
-            })
-        .then(function(m){
+        for (var i in modelDefinitions){
+            
+            var modelDefinition = modelDefinitions[i];
+
+            if(pool[modelDefinition.identifier]){
+                //model already loaded.
+                var error = {"message" : "model already loaded into pool. cannot register again or another entity with same identifier"};
+                logger.error(error);
+                return callback(error);
+            }           
+
             //TODO handle define errors
             var deModel = sequelize.define(
                 modelDefinition.identifier, 
-                modelDefinition.model,
-                modelDefinition.options
+                modelDefinition.sequelizeModel,
+                modelDefinition.sequelizeOptions
                 );
 
             pool[modelDefinition.identifier] = deModel;
-            logger.debug("Dynamic model persisted into database: " + modelDefinition.identifier);
+
+            logger.debug("Dynamic model registered into pool: " + modelDefinition.identifier);
             
-            logger.warn("TODO deModel.sync() necessário? pool.registerModel");
-            deModel.sync();
-            //NO ERRORS
-            return callback(null);
-        })
-        .catch(function(e){
-            var error = {"message" : "Error trying to persisted Dynamic model into database: " + modelDefinition.identifier};
-            logger.error(e);
-            return callback(error);
-        });        
+            
+            done++;
+
+            if(done == countTotal){
+                sequelize.sync().then(function(){
+                    //NO ERRORS
+                    return callback(null);
+                }).catch(function(e){
+                    var error = "pool sequelize.sync error : " + e ;
+                    logger.error(error);
+                    return callback(error);
+                });
+                
+            }                
+             
+        }              
        
     }
  

@@ -1,11 +1,10 @@
 var logger = require('winston');
 var validator = require('validator');
+var Sequelize = require('sequelize');
 var PlatformError = require('../utils/platformerror');
+var DynamicEntity = require('../models/orm/dynamicentity');
 
-var DEValidator = function (sequelize){
-
-	ClientEntitiesRaw = require('../models/orm/cliententitiesraw');
-	ClientEntitiesRaw.sync();
+var DEValidator = function (){
 
 }
 
@@ -14,7 +13,8 @@ DEValidator.prototype.typesEnum = {
 	ENTITY : "ENTITY", 
 	TEXT : "TEXT",
 	GROUP : "GROUP",
-	NUMBER : "NUMBER",
+	INTEGER : "INTEGER",
+	DOUBLE : "DOUBLE",
 	IMAGE : "IMAGE",
 	DATETIME : "DATETIME",
 	STATUS : "STATUS",
@@ -22,29 +22,32 @@ DEValidator.prototype.typesEnum = {
 	UNKNOWN : null
 }
 
-DEValidator.prototype.typesEnumToPostgres = function(type){
-	logger.warn('fix this translate to Sequelize.Type');
+
+DEValidator.prototype.typesEnumToSequelize = function(type){
 	switch(type){
 		case DEValidator.prototype.typesEnum.RFIDCODE :
-			return 'TEXT';
+			return 'DataTypes.STRING';
 			break;
 		case DEValidator.prototype.typesEnum.TEXT:
-			return 'TEXT';
+			return 'DataTypes.TEXT';
 			break;
-		case DEValidator.prototype.typesEnum.NUMBER:
-			return 'INTEGER';
+		case DEValidator.prototype.typesEnum.INTEGER:
+			return 'DataTypes.INTEGER';
+			break;
+		case DEValidator.prototype.typesEnum.DOUBLE:
+			return 'DataTypes.DOUBLE';
 			break;
 		case DEValidator.prototype.typesEnum.IMAGE:
-			return 'TEXT';
+			return 'DataTypes.STRING';
 			break;
 		case DEValidator.prototype.typesEnum.DATETIME:
-			return 'TIMESTAMP';
+			return 'DataTypes.DATE';
 			break;
-		case DEValidator.prototype.typesEnum.ID:
-			return 'SERIAL';
-			break;
+		// case DEValidator.prototype.typesEnum.ID:
+		// 	return Sequelize.STRING;
+			// break;
 		default:
-			throw new PlatformError("UNKNOWN DEValidator type to POSTGRES convertion ["+type+"]");
+			throw new PlatformError("UNKNOWN DEValidator type to SEQUELIZE convertion ["+type+"]");
 	}
 }
 
@@ -145,6 +148,14 @@ var splitAndUpdateRootObj = function(json){
 		//Add an identifier to the object.
 		rootObj.identifier = normalizeString(rootObj.field);
 
+		//normalize uniques
+		for(var iun in rootObj.unique ){
+			for (var iunn in rootObj.unique[iun]){
+				rootObj.unique[iun][iunn] = normalizeString(rootObj.unique[iun][iunn]);
+				logger.warn("devalidator : splitAndUpdateRootObj : if this is not string could generate problems");
+			}
+		}
+
 		//Add the current obj udpated.
 		newEntitiesSplit.push(rootObj);		
 	}
@@ -193,6 +204,7 @@ DEValidator.prototype.validateClientRootArray = function(json, callback){
 	// logger.debug("##" +JSON.stringify(newEntities, null , '\t'));
 
 	if(newEntities.length == 0){
+		logger.error('Unexpected behavior: newEntities list is empty after splitAndUpdateRootObj');
 		return callback({ "message" : "Unexpected behavior: newEntities list is empty after splitAndUpdateRootObj"}, null);
 	}
 
@@ -200,38 +212,42 @@ DEValidator.prototype.validateClientRootArray = function(json, callback){
 	entitiesPool = entitiesPool.concat(newEntities);
 
 
-	ClientEntitiesRaw.findAll({attributes : ['entity']}).then(function(entities){
+	DynamicEntity.findAll({attributes : ['original']}).then(function(entities){
 
 		// The entities from database are raw strings. The must be parsed.
 		for(var icer in entities){
-			entitiesPool.push(JSON.parse(entities[icer].entity));
+			entitiesPool.push(JSON.parse(entities[icer].original));
 		}
-
 		// logger.debug("##" +JSON.stringify(entitiesPool, null , '\t'));
 		
 		//Find repeated names. Return errors if so.
 		var error = searchForRepeatedIdentifiers(entitiesPool);
+		logger.debug(error);
 		if(error)
 			return callback(error, null);
 
 		//Persist the new entities as they are ok.
 		var bulkArray = []
 		for (var j in newEntities){
-			bulkArray.push({identifier : newEntities[j].identifier, entity : JSON.stringify(newEntities[j], null, null)});
+			var obj = {};
+			obj.identifier = newEntities[j].identifier;
+			obj.original = JSON.stringify(newEntities[j], null, null);
+			bulkArray.push(obj);
 		}
 
-		ClientEntitiesRaw.bulkCreate(bulkArray).then(function(){
+		DynamicEntity.bulkCreate(bulkArray).then(function(){
 
-			//No errors on validateClientRootArray
-			return callback(null, newEntities);
+			//No errors on validateClientRootArray	
+			callback(null, newEntities);
+
 
 		}).catch(function(e){
-			logger.error(e);
-			return callback(e, null);
+			logger.error('BulkCreate error on deValidator : ' +e);
+			return callback(e, newEntities);
 		});	
 
 	}).catch(function(e){
-		logger.error(e);
+		logger.error('FindAll error on deValidator: ' + e);
 		return callback(e, null);
 	});
 }

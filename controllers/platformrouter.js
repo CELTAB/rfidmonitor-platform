@@ -78,6 +78,7 @@ var validateBearer = function(token, done) {
 }
 
 var setAuthorization = function(){
+	logger.warn('move setAuthorization to some generic place. This is being used by all routers not only this.');
 	router.all(
 		'*', 
 		passport.authenticate('api-bearer', { session: false }), 

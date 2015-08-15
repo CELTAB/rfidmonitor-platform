@@ -2,6 +2,8 @@ var express = require('express');
 var logger = require('winston');
 var BearerStrategy = require('passport-http-bearer').Strategy
 var passport = require('passport');
+var fs = require('fs')
+var path = require('path');
 
 var AppClient = require('../models/appclient');
 var AppClientDao = require('../dao/appclientdao');
@@ -16,23 +18,29 @@ var routes = require('../utils/routes');
 var DynamicEntities = require('./dynamicentities');
 var deModelPool = require('./demodelpool');
 
-var ClientEntitiesRaw = require('../models/orm/cliententitiesraw');
+var DynamicEntity = require('../models/orm/dynamicentity');
+var PlatformMedia = require('../models/orm/platformmedia');
+
+var multer  = require('multer')
+var upload = multer({ dest: '../restricted_media/tmp/' })
+
+var appDir = path.dirname(require.main.filename);
 
 var DERouter = function(){
+
 
 	router = express.Router();
 	appClientDao = new AppClientDao();
 	accessTokenDao = new AccessTokenDao();
 	routerAccessDao = new RouterAccessDao();
 
+	//this also syncs the database through deModelPool call.
 	dynamicEntities = new DynamicEntities();
-
-	passport.use('api-bearer', new BearerStrategy({}, validateBearer));
-	setAuthorization();
 
 	setRouteMetaInfo();
 	setRouteRegisterEntity();
 	setRouteDeDao();
+	setRoutePlatformMedia();
 
 	return router;
 }
@@ -60,73 +68,6 @@ var validateBearer = function(token, done) {
     });
 }
 
-var setAuthorization = function(){
-	router.all(
-		'*', 
-		passport.authenticate('api-bearer', { session: false }), 
-		function(req, res, next){
-
-			var finalRoute = null;
-
-			if(!req.originalUrl){
-				logger.warn("originalUrl missing");
-				return res.status(400).send({'message':'originalUrl missing'});
-			}
-			
-			var uriArray = req.originalUrl.split('/');
-
-			/*
-			//Example: /api/collectors/1/2/3
-				For this uri 'https://localhost/api/collectors/1/2'
-				The uriArray will be  '0=, 1=api, 2=collectors, 3=1, 4=2'
-				
-				More examples:
-				https://localhost/api/collectors
-				0=, 1=api, 2=collectors
-
-				https://localhost/api
-				0=, 1=api
-
-				https://localhost/api/
-				0=, 1=api, 2=
-			*/
-
-			if(uriArray.length < 3 || uriArray[2] === undefined || uriArray[2] == '')
-				return res.status(400).send({'message':'What a such bad request...'});
-
-
-			//Lets get the position 1 and 2 always.
-			logger.warn("fix this on derouter");
-			finalRoute = '/'+uriArray[1]+'/'+uriArray[2];
-
-			logger.debug('Searching on authorization table for this uri: ' + finalRoute);
-
-			var requestInfo = {
-				clientId: req.user.clientId,
-				route: finalRoute,
-				methodName: req.method
-			};
-
-			routerAccessDao.getAccess(requestInfo, function(err, result){
-
-                if(err) {
-                	logger.error("setAuthorization routerAccessDao ");
-                	return res.status(500).send({'message' : "INTERNAL ERROR"});
-				}
-
-                if(result){
-                	//ACCESS GRANTED.
-                	logger.debug("ACCESS GRANTED.");
-                    next();
-                }else{
-                    res.status(403).send({'message' : 'Get out dog.'});
-                }
-       		});			
-			
-		}
-	);
-}
-
 var setRouteMetaInfo = function(){
 
 	var dbRoute = '/api/de/meta';
@@ -137,7 +78,7 @@ var setRouteMetaInfo = function(){
 
 	router.get(expressRouteSimple,function(req, res){
 
-		ClientEntitiesRaw.findAll()
+		DynamicEntity.findAll({attributes : ['original', 'meta']})
 		.then(function(entities){
 			return res.status(200).send(entities);
 		})
@@ -149,7 +90,7 @@ var setRouteMetaInfo = function(){
 
 	router.get(expressRouteId,function(req, res){
 
-		ClientEntitiesRaw.findAll({where : { identifier : req.params.entity }})
+		DynamicEntity.findAll({where : { identifier : req.params.entity }})
 		.then(function(entities){
 			return res.status(200).send(entities);
 		})
@@ -172,7 +113,7 @@ var setRouteRegisterEntity = function(){
 
 		dynamicEntities.registerEntity(req.body, function(errors){
 			if(errors)
-				return res.status(500).send(errors);	
+				return res.status(500).send('errors : ' + JSON.stringify(errors));	
 			
 			return res.status(200).send({"message" : "OK"});
 		});
@@ -242,8 +183,10 @@ var setRouteDeDao = function(){
 		if(!model)
 			return res.status(400).send("Invalid model.");
 		
-		model.findAll({where : { id : req.params.id }})
-		.then(function(entities){
+		model.findOne({where : { id : req.params.id }})
+		.then(function(entity){
+			if(!entity)
+				return res.status(400).send("not found");
 			return res.status(200).send(entities);
 		})
 		.catch(function(e){
@@ -251,6 +194,8 @@ var setRouteDeDao = function(){
 		});	
 
 	});
+
+	routes.register(dbRoute, routes.getMethods().POST);
 
 	router.post(expressRouteSimple, checkEntity, function(req, res){
 
@@ -267,6 +212,8 @@ var setRouteDeDao = function(){
 		});	
 
 	});
+
+	routes.register(dbRoute, routes.getMethods().PUT);
 
 	router.put(expressRouteId, checkEntity, function(req, res){
 
@@ -300,6 +247,8 @@ var setRouteDeDao = function(){
 
 	});
 
+	routes.register(dbRoute, routes.getMethods().DELETE);
+
 	router.delete(expressRouteId, checkEntity, function(req, res){
 
 		var model = deModelPool.getModel(req.params.entity);
@@ -323,6 +272,76 @@ var setRouteDeDao = function(){
 		.catch(function(e){
 			return res.status(500).send("Find to delete error "+e);
 		});	
+
+	});
+}
+
+var setRoutePlatformMedia = function(){
+	var dbRoute = '/api/media';
+	var expressRouteSimple = '/media';
+	var expressRouteId = expressRouteSimple + '/:id';
+
+	routes.register(dbRoute, routes.getMethods().GET);
+
+	router.get(expressRouteId, function(req, res){
+		
+		PlatformMedia.findOne({where : { id : req.params.id }})
+		.then(function(record){
+			return res.sendfile(path.join(appDir, record.path), options);		
+		})
+		.catch(function(e){
+			return res.status(500).send("Error while getting media: "+e);
+		});	
+
+	});
+
+	routes.register(dbRoute, routes.getMethods().POST);
+
+	router.post(expressRouteSimple, upload.single('image'), function(req, res){
+		logger.warn("remember to remove body parser because of this http://andrewkelley.me/post/do-not-use-bodyparser-with-express-js.html");
+
+		if(!req.file)
+			return res.status(500).send("We didnt receive you file");
+
+		var file = req.file;
+
+		if(file.size > 5 * 1024 * 1024)
+			return res.status(400).send("file bigger than 5mb");
+
+		file.finalPath = __dirname + '/../restricted_media/media/images/' + req.file.filename;
+
+		fs.readFile(req.file.path, function (err, data) {
+		    if (err){
+		    	 return res.status(500).send("error read" + err);
+		    }
+		    fs.writeFile(file.finalPath, data, function (err) {
+		        if (err){
+			    	 return res.status(500).send("error " + err);
+			    }
+
+			    PlatformMedia.create(
+			    	{
+			    		url: file.filename,
+			    		path : 'restricted_media/media/images/' + file.filename,
+			    		type: 'IMAGE'
+			    	})
+			    .then(function(f){
+
+			    	f.url = 'https://localhost/api/media/'+f.id;
+			    	f.save().then(function(f){
+
+						return res.status(200).send({"mediaId" :f.id});
+			    	}).catch(function(e){
+			    		return res.status(500).send("error " + e);
+			    	});
+			    }).catch(function(e){
+			    	return res.status(500).send("error " + e);
+			    });		        
+		    });
+		});
+
+
+
 
 	});
 }

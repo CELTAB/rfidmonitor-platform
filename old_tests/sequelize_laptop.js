@@ -53,6 +53,10 @@ sequelize.sync({force: true}).then(function(){
 		var c1 = Carro.build({"Código RFID" : "123"});
 		c1.setDono(dono).then(function(carro){
 			console.log("Deuuuuuuuuuuuuuuuuuuuuuuuuuuu");
+			var util = require('util');
+
+			console.log(util.inspect(Dono, { showHidden: true, depth: null }));
+			// console.log(c1.donoId);
 		});
 	});	
 });
