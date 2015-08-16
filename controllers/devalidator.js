@@ -26,26 +26,48 @@ DEValidator.prototype.typesEnum = {
 DEValidator.prototype.typesEnumToSequelize = function(type){
 	switch(type){
 		case DEValidator.prototype.typesEnum.RFIDCODE :
-			return 'DataTypes.STRING';
+			return 'Sequelize.STRING';
 			break;
 		case DEValidator.prototype.typesEnum.TEXT:
-			return 'DataTypes.TEXT';
+			return 'Sequelize.TEXT';
 			break;
 		case DEValidator.prototype.typesEnum.INTEGER:
-			return 'DataTypes.INTEGER';
+			return 'Sequelize.INTEGER';
 			break;
 		case DEValidator.prototype.typesEnum.DOUBLE:
-			return 'DataTypes.DOUBLE';
+			return 'Sequelize.DOUBLE';
 			break;
 		case DEValidator.prototype.typesEnum.IMAGE:
-			return 'DataTypes.STRING';
+			return 'Sequelize.STRING';
 			break;
 		case DEValidator.prototype.typesEnum.DATETIME:
-			return 'DataTypes.DATE';
+			return 'Sequelize.DATE';
 			break;
 		// case DEValidator.prototype.typesEnum.ID:
 		// 	return Sequelize.STRING;
 			// break;
+		default:
+			throw new PlatformError("UNKNOWN DEValidator type to SEQUELIZE convertion ["+type+"]");
+	}
+}
+
+DEValidator.prototype.typesStrToRealTypes = function(type){
+	switch(type){
+		case 'Sequelize.STRING' :
+			return Sequelize.STRING;
+			break;
+		case 'Sequelize.TEXT':
+			return Sequelize.TEXT;
+			break;
+		case 'Sequelize.INTEGER':
+			return Sequelize.INTEGER;
+			break;
+		case 'Sequelize.DOUBLE':
+			return Sequelize.DOUBLE;
+			break;
+		case 'Sequelize.DATE':
+			return Sequelize.DATE;
+			break;
 		default:
 			throw new PlatformError("UNKNOWN DEValidator type to SEQUELIZE convertion ["+type+"]");
 	}

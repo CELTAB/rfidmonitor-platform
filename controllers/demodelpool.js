@@ -4,6 +4,7 @@ var sequelize = require('../dao/platformsequelize');
 
 var DynamicEntity = require('../models/orm/dynamicentity');
 var PlatformMedia = require('../models/orm/platformmedia'); // here just for early sync
+var DEValidator = require('./devalidator');
 
 
 var DEModelPool = function DEModelPool(){
@@ -20,10 +21,16 @@ var DEModelPool = function DEModelPool(){
         .then(function(models){
             //Load all models from database and set it into the pool
             for(var i in models){
+
+                var seqIdentifier = models[i].identifier;
+                var seqModel = JSON.parse(models[i].sequelizeModel);
+                seqModel = parseModelToReal(seqModel);
+                var seqOptions = JSON.parse(models[i].sequelizeOptions);
+
                 pool[models[i].identifier] = sequelize.define(
-                    models[i].identifier, 
-                    JSON.parse(models[i].sequelizeModel),
-                    JSON.parse(models[i].sequelizeOptions)
+                    seqIdentifier,
+                    seqModel,
+                    seqOptions                    
                 ); 
 
                 // pool[models[i].identifier].sync();
@@ -66,11 +73,11 @@ var DEModelPool = function DEModelPool(){
                 var error = {"message" : "model already loaded into pool. cannot register again or another entity with same identifier"};
                 logger.error(error);
                 return callback(error);
-            }  
+            }
 
-            logger.warn(JSON.stringify(modelDefinition.sequelizeModel));         
+            modelDefinition.sequelizeModel = parseModelToReal(modelDefinition.sequelizeModel);
+           
 
-            //TODO handle define errors
             var deModel = sequelize.define(
                 modelDefinition.identifier, 
                 modelDefinition.sequelizeModel,
@@ -104,6 +111,23 @@ var DEModelPool = function DEModelPool(){
     if(DEModelPool.caller != DEModelPool.getInstance){
         throw new PlatformError("This object cannot be instanciated");
     }
+}
+
+var parseModelToReal = function(model){
+     /*We store a string to define the type of the field on database.
+        but for using on code running, we need to translate that for a Sequelize function that represents the type.
+    */
+
+    var attArray = Object.keys(model);
+    for(var aedf in attArray){
+        var attr = attArray[aedf];
+
+        if(model[attr].type){
+            model[attr].type = DEValidator.prototype.typesStrToRealTypes(model[attr].type);
+        }                  
+
+    }
+    return model;
 }
  
 DEModelPool.instance = null; 

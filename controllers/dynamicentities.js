@@ -170,7 +170,7 @@ var buildDefinition = function(entity){
 			field.identifierUpdated = fieldName;
 
 			definition.sequelizeModel[fieldName] = {
-				type: 'DataTypes.INTEGER',
+				type: 'Sequelize.INTEGER',
 				references: {
 					model: 'tb_de_' + field.identifier, // Can be both a string representing the table name, or a reference to the model
 					key:   "id"
@@ -186,7 +186,7 @@ var buildDefinition = function(entity){
 			logger.warn('fix group table name to tb_plat_group  someday...');
 
 			definition.sequelizeModel[fieldName] = {
-				type: 'DataTypes.INTEGER',
+				type: 'Sequelize.INTEGER',
 				references: {
 					model: 'group', // Can be both a string representing the table name, or a reference to the model
 					key:   "id"
@@ -200,7 +200,7 @@ var buildDefinition = function(entity){
 			field.identifierUpdated = fieldName;
 
 			definition.sequelizeModel[fieldName] = {
-				type: 'DataTypes.INTEGER',
+				type: 'Sequelize.INTEGER',
 				allowNull : true,
 				references: {
 					model: 'tb_plat_platform_media', // Can be both a string representing the table name, or a reference to the model
@@ -273,10 +273,7 @@ var buildSequelizeModels = function(entities, callback){
 		if(!definition)
 			return callback({"message" : "Error : cannot build definitions"});
 
-
-
 		definitions.push(definition);
-		logger.debug("1 HERE: " +JSON.stringify(entity.identifier, null, '\t'));
 		definitionsMapperTmp[entity.identifier] = definition;
 
 
@@ -304,13 +301,11 @@ var buildSequelizeModels = function(entities, callback){
 				}
 			}
 
-			logger.debug("2 HERE: " +JSON.stringify(definitionsMapperTmp, null, '\t'));
 
 			rec.meta = JSON.stringify(definitionsMapperTmp[rec.identifier], null, null);
 			rec.sequelizeModel = JSON.stringify(definitionsMapperTmp[rec.identifier].sequelizeModel, null, null);
 			rec.sequelizeOptions = JSON.stringify(definitionsMapperTmp[rec.identifier].sequelizeOptions, null, null);
 		
-			logger.debug("DEFINITION HERE: " +JSON.stringify(definitionsMapperTmp[rec.identifier], null, '\t'));
 
 			rec.save().then(function(){
 
