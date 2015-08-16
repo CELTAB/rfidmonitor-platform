@@ -5,6 +5,7 @@ var sequelize = require('../dao/platformsequelize');
 var DynamicEntity = require('../models/orm/dynamicentity');
 var PlatformMedia = require('../models/orm/platformmedia'); // here just for early sync
 var DEValidator = require('./devalidator');
+var routes = require('../utils/routes');
 
 
 var DEModelPool = function DEModelPool(){
@@ -93,7 +94,14 @@ var DEModelPool = function DEModelPool(){
                     for(var imdt in modelpoolTmp){
                         logger.debug("Dynamic model registered into pool: " + modelpoolTmp[imdt].identifier);
                         pool[modelpoolTmp[imdt].identifier] = modelpoolTmp[imdt].model;
+                        var dbRoute = '/api/de/dao/' + modelpoolTmp[imdt].identifier;
+                        routes.register(dbRoute, routes.getMethods().GET);
+                        routes.register(dbRoute, routes.getMethods().POST);
+                        routes.register(dbRoute, routes.getMethods().PUT);
+                        routes.register(dbRoute, routes.getMethods().DELETE);
                     }
+
+                    
                     //NO ERRORS
                     return callback(null);
                 }).catch(function(e){
