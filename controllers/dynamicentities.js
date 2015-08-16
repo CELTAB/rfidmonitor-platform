@@ -260,6 +260,9 @@ var buildSequelizeModels = function(entities, callback){
 	var loopTotal = entities.length;
 	var loopCount = 0;
 
+	var definitionsMapperTmp = {};
+
+
 	for (var i in entities){
 
 		var entity = entities[i];
@@ -270,11 +273,28 @@ var buildSequelizeModels = function(entities, callback){
 		if(!definition)
 			return callback({"message" : "Error : cannot build definitions"});
 
+
+
 		definitions.push(definition);
-		logger.debug("DEFINITION HERE: " +JSON.stringify(definition, null, '\t'));
+		logger.debug("1 HERE: " +JSON.stringify(entity.identifier, null, '\t'));
+		definitionsMapperTmp[entity.identifier] = definition;
+
 
 		DynamicEntity.findOne({where : { identifier : entity.identifier}})
 		.then(function(rec){
+			/*	we are inside a anonimous function that uses global variables as definition of the mother function
+				this function will get the state of the global variables at the while it is changing because of a external loop.
+				That means, the function was declared and a global variable state as 1, for example.
+				but when the this function execute, that global variable cound have a different state, as 5 for example.
+				we cannot trust that this anonimous function will have the state of the external global variable at the time
+				it was declared. it depends on the time when it executes.
+				i got errors here, because 'definition' was looping 5 times. I was expecting that this anonimous function
+				would have each of the 5 states. But instead, when all the 5 anonimous functions were running, all of them 
+				had the same state.
+
+				Problem solved using a object mapper 'definitionsMapperTmp', getting the info nededed by a key 'rec.identifier'.
+			*/
+
 			if(!rec){
 				var error = 'DynamicEntity not found when should be.';
 				logger.error(error);
@@ -284,9 +304,13 @@ var buildSequelizeModels = function(entities, callback){
 				}
 			}
 
-			rec.meta = JSON.stringify(definition, null, null);
-			rec.sequelizeModel = JSON.stringify(definition.sequelizeModel, null, null);
-			rec.sequelizeOptions = JSON.stringify(definition.sequelizeOptions, null, null);
+			logger.debug("2 HERE: " +JSON.stringify(definitionsMapperTmp, null, '\t'));
+
+			rec.meta = JSON.stringify(definitionsMapperTmp[rec.identifier], null, null);
+			rec.sequelizeModel = JSON.stringify(definitionsMapperTmp[rec.identifier].sequelizeModel, null, null);
+			rec.sequelizeOptions = JSON.stringify(definitionsMapperTmp[rec.identifier].sequelizeOptions, null, null);
+		
+			logger.debug("DEFINITION HERE: " +JSON.stringify(definitionsMapperTmp[rec.identifier], null, '\t'));
 
 			rec.save().then(function(){
 

@@ -51,6 +51,7 @@ var DEModelPool = function DEModelPool(){
         
         var countTotal = modelDefinitions.length;
         var done = 0;
+        var modelpoolTmp = [];
 
         // for (var abc in modelDefinitions){
         //         logger.warn(JSON.stringify(modelDefinitions[abc]));
@@ -65,7 +66,9 @@ var DEModelPool = function DEModelPool(){
                 var error = {"message" : "model already loaded into pool. cannot register again or another entity with same identifier"};
                 logger.error(error);
                 return callback(error);
-            }           
+            }  
+
+            logger.warn(JSON.stringify(modelDefinition.sequelizeModel));         
 
             //TODO handle define errors
             var deModel = sequelize.define(
@@ -74,15 +77,16 @@ var DEModelPool = function DEModelPool(){
                 modelDefinition.sequelizeOptions
                 );
 
-            pool[modelDefinition.identifier] = deModel;
-
-            logger.debug("Dynamic model registered into pool: " + modelDefinition.identifier);
-            
+            modelpoolTmp.push({identifier: modelDefinition.identifier, model: deModel});            
             
             done++;
 
             if(done == countTotal){
                 sequelize.sync().then(function(){
+                    for(var imdt in modelpoolTmp){
+                        logger.debug("Dynamic model registered into pool: " + modelpoolTmp[imdt].identifier);
+                        pool[modelpoolTmp[imdt].identifier] = modelpoolTmp[imdt].model;
+                    }
                     //NO ERRORS
                     return callback(null);
                 }).catch(function(e){
