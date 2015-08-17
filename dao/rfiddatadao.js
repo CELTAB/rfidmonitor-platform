@@ -51,7 +51,7 @@ var insertSummary = function(rfiddata, collector, summaryCallback){
             packagedao.insert(pkObj, function(err, pk_id){
                 if(err){
                     logger.error("RFIDATADAO insertSummary. ERROR: " + err);
-                    return;
+                    return callback(err, null);
                 }
 
                 totalDataCount = rfiddata.data.length;
@@ -73,7 +73,7 @@ var insertSummary = function(rfiddata, collector, summaryCallback){
                     insertRFIDData(rfidObject, function(err){
                         if(err){
                             logger.error("Error: " + err);
-                            return;
+                            return summaryCallback(err, null);
                         }
 
                         dataCount++;
@@ -146,6 +146,11 @@ RFIDDataDao.prototype.insert = function(obj, callback){
                     So, the next instance of this code will try to search but don't find again bacause the insertion is not done yet.
                 */
                 collectorDao.insertOrFindByMacUniqueError(collectorObj, function(err, collectorId){
+
+                    if(err)
+                        return callback(err, null);
+
+                    logger.warn("missing error handling on rfidatadao collectorDao.insertOrFindByMacUniqueError");
 
                     if(collectorId == null){
                         logger.error(err);

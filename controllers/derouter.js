@@ -305,7 +305,7 @@ var setRoutePlatformMedia = function(){
 		logger.warn("remember to remove body parser because of this http://andrewkelley.me/post/do-not-use-bodyparser-with-express-js.html");
 
 		if(!req.file)
-			return res.status(500).send("We didnt receive you file");
+			return res.status(400).send("We didnt receive you file");
 
 		var file = req.file;
 

@@ -1,4 +1,5 @@
 var express = require('express');
+var fs = require('fs');
 
 var logger = require('winston');
 var BearerStrategy = require('passport-http-bearer').Strategy
@@ -28,6 +29,9 @@ var RfiddataDao = require('../dao/rfiddatadao');
 var routes = require('../utils/routes');
 var permissions = require('../utils/permissions');
 
+var multer  = require('multer')
+var upload = multer({ dest: '../restricted_media/tmp/' })
+
 
 
 var PlatformRouter = function(){
@@ -50,6 +54,7 @@ var PlatformRouter = function(){
 	setRouteGroups();
 	setRouteRfiddata();
 	setRoutePermissions();
+	setRouteManualImport();
 
 	return router;
 }
@@ -684,6 +689,50 @@ var setRoutePermissions = function(){
 			return res.status(200).send(permissions);				
 		});	
 	});
+}
+
+var setRouteManualImport = function(){
+
+	var dbRoute = '/api/import';
+	var expressRouteSimple = '/import';
+
+	routes.register(dbRoute, routes.getMethods().POST);
+
+	router.post(expressRouteSimple, upload.single('import_file'), function(req, res){
+
+		if(!req.file)
+			return res.status(400).send("We didnt receive you file");
+		
+		var file = req.file;
+
+		if(file.size > 500 * 1024 * 1024)
+			return res.status(400).send("file bigger than 500mb");
+
+		file.finalPath = __dirname + '/../restricted_media/media/manual_import/' + req.file.filename;
+
+		fs.readFile(req.file.path, function (err, data) {
+		    if (err){
+		    	 return res.status(500).send("error read" + err);
+		    }
+		    fs.writeFile(file.finalPath, data, function (err) {
+		        if (err){
+			    	 return res.status(500).send("error " + err);
+			    }
+
+			    rfiddataDao.insert(data, function(err, md5diggest){
+					if (err){
+						var error = "rfiddatadao router insert err : " + err;
+						logger.error(error);
+						res.status(500).send(error);
+					}
+					else{
+						res.status(200).send({"message" : "OK"});
+					}
+				});	        
+		    });
+		});		
+	});
+
 }
 
 module.exports = PlatformRouter;
