@@ -312,10 +312,12 @@ var buildSequelizeModels = function(entities, callback){
 				return callback({"message" : "Error : cannot build definitions"});
 
 			definitions.push(definition);
-			definitionsMapperTmp[entity.identifier] = definition;
+			definitionsMapperTmp[definition.identifier] = definition;
+
+			logger.debug("rec.identifier2: " + definition.identifier);
 
 
-			DynamicEntity.findOne({where : { identifier : entity.identifier}})
+			DynamicEntity.findOne({where : { identifier : definition.identifier}})
 			.then(function(rec){
 				/*	we are inside a anonimous function that uses global variables as definition of the mother function
 					this function will get the state of the global variables at the while it is changing because of a external loop.

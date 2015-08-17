@@ -126,6 +126,7 @@ var parseModelToReal = function(model){
         but for using on code running, we need to translate that for a Sequelize function that represents the type.
     */
 
+
     var attArray = Object.keys(model);
     for(var aedf in attArray){
         var attr = attArray[aedf];
