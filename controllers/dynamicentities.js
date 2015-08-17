@@ -88,7 +88,7 @@ DynamicEntities.prototype.registerEntity = function(json, callback){
 	});
 }
 
-var buildDefinition = function(entity){
+var buildDefinition = function(entity, callback){
 
 	var definition = {};
 
@@ -166,13 +166,13 @@ var buildDefinition = function(entity){
 
 		if(field.type == DEValidator.prototype.typesEnum.ENTITY){
 
-			var fieldName = field.identifier + '_id';
-			field.identifierUpdated = fieldName;
+			field.name = field.identifier;
+			field.identifier = field.identifier + '_id';
 
-			definition.sequelizeModel[fieldName] = {
+			definition.sequelizeModel[field.identifier] = {
 				type: 'Sequelize.INTEGER',
 				references: {
-					model: 'tb_de_' + field.identifier, // Can be both a string representing the table name, or a reference to the model
+					model: 'tb_de_' + field.name, // Can be both a string representing the table name, or a reference to the model
 					key:   "id"
 					//, deferrable: Sequelize.Deferrable.INITIALLY_IMMEDIATE
 				}
@@ -180,12 +180,12 @@ var buildDefinition = function(entity){
 
 		}else if(field.type == DEValidator.prototype.typesEnum.GROUP){
 
-			var fieldName = field.identifier + '_group_id';
-			field.identifierUpdated = fieldName;
+			field.name = field.identifier;
+			field.identifier = field.identifier + '_group_id';
 
 			logger.warn('fix group table name to tb_plat_group  someday...');
 
-			definition.sequelizeModel[fieldName] = {
+			definition.sequelizeModel[field.identifier] = {
 				type: 'Sequelize.INTEGER',
 				references: {
 					model: 'group', // Can be both a string representing the table name, or a reference to the model
@@ -196,10 +196,10 @@ var buildDefinition = function(entity){
 
 		}else if(field.type == DEValidator.prototype.typesEnum.IMAGE){
 
-			var fieldName = field.identifier + '_platform_media';
-			field.identifierUpdated = fieldName;
+			field.name = field.identifier;
+			field.identifier = field.identifier + '_platform_media';
 
-			definition.sequelizeModel[fieldName] = {
+			definition.sequelizeModel[field.identifier] = {
 				type: 'Sequelize.INTEGER',
 				allowNull : true,
 				references: {
@@ -211,27 +211,64 @@ var buildDefinition = function(entity){
 
 		}else{
 			try{
-				var fieldName = field.identifier;
-				field.identifierUpdated = fieldName;
+				field.name = field.identifier;
 
-				definition.sequelizeModel[fieldName] = {
+				definition.sequelizeModel[field.identifier] = {
 					type : deValidator.typesEnumToSequelize(field.type) ,
 					allowNull : field.allowNull			
 				}
 			}catch(e){
 				logger.error("buildDefinition error on deValidator.typesEnumToSequelize: " + e);
 				//null means problem
-				return null;
+				return callback(null);
 			}
 			
 		}
 
 		//Sets unique on the field if in the map
-		if(uniqueMap[field.identifier])
-			definition.sequelizeModel[field.identifierUpdated].unique = uniqueMap[field.identifier];
+		if(uniqueMap[field.name])
+			definition.sequelizeModel[field.identifier].unique = uniqueMap[field.name];
 	}
 
-	return definition;
+	DynamicEntity.findOne({where : { identifier : entity.identifier}})
+		.then(function(rec){
+			
+			if(!rec){
+				var error = 'DynamicEntity not found when should be.';
+				logger.error(error);
+				if(!loopError){
+					loopError = true;
+					return callback(null);
+				}
+			}
+
+
+			rec.meta = JSON.stringify(entity, null, null);
+
+
+			rec.save().then(function(){
+
+				return callback(definition);
+
+			})
+			.catch(function(e){
+				var error = 'save error on DynamicEntities when saving meta: ' + e;
+				logger.error(error);
+				if(!loopError){
+					loopError = true;
+					return callback(null);
+				}
+			});
+
+		}).catch(function(e){
+			var error = 'findOne error on DynamicEntities: ' + e;
+			logger.error(error);
+			if(!loopError){
+				loopError = true;
+				return callback(null);
+			}
+			//else the callback was already called and a rollback will occur.
+		});	
 }
 
 var registerModelsWhenReady = function(definitions, callback){
@@ -269,70 +306,72 @@ var buildSequelizeModels = function(entities, callback){
 		var definition = null;
 
 
-		definition = buildDefinition(entity);
-		if(!definition)
-			return callback({"message" : "Error : cannot build definitions"});
+		buildDefinition(entity, function(definition){
 
-		definitions.push(definition);
-		definitionsMapperTmp[entity.identifier] = definition;
+			if(!definition)
+				return callback({"message" : "Error : cannot build definitions"});
+
+			definitions.push(definition);
+			definitionsMapperTmp[entity.identifier] = definition;
 
 
-		DynamicEntity.findOne({where : { identifier : entity.identifier}})
-		.then(function(rec){
-			/*	we are inside a anonimous function that uses global variables as definition of the mother function
-				this function will get the state of the global variables at the while it is changing because of a external loop.
-				That means, the function was declared and a global variable state as 1, for example.
-				but when the this function execute, that global variable cound have a different state, as 5 for example.
-				we cannot trust that this anonimous function will have the state of the external global variable at the time
-				it was declared. it depends on the time when it executes.
-				i got errors here, because 'definition' was looping 5 times. I was expecting that this anonimous function
-				would have each of the 5 states. But instead, when all the 5 anonimous functions were running, all of them 
-				had the same state.
+			DynamicEntity.findOne({where : { identifier : entity.identifier}})
+			.then(function(rec){
+				/*	we are inside a anonimous function that uses global variables as definition of the mother function
+					this function will get the state of the global variables at the while it is changing because of a external loop.
+					That means, the function was declared and a global variable state as 1, for example.
+					but when the this function execute, that global variable cound have a different state, as 5 for example.
+					we cannot trust that this anonimous function will have the state of the external global variable at the time
+					it was declared. it depends on the time when it executes.
+					i got errors here, because 'definition' was looping 5 times. I was expecting that this anonimous function
+					would have each of the 5 states. But instead, when all the 5 anonimous functions were running, all of them 
+					had the same state.
 
-				Problem solved using a object mapper 'definitionsMapperTmp', getting the info nededed by a key 'rec.identifier'.
-			*/
+					Problem solved using a object mapper 'definitionsMapperTmp', getting the info nededed by a key 'rec.identifier'.
+				*/
 
-			if(!rec){
-				var error = 'DynamicEntity not found when should be.';
+				if(!rec){
+					var error = 'DynamicEntity not found when should be.';
+					logger.error(error);
+					if(!loopError){
+						loopError = true;
+						return callback(error);
+					}
+				}
+
+				rec.sequelizeModel = JSON.stringify(definitionsMapperTmp[rec.identifier].sequelizeModel, null, null);
+				rec.sequelizeOptions = JSON.stringify(definitionsMapperTmp[rec.identifier].sequelizeOptions, null, null);
+			
+
+				rec.save().then(function(){
+
+					//we need to check if this is the final assync function of success, and only then callback success.
+					loopCount++;
+					if(loopCount == loopTotal)
+						registerModelsWhenReady(definitions, callback);
+
+				})
+				.catch(function(e){
+					var error = 'save error on DynamicEntities when saving meta: ' + e;
+					logger.error(error);
+					if(!loopError){
+						loopError = true;
+						return callback(error);
+					}
+				});
+
+			}).catch(function(e){
+				var error = 'findOne error on DynamicEntities: ' + e;
 				logger.error(error);
 				if(!loopError){
 					loopError = true;
 					return callback(error);
 				}
-			}
+				//else the callback was already called and a rollback will occur.
+			});	
 
-
-			rec.meta = JSON.stringify(definitionsMapperTmp[rec.identifier], null, null);
-			rec.sequelizeModel = JSON.stringify(definitionsMapperTmp[rec.identifier].sequelizeModel, null, null);
-			rec.sequelizeOptions = JSON.stringify(definitionsMapperTmp[rec.identifier].sequelizeOptions, null, null);
-		
-
-			rec.save().then(function(){
-
-				//we need to check if this is the final assync function of success, and only then callback success.
-				loopCount++;
-				if(loopCount == loopTotal)
-					registerModelsWhenReady(definitions, callback);
-
-			})
-			.catch(function(e){
-				var error = 'save error on DynamicEntities when saving meta: ' + e;
-				logger.error(error);
-				if(!loopError){
-					loopError = true;
-					return callback(error);
-				}
-			});
-
-		}).catch(function(e){
-			var error = 'findOne error on DynamicEntities: ' + e;
-			logger.error(error);
-			if(!loopError){
-				loopError = true;
-				return callback(error);
-			}
-			//else the callback was already called and a rollback will occur.
-		});		
+		});
+			
 
 	}
 

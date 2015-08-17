@@ -78,9 +78,13 @@ var setRouteMetaInfo = function(){
 
 	router.get(expressRouteSimple,function(req, res){
 
-		DynamicEntity.findAll({attributes : ['original', 'meta']})
+		DynamicEntity.findAll({attributes : ['meta']})
 		.then(function(entities){
-			return res.status(200).send(entities);
+			var response = [];
+			for(var i in entities){
+				response.push(JSON.parse(entities[i].meta));
+			}
+			return res.status(200).send(response);
 		})
 		.catch(function(e){
 			return res.status(500).send(e);
