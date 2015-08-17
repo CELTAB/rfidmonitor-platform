@@ -187,10 +187,10 @@ var setRouteDeDao = function(){
 		.then(function(entity){
 			if(!entity)
 				return res.status(400).send("not found");
-			return res.status(200).send(entities);
+			return res.status(200).send(entity);
 		})
 		.catch(function(e){
-			return res.status(500).send(e);
+			return res.status(500).send("getbyid dao error : " +e);
 		});	
 
 	});
