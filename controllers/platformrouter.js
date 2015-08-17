@@ -714,6 +714,7 @@ var setRouteManualImport = function(){
 		    if (err){
 		    	 return res.status(500).send("error read" + err);
 		    }
+		    
 		    fs.writeFile(file.finalPath, data, function (err) {
 		        if (err){
 			    	 return res.status(500).send("error " + err);
