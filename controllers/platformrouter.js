@@ -510,11 +510,11 @@ var setRouteGroups = function(){
 
 	router.post(expressRouteSimple, function(req, res){
 
-		req.checkBody('id', 'missing or invalid int.').isInt();
+		// req.checkBody('id', 'missing or invalid int.').isInt();
 		req.checkBody('name', 'missing.').notEmpty();
 		// req.checkBody('creationDate', 'missing  or invalid date.').isDate();
 		req.checkBody('description', 'missing.').notEmpty();
-		req.checkBody('isDefault', 'missing or invalid boolean.').isBoolean();
+		// req.checkBody('isDefault', 'missing or invalid boolean.').isBoolean();
 
 		req.sanitizeBody('name').toString();
 		req.sanitizeBody('description').toString();
