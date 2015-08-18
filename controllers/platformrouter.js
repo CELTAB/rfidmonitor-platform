@@ -1,5 +1,6 @@
 var express = require('express');
 var fs = require('fs');
+var path = require('path');
 
 var logger = require('winston');
 var BearerStrategy = require('passport-http-bearer').Strategy
@@ -29,9 +30,10 @@ var RfiddataDao = require('../dao/rfiddatadao');
 var routes = require('../utils/routes');
 var permissions = require('../utils/permissions');
 
-var multer  = require('multer')
-var upload = multer({ dest: '../restricted_media/tmp/' })
+var multer  = require('multer');
+var upload = multer({ dest: 'restricted_media/tmp/' });
 
+var appDir = path.dirname(require.main.filename);
 
 
 var PlatformRouter = function(){
@@ -708,7 +710,7 @@ var setRouteManualImport = function(){
 		if(file.size > 500 * 1024 * 1024)
 			return res.status(400).send("file bigger than 500mb");
 
-		file.finalPath = __dirname + '/../restricted_media/media/manual_import/' + req.file.filename;
+		file.finalPath = appDir + '/restricted_media/media/manual_import/' + req.file.filename;
 
 		fs.readFile(req.file.path, function (err, data) {
 		    if (err){

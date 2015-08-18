@@ -22,7 +22,7 @@ var DynamicEntity = require('../models/orm/dynamicentity');
 var PlatformMedia = require('../models/orm/platformmedia');
 
 var multer  = require('multer')
-var upload = multer({ dest: '../restricted_media/tmp/' })
+var upload = multer({ dest: 'restricted_media/tmp/' })
 
 var appDir = path.dirname(require.main.filename);
 
@@ -312,7 +312,9 @@ var setRoutePlatformMedia = function(){
 		if(file.size > 5 * 1024 * 1024)
 			return res.status(400).send("file bigger than 5mb");
 
-		file.finalPath = __dirname + '/../restricted_media/media/images/' + req.file.filename;
+		file.finalPath = appDir + '/restricted_media/media/images/' + req.file.filename;
+
+		logger.debug(req.file.path);
 
 		fs.readFile(req.file.path, function (err, data) {
 		    if (err){

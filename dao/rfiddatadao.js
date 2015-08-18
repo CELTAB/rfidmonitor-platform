@@ -120,6 +120,37 @@ var existsByHash = function(hash,callback){
     });
 }
 
+RFIDDataDao.prototype.insertArray = function(array, callback){
+    var total = array.length;
+
+    if(total == 0){
+        return callback("empty array", null);
+    }
+
+    var count = 0;
+    var global_error = null;
+    var global_success = '';
+
+    for (var i in array){
+
+        RFIDDataDao.prototype.insert(array[i], function(err, md5diggest){
+            count ++;
+
+            if(err){
+                global_error += 'NEXT ERROR : ' + err + ' | ';
+            }else{
+                global_success += md5diggest + ',';
+            }
+
+            if(count == total){
+                return callback(global_error, global_success);
+            }
+        });
+
+    }
+
+}
+
 RFIDDataDao.prototype.insert = function(obj, callback){
 
 	collectorDao.findByMac(obj.macaddress, function(err, collector){
