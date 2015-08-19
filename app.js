@@ -149,7 +149,7 @@ app.use(function(err, req, res, next) {
 	//To check if it is bodyparser error, remove the response below and just call next().
 	if(err){
 		return res.status(400).json({"error" : err});
-	}	
+	}
 	next();
 })
 

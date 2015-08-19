@@ -31,7 +31,7 @@ var routes = require('../utils/routes');
 var permissions = require('../utils/permissions');
 
 var multer  = require('multer');
-var upload = multer({ dest: 'restricted_media/tmp/' });
+var upload = multer({ dest: '1restricted_media/tmp/' });
 
 var appDir = path.dirname(require.main.filename);
 
@@ -722,14 +722,21 @@ var setRouteManualImport = function(){
 			    	 return res.status(500).send("error " + err);
 			    }
 
-			    rfiddataDao.insert(data, function(err, md5diggest){
+			    var parsedData = null;
+			    try{
+			    	parsedData = JSON.parse(data);
+			    }catch(e){
+			    	return res.status(400).send("Parsing file error : " + e );
+			    }
+
+			    rfiddataDao.insertArray(parsedData, function(err, result){
 					if (err){
 						var error = "rfiddatadao router insert err : " + err;
 						logger.error(error);
 						res.status(500).send(error);
 					}
 					else{
-						res.status(200).send({"message" : "OK"});
+						res.status(200).send(result);
 					}
 				});	        
 		    });
