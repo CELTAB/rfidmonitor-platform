@@ -35,9 +35,12 @@ var upload = multer({ dest: 'restricted_media/tmp/' });
 
 var appDir = path.dirname(require.main.filename);
 
-var SeqAccessToken = require('../models/seqaccesstoken');
-	
+var SeqAccessToken = require('../models/seqaccesstoken');	
 var SeqAppClient = require('../models/seqappclient');
+var SeqUriRoute = require('../models/sequriroute');
+
+	SeqUriRoute.sync(); // TODO <- GAMBI quem garante que sincronizará a tempo antes de alguem tentar usar.
+
 	SeqAppClient.sync().then(function(){
 
 		SeqAccessToken.sync().then(function(){
@@ -92,29 +95,6 @@ var PlatformRouter = function(){
 
 	return router;
 }
-
-// var validateBearer = function(token, done) {
-// 	logger.debug('validateBearer');
-
-// 	accessTokenDao.getByValue(token, function (err, token) {
-
-//         if (err) { return done(err); }
-
-//         // No token found
-//         if (!token) { return done(null, false); }
-
-//         appClientDao.getById(token.appClientId , function (err, client) {
-//             if (err) { return done(err); }
-
-//             // No user found
-//             if (!client) { return done(null, false); }
-
-//             // Simple example with no scope
-//             logger.debug("BearerStrategy : SUCCESS");
-//             done(null, {clientId: client.id, clientName: client.clientName}, { scope: '*' });
-//         });
-//     });
-// }
 
 var validateBearer = function(token, done) {
 	logger.debug('validateBearer');
@@ -189,6 +169,7 @@ var setAuthorization = function(){
 				route: finalRoute,
 				methodName: req.method
 			};
+//	var query = "select * from router_access as r, uri_routers as u where r.app_client_id = $1 and r.uri_routers_id = u.id and u.path IN ('ANY', $2) and u.method IN('ANY', $3)";
 
 			routerAccessDao.getAccess(requestInfo, function(err, result){
 
