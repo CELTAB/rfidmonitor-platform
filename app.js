@@ -74,7 +74,7 @@ server.startServer();
 
 //--------------------
 // Verify database and default user creation
-require('./utils/baseutils').InitiateDb.start();
+// require('./utils/baseutils').InitiateDb.start();
 
 //--------------------
 

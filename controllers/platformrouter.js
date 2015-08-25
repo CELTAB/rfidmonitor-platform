@@ -31,12 +31,44 @@ var routes = require('../utils/routes');
 var permissions = require('../utils/permissions');
 
 var multer  = require('multer');
-var upload = multer({ dest: '1restricted_media/tmp/' });
+var upload = multer({ dest: 'restricted_media/tmp/' });
 
 var appDir = path.dirname(require.main.filename);
 
+var SeqAccessToken = require('../models/seqaccesstoken');
+	
+var SeqAppClient = require('../models/seqappclient');
+	SeqAppClient.sync().then(function(){
+
+		SeqAccessToken.sync().then(function(){
+
+			//TMP CODE
+
+			logger.warn('Is expected to receive the follow error from sequelize: "SequelizeUniqueConstraintError: Validation error". The reason is unkown.');
+
+			SeqAppClient.create({id: 1, clientName: "DEFAULT", authSecret : "DEFAULT", description : "DEFAULT"})
+			.then(function(){
+				SeqAccessToken.create({value: "defaulttokenaccess", appClient : 1})
+				.then(function(){
+					logger.debug('default token created.');
+				})
+				.catch(function(e){
+					logger.error('SeqAccessToken.create error : ' + e);
+				});
+			})
+			.catch(function(e){
+				logger.error('SeqAppClient.create error : ' + e);
+			});
+
+
+			 //END OF TMP CODE
+
+		});
+	});
+
 
 var PlatformRouter = function(){
+
 
 	router = express.Router();
 	userDao = new UserDao();
@@ -61,27 +93,54 @@ var PlatformRouter = function(){
 	return router;
 }
 
+// var validateBearer = function(token, done) {
+// 	logger.debug('validateBearer');
+
+// 	accessTokenDao.getByValue(token, function (err, token) {
+
+//         if (err) { return done(err); }
+
+//         // No token found
+//         if (!token) { return done(null, false); }
+
+//         appClientDao.getById(token.appClientId , function (err, client) {
+//             if (err) { return done(err); }
+
+//             // No user found
+//             if (!client) { return done(null, false); }
+
+//             // Simple example with no scope
+//             logger.debug("BearerStrategy : SUCCESS");
+//             done(null, {clientId: client.id, clientName: client.clientName}, { scope: '*' });
+//         });
+//     });
+// }
+
 var validateBearer = function(token, done) {
 	logger.debug('validateBearer');
 
-	accessTokenDao.getByValue(token, function (err, token) {
+	SeqAccessToken.findOne({where : { value : token }})
+	.then(function(token){
 
-        if (err) { return done(err); }
+		if (!token) { return done(null, false); }
 
-        // No token found
-        if (!token) { return done(null, false); }
+		SeqAppClient.findOne({where : { id : token.appClient}})
+		.then(function(client){
 
-        appClientDao.getById(token.appClientId , function (err, client) {
-            if (err) { return done(err); }
+			if (!client) { return done(null, false); }
 
-            // No user found
-            if (!client) { return done(null, false); }
-
-            // Simple example with no scope
-            logger.debug("BearerStrategy : SUCCESS");
+			logger.debug("BearerStrategy : SUCCESS");
             done(null, {clientId: client.id, clientName: client.clientName}, { scope: '*' });
-        });
-    });
+
+		})
+		.catch(function(e){
+			return done(e);
+		});
+
+	})
+	.catch(function(e){
+		return done(e);
+	});
 }
 
 var setAuthorization = function(){
