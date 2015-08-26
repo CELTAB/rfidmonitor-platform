@@ -55,8 +55,9 @@ sequelize.sync({force: true}).then(function(){
 			console.log("Deuuuuuuuuuuuuuuuuuuuuuuuuuuu");
 			var util = require('util');
 
-			console.log(util.inspect(Dono, { showHidden: true, depth: null }));
+			console.log(util.inspect(Dono, { showHidden: true, depth: 1 }));
 			// console.log(c1.donoId);
+// Carro.describe().then(function(desc){console.log(desc)});
 		});
 	});	
 });

@@ -38,8 +38,10 @@ var appDir = path.dirname(require.main.filename);
 var SeqAccessToken = require('../models/seqaccesstoken');	
 var SeqAppClient = require('../models/seqappclient');
 var SeqUriRoute = require('../models/sequriroute');
+var SeqRouteAccess = require('../models/seqrouteaccess');
 
 	SeqUriRoute.sync(); // TODO <- GAMBI quem garante que sincronizará a tempo antes de alguem tentar usar.
+	SeqRouteAccess.sync(); // TODO <- GAMBI quem garante que sincronizará a tempo antes de alguem tentar usar.
 
 	SeqAppClient.sync().then(function(){
 
@@ -49,14 +51,30 @@ var SeqUriRoute = require('../models/sequriroute');
 
 			logger.warn('Is expected to receive the follow error from sequelize: "SequelizeUniqueConstraintError: Validation error". The reason is unkown.');
 
+			//TODO we should use findorcreated instead. but it is not working.
 			SeqAppClient.create({id: 1, clientName: "DEFAULT", authSecret : "DEFAULT", description : "DEFAULT"})
-			.then(function(){
-				SeqAccessToken.create({value: "defaulttokenaccess", appClient : 1})
+			.then(function(client){
+				SeqAccessToken.create({value: "defaulttokenaccess", appClient : client.id})
 				.then(function(){
 					logger.debug('default token created.');
+
+
 				})
 				.catch(function(e){
 					logger.error('SeqAccessToken.create error : ' + e);
+				});
+
+
+				SeqUriRoute.findOne({where : {path : 'ANY', method : 'ANY'}}).then(function(rec){
+					if(rec){
+						SeqRouteAccess
+						.findOrCreate({where: {appClient: 1}, defaults: {uriRoute: rec.id}})
+	  					.spread(function(accessroute, created) {
+	  						if(created){
+	  							logger.debug('ROUTE ACCESS TO ANY-ANY AND USER ID 1 HAS BEEN CREATED');
+	  						}
+	  					});
+					}
 				});
 			})
 			.catch(function(e){
@@ -171,20 +189,32 @@ var setAuthorization = function(){
 			};
 //	var query = "select * from router_access as r, uri_routers as u where r.app_client_id = $1 and r.uri_routers_id = u.id and u.path IN ('ANY', $2) and u.method IN('ANY', $3)";
 
-			routerAccessDao.getAccess(requestInfo, function(err, result){
-
-                if(err) {
-                	logger.error("setAuthorization routerAccessDao ");
-                	return res.status(500).send({'message' : "INTERNAL ERROR"});
+// SeqRouteAccess.describe().then(function(desc){console.log(desc)});
+			SeqRouteAccess.findOne(
+				{
+					where : { appClient: req.user.clientId}, 
+					include: [
+						{
+		        			model: SeqUriRoute,
+		        			where: { 
+		        				path: { $or : ['ANY', finalRoute] }, 
+		        				method : { $or : ['ANY', req.method] } 
+		        			}
+		    			}
+		    		]
 				}
-
-                if(result){
+		    )
+			.then(function(access){
+				if(access){
                 	//ACCESS GRANTED.
                     next();
                 }else{
                     res.status(403).send({'message' : 'Get out dog.'});
                 }
-       		});			
+			})
+			.catch(function(e){
+				return res.status(500).send({'message' : "INTERNAL ERROR : " + e});
+			});		
 			
 		}
 	);
