@@ -35,6 +35,7 @@ var CollectorPool = function CollectorPool(){
 	this.updateStatusByMac = function(collector, status){
 		
 		if(this.isCollectorValid(collector)){
+			logger.debug(collector.mac + " update status to " + status);
 			pool[collector.mac].status = status;
 			return true;
 		}

@@ -167,6 +167,8 @@ RFIDDataDao.prototype.findAll = function(limit, offset, callback){
     var query = 'SELECT * FROM rfiddata';
 
     var parameters = [];
+    
+    query += ' ORDER BY server_received_date DESC';
 
     if(limit){
         query += ' LIMIT $1';
@@ -177,6 +179,7 @@ RFIDDataDao.prototype.findAll = function(limit, offset, callback){
         query += ' OFFSET $2';
         parameters.push(offset);
     }
+
 
     db.query(query, parameters, function(err, result){
         if(err){

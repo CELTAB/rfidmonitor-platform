@@ -149,7 +149,9 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 	}
 
 	var buildMessageObject = function(m_type, m_data){
-		return {type: m_type, data: m_data, datetime: (new Date()).toISOString()};
+		// logger.error("HORA ATUAL - ARRUMAR ISSO (Formato que o rasp não consegue atualizar)>>>> " + (new Date()));
+		// return {type: m_type, data: m_data, datetime: (new Date()).toISOString()};
+		return {type: m_type, data: m_data, datetime: new Date().toString()};
 	}
 
 	var sendObject = function(object){

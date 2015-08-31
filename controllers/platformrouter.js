@@ -617,7 +617,7 @@ var setRouteRfiddata = function(){
 			req.checkQuery('offset', 'invalid or out of boundaries').isInt({ min: 1, max: 50});
 		}
 
-		logger.warn(dbRoute + "GET : Cound generate offset db error if bigger than rows available?");
+		// logger.warn(dbRoute + "GET : Cound generate offset db error if bigger than rows available?");
 
 		rfiddataDao.findAll(limit, offset, function(err, rfiddatas){
 			if(err)
