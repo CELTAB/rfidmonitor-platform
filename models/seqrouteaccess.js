@@ -27,12 +27,10 @@ var model = sequelize.define("RouteAccess", {
 {
 	paranoid : true,
 	freezeTableName: true,
-	tableName: 'tb_plat_route_access',
-	classMethods: {
-		associate : function(models){
-			sequelize.model('RouteAccess').belongsTo(models['UriRoute'], {foreignKey : 'uri_route_id'});
-		}	
-	}	
+	tableName: 'tb_plat_route_access'
 });
+
+
+model.belongsTo(SeqUriRoute, {foreignKey : 'uri_route_id'});
 
 module.exports = model;
