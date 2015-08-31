@@ -77,7 +77,7 @@ DEValidator.prototype.validateTypesEnum = function(type){
 	return DEValidator.prototype.typesEnum[type];
 }
 
-var validateEntityField = function(field){
+var validateEntityField = function(field, isRoot){
 
 	var errors = [];
 
@@ -97,6 +97,10 @@ var validateEntityField = function(field){
 		errors.push({field : field.field, error : "type invalid"});
 	}
 
+	if(isRoot && field["type"] != DEValidator.prototype.typesEnum.ENTITY){
+		errors.push({obj : field.field, error : "root object is not an ENTITY"});
+	}
+	
 	if(field["type"] == DEValidator.prototype.typesEnum.ENTITY){
 
 		if(!field["structureList"]){
@@ -109,7 +113,7 @@ var validateEntityField = function(field){
 			for(var ie in field["structureList"]){
 				var entityField = field["structureList"][ie];
 
-				var e = validateEntityField(entityField);
+				var e = validateEntityField(entityField, false);
 				if(e)
 					errors.push(e);
 			}
@@ -206,7 +210,7 @@ DEValidator.prototype.validateClientRootArray = function(json, callback){
 	for (var i in json){
 
 		var rootObj = json[i];
-		var errors = validateEntityField(rootObj);
+		var errors = validateEntityField(rootObj, true);
 		if(errors)
 			return callback(errors, null);
 	}
