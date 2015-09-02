@@ -1,4 +1,6 @@
 var express = require('express');
+var fs = require('fs');
+var path = require('path');
 
 var logger = require('winston');
 var BearerStrategy = require('passport-http-bearer').Strategy
@@ -28,6 +30,64 @@ var RfiddataDao = require('../dao/rfiddatadao');
 var routes = require('../utils/routes');
 var permissions = require('../utils/permissions');
 
+var multer  = require('multer');
+var upload = multer({ dest: 'restricted_media/tmp/' });
+
+var appDir = path.dirname(require.main.filename);
+
+var SeqUser = require('../models/sequser');
+var SeqAccessToken = require('../models/seqaccesstoken');	
+var SeqAppClient = require('../models/seqappclient');
+var SeqUriRoute = require('../models/sequriroute');
+var SeqRouteAccess = require('../models/seqrouteaccess');
+
+	SeqUser.sync();
+	SeqUriRoute.sync(); // TODO <- GAMBI quem garante que sincronizará a tempo antes de alguem tentar usar.
+	SeqRouteAccess.sync(); // TODO <- GAMBI quem garante que sincronizará a tempo antes de alguem tentar usar.
+
+	SeqAppClient.sync().then(function(){
+
+		SeqAccessToken.sync().then(function(){
+
+			//TMP CODE
+
+			logger.warn('Is expected to receive the follow error from sequelize: "SequelizeUniqueConstraintError: Validation error". The reason is unkown.');
+
+			//TODO we should use findorcreated instead. but it is not working.
+			SeqAppClient.create({id: 1, clientName: "DEFAULT", authSecret : "DEFAULT", description : "DEFAULT"})
+			.then(function(client){
+				SeqAccessToken.create({value: "defaulttokenaccess", appClient : client.id})
+				.then(function(){
+					logger.debug('default token created.');
+
+
+				})
+				.catch(function(e){
+					logger.error('SeqAccessToken.create error : ' + e);
+				});
+
+
+				SeqUriRoute.findOne({where : {path : 'ANY', method : 'ANY'}}).then(function(rec){
+					if(rec){
+						SeqRouteAccess
+						.findOrCreate({where: {appClient: 1}, defaults: {uriRoute: rec.id}})
+	  					.spread(function(accessroute, created) {
+	  						if(created){
+	  							logger.debug('ROUTE ACCESS TO ANY-ANY AND USER ID 1 HAS BEEN CREATED');
+	  						}
+	  					});
+					}
+				});
+			})
+			.catch(function(e){
+				logger.error('SeqAppClient.create error : ' + e);
+			});
+
+
+			 //END OF TMP CODE
+
+		});
+	});
 
 
 var PlatformRouter = function(){
@@ -50,6 +110,7 @@ var PlatformRouter = function(){
 	setRouteGroups();
 	setRouteRfiddata();
 	setRoutePermissions();
+	setRouteManualImport();
 
 	return router;
 }
@@ -57,27 +118,32 @@ var PlatformRouter = function(){
 var validateBearer = function(token, done) {
 	logger.debug('validateBearer');
 
-	accessTokenDao.getByValue(token, function (err, token) {
+	SeqAccessToken.findOne({where : { value : token }})
+	.then(function(token){
 
-        if (err) { return done(err); }
+		if (!token) { return done(null, false); }
 
-        // No token found
-        if (!token) { return done(null, false); }
+		SeqAppClient.findOne({where : { id : token.appClient}})
+		.then(function(client){
 
-        appClientDao.getById(token.appClientId , function (err, client) {
-            if (err) { return done(err); }
+			if (!client) { return done(null, false); }
 
-            // No user found
-            if (!client) { return done(null, false); }
-
-            // Simple example with no scope
-            logger.debug("BearerStrategy : SUCCESS");
+			logger.debug("BearerStrategy : SUCCESS");
             done(null, {clientId: client.id, clientName: client.clientName}, { scope: '*' });
-        });
-    });
+
+		})
+		.catch(function(e){
+			return done(e);
+		});
+
+	})
+	.catch(function(e){
+		return done(e);
+	});
 }
 
 var setAuthorization = function(){
+	logger.warn('move setAuthorization to some generic place. This is being used by all routers not only this.');
 	router.all(
 		'*', 
 		passport.authenticate('api-bearer', { session: false }), 
@@ -122,21 +188,34 @@ var setAuthorization = function(){
 				route: finalRoute,
 				methodName: req.method
 			};
+//	var query = "select * from router_access as r, uri_routers as u where r.app_client_id = $1 and r.uri_routers_id = u.id and u.path IN ('ANY', $2) and u.method IN('ANY', $3)";
 
-			routerAccessDao.getAccess(requestInfo, function(err, result){
-
-                if(err) {
-                	logger.error("setAuthorization routerAccessDao ");
-                	return res.status(500).send({'message' : "INTERNAL ERROR"});
+// SeqRouteAccess.describe().then(function(desc){console.log(desc)});
+			SeqRouteAccess.findOne(
+				{
+					where : { appClient: req.user.clientId}, 
+					include: [
+						{
+		        			model: SeqUriRoute,
+		        			where: { 
+		        				path: { $or : ['ANY', finalRoute] }, 
+		        				method : { $or : ['ANY', req.method] } 
+		        			}
+		    			}
+		    		]
 				}
-
-                if(result){
+		    )
+			.then(function(access){
+				if(access){
                 	//ACCESS GRANTED.
                     next();
                 }else{
                     res.status(403).send({'message' : 'Get out dog.'});
                 }
-       		});			
+			})
+			.catch(function(e){
+				return res.status(500).send({'message' : "INTERNAL ERROR : " + e});
+			});		
 			
 		}
 	);
@@ -162,14 +241,46 @@ var setRouteUsers = function(){
 	routes.register(dbRoute, routes.getMethods().GET);
 
 	router.get(expressRouteSimple,function(req, res){
+
+		return res.status(501).send("Not implemented yet");
+
 		logger.warn("DEVELOPMENT ROUTE IN ACTION. SHOULD NOT BE AVAILABLE ON PRODUCTION." + dbRoute);
-		userDao.getAll(function(err, users){
-			if(err)
-				return res.status(500).send({'message' : err.toString()}); 
 
-			return res.status(200).send(users);
+		if(!req.body.username || !req.body.password){
+			return res.status(400).send({'message': 'Missing username or password'});
+		}
 
-		});
+		logger.warn("Need to HASH the password");
+
+		SeqUser.findAll(
+				{
+					where : { 
+						username: req.body.username,
+						loginAllowed: true
+					}
+				}
+		    )
+			.then(function(user){
+				if(user){
+                	
+
+
+
+                }else{
+                    res.status(403).send({'message' : 'Get out dog.'});
+                }
+			})
+			.catch(function(e){
+				return res.status(500).send({'message' : "INTERNAL ERROR : " + e});
+			});		
+			
+		// userDao.getAll(function(err, users){
+		// 	if(err)
+		// 		return res.status(500).send({'message' : err.toString()}); 
+
+		// 	return res.status(200).send(users);
+
+		// });
 	});
 	router.get(expressRouteId,function(req, res){
 		logger.warn("DEVELOPMENT ROUTE IN ACTION. SHOULD NOT BE AVAILABLE ON PRODUCTION." + dbRoute);
@@ -207,6 +318,73 @@ var setRouteUsers = function(){
 		});
 
 	});
+
+}
+
+
+var setLoginRouters = function() {
+
+	var dbRoute = '/api/users';
+	var expressRouteSimple = '/users';
+	var expressRouteId = expressRouteSimple + '/:id';
+
+	logger.warn("DEVELOPMENT ROUTE IN ACTION. SHOULD NOT BE AVAILABLE ON PRODUCTION." + dbRoute);
+
+	/* OBJECT EXAMPLE
+	{
+		"username" : "jaime",
+		"password" : "ab#5",
+		"name" : "jaime bomber man",
+		"email" : "jaime@jaime.com"
+	}
+	*/
+
+	routes.register(dbRoute, routes.getMethods().GET);
+
+	router.get(expressRouteSimple,function(req, res){
+		logger.warn("DEVELOPMENT ROUTE IN ACTION. SHOULD NOT BE AVAILABLE ON PRODUCTION." + dbRoute);
+
+		if(!req.body.username || !req.body.password){
+			return res.status(400).send({'message': 'Missing username or password'});
+		}
+
+		logger.warn("Need to HASH the password");
+
+		SeqUser.findOne(
+				{
+					where : { 
+						username: req.body.username,
+						loginAllowed: true
+					}
+				}
+		    )
+			.then(function(user){
+				if(user){
+                	
+
+
+
+                }else{
+                    res.status(403).send({'message' : 'Get out dog.'});
+                }
+			})
+			.catch(function(e){
+				return res.status(500).send({'message' : "INTERNAL ERROR : " + e});
+			});		
+			
+
+
+
+
+		// userDao.getAll(function(err, users){
+		// 	if(err)
+		// 		return res.status(500).send({'message' : err.toString()}); 
+
+		// 	return res.status(200).send(users);
+
+		// });
+	});
+
 
 }
 
@@ -509,11 +687,11 @@ var setRouteGroups = function(){
 
 	router.post(expressRouteSimple, function(req, res){
 
-		req.checkBody('id', 'missing or invalid int.').isInt();
+		// req.checkBody('id', 'missing or invalid int.').isInt();
 		req.checkBody('name', 'missing.').notEmpty();
-		req.checkBody('creationDate', 'missing  or invalid date.').isDate();
+		// req.checkBody('creationDate', 'missing  or invalid date.').isDate();
 		req.checkBody('description', 'missing.').notEmpty();
-		req.checkBody('isDefault', 'missing or invalid boolean.').isBoolean();
+		// req.checkBody('isDefault', 'missing or invalid boolean.').isBoolean();
 
 		req.sanitizeBody('name').toString();
 		req.sanitizeBody('description').toString();
@@ -683,6 +861,58 @@ var setRoutePermissions = function(){
 			return res.status(200).send(permissions);				
 		});	
 	});
+}
+
+var setRouteManualImport = function(){
+
+	var dbRoute = '/api/import';
+	var expressRouteSimple = '/import';
+
+	routes.register(dbRoute, routes.getMethods().POST);
+
+	router.post(expressRouteSimple, upload.single('import_file'), function(req, res){
+
+		if(!req.file)
+			return res.status(400).send("We didnt receive you file");
+		
+		var file = req.file;
+
+		if(file.size > 500 * 1024 * 1024)
+			return res.status(400).send("file bigger than 500mb");
+
+		file.finalPath = appDir + '/restricted_media/media/manual_import/' + req.file.filename;
+
+		fs.readFile(req.file.path, function (err, data) {
+		    if (err){
+		    	 return res.status(500).send("error read" + err);
+		    }
+		    
+		    fs.writeFile(file.finalPath, data, function (err) {
+		        if (err){
+			    	 return res.status(500).send("error " + err);
+			    }
+
+			    var parsedData = null;
+			    try{
+			    	parsedData = JSON.parse(data);
+			    }catch(e){
+			    	return res.status(400).send("Parsing file error : " + e );
+			    }
+
+			    rfiddataDao.insertArray(parsedData, function(err, result){
+					if (err){
+						var error = "rfiddatadao router insert err : " + err;
+						logger.error(error);
+						res.status(500).send(error);
+					}
+					else{
+						res.status(200).send(result);
+					}
+				});	        
+		    });
+		});		
+	});
+
 }
 
 module.exports = PlatformRouter;

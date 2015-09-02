@@ -40,6 +40,7 @@ var expressValidator = require('express-validator');
 var Cors = require('cors');
 
 var PlatformRouter = require('./controllers/platformrouter');
+var DERouter = require('./controllers/derouter');
 var Server = require('./utils/server');
 var Collector = require('./models/collector');
 
@@ -73,7 +74,7 @@ server.startServer();
 
 //--------------------
 // Verify database and default user creation
-require('./utils/baseutils').InitiateDb.start();
+// require('./utils/baseutils').InitiateDb.start();
 
 //--------------------
 
@@ -147,8 +148,8 @@ app.use(function(err, req, res, next) {
 	//This functions gets some erros like 'bodyParser errors'.
 	//To check if it is bodyparser error, remove the response below and just call next().
 	if(err){
-		return res.status(400).json({"error" : "Error catch on app.js handler. Maybe bodyparser error: " + err});
-	}	
+		return res.status(400).json({"error" : err});
+	}
 	next();
 })
 
@@ -166,5 +167,6 @@ app.use('/web/public', express.static('web/public'));
 app.use('/api/doc', express.static('apidoc'));
 
 app.use('/api', new PlatformRouter());
+app.use('/api', new DERouter());
 
 https.createServer(options, app).listen(443);

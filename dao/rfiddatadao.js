@@ -51,7 +51,7 @@ var insertSummary = function(rfiddata, collector, summaryCallback){
             packagedao.insert(pkObj, function(err, pk_id){
                 if(err){
                     logger.error("RFIDATADAO insertSummary. ERROR: " + err);
-                    return;
+                    return callback(err, null);
                 }
 
                 totalDataCount = rfiddata.data.length;
@@ -73,18 +73,26 @@ var insertSummary = function(rfiddata, collector, summaryCallback){
                     insertRFIDData(rfidObject, function(err){
                         if(err){
                             logger.error("Error: " + err);
-                            return;
+                            return summaryCallback(err, null);
                         }
 
                         dataCount++;
                         if(dataCount == totalDataCount)
                             summaryCallback(null, rfiddata.md5diggest);
+                        logger.warn("IMPLEMENT HERE");
+                        /*
+                            summaryCallback(null, { new : true , md5diggest : rfiddata.md5diggest});
+                        */
                     });
                 }
             });
         }else{
             //The server already has the package with this hash, so send the ACK-DATA to the collector to confirm persistence.
             logger.info("Package already has the hash pesisted. ACK-DATA needed.");
+            logger.warn("IMPLEMENT HERE");
+            /*
+                summaryCallback(null, { new : false, md5diggest : rfiddata.md5diggest});
+            */
             summaryCallback(null, rfiddata.md5diggest);
         }
     });     
@@ -120,6 +128,48 @@ var existsByHash = function(hash,callback){
     });
 }
 
+RFIDDataDao.prototype.insertArray = function(array, callback){
+    var total = array.length;
+
+    logger.debug('array total length: ' + total)
+
+    if(total == 0){
+        return callback("empty array", null);
+    }
+
+    var count = 0;
+    var globalError = null;
+    var repeatedRfiddata = 0;
+    var newRfiddata = 0;
+    var errorRfiddata = 0;
+
+    for (var i in array){
+
+        RFIDDataDao.prototype.insert(array[i], function(err, result){
+            count ++;
+
+            if(err){
+                globalError += 'NEXT ERROR : ' + err + ' | ';
+                errorRfiddata++;
+            }else{
+                /*
+
+                if(result.new)
+                    newRfiddata++;
+                else
+                    repeatedRfiddata++;
+            
+                */
+            }
+            if(count == total){
+                return callback(globalError, { 'totalRfiddata' : total, 'repeatedRfiddata': repeatedRfiddata, 'newRfiddata' : newRfiddata, 'errorRfiddata' : errorRfiddata});
+            }
+        });
+
+    }
+
+}
+
 RFIDDataDao.prototype.insert = function(obj, callback){
 
 	collectorDao.findByMac(obj.macaddress, function(err, collector){
@@ -147,9 +197,14 @@ RFIDDataDao.prototype.insert = function(obj, callback){
                 */
                 collectorDao.insertOrFindByMacUniqueError(collectorObj, function(err, collectorId){
 
+                    if(err)
+                        return callback(err, null);
+
+                    logger.warn("missing error handling on rfidatadao collectorDao.insertOrFindByMacUniqueError");
+
                     if(collectorId == null){
-                        logger.error(err);
-                        return;
+                        logger.error('collector null');
+                        return callback('collector null', null);
                     }
                         
                     collectorObj.id = collectorId;
