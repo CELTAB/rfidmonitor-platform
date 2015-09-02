@@ -125,7 +125,7 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 	}
 
 	var handle_DATA = function(message){
-		logger.debug("handle_DATA raw message: " + JSON.stringify(message,null,"\t"));
+		logger.silly("handle_DATA raw message: " + JSON.stringify(message,null,"\t"));
 		packCounter++;
 		logger.debug("Packages Received: " + packCounter);
 
@@ -160,7 +160,7 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 
 		try{
 			var message = JSON.stringify(object);
-			logger.debug("sendMessage : " + message);
+			logger.silly("sendMessage : " + message);
 
 			if(socket.isConnected)
 				socket.write(buildMessage(message));

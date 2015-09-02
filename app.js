@@ -49,6 +49,8 @@ var debugConsole = false;
 var debugFile = false;
 var verboseConsole = false;
 var verboseFile = false;
+var sillyConsole = false;
+var sillyFile = false;
 
 if(args.indexOf('--debugAll') > -1){
 	debugConsole = true;
@@ -68,7 +70,7 @@ if(args.indexOf('--debugAll') > -1){
 }
 
 
-new Logs(debugConsole, debugFile, verboseConsole, verboseFile);
+new Logs(debugConsole, debugFile, verboseConsole, verboseFile, sillyConsole, sillyFile);
 var server = new Server();
 server.startServer();
 
