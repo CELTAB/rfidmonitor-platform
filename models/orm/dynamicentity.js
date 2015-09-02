@@ -23,6 +23,11 @@ module.exports = sequelize.define("DynamicEntity", {
 		type : SequelizeClass.TEXT,
 		allowNull : true
 	},
+	active: {
+		type: SequelizeClass.BOOLEAN,
+		allowNull : false,
+		defaultValue: true	
+	},
 	deletedAt : {
 		type : SequelizeClass.DATE,
 		unique : 'uq_identifier_and_deletedAt' //this enables having 1 unique identifier not deleted, and repeated identifiers deleted.

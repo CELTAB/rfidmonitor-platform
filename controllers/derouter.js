@@ -37,6 +37,9 @@ var DERouter = function(){
 	//this also syncs the database through deModelPool call.
 	dynamicEntities = new DynamicEntities();
 
+	setRouteOriginalInfo();
+	setRouteEntityActivate();
+	setRouteEntityDeactivate();
 	setRouteMetaInfo();
 	setRouteRegisterEntity();
 	setRouteDeDao();
@@ -78,7 +81,11 @@ var setRouteMetaInfo = function(){
 
 	router.get(expressRouteSimple,function(req, res){
 
-		DynamicEntity.findAll({attributes : ['meta']})
+		DynamicEntity.findAll(
+			
+			{attributes : ['meta'], where: {active: true}}
+
+			)
 		.then(function(entities){
 			var response = [];
 			for(var i in entities){
@@ -105,6 +112,129 @@ var setRouteMetaInfo = function(){
 	});
 }
 
+var setRouteOriginalInfo = function(){
+
+	var dbRoute = '/api/de/original';
+	var expressRouteSimple = '/de/original';
+	var expressRouteId = expressRouteSimple + '/:entity';
+
+	routes.register(dbRoute, routes.getMethods().GET);
+
+	router.get(expressRouteSimple,function(req, res){
+
+		DynamicEntity.findAll({
+			attributes : ['original', 'active']
+		})
+		.then(function(entities){
+			var response = [];
+			for(var i in entities){
+
+
+				var entity = entities[i].original;
+
+				logger.warn(entities[i].active);
+				
+				entity = JSON.parse(entity);
+
+
+				entity.active = entities[i].active;
+				logger.info(entity);
+
+				response.push(entity);
+			}
+			return res.status(200).send(response);
+		})
+		.catch(function(e){
+			return res.status(500).send(e);
+		});		
+
+	});
+
+	router.get(expressRouteId,function(req, res){
+
+		DynamicEntity.findOne({where : { identifier : req.params.entity }})
+		.then(function(entities){
+			var entity = entities.original;
+
+			entity = JSON.parse(entity);
+			entity.active = entities.active;
+
+			return res.status(200).send(entity);
+		})
+		.catch(function(e){
+			return res.status(500).send(e);
+		});	
+
+	});
+}
+
+
+var setRouteEntityActivate = function(){
+
+	var dbRoute = '/api/de/activate';
+	var expressRouteSimple = '/de/activate';
+	var expressRouteId = expressRouteSimple + '/:entity';
+
+	routes.register(dbRoute, routes.getMethods().PUT);
+
+	router.put(expressRouteId, checkEntity, function(req, res){
+
+		logger.warn(req.params.entity);
+
+		DynamicEntity.findOne({
+			where: { identifier: req.params.entity}
+		}).then(function(entity){
+
+			if(!entity)
+				return res.status(400).send("Invalid Entity.");
+
+
+			logger.info(entity.identifier);
+
+			entity.active = true;
+			entity.save().then(function(ok){
+				return res.status(200).send("OK");
+			});
+
+		}).catch(function(e){
+			return res.status(500).send(e);
+		});
+
+	});
+}
+
+
+var setRouteEntityDeactivate = function(){
+
+	var dbRoute = '/api/de/deactivate';
+	var expressRouteSimple = '/de/deactivate';
+	var expressRouteId = expressRouteSimple + '/:entity';
+
+	routes.register(dbRoute, routes.getMethods().PUT);
+
+	router.put(expressRouteId, checkEntity, function(req, res){
+
+		logger.warn(req.params.entity);
+
+		DynamicEntity.findOne({
+			where: { identifier: req.params.entity}
+		}).then(function(entity){
+
+			if(!entity)
+				return res.status(400).send("Invalid Entity.");
+
+			entity.active = false;
+			entity.save().then(function(ok){
+				return res.status(200).send("OK");
+			});
+
+		}).catch(function(e){
+			return res.status(500).send(e);
+		});
+
+	});
+}
+
 var setRouteRegisterEntity = function(){
 
 	var dbRoute = '/api/de/register';
@@ -122,9 +252,7 @@ var setRouteRegisterEntity = function(){
 			return res.status(200).send({"message" : "OK"});
 		});
 
-
 	});
-
 }
 
 var checkEntity = function(req, res, next){

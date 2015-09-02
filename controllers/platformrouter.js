@@ -35,11 +35,13 @@ var upload = multer({ dest: 'restricted_media/tmp/' });
 
 var appDir = path.dirname(require.main.filename);
 
+var SeqUser = require('../models/sequser');
 var SeqAccessToken = require('../models/seqaccesstoken');	
 var SeqAppClient = require('../models/seqappclient');
 var SeqUriRoute = require('../models/sequriroute');
 var SeqRouteAccess = require('../models/seqrouteaccess');
 
+	SeqUser.sync();
 	SeqUriRoute.sync(); // TODO <- GAMBI quem garante que sincronizará a tempo antes de alguem tentar usar.
 	SeqRouteAccess.sync(); // TODO <- GAMBI quem garante que sincronizará a tempo antes de alguem tentar usar.
 
@@ -89,7 +91,6 @@ var SeqRouteAccess = require('../models/seqrouteaccess');
 
 
 var PlatformRouter = function(){
-
 
 	router = express.Router();
 	userDao = new UserDao();
@@ -240,14 +241,46 @@ var setRouteUsers = function(){
 	routes.register(dbRoute, routes.getMethods().GET);
 
 	router.get(expressRouteSimple,function(req, res){
+
+		return res.status(501).send("Not implemented yet");
+
 		logger.warn("DEVELOPMENT ROUTE IN ACTION. SHOULD NOT BE AVAILABLE ON PRODUCTION." + dbRoute);
-		userDao.getAll(function(err, users){
-			if(err)
-				return res.status(500).send({'message' : err.toString()}); 
 
-			return res.status(200).send(users);
+		if(!req.body.username || !req.body.password){
+			return res.status(400).send({'message': 'Missing username or password'});
+		}
 
-		});
+		logger.warn("Need to HASH the password");
+
+		SeqUser.findAll(
+				{
+					where : { 
+						username: req.body.username,
+						loginAllowed: true
+					}
+				}
+		    )
+			.then(function(user){
+				if(user){
+                	
+
+
+
+                }else{
+                    res.status(403).send({'message' : 'Get out dog.'});
+                }
+			})
+			.catch(function(e){
+				return res.status(500).send({'message' : "INTERNAL ERROR : " + e});
+			});		
+			
+		// userDao.getAll(function(err, users){
+		// 	if(err)
+		// 		return res.status(500).send({'message' : err.toString()}); 
+
+		// 	return res.status(200).send(users);
+
+		// });
 	});
 	router.get(expressRouteId,function(req, res){
 		logger.warn("DEVELOPMENT ROUTE IN ACTION. SHOULD NOT BE AVAILABLE ON PRODUCTION." + dbRoute);
@@ -285,6 +318,73 @@ var setRouteUsers = function(){
 		});
 
 	});
+
+}
+
+
+var setLoginRouters = function() {
+
+	var dbRoute = '/api/users';
+	var expressRouteSimple = '/users';
+	var expressRouteId = expressRouteSimple + '/:id';
+
+	logger.warn("DEVELOPMENT ROUTE IN ACTION. SHOULD NOT BE AVAILABLE ON PRODUCTION." + dbRoute);
+
+	/* OBJECT EXAMPLE
+	{
+		"username" : "jaime",
+		"password" : "ab#5",
+		"name" : "jaime bomber man",
+		"email" : "jaime@jaime.com"
+	}
+	*/
+
+	routes.register(dbRoute, routes.getMethods().GET);
+
+	router.get(expressRouteSimple,function(req, res){
+		logger.warn("DEVELOPMENT ROUTE IN ACTION. SHOULD NOT BE AVAILABLE ON PRODUCTION." + dbRoute);
+
+		if(!req.body.username || !req.body.password){
+			return res.status(400).send({'message': 'Missing username or password'});
+		}
+
+		logger.warn("Need to HASH the password");
+
+		SeqUser.findOne(
+				{
+					where : { 
+						username: req.body.username,
+						loginAllowed: true
+					}
+				}
+		    )
+			.then(function(user){
+				if(user){
+                	
+
+
+
+                }else{
+                    res.status(403).send({'message' : 'Get out dog.'});
+                }
+			})
+			.catch(function(e){
+				return res.status(500).send({'message' : "INTERNAL ERROR : " + e});
+			});		
+			
+
+
+
+
+		// userDao.getAll(function(err, users){
+		// 	if(err)
+		// 		return res.status(500).send({'message' : err.toString()}); 
+
+		// 	return res.status(200).send(users);
+
+		// });
+	});
+
 
 }
 

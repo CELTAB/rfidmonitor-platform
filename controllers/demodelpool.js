@@ -8,6 +8,8 @@ var DEValidator = require('./devalidator');
 var routes = require('../utils/routes');
 
 
+// sequelize.sync({force: true});
+
 var DEModelPool = function DEModelPool(){
 
     PlatformMedia.sync().catch(function(e){
