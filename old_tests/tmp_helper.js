@@ -423,6 +423,7 @@ var testObj_complexFiveDeep = [
   {
     "field" : "Carro",
     "type" : "ENTITY",
+    "defaultReference": "teste",
     "structureList" : [
       {
         "field" : "teste",

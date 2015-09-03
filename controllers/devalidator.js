@@ -110,13 +110,32 @@ var validateEntityField = function(field, isRoot){
 		} else if(field["structureList"].length == 0){
 			errors.push({obj : field.field, error : "structureList is empty"});
 		}else {
+			
+			var defaultReference = null;
+			var defaultRefOk = false;
+
+			if(!field["defaultReference"]){
+				errors.push({field : "defaultReference", error : "defaultReference not found"});
+				field["defaultReference"]
+			}else{
+				defaultReference = field["defaultReference"];
+			}
+
 			for(var ie in field["structureList"]){
 				var entityField = field["structureList"][ie];
+
+				if(defaultReference && defaultReference == entityField.field){
+					defaultRefOk = true;
+				}
 
 				var e = validateEntityField(entityField, false);
 				if(e)
 					errors.push(e);
 			}
+
+			if(defaultReference && !defaultRefOk)
+				errors.push({field : "defaultReference", error : "defaultReference not match to any field in the structureList"});
+
 		}
 	}else{
 		if(!validator.isBoolean(field["allowNull"])){
@@ -151,8 +170,7 @@ var splitAndUpdateRootObj = function(json){
 	var newEntitiesSplit = [];
 
 	for (var i in json ){
-		//TODO look into structureList for entities and do the magic.
-		//remove structureList e unique.
+		//remove structureList and unique.
 		var rootObj = json[i];
 		for (var is in rootObj.structureList){
 			rootObj.structureList[is].identifier = normalizeString(rootObj.structureList[is].field);
@@ -162,6 +180,9 @@ var splitAndUpdateRootObj = function(json){
 				//copy the entity
 				//I know, it is ugly but is what I have for today.
 				var cpEntity = JSON.parse(JSON.stringify(rootObj.structureList[is]));
+
+				//Normalize the defaultReference field
+				rootObj.structureList[is].defaultReference = normalizeString(rootObj.structureList[is].defaultReference);
 
 				//remove useless for a field, but keep on the copy that will  be the entity itself.
 				delete rootObj.structureList[is].unique;
@@ -181,6 +202,9 @@ var splitAndUpdateRootObj = function(json){
 				logger.warn("devalidator : splitAndUpdateRootObj : if this is not string could generate problems");
 			}
 		}
+
+		//Normalize the defaultReference field
+		rootObj.defaultReference = normalizeString(rootObj.defaultReference);
 
 		//Add the current obj udpated.
 		newEntitiesSplit.push(rootObj);		
@@ -224,7 +248,6 @@ DEValidator.prototype.validateClientRootArray = function(json, callback){
 	... Guarda no banco cada entidade nova em tuplas.
 	*/
 	
-	
 
 	var newEntities = splitAndUpdateRootObj(json);
 	// logger.debug("##" +JSON.stringify(newEntities, null , '\t'));
@@ -248,9 +271,10 @@ DEValidator.prototype.validateClientRootArray = function(json, callback){
 		
 		//Find repeated names. Return errors if so.
 		var error = searchForRepeatedIdentifiers(entitiesPool);
-		logger.debug(error);
-		if(error)
+		if(error){
+			logger.debug(error);
 			return callback(error, null);
+		}
 
 		//Persist the new entities as they are ok.
 		var bulkArray = []

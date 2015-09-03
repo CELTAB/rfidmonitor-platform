@@ -75,7 +75,6 @@ DynamicEntities.prototype.registerEntity = function(json, callback){
 			return callback(errors);
 		}
 
-
 		buildSequelizeModels(newEntities, function(errors){
 			if(errors){
 				logger.error('errors ' + errors);
@@ -341,7 +340,7 @@ var buildSequelizeModels = function(entities, callback){
 					}
 				}
 
-				rec.sequelizeModel = JSON.stringify(definitionsMapperTmp[rec.identifier].sequelizeModel, null, null);
+				rec.sequelizeModel = JSON.stringify( [rec.identifier].sequelizeModel, null, null);
 				rec.sequelizeOptions = JSON.stringify(definitionsMapperTmp[rec.identifier].sequelizeOptions, null, null);
 			
 
