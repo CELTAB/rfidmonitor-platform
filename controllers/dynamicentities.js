@@ -98,7 +98,10 @@ var buildDefinition = function(entity, callback){
 	definition.sequelizeOptions = {
 		paranoid : true,
 		freezeTableName: true,
-  		tableName: 'tb_de_' + entity.identifier
+  		tableName: 'tb_de_' + entity.identifier,
+  		classMethods: {
+  			associate: []
+  		}
 	}
 
 	/*
@@ -115,7 +118,7 @@ var buildDefinition = function(entity, callback){
 	// Example : unique : [ ['abc', 'cde'] , ['def'] ]
 	for (var iu in entity.unique){
 		var uqConstraint = entity.unique[iu];
-		logger.debug(JSON.stringify(uqConstraint));
+		logger.debug("Unique Constraint: " + JSON.stringify(uqConstraint));
 
 		if(uqConstraint.length == 1){
 			// unique : ['def']   > single field unique
@@ -157,7 +160,7 @@ var buildDefinition = function(entity, callback){
 		}
 	}
 
-	logger.debug(JSON.stringify(uniqueMap));
+	logger.debug("Unique Map: " + JSON.stringify(uniqueMap));
 
 
 	for (var i in entity.structureList){
@@ -176,6 +179,9 @@ var buildDefinition = function(entity, callback){
 					//, deferrable: Sequelize.Deferrable.INITIALLY_IMMEDIATE
 				}
 			}
+
+			//TODO: AQUI.. Montar option
+			definition.sequelizeOptions.classMethods.associate.push({modelName: definition.identifier, targetName: field.name, foreignKey: field.identifier});		
 
 		}else if(field.type == DEValidator.prototype.typesEnum.GROUP){
 
@@ -315,7 +321,6 @@ var buildSequelizeModels = function(entities, callback){
 
 			logger.debug("rec.identifier2: " + definition.identifier);
 
-
 			DynamicEntity.findOne({where : { identifier : definition.identifier}})
 			.then(function(rec){
 				/*	we are inside a anonimous function that uses global variables as definition of the mother function
@@ -340,9 +345,9 @@ var buildSequelizeModels = function(entities, callback){
 					}
 				}
 
-				rec.sequelizeModel = JSON.stringify( [rec.identifier].sequelizeModel, null, null);
+				rec.sequelizeModel = JSON.stringify( definitionsMapperTmp[rec.identifier].sequelizeModel, null, null);
 				rec.sequelizeOptions = JSON.stringify(definitionsMapperTmp[rec.identifier].sequelizeOptions, null, null);
-			
+
 
 				rec.save().then(function(){
 
