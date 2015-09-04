@@ -29,6 +29,36 @@ var DEModelPool = function DEModelPool(){
 
                 logger.debug("Dynamic model loaded into DEModelPool: " + models[i].identifier);
             }
+
+            for (var it in models){
+        
+                var seqOptions = JSON.parse(models[it].sequelizeOptions);
+
+                logger.info(seqOptions);
+
+                if(seqOptions.classMethods && seqOptions.classMethods.associate){
+                    var associate = seqOptions.classMethods.associate;
+
+                    if(associate.length > 0){
+
+                        for(var k in associate){
+                            try{
+
+                                logger.warn(associate[k].modelName);
+                                logger.warn(associate[k].targetName);
+                                logger.warn(associate[k].foreignKey);
+
+                                sequelize.model(associate[k].modelName).belongsTo(sequelize.model(associate[k].targetName), {foreignKey: associate[k].foreignKey});
+                            }catch(error){
+                                return callback(error);
+                            }
+                        }
+
+                    }
+                }
+            }
+
+
             //todo maybe doind sync with sequelize instead of each model, it will try to order its creation in cases of dependecy
             sequelize.sync().then(function(){
                 
@@ -55,7 +85,6 @@ DEModelPool.prototype.getModel = function(modelIdentifier){
         return model;
 
     }catch(e){
-        logger.error(e);
         return null;
     }
 }
@@ -81,18 +110,39 @@ DEModelPool.prototype.registerModel = function(modelDefinitions, callback){
 
         modelDefinition.sequelizeModel = parseModelToReal(modelDefinition.sequelizeModel);
        
-
         sequelize.define(
             modelDefinition.identifier, 
             modelDefinition.sequelizeModel,
             modelDefinition.sequelizeOptions
-            );
+        );
 
         modelpoolTmp.push(modelDefinition.identifier);            
         
         done++;
 
         if(done == countTotal){
+            //TODO: Aqui... -> model.belongsTo(SeqUriRoute, {foreignKey : 'uri_route_id'});
+            
+            for (var j in modelDefinitions){
+        
+                var modelDefinition = modelDefinitions[j];
+                var associate = modelDefinition.sequelizeOptions.classMethods.associate;
+
+                logger.info(JSON.stringify(associate));
+
+                if(associate.length > 0){
+
+                    for(var k in associate){
+                        try{
+                            sequelize.model(associate[k].modelName).belongsTo(sequelize.model(associate[k].targetName), {foreignKey: associate[k].foreignKey});
+                        }catch(error){
+                            return callback(error);
+                        }
+                    }
+
+                }
+            }
+
             sequelize.sync().then(function(){
                 for(var imdt in modelpoolTmp){
                     logger.debug("Dynamic model registered into pool: " + modelpoolTmp[imdt]);
@@ -113,7 +163,8 @@ DEModelPool.prototype.registerModel = function(modelDefinitions, callback){
             });
             
         }                  
-    }              
+    }
+
 }
 
 

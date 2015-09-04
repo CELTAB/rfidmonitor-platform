@@ -77,7 +77,7 @@ server.startServer();
 require('./utils/baseutils').InitiateDb.start(function(err){
 
 	if(err){
-		logger.error("Error loading models");
+		logger.error("Error loading models: " + err);
 		return 1;
 	}
 

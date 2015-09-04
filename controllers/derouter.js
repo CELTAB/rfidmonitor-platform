@@ -309,13 +309,20 @@ var setRouteDeDao = function(){
 		});	
 	});
 
+	//TODO: TESTAR
 	router.get(expressRouteId, checkEntity, function(req, res){
 
 		var model = deModelPool.getModel(req.params.entity);
 		if(!model)
 			return res.status(400).send("Invalid model.");
 		
-		model.findOne({where : { id : req.params.id }})
+		model.findOne(
+		{
+			where : { id : req.params.id }, 
+			include: [
+						{all: true}
+					]
+		})
 		.then(function(entity){
 			if(!entity)
 				return res.status(400).send("not found");

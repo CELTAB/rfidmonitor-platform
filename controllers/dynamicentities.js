@@ -98,7 +98,10 @@ var buildDefinition = function(entity, callback){
 	definition.sequelizeOptions = {
 		paranoid : true,
 		freezeTableName: true,
-  		tableName: 'tb_de_' + entity.identifier
+  		tableName: 'tb_de_' + entity.identifier,
+  		classMethods: {
+  			associate: []
+  		}
 	}
 
 	/*
@@ -176,6 +179,9 @@ var buildDefinition = function(entity, callback){
 					//, deferrable: Sequelize.Deferrable.INITIALLY_IMMEDIATE
 				}
 			}
+
+			//TODO: AQUI.. Montar option
+			definition.sequelizeOptions.classMethods.associate.push({modelName: definition.identifier, targetName: field.name, foreignKey: field.identifier});		
 
 		}else if(field.type == DEValidator.prototype.typesEnum.GROUP){
 
