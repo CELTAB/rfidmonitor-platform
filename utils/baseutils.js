@@ -125,6 +125,49 @@ var RandomChars = function() {
 	}
 }();
 
+
+var Hash = function() {
+
+	//Hash passwords
+	var crypto = require('crypto');
+	var SaltLength = 9;
+
+	this.createHash = function(password) {
+	  var salt = this.generateSalt(SaltLength);
+	  var hash = this.md5(password + salt);
+	  return salt + hash;
+	}
+
+	this.validateHash = function(hash, password) {
+	  var salt = hash.substr(0, SaltLength);
+	  var validHash = salt + this.md5(password + salt);
+	  return hash === validHash;
+	}
+
+	this.generateSalt = function(len) {
+	  var set = '0123456789abcdefghijklmnopqurstuvwxyzABCDEFGHIJKLMNOPQURSTUVWXYZ',
+	      setLen = set.length,
+	      salt = '';
+	  for (var i = 0; i < len; i++) {
+	    var p = Math.floor(Math.random() * setLen);
+	    salt += set[p];
+	  }
+	  return salt;
+	}
+
+	this.md5 = function(string) {
+	  return crypto.createHash('md5').update(string).digest('hex');
+	}
+
+	return {
+		md5: md5,
+		createHash: createHash,
+		validateHash: validateHash,
+		generateSalt: generateSalt
+	}
+}();
+
+exports.Hash = Hash;
 exports.randomChars = RandomChars;
 exports.resultToArray = resultToArray;
 exports.InitiateDb = InitiateDb;
