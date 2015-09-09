@@ -1,52 +1,78 @@
 var logger = require('winston');
-var ManipulateDb = require('./manipulatedb');
+// var ManipulateDb = require('./manipulatedb');
+var DEModelPool = require('../controllers/demodelpool');
+var sequelize = require('../dao/platformsequelize');
 
 var InitiateDb = function() {
 
-	var _manipulate = new ManipulateDb();
+	this.start = function(done){
+		
 
-	this.start = function(){
-		_manipulate.testConnection(function(){
+		//TODO: Remover requirede de todos os outros lugares. Seria redundante. Usar sequelize.model('nome');
+		//TODO: Verificar a eliminação do sequelizeClass e usar apenas rfidplatformSequeleize. Se possível.
 
-			var AppClient = require('../models/appclient');
-			var AppClientDao = require('../dao/appclientdao');
+		require('../models/orm/dynamicentity');
+		require('../models/orm/platformmedia');
 
-			var AccessToken = require('../models/accesstoken');
-			var AccessTokenDao = require('../dao/accesstokendao');
+		require('../models/seqaccesstoken');
+		require('../models/seqappclient');
+		require('../models/seqrouteaccess');
+		require('../models/sequriroute');
+		require('../models/sequser');
 
-			var client = new AppClient();
-			appClientDao =  new AppClientDao();
-			appClientDao.getByName("Default Client", function(err, defaultClient){
+		sequelize.sync().then(function(){
 
-				if(err) return;
+			//Models synchronized. Call done with no errors (null).
+			DEModelPool.loadDynamicEntities(done);
+			// done(null);
 
-				if(defaultClient) return logger.info("Default appClient already exists");
-
-				client.clientName = "Default Client";
-				client.authSecret = "defaultsecret";
-				client.description = "Default client inserted on every start-up";
-
-				appClientDao.insert(client, function(err, clientId){
-					if(err){
-						return;
-					}
-
-					// Create a new access token
-					var token = new AccessToken();
-					token.value = "defaulttokenaccess";
-					token.appClientId = clientId;
-
-					logger.info("Default appClient created with ID " + clientId);
-
-					var tokenDao = new AccessTokenDao();
-					tokenDao.insert(token, function(err, tokenId){
-
-						if(err) return logger.error("Error on create token for default appClient");
-						logger.info("Default token for appClient: " + token.value);
-					});
-				});
-			});
+		}).catch(function(error){
+			logger.error("Error to synchronize sequelize models: " + error);
+			done(error);	
 		});
+
+		// _manipulate.testConnection(function(){
+
+		// 	var AppClient = require('../models/appclient');
+		// 	var AppClientDao = require('../dao/appclientdao');
+
+		// 	var AccessToken = require('../models/accesstoken');
+		// 	var AccessTokenDao = require('../dao/accesstokendao');
+
+		// 	var client = new AppClient();
+		// 	appClientDao =  new AppClientDao();
+		// 	appClientDao.getByName("Default Client", function(err, defaultClient){
+
+		// 		if(err) return;
+
+		// 		if(defaultClient) return logger.info("Default appClient already exists");
+
+		// 		client.clientName = "Default Client";
+		// 		client.authSecret = "defaultsecret";
+		// 		client.description = "Default client inserted on every start-up";
+
+		// 		appClientDao.insert(client, function(err, clientId){
+		// 			if(err){
+		// 				return;
+		// 			}
+
+		// 			// Create a new access token
+		// 			var token = new AccessToken();
+		// 			token.value = "defaulttokenaccess";
+		// 			token.appClientId = clientId;
+
+		// 			logger.info("Default appClient created with ID " + clientId);
+
+		// 			var tokenDao = new AccessTokenDao();
+		// 			tokenDao.insert(token, function(err, tokenId){
+
+		// 				if(err) return logger.error("Error on create token for default appClient");
+		// 				logger.info("Default token for appClient: " + token.value);
+		// 			});
+		// 		});
+		// 	});
+		// });
+
 	}
 
 	return{
