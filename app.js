@@ -155,16 +155,29 @@ app.use(function(err, req, res, next) {
 	next();
 })
 
-app.get('/', function(req, res){
-	//Redirect to /web when the GET request to / arrives
-	res.redirect('/web');
-});
+// app.get('/', function(req, res){
+// 	//Redirect to /web when the GET request to / arrives
+// 	res.redirect('/web');
+// });
 
-var WebRouter = require('./controllers/webrouter');
-app.use('/web', new WebRouter());
+var isSessionAuthorized = function(req,res,next){
+	//check session
+	// ...
+	
+	return res.status(403).send("Session not authorized.");
+
+	//If ok...
+	next();
+};
 
 //Serve as static all files inside web/public folder
-app.use('/web/public', express.static('web/public'));
+app.use('/', express.static('web/public'));
+
+app.get('/web/restricted', isSessionAuthorized);
+app.use('/web/restricted', express.static('web/restricted'));
+
+// var WebRouter = require('./controllers/webrouter');
+// app.use('/web', new WebRouter());
 
 app.use('/api/doc', express.static('apidoc'));
 
