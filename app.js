@@ -157,16 +157,29 @@ require('./utils/baseutils').InitiateDb.start(function(err){
 		next();
 	})
 
-	app.get('/', function(req, res){
-		//Redirect to /web when the GET request to / arrives
-		res.redirect('/web');
-	});
+	// app.get('/', function(req, res){
+	// 	//Redirect to /web when the GET request to / arrives
+	// 	res.redirect('/web');
+	// });
 
-	var WebRouter = require('./controllers/webrouter');
-	app.use('/web', new WebRouter());
+	var isSessionAuthorized = function(req,res,next){
+		//check session
+		// ...
+		
+		return res.status(403).send("Session not authorized.");
+
+		//If ok...
+		next();
+	};
 
 	//Serve as static all files inside web/public folder
-	app.use('/web/public', express.static('web/public'));
+	app.use('/', express.static('web/public'));
+
+	app.get('/web/restricted', isSessionAuthorized);
+	app.use('/web/restricted', express.static('web/restricted'));
+
+	// var WebRouter = require('./controllers/webrouter');
+	// app.use('/web', new WebRouter());
 
 	app.use('/api/doc', express.static('apidoc'));
 
@@ -175,8 +188,12 @@ require('./utils/baseutils').InitiateDb.start(function(err){
 
 	https.createServer(options, app).listen(443);
 
-
-
+	//prepare redirection from http to https
+	var httpPort = 80;
+	http.createServer(function(req, res){
+		res.writeHead(301, { "Location": "https://" + req.headers['host'] + req.url });
+    	res.end();
+	}).listen(httpPort, function(){
+		logger.info("HTTP server listening on port " + httpPort);
+	});
 });
-
-//--------------------
