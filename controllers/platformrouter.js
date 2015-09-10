@@ -190,9 +190,7 @@ var setAuthorization = function(){
 				route: finalRoute,
 				methodName: req.method
 			};
-//	var query = "select * from router_access as r, uri_routers as u where r.app_client_id = $1 and r.uri_routers_id = u.id and u.path IN ('ANY', $2) and u.method IN('ANY', $3)";
 
-// SeqRouteAccess.describe().then(function(desc){console.log(desc)});
 			SeqRouteAccess.findOne(
 				{
 					where : { appClient: req.user.clientId}, 
@@ -229,20 +227,20 @@ var setRouteUsers = function(){
 	var expressRouteSimple = '/users';
 	var expressRouteId = expressRouteSimple + '/:id';
 
-	logger.warn("DEVELOPMENT ROUTE IN ACTION. SHOULD NOT BE AVAILABLE ON PRODUCTION." + dbRoute);
-
 	/* OBJECT EXAMPLE
 	{
 		"username" : "jaime",
 		"password" : "ab#5",
 		"name" : "jaime bomber man",
-		"email" : "jaime@jaime.com"
+		"email" : "jaime@jaime.com",
+		"loginAllowed": false
 	}
 	*/
 
 	routes.register(dbRoute, routes.getMethods().GET);
 	router.get(expressRouteSimple, function(req, res){
 
+		/* Will no return the password filed and the deletedAt field 1*/
 		SeqUser.findAll()
 			.then(function(users){
 				res.status(200).send(users);
@@ -253,12 +251,12 @@ var setRouteUsers = function(){
 	});
 
 	router.get(expressRouteId, function(req, res){
-		logger.warn("DEVELOPMENT ROUTE IN ACTION. SHOULD NOT BE AVAILABLE ON PRODUCTION." + dbRoute);
 
 		if(!req.params || !req.params.id){
 			return res.status(400).send({message: "Missing User ID"});
 		}
 
+		/* Will no return the password filed and the deletedAt field 1*/
 		SeqUser.findOne(
 				{
 					where: {
@@ -281,18 +279,16 @@ var setRouteUsers = function(){
 
 	routes.register(dbRoute, routes.getMethods().POST);
 	router.post(expressRouteSimple, function(req, res){
-		logger.warn("DEVELOPMENT ROUTE IN ACTION. SHOULD NOT BE AVAILABLE ON PRODUCTION." + dbRoute);
+		// req.checkBody('username', 'missing or invalid').isAlphanumeric();
+		// req.checkBody('password', 'missing or invalid').notEmpty();
+		// req.checkBody('password', 'too short').isLength(3);
+		// req.checkBody('name', 'missing').notEmpty();
+		// req.checkBody('email', 'missing or invalid').isEmail();
 
-		req.checkBody('username', 'missing or invalid').isAlphanumeric();
-		req.checkBody('password', 'missing or invalid').notEmpty();
-		req.checkBody('password', 'too short').isLength(3);
-		req.checkBody('name', 'missing').notEmpty();
-		req.checkBody('email', 'missing or invalid').isEmail();
+		// var errors = req.validationErrors();
 
-		var errors = req.validationErrors();
-
-		if(errors)
-			return res.status(400).json(errors);
+		// if(errors)
+		// 	return res.status(400).json(errors);
 
 		try{
 
@@ -304,9 +300,12 @@ var setRouteUsers = function(){
 						User.create(req.body)
 							.then(function(newUser){
 								return res.status(200).send(newUser.clean());
-						});
+							})
+							.catch(function(err){
+								return res.status(400).send({message: err});
+							});
 					}else{
-						return res.status(400).send({mesage:"Username already exists"});
+						return res.status(400).send({mesage:"Username already in use"});
 					}
 			});
 
@@ -319,18 +318,11 @@ var setRouteUsers = function(){
 	routes.register(dbRoute, routes.getMethods().PUT);
 	router.put(expressRouteId, function(req, res){
 		
-		logger.warn("DEVELOPMENT ROUTE IN ACTION. SHOULD NOT BE AVAILABLE ON PRODUCTION." + dbRoute);
-
-		var errors = req.validationErrors();
-
-		if(errors)
-			return res.status(400).json(errors);
-
 		if(!req.params.id || !req.body.id)
-			return res.status(400).send("Missing param ID or body ID");
+			return res.status(400).send({message: "Missing param ID or body ID"});
 
 		if(req.params.id != req.body.id)
-			return res.status(400).send("Divergent param ID & body ID");
+			return res.status(400).send({message: "Divergent param ID & body ID"});
 
 		try{
 
@@ -361,7 +353,6 @@ var setRouteUsers = function(){
 
 		}catch(err){
 			logger.error("Error: " + err);
-			// logger.error('Model User not found');
 			return res.status(500).send({message: "INTERNAL ERROR : " + err});
 		}
 	});
@@ -369,8 +360,6 @@ var setRouteUsers = function(){
 	routes.register(dbRoute, routes.getMethods().DELETE);
 	router.delete(expressRouteId, function(req, res){
 		
-		logger.warn("DEVELOPMENT ROUTE IN ACTION. SHOULD NOT BE AVAILABLE ON PRODUCTION." + dbRoute);
-
 		if(!req.params.id)
 			return res.status(400).send("Missing param ID");
 
@@ -388,7 +377,7 @@ var setRouteUsers = function(){
 									return res.status(200).send(delUser.clean());
 
 								}else{
-									return res.status(500).send({message:"Could not update the user"});
+									return res.status(500).send({message:"Could not delete the user"});
 								}
 
 							}).catch(function(e){

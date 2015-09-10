@@ -10,12 +10,15 @@ module.exports = sequelize.define("User", {
 	},
 	email: {
 		type : SequelizeClass.STRING,
-		allowNull : false
+		allowNull : false,
+		validate: {
+			isEmail: true
+		}
 	},
 	username: {
 		type : SequelizeClass.STRING,
 		allowNull : false,
-		unique: true		
+		unique : true		
 	},
 	password: {
 		type: SequelizeClass.STRING,
