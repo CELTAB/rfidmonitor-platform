@@ -41,6 +41,8 @@ var SeqAppClient = require('../models/seqappclient');
 var SeqUriRoute = require('../models/sequriroute');
 var SeqRouteAccess = require('../models/seqrouteaccess');
 
+var sequelize = require('../dao/platformsequelize');
+
 	SeqUser.sync();
 	SeqUriRoute.sync(); // TODO <- GAMBI quem garante que sincronizará a tempo antes de alguem tentar usar.
 	SeqRouteAccess.sync(); // TODO <- GAMBI quem garante que sincronizará a tempo antes de alguem tentar usar.
@@ -188,9 +190,7 @@ var setAuthorization = function(){
 				route: finalRoute,
 				methodName: req.method
 			};
-//	var query = "select * from router_access as r, uri_routers as u where r.app_client_id = $1 and r.uri_routers_id = u.id and u.path IN ('ANY', $2) and u.method IN('ANY', $3)";
 
-// SeqRouteAccess.describe().then(function(desc){console.log(desc)});
 			SeqRouteAccess.findOne(
 				{
 					where : { appClient: req.user.clientId}, 
@@ -227,105 +227,185 @@ var setRouteUsers = function(){
 	var expressRouteSimple = '/users';
 	var expressRouteId = expressRouteSimple + '/:id';
 
-	logger.warn("DEVELOPMENT ROUTE IN ACTION. SHOULD NOT BE AVAILABLE ON PRODUCTION." + dbRoute);
-
 	/* OBJECT EXAMPLE
 	{
 		"username" : "jaime",
 		"password" : "ab#5",
 		"name" : "jaime bomber man",
-		"email" : "jaime@jaime.com"
+		"email" : "jaime@jaime.com",
+		"loginAllowed": false
 	}
 	*/
 
 	routes.register(dbRoute, routes.getMethods().GET);
+	router.get(expressRouteSimple, function(req, res){
 
-	router.get(expressRouteSimple,function(req, res){
+		/* Will no return the password filed and the deletedAt field 1*/
+		SeqUser.findAll()
+			.then(function(users){
+				res.status(200).send(users);
+			})
+			.catch(function(e){
+				return res.status(500).send({'message' : "INTERNAL ERROR : " + e});
+		});		
+	});
 
-		return res.status(501).send("Not implemented yet");
+	router.get(expressRouteId, function(req, res){
 
-		logger.warn("DEVELOPMENT ROUTE IN ACTION. SHOULD NOT BE AVAILABLE ON PRODUCTION." + dbRoute);
-
-		if(!req.body.username || !req.body.password){
-			return res.status(400).send({'message': 'Missing username or password'});
+		if(!req.params || !req.params.id){
+			return res.status(400).send({message: "Missing User ID"});
 		}
 
-		logger.warn("Need to HASH the password");
-
-		SeqUser.findAll(
+		/* Will no return the password filed and the deletedAt field 1*/
+		SeqUser.findOne(
 				{
-					where : { 
-						username: req.body.username,
-						loginAllowed: true
+					where: {
+						id: req.params.id
 					}
 				}
 		    )
 			.then(function(user){
 				if(user){
-                	
-
-
-
-                }else{
-                    res.status(403).send({'message' : 'Get out dog.'});
-                }
+					res.status(200).send(user);
+				}else{
+					res.status(200).send({message: "User not found"});
+				}
 			})
 			.catch(function(e){
 				return res.status(500).send({'message' : "INTERNAL ERROR : " + e});
-			});		
-			
-		// userDao.getAll(function(err, users){
-		// 	if(err)
-		// 		return res.status(500).send({'message' : err.toString()}); 
-
-		// 	return res.status(200).send(users);
-
-		// });
-	});
-	router.get(expressRouteId,function(req, res){
-		logger.warn("DEVELOPMENT ROUTE IN ACTION. SHOULD NOT BE AVAILABLE ON PRODUCTION." + dbRoute);
-		userDao.findById(req.params.id, function(err, user){
-			if(err)
-				return res.status(500).send({'message' : err.toString()}); 
-
-			return res.status(200).send(user);
 		});
 
 	});
 
 	routes.register(dbRoute, routes.getMethods().POST);
 	router.post(expressRouteSimple, function(req, res){
-		logger.warn("DEVELOPMENT ROUTE IN ACTION. SHOULD NOT BE AVAILABLE ON PRODUCTION." + dbRoute);
+		// req.checkBody('username', 'missing or invalid').isAlphanumeric();
+		// req.checkBody('password', 'missing or invalid').notEmpty();
+		// req.checkBody('password', 'too short').isLength(3);
+		// req.checkBody('name', 'missing').notEmpty();
+		// req.checkBody('email', 'missing or invalid').isEmail();
 
-		req.checkBody('username', 'missing or invalid').isAlphanumeric();
-		req.checkBody('password', 'missing or invalid').notEmpty();
-		req.checkBody('password', 'too short').isLength(3);
-		req.checkBody('name', 'missing').notEmpty();
-		req.checkBody('email', 'missing or invalid').isEmail();
+		// var errors = req.validationErrors();
 
-		var errors = req.validationErrors();
+		// if(errors)
+		// 	return res.status(400).json(errors);
 
-		if(errors)
-			return res.status(400).json(erros);
+		try{
 
-		var user = new User(req.body);
-		userDao.insert(user, function(err, id){
-			if(err)
-				return res.status(500).send({'message' : err.toString()}); 
+			var User = sequelize.model("User");
 
-			user.id = id;
-			return res.status(200).send(user);
-		});
+			User.findOne({where: {username: req.body.username}})
+				.then(function(user){
+					if(!user){
+						User.create(req.body)
+							.then(function(newUser){
+								return res.status(200).send(newUser.clean());
+							})
+							.catch(function(err){
+								return res.status(400).send({message: err});
+							});
+					}else{
+						return res.status(400).send({mesage:"Username already in use"});
+					}
+			});
 
+		}catch(err){
+			logger.error("Error: " + err);
+			return res.status(500).send({message: "INTERNAL ERROR : " + err});
+		}
 	});
 
+	routes.register(dbRoute, routes.getMethods().PUT);
+	router.put(expressRouteId, function(req, res){
+		
+		if(!req.params.id || !req.body.id)
+			return res.status(400).send({message: "Missing param ID or body ID"});
+
+		if(req.params.id != req.body.id)
+			return res.status(400).send({message: "Divergent param ID & body ID"});
+
+		try{
+
+			var User = sequelize.model("User");
+
+			User.findOne({where: {id: req.params.id}})
+				.then(function(user){
+					if(user){
+						user.update(req.body)
+							.then(function(upUser){
+
+								if(upUser){
+									return res.status(200).send(upUser.clean());
+
+								}else{
+									return res.status(500).send({message:"Could not update the user"});
+								}
+
+							}).catch(function(e){
+								return res.status(400).send({message: "ERROR : " + e});	
+							});
+					}else{
+						return res.status(400).send({mesage:"User not found"});
+					}
+			}).catch(function(e){
+				return res.status(400).send({message: "ERROR : " + e});	
+			});
+
+		}catch(err){
+			logger.error("Error: " + err);
+			return res.status(500).send({message: "INTERNAL ERROR : " + err});
+		}
+	});
+
+	routes.register(dbRoute, routes.getMethods().DELETE);
+	router.delete(expressRouteId, function(req, res){
+		
+		if(!req.params.id)
+			return res.status(400).send("Missing param ID");
+
+		try{
+
+			var User = sequelize.model("User");
+
+			User.findOne({where: {id: req.params.id}})
+				.then(function(user){
+					if(user){
+						user.destroy(req.body)
+							.then(function(delUser){
+
+								if(delUser){
+									return res.status(200).send(delUser.clean());
+
+								}else{
+									return res.status(500).send({message:"Could not delete the user"});
+								}
+
+							}).catch(function(e){
+								return res.status(400).send({message: "ERROR : " + e});	
+							});
+					}else{
+						return res.status(400).send({mesage:"User not found"});
+					}
+			}).catch(function(e){
+				return res.status(400).send({message: "ERROR : " + e});	
+			});
+
+		}catch(err){
+			logger.error("Error: " + err);
+			// logger.error('Model User not found');
+			return res.status(500).send({message: "INTERNAL ERROR : " + err});
+		}
+	});
 }
 
 
 var setLoginRouters = function() {
 
-	var dbRoute = '/api/users';
-	var expressRouteSimple = '/users';
+	return;
+
+	//This is not working. Need change logic. Don't touch it, please
+	var dbRoute = '/api/users/login';
+	var expressRouteSimple = '/users/login';
 	var expressRouteId = expressRouteSimple + '/:id';
 
 	logger.warn("DEVELOPMENT ROUTE IN ACTION. SHOULD NOT BE AVAILABLE ON PRODUCTION." + dbRoute);
@@ -342,48 +422,44 @@ var setLoginRouters = function() {
 	routes.register(dbRoute, routes.getMethods().GET);
 
 	router.get(expressRouteSimple,function(req, res){
-		logger.warn("DEVELOPMENT ROUTE IN ACTION. SHOULD NOT BE AVAILABLE ON PRODUCTION." + dbRoute);
 
-		if(!req.body.username || !req.body.password){
-			return res.status(400).send({'message': 'Missing username or password'});
-		}
-
-		logger.warn("Need to HASH the password");
-
-		SeqUser.findOne(
-				{
-					where : { 
-						username: req.body.username,
-						loginAllowed: true
-					}
-				}
-		    )
-			.then(function(user){
-				if(user){
-                	
-
-
-
-                }else{
-                    res.status(403).send({'message' : 'Get out dog.'});
-                }
-			})
-			.catch(function(e){
-				return res.status(500).send({'message' : "INTERNAL ERROR : " + e});
-			});		
-			
-
-
-
-
-		// userDao.getAll(function(err, users){
-		// 	if(err)
-		// 		return res.status(500).send({'message' : err.toString()}); 
-
-		// 	return res.status(200).send(users);
-
-		// });
+		return res.status(501).send({message: "Not implemented yet"});
+		
 	});
+
+
+			//TODO: Login
+		// logger.warn("DEVELOPMENT ROUTE IN ACTION. SHOULD NOT BE AVAILABLE ON PRODUCTION." + dbRoute);
+
+		// if(!req.body.username || !req.body.password){
+		// 	return res.status(400).send({'message': 'Missing username or password'});
+		// }
+
+		// logger.warn("Need to HASH the password");
+
+		// SeqUser.findOne(
+		// 		{
+		// 			where : { 
+		// 				username: req.body.username,
+		// 				loginAllowed: true
+		// 			}
+		// 		}
+		//     )
+		// 	.then(function(user){
+		// 		if(user){
+                	
+		// 			//TODO: Validade Password here.
+
+
+  //               }else{
+  //                   res.status(403).send({'message' : 'Get out dog.'});
+  //               }
+		// 	})
+		// 	.catch(function(e){
+		// 		return res.status(500).send({'message' : "INTERNAL ERROR : " + e});
+		// 	});	
+
+
 
 
 }
