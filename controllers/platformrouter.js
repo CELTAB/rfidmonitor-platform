@@ -648,7 +648,6 @@ var setRouteCollectors = function(){
 		});	
 	}
 
-
 	routes.register(dbRoute, routes.getMethods().GET);
 
 	router.get(expressRouteSimple, function(req, res){
@@ -976,6 +975,22 @@ var setRouteRfiddata = function(){
 	    "extraData" = "{}";
 	*/
 
+
+	var getCollectorById = function(data, callback){
+
+		collectorDao.findById(data.collectorId, function(err, collector){
+			if(err)
+				return callback(err, null);
+
+			if(collector){
+				data.collector = collector;
+				callback(null, data);
+			}else{
+				callback(null, null);
+			}
+		});
+	}
+
 	routes.register(dbRoute, routes.getMethods().GET);
 
 	router.get(expressRouteSimple, function(req, res){
@@ -1000,24 +1015,24 @@ var setRouteRfiddata = function(){
 				return res.status(200).json(rfiddatas);
 			}
 
-			var dataLength = rfiddatas.length -1;
-			for(var index in rfiddatas){
+			var cLength = rfiddatas.length;
+			var responseDatas = [];
+			var index = 0;
+			var cb = function(err, collector){
 
-				var data = rfiddatas[index];
-				collectorDao.findById(data.collectorId, function(err, collector){
-					if(err)
-						return res.status(500).send(err.toString()); 
+				if(err)
+					return res.status(500).send(err.toString());
 
-					if(collector){
-						data.collector = collector;
-					}
+				responseDatas.push(collector);
+				if(cLength == responseDatas.length){
+					return res.status(200).send(responseDatas);
+				}
 
-					if(index == dataLength){
-						return res.status(200).json(rfiddatas);
-					}
-				});
+				index++;
+				return getCollectorById(rfiddatas[index], cb);
 			}
 
+			getCollectorById(rfiddatas[index], cb); 
 		});			
 	});
 
