@@ -634,6 +634,20 @@ var setRouteCollectors = function(){
 	*/
 
 	
+	var getGroupById = function(collector, callback){
+		groupDao.findById(collector.groupId, function(err, group){
+			if(err)
+				return callback(err, null);
+
+			if(group){
+				collector.group = group;
+				callback(null, collector);
+			}else{
+				callback(null, null);
+			}
+		});	
+	}
+
 
 	routes.register(dbRoute, routes.getMethods().GET);
 
@@ -659,24 +673,29 @@ var setRouteCollectors = function(){
 			if(err)
 				return res.status(500).send(err.toString()); 
 
-			var cLength = collectors.length -1;
-			for(var coll in collectors){
-
-				var collector = collectors[coll];
-				groupDao.findById(collector.groupId, function(err, group){
-					if(err)
-						return res.status(500).send(err.toString()); 
-
-					if(group){
-						collector.group = group;
-					}
-
-					if(cLength == coll){
-						return res.status(200).send(collectors);
-					}
-				});	
+			if(collectors.length == 0){
+				return res.status(200).send(collectors);
 			}
 
+			var cLength = collectors.length;
+			var responseCollectors = [];
+			var index = 0;
+
+			var cb = function(err, collector){
+
+				if(err)
+					return res.status(500).send(err.toString());
+
+				responseCollectors.push(collector);
+				if(cLength == responseCollectors.length){
+					return res.status(200).send(responseCollectors);
+				}
+
+				index++;
+				return getGroupById(collectors[index], cb);
+			}
+
+			getGroupById(collectors[index], cb); 
 		});
 	});
 
@@ -703,6 +722,8 @@ var setRouteCollectors = function(){
 
 					return res.status(200).send(collector);
 				});	
+			}else{
+				return res.status(200).send(collector);
 			}
 		});
 	});
