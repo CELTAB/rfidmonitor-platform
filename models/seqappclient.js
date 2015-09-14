@@ -1,26 +1,35 @@
 var SequelizeClass = require('sequelize');
 var sequelize = require('../dao/platformsequelize');
+var SeqUser = require('./sequser');
+var Tokenizer = require('../utils/baseutils').randomChars;
 
-module.exports = sequelize.define("AppClient", {
-	clientName : {
+var logger = require('winston');
+
+logger.info(Tokenizer.uid(32));
+
+var model = sequelize.define("AppClient", {
+	token: {
 		type : SequelizeClass.STRING,
 		allowNull : false,
 		unique : true,
-		field : 'client_name'
-	},
-	authSecret: {
-		type : SequelizeClass.STRING,
-		allowNull : false,
-		field : 'auth_secret'
+		field : 'token'
 	},
 	description: {
 		type : SequelizeClass.STRING,
 		allowNull : false,
-		field : 'description'
+		field : 'description',
+		set: function(desc){
+      		this.setDataValue('description', desc);
+      		this.setDataValue('token', Tokenizer.uid(32));
+		}
 	}
 },
 {
 	paranoid : true,
 	freezeTableName: true,
 	tableName: 'tb_plat_app_client'
-})
+});
+
+model.belongsTo(SeqUser, {foreignKey: 'user_id'});
+
+module.exports = model;

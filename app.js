@@ -186,10 +186,10 @@ require('./utils/baseutils').InitiateDb.start(function(err){
 	app.use('/api', new PlatformRouter());
 	app.use('/api', new DERouter());
 
-	https.createServer(options, app).listen(443);
+	https.createServer(options, app).listen(8143);
 
-	//prepare redirection from http to https
-	var httpPort = 80;
+	// prepare redirection from http to https
+	var httpPort = 8180;
 	http.createServer(function(req, res){
 		res.writeHead(301, { "Location": "https://" + req.headers['host'] + req.url });
     	res.end();

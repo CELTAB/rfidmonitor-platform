@@ -56,17 +56,17 @@ var sequelize = require('../dao/platformsequelize');
 			logger.warn('Is expected to receive the follow error from sequelize: "SequelizeUniqueConstraintError: Validation error". The reason is unkown.');
 
 			//TODO we should use findorcreated instead. but it is not working.
-			SeqAppClient.create({id: 1, clientName: "DEFAULT", authSecret : "DEFAULT", description : "DEFAULT"})
+			SeqAppClient.create({id: 1, token : "defaulttokenaccess", description : "DEFAULT"})
 			.then(function(client){
-				SeqAccessToken.create({value: "defaulttokenaccess", appClient : client.id})
-				.then(function(){
-					logger.debug('default token created.');
+				// SeqAccessToken.create({value: "defaulttokenaccess", appClient : client.id})
+				// .then(function(){
+				// 	logger.debug('default token created.');
 
 
-				})
-				.catch(function(e){
-					logger.error('SeqAccessToken.create error : ' + e);
-				});
+				// })
+				// .catch(function(e){
+				// 	logger.error('SeqAccessToken.create error : ' + e);
+				// });
 
 
 				SeqUriRoute.findOne({where : {path : 'ANY', method : 'ANY'}}).then(function(rec){
@@ -107,6 +107,8 @@ var PlatformRouter = function(){
 	setAuthorization();
 
 	setRouteUsers();
+	setLoginRouters();
+
 	// setRouteAppClients();
 	setRouteCollectors();
 	setRouteGroups();
@@ -120,28 +122,44 @@ var PlatformRouter = function(){
 var validateBearer = function(token, done) {
 	logger.debug('validateBearer');
 
-	SeqAccessToken.findOne({where : { value : token }})
-	.then(function(token){
 
-		if (!token) { return done(null, false); }
-
-		SeqAppClient.findOne({where : { id : token.appClient}})
+	SeqAppClient.findOne({where : { token : token}})
 		.then(function(client){
 
 			if (!client) { return done(null, false); }
 
 			logger.debug("BearerStrategy : SUCCESS");
-            done(null, {clientId: client.id, clientName: client.clientName}, { scope: '*' });
+	        done(null, {clientId: client.id, clientName: "client.clientName"}, { scope: '*' });
 
 		})
 		.catch(function(e){
 			return done(e);
 		});
 
-	})
-	.catch(function(e){
-		return done(e);
-	});
+
+
+	// SeqAccessToken.findOne({where : { value : token }})
+	// .then(function(token){
+
+	// 	if (!token) { return done(null, false); }
+
+	// 	SeqAppClient.findOne({where : { id : token.appClient}})
+	// 	.then(function(client){
+
+	// 		if (!client) { return done(null, false); }
+
+	// 		logger.debug("BearerStrategy : SUCCESS");
+ //            done(null, {clientId: client.id, clientName: client.clientName}, { scope: '*' });
+
+	// 	})
+	// 	.catch(function(e){
+	// 		return done(e);
+	// 	});
+
+	// })
+	// .catch(function(e){
+	// 	return done(e);
+	// });
 }
 
 var setAuthorization = function(){
@@ -299,7 +317,19 @@ var setRouteUsers = function(){
 					if(!user){
 						User.create(req.body)
 							.then(function(newUser){
-								return res.status(200).send(newUser.clean());
+
+								var AppClient = sequelize.model('AppClient');
+
+								var appClient = {user_id: newUser.id, description: "Default appClient for user " + newUser.username};
+								AppClient.create(appClient)
+									.then(function(newApp){
+										if(newApp)
+											return res.status(200).send(newUser.clean());
+										else
+											return res.status(500).send({message: "INTERNAL ERROR ON CREATE AppClient"});							
+									}).catch(function(err){
+										return res.status(500).send({message: "INTERNAL ERROR : " + err});							
+									});
 							})
 							.catch(function(err){
 								return res.status(400).send({message: err});
@@ -401,33 +431,79 @@ var setRouteUsers = function(){
 
 var setLoginRouters = function() {
 
-	return;
-
 	//This is not working. Need change logic. Don't touch it, please
-	var dbRoute = '/api/users/login';
-	var expressRouteSimple = '/users/login';
-	var expressRouteId = expressRouteSimple + '/:id';
+	var dbRoute = '/api/login';
+	var expressRouteSimple = '/login';
 
-	logger.warn("DEVELOPMENT ROUTE IN ACTION. SHOULD NOT BE AVAILABLE ON PRODUCTION." + dbRoute);
+	// routes.register(dbRoute, routes.getMethods().GET);
 
-	/* OBJECT EXAMPLE
-	{
-		"username" : "jaime",
-		"password" : "ab#5",
-		"name" : "jaime bomber man",
-		"email" : "jaime@jaime.com"
-	}
-	*/
+	router.post(expressRouteSimple,function(req, res){
 
-	routes.register(dbRoute, routes.getMethods().GET);
+		logger.info(req.body);
 
-	router.get(expressRouteSimple,function(req, res){
+		if(!req.body.username || !req.body.password)
+			return res.status(400).send({message: "Missing username ou password"});
 
-		return res.status(501).send({message: "Not implemented yet"});
-		
+		logger.info("Username: " + req.body.username);
+		logger.info("password: " + req.body.password);
+
+		try{
+
+			var User = sequelize.model("User");
+
+			User.scope('loginScope').findOne({where: {username: req.body.username}})
+				.then(function(user){
+
+					if(user){
+
+						if(user.isPasswordValid(req.body.password)){
+
+							user = user.clean();
+							var AppClient = sequelize.model('AppClient');
+
+							AppClient.find(
+									{
+										where: {user_id: user.id}
+									})
+								.then(function(app){
+
+									if(app){
+										user.token = app.token;
+										return res.status(200).send(user);
+									}else{
+										logger.error("Token not found for user " + user.username);
+										return res.status(500).send({message: "INTERNAL ERROR"});
+									}
+
+								}).catch(function(err){
+									logger.error("Find AppClient: " + err);
+									return res.send(500).send({message: "INTERNAL ERROR : " + err});				
+								});
+
+						}else{
+							return res.status(400).send({message:"Password don't match to this user"});
+						}
+
+					}else{
+						return res.status(400).send({message: "Username not match to any user"});
+					}
+
+				})
+				.catch(function(e){
+					logger.error("Find User: " + e);
+					return res.send(500).send({message: "INTERNAL ERROR : " + e});
+				});
+
+
+		}catch(error){
+			logger.error(error);
+			return res.send(500).send({message: "INTERNAL ERROR : " + error});
+		}
+
+		// return res.status(200).send(user);
+		// return res.status(501).send({message: "Not implemented yet"});
+
 	});
-
-
 			//TODO: Login
 		// logger.warn("DEVELOPMENT ROUTE IN ACTION. SHOULD NOT BE AVAILABLE ON PRODUCTION." + dbRoute);
 
@@ -458,9 +534,6 @@ var setLoginRouters = function() {
 		// 	.catch(function(e){
 		// 		return res.status(500).send({'message' : "INTERNAL ERROR : " + e});
 		// 	});	
-
-
-
 
 }
 
@@ -586,11 +659,26 @@ var setRouteCollectors = function(){
 			if(err)
 				return res.status(500).send(err.toString()); 
 
-			return res.status(200).send(collectors);
+			var cLength = collectors.length -1;
+			for(var coll in collectors){
+
+				var collector = collectors[coll];
+				groupDao.findById(collector.groupId, function(err, group){
+					if(err)
+						return res.status(500).send(err.toString()); 
+
+					if(group){
+						collector.group = group;
+					}
+
+					if(cLength == coll){
+						return res.status(200).send(collectors);
+					}
+				});	
+			}
+
 		});
 	});
-
-	
 
 	router.get(expressRouteId, function(req, res){
 
@@ -604,10 +692,20 @@ var setRouteCollectors = function(){
 			if(err)
 				return res.status(500).send(err.toString()); 
 
-			return res.status(200).send(collector);
+			if(collector){
+				groupDao.findById(collector.groupId, function(err, group){
+					if(err)
+						return res.status(500).send(err.toString()); 
+
+					if(group){
+						collector.group = group;
+					}
+
+					return res.status(200).send(collector);
+				});	
+			}
 		});
 	});
-
 	
 
 	routes.register(dbRoute, routes.getMethods().POST);
@@ -877,7 +975,26 @@ var setRouteRfiddata = function(){
 			if(err)
 				return res.status(500).send({"message" : err.toString()}); 
 
-			return res.status(200).json(rfiddatas);
+
+			var dataLength = rfiddatas.length - 1;
+			for(var index in rfiddatas){
+
+				var data = rfiddatas[index];
+
+				collectorDao.findById(data.collectorId, function(err, collector){
+					if(err)
+						return res.status(500).send(err.toString()); 
+
+					if(collector){
+						data.collector = collector;
+					}
+
+					if(index == dataLength){
+						return res.status(200).json(rfiddatas);
+					}
+				});
+			}
+
 		});			
 	});
 
@@ -903,6 +1020,25 @@ var setRouteRfiddata = function(){
 		rfiddataDao.findByRfidcode(req.params.rfidcode, limit, offset, function(err, rfiddatas){
 			if(err)
 				return res.status(500).send({"message" : err.toString()}); 
+
+			var dataLength = rfiddatas.length - 1;
+			for(var index in rfiddatas){
+
+				var data = rfiddatas[index];
+
+				collectorDao.findById(data.collectorId, function(err, collector){
+					if(err)
+						return res.status(500).send(err.toString()); 
+
+					if(collector){
+						data.collector = collector;
+					}
+
+					if(index == dataLength){
+						return res.status(200).json(rfiddatas);
+					}
+				});
+			}
 
 			return res.status(200).send(rfiddatas);
 		});		

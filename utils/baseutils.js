@@ -20,10 +20,17 @@ var InitiateDb = function() {
 		require('../models/sequriroute');
 		require('../models/sequser');
 
+		// sequelize.sync({force: true}).then(function(){
 		sequelize.sync().then(function(){
 
 			//Models synchronized. Call done with no errors (null).
-			DEModelPool.loadDynamicEntities(done);
+			DEModelPool.loadDynamicEntities(function(error){
+
+				if(error) return done(error);
+
+				done();
+
+			});
 			// done(null);
 
 		}).catch(function(error){
@@ -152,7 +159,8 @@ var Hash = function() {
 	    var p = Math.floor(Math.random() * setLen);
 	    salt += set[p];
 	  }
-	  return salt;
+	  // return salt;
+	  return 'Z]s4NpW*';
 	}
 
 	this.md5 = function(string) {

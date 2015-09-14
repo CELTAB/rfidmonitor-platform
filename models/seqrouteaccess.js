@@ -30,7 +30,6 @@ var model = sequelize.define("RouteAccess", {
 	tableName: 'tb_plat_route_access'
 });
 
-
 model.belongsTo(SeqUriRoute, {foreignKey : 'uri_route_id'});
 
 module.exports = model;

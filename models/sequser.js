@@ -41,6 +41,12 @@ module.exports = sequelize.define("User", {
 			attributes : ['id', 'name', 'username', 'email', 'loginAllowed'],
 			where: { deletedAt: null }
 		},
+	scopes:{
+		loginScope: {
+			attributes : ['id', 'username', 'password'],
+			where: { deletedAt: null, loginAllowed: true}	
+		} 
+	},
 	instanceMethods: {
     	clean: function()  { 
     		var objUser = {};
@@ -52,9 +58,8 @@ module.exports = sequelize.define("User", {
 
     		return objUser;
     	},
-    	isPasswordValid: function(pass){ // TODO: Testar
+    	isPasswordValid: function(pass){
     		var match = Hash.createHash(pass) == this.getDataValue('password');
-    		logger.warn("passwords match: " + match);
     		return match;
     	}
   	}
