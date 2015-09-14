@@ -975,12 +975,14 @@ var setRouteRfiddata = function(){
 			if(err)
 				return res.status(500).send({"message" : err.toString()}); 
 
+			if(rfiddatas.length == 0){
+				return res.status(200).json(rfiddatas);
+			}
 
-			var dataLength = rfiddatas.length - 1;
+			var dataLength = rfiddatas.length -1;
 			for(var index in rfiddatas){
 
 				var data = rfiddatas[index];
-
 				collectorDao.findById(data.collectorId, function(err, collector){
 					if(err)
 						return res.status(500).send(err.toString()); 
@@ -1021,7 +1023,11 @@ var setRouteRfiddata = function(){
 			if(err)
 				return res.status(500).send({"message" : err.toString()}); 
 
-			var dataLength = rfiddatas.length - 1;
+			if(rfiddatas.length == 0){
+				return res.status(200).json(rfiddatas);
+			}
+
+			var dataLength = rfiddatas.length -1;
 			for(var index in rfiddatas){
 
 				var data = rfiddatas[index];
