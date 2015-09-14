@@ -148,8 +148,17 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 		return newMessage;
 	}
 
+	var getTimezonedISODateString = function(){
+		var date = new Date();
+		//Subtracts the timezone hours to local time.
+		date.setHours(date.getHours() - (date.getTimezoneOffset() / 60) );
+		return date.toISOString();
+	}
+
 	var buildMessageObject = function(m_type, m_data){
-		return {type: m_type, data: m_data, datetime: (new Date()).toISOString()};
+		
+		
+		return {type: m_type, data: m_data, datetime: getTimezonedISODateString()};
 	}
 
 	var sendObject = function(object){
@@ -173,7 +182,7 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 
 	//Function passed to collector monitor
 	var sendSynAliveMessage = function(){
-		var syn_alive = { type:"SYN-ALIVE", data: {}, datetime: (new Date()).toISOString() };
+		var syn_alive = { type:"SYN-ALIVE", data: {}, datetime: getTimezonedISODateString() };
 		sendObject(syn_alive);
 	}
 
