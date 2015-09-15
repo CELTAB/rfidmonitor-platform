@@ -1,27 +1,3 @@
-/*
-	TODOs
-
-	- Implement the silly debug and verbose;
-	- Implement the admin user interface;
-	- create userDao; 
-	- Implement Transactions;
-	- RESTFUL
-		- Authentication using oauth2. (every single thing following should be authenticated.)
-		- Access Permissions. (every single service must have access permissions)
-		- Services:
-			- Show to the requester how to make a request (service documentation pattern).
-				Like: collector/get -> collector/get/how
-			- Validate every single service request:
-				Like: max_resuts, date_range, etc
-			- Only after authentication and validation, process request and return json object with the response.
-			- Any error in any place must respond with a default error object with explantory message.
-
-	- Create user on postgres that not depends of a database
-	- remove ejs.
-
-*/
-
-
 // Keep as firsts requires >>> 
 var Logs = require('./utils/logs').Logs;
 var logger = require('winston');

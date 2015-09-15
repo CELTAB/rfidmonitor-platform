@@ -36,8 +36,6 @@ var multer  = require('multer');
 var storage = multer.diskStorage({destination: appDir + '/restricted_media/tmp/'});
 var upload = multer({ storage: storage });
 
-logger.warn("clean up /restricted_media/tmp/ on app start.");
-
 var SeqUser = require('../models/sequser');
 var SeqAccessToken = require('../models/seqaccesstoken');	
 var SeqAppClient = require('../models/seqappclient');
