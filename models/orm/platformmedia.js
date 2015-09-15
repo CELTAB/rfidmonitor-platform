@@ -15,11 +15,15 @@ module.exports = sequelize.define("PlatformMedia", {
 	description : {
 		type : SequelizeClass.STRING
 	},
+	mimetype : {
+		type : SequelizeClass.STRING,
+		allowNull : false
+	},
 	type : {
 		type : SequelizeClass.STRING,
 		allowNull : false,
 		validate : {
-			isIn : [['IMAGE', 'PDF']]
+			isIn : [['IMAGE', 'PDF', 'RFID_IMPORT']]
 		}
 	}
 },

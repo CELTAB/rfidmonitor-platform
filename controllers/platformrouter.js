@@ -30,16 +30,20 @@ var RfiddataDao = require('../dao/rfiddatadao');
 var routes = require('../utils/routes');
 var permissions = require('../utils/permissions');
 
-var multer  = require('multer');
-var upload = multer({ dest: 'restricted_media/tmp/' });
-
 var appDir = path.dirname(require.main.filename);
+
+var multer  = require('multer');
+var storage = multer.diskStorage({destination: appDir + '/restricted_media/tmp/'});
+var upload = multer({ storage: storage });
+
+logger.warn("clean up /restricted_media/tmp/ on app start.");
 
 var SeqUser = require('../models/sequser');
 var SeqAccessToken = require('../models/seqaccesstoken');	
 var SeqAppClient = require('../models/seqappclient');
 var SeqUriRoute = require('../models/sequriroute');
 var SeqRouteAccess = require('../models/seqrouteaccess');
+var PlatformMedia = require('../models/orm/platformmedia');
 
 var sequelize = require('../dao/platformsequelize');
 
@@ -1131,42 +1135,62 @@ var setRouteManualImport = function(){
 		
 		var file = req.file;
 
-		if(file.size > 500 * 1024 * 1024)
-			return res.status(400).send("file bigger than 500mb");
+		var underAppPath = '/restricted_media/media/manual_import/' + req.file.filename;
 
-		file.finalPath = appDir + '/restricted_media/media/manual_import/' + req.file.filename;
+		file.finalPath = appDir + underAppPath;
 
-		fs.readFile(req.file.path, function (err, data) {
-		    if (err){
-		    	 return res.status(500).send("error read" + err);
-		    }
-		    
-		    fs.writeFile(file.finalPath, data, function (err) {
-		        if (err){
-			    	 return res.status(500).send("error " + err);
-			    }
+		fs.rename(req.file.path, file.finalPath, function(err){
+			if (err)
+				return res.status(500).send("INTERNAL ERROR: " + err);
 
-			    var parsedData = null;
-			    try{
-			    	parsedData = JSON.parse(data);
-			    }catch(e){
-			    	return res.status(400).send("Parsing file error : " + e );
-			    }
+			PlatformMedia.create(
+			    	{
+			    		url: file.filename,
+			    		path : underAppPath,
+			    		type: 'RFID_IMPORT',
+			    		mimetype : file.mimetype
+			    	})
+			    .then(function(f){
 
-			    rfiddataDao.insertArray(parsedData, function(err, result){
-					if (err){
-						var error = "rfiddatadao router insert err : " + err;
-						logger.error(error);
-						res.status(500).send(error);
-					}
-					else{
-						res.status(200).send(result);
-					}
-				});	        
-		    });
-		});		
+			    	f.url = '/api/media/'+f.id;
+			    	f.save().then(function(f){
+						
+
+			    		fs.readFile(file.finalPath, function (err, data) {
+						    if (err){
+						    	 return res.status(500).send("error read" + err);
+						    }
+
+						    var parsedData = null;
+						    try{
+						    	parsedData = JSON.parse(data);
+						    }catch(e){
+						    	return res.status(400).send("Parsing file error : " + e );
+						    }
+
+						    logger.warn('todo : REGISTER on database the file info.');
+
+						    rfiddataDao.insertArray(parsedData, function(err, result){
+								if (err){
+									var error = "rfiddatadao router insert err : " + err;
+									logger.error(error);
+									res.status(500).send(error);
+								}
+								else{
+									res.status(200).send(result);
+								}
+							});
+						});	
+						
+			    	}).catch(function(e){
+			    		return res.status(500).send("error " + e);
+			    	});
+			    }).catch(function(e){
+			    	return res.status(500).send("error " + e);
+			    });			
+			
+		});
 	});
-
 }
 
 module.exports = PlatformRouter;

@@ -74,6 +74,12 @@ new Logs(debugConsole, debugFile, verboseConsole, verboseFile, sillyConsole, sil
 var server = new Server();
 server.startServer();
 
+//-- clean tmp restricted_media/tmp
+
+	require('./utils/baseutils').cleanRestrictedMediaTmpSync();
+
+//-- end
+
 //--------------------
 // Verify database and default user creation
 require('./utils/baseutils').InitiateDb.start(function(err){
@@ -98,8 +104,9 @@ require('./utils/baseutils').InitiateDb.start(function(err){
 
 	app.use(Cors());
 
-	app.use(bodyParser.urlencoded({extended : true}));
-	app.use(bodyParser.json());
+	app.use(bodyParser.json({type: 'application/json'}));
+	app.use(bodyParser.urlencoded({limit: '5mb', extended : true}));
+
 	app.use(expressValidator({
 	  	customValidators: {
 		    isArray: function(value) {

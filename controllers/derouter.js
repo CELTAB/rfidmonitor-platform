@@ -21,10 +21,11 @@ var deModelPool = require('./demodelpool');
 var DynamicEntity = require('../models/orm/dynamicentity');
 var PlatformMedia = require('../models/orm/platformmedia');
 
-var multer  = require('multer')
-var upload = multer({ dest: 'restricted_media/tmp/' })
-
 var appDir = path.dirname(require.main.filename);
+
+var multer  = require('multer');
+var storage = multer.diskStorage({destination: appDir + '/restricted_media/tmp/'});
+var upload = multer({ storage: storage });
 
 var DERouter = function(){
 
@@ -426,7 +427,7 @@ var setRoutePlatformMedia = function(){
 		
 		PlatformMedia.findOne({where : { id : req.params.id }})
 		.then(function(record){
-			return res.sendfile(path.join(appDir, record.path), options);		
+			return res.sendfile(path.join(appDir, record.path));		
 		})
 		.catch(function(e){
 			return res.status(500).send("Error while getting media: "+e);
@@ -440,35 +441,32 @@ var setRoutePlatformMedia = function(){
 		logger.warn("remember to remove body parser because of this http://andrewkelley.me/post/do-not-use-bodyparser-with-express-js.html");
 
 		if(!req.file)
-			return res.status(400).send("We didnt receive you file");
+			return res.status(400).send("We didnt receive your file");
 
 		var file = req.file;
 
-		if(file.size > 5 * 1024 * 1024)
-			return res.status(400).send("file bigger than 5mb");
+		var underAppPath = '/restricted_media/media/images/' + req.file.filename;
 
-		file.finalPath = appDir + '/restricted_media/media/images/' + req.file.filename;
+		file.finalPath = appDir + underAppPath;
 
-		logger.debug(req.file.path);
+		fs.rename(req.file.path, file.finalPath, function(err){
+			if (err)
+				return res.status(500).send("INTERNAL ERROR: " + err);
 
-		fs.readFile(req.file.path, function (err, data) {
-		    if (err){
-		    	 return res.status(500).send("error read" + err);
-		    }
-		    fs.writeFile(file.finalPath, data, function (err) {
-		        if (err){
-			    	 return res.status(500).send("error " + err);
+			fs.readFile(file.finalPath, function (err, data) {
+			    if (err){
+			    	 return res.status(500).send("error read" + err);
 			    }
-
 			    PlatformMedia.create(
 			    	{
 			    		url: file.filename,
-			    		path : 'restricted_media/media/images/' + file.filename,
-			    		type: 'IMAGE'
+			    		path : underAppPath,
+			    		type: 'IMAGE',
+			    		mimetype : file.mimetype
 			    	})
 			    .then(function(f){
 
-			    	f.url = 'https://localhost/api/media/'+f.id;
+			    	f.url = '/api/media/'+f.id;
 			    	f.save().then(function(f){
 
 						return res.status(200).send({"mediaId" :f.id});
@@ -478,12 +476,9 @@ var setRoutePlatformMedia = function(){
 			    }).catch(function(e){
 			    	return res.status(500).send("error " + e);
 			    });		        
-		    });
+			    
+			});
 		});
-
-
-
-
 	});
 }
 
