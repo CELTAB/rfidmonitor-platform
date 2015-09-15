@@ -1121,6 +1121,32 @@ var setRoutePermissions = function(){
 	});
 }
 
+var setRawUpload = function(){
+
+	//binary upload
+
+	var dbRoute = '/api/rawupload';
+	var expressRouteSimple = '/rawupload';
+
+	routes.register(dbRoute, routes.getMethods().POST);
+
+	router.post(expressRouteSimple, function(req, res){
+		logger.debug("ae");
+		var data = [];
+	    req.on('data', function(chunk) {
+	        data.push(chunk);
+	        logger.debug("ae2");
+	    }).on('end', function() {
+	        //at this point data is an array of Buffers
+	        //so Buffer.concat() can make us a new Buffer
+	        //of all of them together
+	        var buffer = Buffer.concat(data);
+	        console.log('deu');
+	    });
+	
+	});
+}
+
 var setRouteManualImport = function(){
 
 	var dbRoute = '/api/import';
@@ -1181,7 +1207,7 @@ var setRouteManualImport = function(){
 								}
 							});
 						});	
-						
+
 			    	}).catch(function(e){
 			    		return res.status(500).send("error " + e);
 			    	});

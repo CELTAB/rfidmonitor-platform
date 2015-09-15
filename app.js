@@ -76,9 +76,13 @@ server.startServer();
 
 //-- clean tmp restricted_media/tmp
 
-	require('./utils/baseutils').cleanRestrictedMediaTmpSync();
+	var cleanErrors = require('./utils/baseutils').cleanRestrictedMediaTmpSync();
 
-//-- end
+	if(cleanErrors){
+		return 1;
+	}
+
+//-- end of clean tmp restricted_media/tmp
 
 //--------------------
 // Verify database and default user creation
