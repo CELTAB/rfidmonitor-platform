@@ -440,10 +440,9 @@ var setLoginRouters = function() {
 	var expressRouteSimple = '/login';
 
 	// routes.register(dbRoute, routes.getMethods().GET);
-
 	router.post(expressRouteSimple,function(req, res){
 
-		logger.info(req.body);
+		// logger.info(req.body);
 
 		if(!req.body.username || !req.body.password)
 			return res.status(400).send({message: "Missing username ou password"});
@@ -476,7 +475,7 @@ var setLoginRouters = function() {
 										return res.status(200).send(user);
 									}else{
 										logger.error("Token not found for user " + user.username);
-										return res.status(500).send({message: "INTERNAL ERROR"});
+										return res.status(401).send({message: "User not allowed"});
 									}
 
 								}).catch(function(err){

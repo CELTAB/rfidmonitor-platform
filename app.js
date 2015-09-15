@@ -44,6 +44,8 @@ var DERouter = require('./controllers/derouter');
 var Server = require('./utils/server');
 var Collector = require('./models/collector');
 
+var WebRouter = require('./controllers/webrouter');
+
 var args = process.argv;
 var debugConsole = false;
 var debugFile = false;
@@ -159,6 +161,25 @@ require('./utils/baseutils').InitiateDb.start(function(err){
 		next();
 	});
 
+	//app.all('*', function(req, res, next){
+
+		// if(req.url == "/web/login"){
+		// 	logger.info("Fazendo Login...");
+		// 	return next();
+		// }else if(req.appSession && req.appSession.user){
+		// 	logger.info("HAS SESSION - " + JSON.stringify(req.appSession));
+		// 	return next();
+
+		// }else if(req.headers.authorization){
+		// 	logger.info("TEM TOKEN: " + req.headers.authorization);
+			//return next();
+
+		// }else{
+		// 	logger.info("Não pode continuar...");
+		// 	return res.status(401).send({message: "Not Authorized"});
+		// }
+	//});
+
 	app.use(function(err, req, res, next) {
 		//This functions gets some erros like 'bodyParser errors'.
 		//To check if it is bodyparser error, remove the response below and just call next().
@@ -166,7 +187,7 @@ require('./utils/baseutils').InitiateDb.start(function(err){
 			return res.status(400).json({"error" : err});
 		}
 		next();
-	})
+	});
 
 	// app.get('/', function(req, res){
 	// 	//Redirect to /web when the GET request to / arrives
@@ -176,21 +197,27 @@ require('./utils/baseutils').InitiateDb.start(function(err){
 	var isSessionAuthorized = function(req,res,next){
 		//check session
 		// ...
-		
-		return res.status(403).send("Session not authorized.");
+		if(req.appSession && req.appSession.user){
+			logger.info("HAS SESSION - " + JSON.stringify(req.appSession));
+			return next();
+		}
 
+		logger.info("Redirect to login");
+		return res.redirect('/login');
+		// return res.status(401).send("User need to Login");
 		//If ok...
-		next();
+		// next();
 	};
 
+	// app.get('/', isSessionAuthorized);
 	//Serve as static all files inside web/public folder
-	app.use('/', express.static('web/public'));
+	app.use('/login', express.static('web/public'));
 
-	app.get('/web/restricted', isSessionAuthorized);
-	app.use('/web/restricted', express.static('web/restricted'));
+	app.get('/', isSessionAuthorized);
+	app.use('/', express.static('web/restricted'));
 
 	// var WebRouter = require('./controllers/webrouter');
-	// app.use('/web', new WebRouter());
+	app.use('/web', new WebRouter());
 
 	app.use('/api/doc', express.static('apidoc'));
 

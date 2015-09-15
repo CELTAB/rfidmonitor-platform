@@ -21,7 +21,7 @@ var model = sequelize.define("AppClient", {
 		set: function(desc){
       		this.setDataValue('description', desc);
       		//TODO: When using login, decoment the line bellow
-      		// this.setDataValue('token', Tokenizer.uid(32));
+      		this.setDataValue('token', Tokenizer.uid(32));
 		}
 	}
 },
