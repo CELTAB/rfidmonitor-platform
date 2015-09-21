@@ -150,24 +150,25 @@ require('./utils/baseutils').InitiateDb.start(function(err){
 		//check session
 		// ...
 		if(req.appSession && req.appSession.user){
-			logger.info("HAS SESSION - " + JSON.stringify(req.appSession));
-			return res.redirect('/web');
+			return next();
+			// logger.info("HAS SESSION - " + JSON.stringify(req.appSession));
+			// return res.redirect('/web');
 		}
 
-		logger.info("Redirect to login");
-		return res.redirect('/login');
-		// return res.status(401).send("User need to Login");
+		// logger.info("Redirect to login");
+		// return res.redirect('/login');
+		return res.status(401).send({mssage: "No Session"});
 		//If ok...
 		// next();
 	};
 
 	// app.get('/', isSessionAuthorized);
 	//Serve as static all files inside web/public folder
-	app.use('/login', express.static('web/public'));
+	app.use('/', express.static('web/public'));
 
-	app.get('/', isSessionAuthorized);
 
-	app.use('/web', function(req, res, next){
+	app.get('/web/private', isSessionAuthorized);
+	app.use('/web/private', function(req, res, next){
 		// logger.warn("aqui");
 		if(!req.appSession || !req.appSession.user){
 			return res.status(403).send({mssage: "No Session"});
@@ -250,7 +251,7 @@ require('./utils/baseutils').InitiateDb.start(function(err){
 
 	// var WebRouter = require('./controllers/webrouter');
 	// app.use('/web', new WebRouter());
-	app.use('/web', express.static('web/private'));
+	app.use('/web/private', express.static('web/private'));
 
 	app.use('/api/doc', express.static('apidoc'));
 
