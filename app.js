@@ -137,25 +137,6 @@ require('./utils/baseutils').InitiateDb.start(function(err){
 		next();
 	});
 
-	//app.all('*', function(req, res, next){
-
-		// if(req.url == "/web/login"){
-		// 	logger.info("Fazendo Login...");
-		// 	return next();
-		// }else if(req.appSession && req.appSession.user){
-		// 	logger.info("HAS SESSION - " + JSON.stringify(req.appSession));
-		// 	return next();
-
-		// }else if(req.headers.authorization){
-		// 	logger.info("TEM TOKEN: " + req.headers.authorization);
-			//return next();
-
-		// }else{
-		// 	logger.info("Não pode continuar...");
-		// 	return res.status(401).send({message: "Not Authorized"});
-		// }
-	//});
-
 	app.use(function(err, req, res, next) {
 		//This functions gets some erros like 'bodyParser errors'.
 		//To check if it is bodyparser error, remove the response below and just call next().
@@ -165,17 +146,12 @@ require('./utils/baseutils').InitiateDb.start(function(err){
 		next();
 	});
 
-	// app.get('/', function(req, res){
-	// 	//Redirect to /web when the GET request to / arrives
-	// 	res.redirect('/web');
-	// });
-
 	var isSessionAuthorized = function(req,res,next){
 		//check session
 		// ...
 		if(req.appSession && req.appSession.user){
 			logger.info("HAS SESSION - " + JSON.stringify(req.appSession));
-			return next();
+			return res.redirect('/web');
 		}
 
 		logger.info("Redirect to login");
@@ -190,10 +166,91 @@ require('./utils/baseutils').InitiateDb.start(function(err){
 	app.use('/login', express.static('web/public'));
 
 	app.get('/', isSessionAuthorized);
-	app.use('/', express.static('web/restricted'));
+
+	app.use('/web', function(req, res, next){
+		// logger.warn("aqui");
+		if(!req.appSession || !req.appSession.user){
+			return res.status(403).send({mssage: "No Session"});
+		}
+		next();
+	});
+
+	app.post('/login', function(req, res){
+
+		var sequelize = require('./dao/platformsequelize');
+
+		if(!req.body.username || !req.body.password)
+			return res.status(400).send({message: "Missing username ou password"});
+
+		logger.info("Username: " + req.body.username);
+		logger.info("password: " + req.body.password);
+
+		try{
+
+			var User = sequelize.model("User");
+
+			User.scope('loginScope').findOne({where: {username: req.body.username}})
+				.then(function(user){
+
+					if(user){
+
+						if(user.isPasswordValid(req.body.password)){
+
+							user = user.clean();
+							var AppClient = sequelize.model('AppClient');
+
+							AppClient.find(
+									{
+										where: {user_id: user.id}
+									})
+								.then(function(app){
+
+									if(app){
+
+										user.token = "defaulttokenaccess";
+										// user.token = app.token;
+										req.appSession.user = {id: user.id, username: user.username, email: user.email};
+										return res.status(200).send(user);
+									}else{
+										logger.error("Token not found for user " + user.username);
+										return res.status(401).send({message: "User not allowed"});
+									}
+
+								}).catch(function(err){
+									logger.error("Find AppClient: " + err);
+									return res.send(500).send({message: "INTERNAL ERROR : " + err});				
+								});
+
+						}else{
+							return res.status(400).send({message:"Password don't match to this user"});
+						}
+
+					}else{
+						return res.status(400).send({message: "Username not match to any user"});
+					}
+
+				})
+				.catch(function(e){
+					logger.error("Find User: " + e);
+					return res.send(500).send({message: "INTERNAL ERROR : " + e});
+				});
+
+		}catch(error){
+			logger.error(error);
+			return res.send(500).send({message: "INTERNAL ERROR : " + error});
+		}
+
+	});
+
+	app.post('/logout', function(req, res){
+		delete req.appSession.user;
+		res.status(200).send({message: "Lougout, no access to this page anymore"});
+	});
+
 
 	// var WebRouter = require('./controllers/webrouter');
-	app.use('/web', new WebRouter());
+	// app.use('/web', new WebRouter());
+	app.use('/web', express.static('web/private'));
 
 	app.use('/api/doc', express.static('apidoc'));
 

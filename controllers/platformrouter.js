@@ -443,7 +443,7 @@ var setLoginRouters = function() {
 		// logger.info(req.body);
 
 		if(!req.body.username || !req.body.password)
-			return res.status(400).send({message: "Missing username ou password"});
+			return res.status(400).send({message: "Missing username or password"});
 
 		logger.info("Username: " + req.body.username);
 		logger.info("password: " + req.body.password);
