@@ -56,7 +56,7 @@ var LoadRoutes = function(){
 			getOne: custom.getOne || custom.find || controller.find,
 			getAll: custom.getAll || custom.find || controller.find,
 			save: custom.save || controller.save,
-			update: custom.update || controller.save,
+			update: custom.update || custom.save || controller.save,
 			remove: custom.remove || controller.remove,
 			name: controller.name
 		}
