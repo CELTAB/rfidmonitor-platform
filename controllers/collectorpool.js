@@ -26,9 +26,10 @@ var CollectorPool = function CollectorPool(){
 
 	this.getStatusByMac = function(mac){
         if(pool[mac]){
+        	logger.debug("Collector pool getStatusByMac [" + mac + "] status: " + pool[mac].status );
             return pool[mac].status;
         }
-        logger.debug("Collector pool getStatusByMac" + mac + " not found.");
+        logger.debug("Collector pool getStatusByMac [" + mac + "] not found on pool. Considering status OFFLINE");
         return Collector.prototype.statusEnum.OFFLINE;
     }
 

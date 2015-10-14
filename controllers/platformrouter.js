@@ -37,7 +37,7 @@ var storage = multer.diskStorage({destination: appDir + '/restricted_media/tmp/'
 var upload = multer({ storage: storage });
 
 var SeqUser = require('../models/sequser');
-var SeqAccessToken = require('../models/seqaccesstoken');	
+var SeqAccessToken = require('../models/seqaccesstoken');
 var SeqAppClient = require('../models/seqappclient');
 var SeqUriRoute = require('../models/sequriroute');
 var SeqRouteAccess = require('../models/seqrouteaccess');
@@ -167,8 +167,8 @@ var validateBearer = function(token, done) {
 var setAuthorization = function(){
 	logger.warn('move setAuthorization to some generic place. This is being used by all routers not only this.');
 	router.all(
-		'*', 
-		passport.authenticate('api-bearer', { session: false }), 
+		'*',
+		passport.authenticate('api-bearer', { session: false }),
 		function(req, res, next){
 
 			var finalRoute = null;
@@ -177,14 +177,14 @@ var setAuthorization = function(){
 				logger.warn("originalUrl missing");
 				return res.status(400).send({'message':'originalUrl missing'});
 			}
-			
+
 			var uriArray = req.originalUrl.split('/');
 
 			/*
 			//Example: /api/collectors/1/2/3
 				For this uri 'https://localhost/api/collectors/1/2'
 				The uriArray will be  '0=, 1=api, 2=collectors, 3=1, 4=2'
-				
+
 				More examples:
 				https://localhost/api/collectors
 				0=, 1=api, 2=collectors
@@ -213,13 +213,13 @@ var setAuthorization = function(){
 
 			SeqRouteAccess.findOne(
 				{
-					where : { appClient: req.user.clientId}, 
+					where : { appClient: req.user.clientId},
 					include: [
 						{
 		        			model: SeqUriRoute,
-		        			where: { 
-		        				path: { $or : ['ANY', finalRoute] }, 
-		        				method : { $or : ['ANY', req.method] } 
+		        			where: {
+		        				path: { $or : ['ANY', finalRoute] },
+		        				method : { $or : ['ANY', req.method] }
 		        			}
 		    			}
 		    		]
@@ -235,8 +235,8 @@ var setAuthorization = function(){
 			})
 			.catch(function(e){
 				return res.status(500).send({'message' : "INTERNAL ERROR : " + e});
-			});		
-			
+			});
+
 		}
 	);
 }
@@ -267,7 +267,7 @@ var setRouteUsers = function(){
 			})
 			.catch(function(e){
 				return res.status(500).send({'message' : "INTERNAL ERROR : " + e});
-		});		
+		});
 	});
 
 	router.get(expressRouteId, function(req, res){
@@ -328,9 +328,9 @@ var setRouteUsers = function(){
 										if(newApp)
 											return res.status(200).send(newUser.clean());
 										else
-											return res.status(500).send({message: "INTERNAL ERROR ON CREATE AppClient"});							
+											return res.status(500).send({message: "INTERNAL ERROR ON CREATE AppClient"});
 									}).catch(function(err){
-										return res.status(500).send({message: "INTERNAL ERROR : " + err});							
+										return res.status(500).send({message: "INTERNAL ERROR : " + err});
 									});
 							})
 							.catch(function(err){
@@ -349,7 +349,7 @@ var setRouteUsers = function(){
 
 	routes.register(dbRoute, routes.getMethods().PUT);
 	router.put(expressRouteId, function(req, res){
-		
+
 		if(!req.params.id || !req.body.id)
 			return res.status(400).send({message: "Missing param ID or body ID"});
 
@@ -374,13 +374,13 @@ var setRouteUsers = function(){
 								}
 
 							}).catch(function(e){
-								return res.status(400).send({message: "ERROR : " + e});	
+								return res.status(400).send({message: "ERROR : " + e});
 							});
 					}else{
 						return res.status(400).send({mesage:"User not found"});
 					}
 			}).catch(function(e){
-				return res.status(400).send({message: "ERROR : " + e});	
+				return res.status(400).send({message: "ERROR : " + e});
 			});
 
 		}catch(err){
@@ -391,7 +391,7 @@ var setRouteUsers = function(){
 
 	routes.register(dbRoute, routes.getMethods().DELETE);
 	router.delete(expressRouteId, function(req, res){
-		
+
 		if(!req.params.id)
 			return res.status(400).send("Missing param ID");
 
@@ -413,13 +413,13 @@ var setRouteUsers = function(){
 								}
 
 							}).catch(function(e){
-								return res.status(400).send({message: "ERROR : " + e});	
+								return res.status(400).send({message: "ERROR : " + e});
 							});
 					}else{
 						return res.status(400).send({mesage:"User not found"});
 					}
 			}).catch(function(e){
-				return res.status(400).send({message: "ERROR : " + e});	
+				return res.status(400).send({message: "ERROR : " + e});
 			});
 
 		}catch(err){
@@ -478,7 +478,7 @@ var setLoginRouters = function() {
 
 								}).catch(function(err){
 									logger.error("Find AppClient: " + err);
-									return res.send(500).send({message: "INTERNAL ERROR : " + err});				
+									return res.send(500).send({message: "INTERNAL ERROR : " + err});
 								});
 
 						}else{
@@ -516,7 +516,7 @@ var setLoginRouters = function() {
 
 		// SeqUser.findOne(
 		// 		{
-		// 			where : { 
+		// 			where : {
 		// 				username: req.body.username,
 		// 				loginAllowed: true
 		// 			}
@@ -524,7 +524,7 @@ var setLoginRouters = function() {
 		//     )
 		// 	.then(function(user){
 		// 		if(user){
-                	
+
 		// 			//TODO: Validade Password here.
 
 
@@ -534,7 +534,7 @@ var setLoginRouters = function() {
 		// 	})
 		// 	.catch(function(e){
 		// 		return res.status(500).send({'message' : "INTERNAL ERROR : " + e});
-		// 	});	
+		// 	});
 
 }
 
@@ -572,11 +572,11 @@ var setRouteAppClients = function (){
 
 	// 	client.clientName = req.body.clientName;
 	// 	client.authSecret = req.body.authSecret;
-		
+
 	// 	//The description is not required. it's optional
 	// 	if(req.body.description)
 	// 		client.description = req.body.description;
-		
+
 	// 	appClientDao.insert(client, function(err, clientId){
 	// 		if(err)
 	// 			return res.json({error: "Could not save app client user"});
@@ -590,9 +590,9 @@ var setRouteAppClients = function (){
 
 	// 		var tokenDao = new AccessTokenDao();
 	// 		tokenDao.insert(token, function(err, tokenId){
-	
+
 	// 			if(err) return res.json({error: "could not create an access token"});
-				
+
 	// 			client.id = clientId;
 	// 			client.token = token.value;
 	// 			res.json(client);
@@ -634,7 +634,7 @@ var setRouteCollectors = function(){
 	}
 	*/
 
-	
+
 	var getGroupById = function(collector, callback){
 		groupDao.findById(collector.groupId, function(err, group){
 			if(err)
@@ -646,7 +646,7 @@ var setRouteCollectors = function(){
 			}else{
 				callback(null, null);
 			}
-		});	
+		});
 	}
 
 	routes.register(dbRoute, routes.getMethods().GET);
@@ -671,7 +671,7 @@ var setRouteCollectors = function(){
 
 		collectorDao.findAll(limit, offset, function(err, collectors){
 			if(err)
-				return res.status(500).send(err.toString()); 
+				return res.status(500).send(err.toString());
 
 			if(collectors.length == 0){
 				return res.status(200).send(collectors);
@@ -695,7 +695,7 @@ var setRouteCollectors = function(){
 				return getGroupById(collectors[index], cb);
 			}
 
-			getGroupById(collectors[index], cb); 
+			getGroupById(collectors[index], cb);
 		});
 	});
 
@@ -709,25 +709,25 @@ var setRouteCollectors = function(){
 
 		collectorDao.findById(req.params.id, function(err, collector){
 			if(err)
-				return res.status(500).send(err.toString()); 
+				return res.status(500).send(err.toString());
 
 			if(collector){
 				groupDao.findById(collector.groupId, function(err, group){
 					if(err)
-						return res.status(500).send(err.toString()); 
+						return res.status(500).send(err.toString());
 
 					if(group){
 						collector.group = group;
 					}
 
 					return res.status(200).send(collector);
-				});	
+				});
 			}else{
 				return res.status(200).send(collector);
 			}
 		});
 	});
-	
+
 
 	routes.register(dbRoute, routes.getMethods().POST);
 	router.post(expressRouteSimple, function(req, res){
@@ -748,20 +748,20 @@ var setRouteCollectors = function(){
 		req.sanitizeBody('description').toString();
 
 		var errors = req.validationErrors();
-		
+
 		if(errors)
-			return res.status(400).send(errors);		
+			return res.status(400).send(errors);
 
 		var collector = new Collector(req.body)
 		collectorDao.insert(collector, function(err, id){
 			if(err)
-				return res.status(500).send(err.toString()); 
+				return res.status(500).send(err.toString());
 
 			collector.id = id;
 			return res.status(200).send(collector);
-		});	
+		});
 	});
-	
+
 
 	routes.register(dbRoute, routes.getMethods().PUT);
 	router.put(expressRouteId, function(req, res){
@@ -786,7 +786,7 @@ var setRouteCollectors = function(){
 		var errors = req.validationErrors();
 
 		if(errors)
-			return res.status(400).send(errors);		
+			return res.status(400).send(errors);
 
 		var collector = new Collector(req.body);
 		collectorDao.updateCollector(collector, function(err, rowCount){
@@ -801,7 +801,7 @@ var setRouteCollectors = function(){
 		});
 	});
 
-	
+
 
 	routes.register(dbRoute, routes.getMethods().DELETE);
 	router.delete(expressRouteId, function(req, res){
@@ -814,7 +814,7 @@ var setRouteCollectors = function(){
 
 		collectorDao.deleteById(req.params.id, function(err, rowCount){
 			if(err)
-				return res.status(500).send(err.toString()); 
+				return res.status(500).send(err.toString());
 
 			if(rowCount > 0)
 				return res.status(200).send();
@@ -857,10 +857,10 @@ var setRouteGroups = function(){
 
 		groupDao.findAll(limit, offset, function(err, groups){
 			if(err)
-				return res.status(500).send(err.toString()); 
+				return res.status(500).send(err.toString());
 
 			return res.status(200).send(groups);
-		});		
+		});
 	});
 
 	router.get(expressRouteId, function(req, res){
@@ -872,10 +872,10 @@ var setRouteGroups = function(){
 
 		groupDao.findById(req.params.id, function(err, group){
 			if(err)
-				return res.status(500).send(err.toString()); 
+				return res.status(500).send(err.toString());
 
 			return res.status(200).send(group);
-		});	
+		});
 	});
 
 	routes.register(dbRoute, routes.getMethods().POST);
@@ -893,24 +893,24 @@ var setRouteGroups = function(){
 		req.sanitizeBody('isDefault').toBoolean();
 
 		var errors = req.validationErrors();
-		
+
 		if(errors)
-			return res.status(400).json(errors);		
+			return res.status(400).json(errors);
 
 		var group = new Group(req.body);
 		groupDao.insert(group, function(err, id){
 			if(err)
-				return res.status(500).send(err.toString()); 
+				return res.status(500).send(err.toString());
 
 			group.id = id;
 			return res.status(200).send(group);
-		});			
+		});
 	});
 
 	routes.register(dbRoute, routes.getMethods().PUT);
 
 	router.put(expressRouteId, function(req, res){
-		
+
 		req.checkParams('id', 'missing or invalid int.').isInt();
 
 		req.checkBody('id', 'missing or invalid int.').isInt();
@@ -926,7 +926,7 @@ var setRouteGroups = function(){
 		var errors = req.validationErrors();
 
 		if(errors)
-			return res.status(400).send(errors);		
+			return res.status(400).send(errors);
 
 		var group = new Group(req.body);
 		groupDao.updateGroup(group, function(err, rowCount){
@@ -941,7 +941,7 @@ var setRouteGroups = function(){
 	});
 
 	routes.register(dbRoute, routes.getMethods().DELETE);
-	
+
 	router.delete(expressRouteId, function(req, res){
 		req.checkParams('id', 'missing or not a integer').isInt();
 
@@ -951,7 +951,7 @@ var setRouteGroups = function(){
 
 		groupDao.deleteById(req.params.id, function(err, rowCount){
 			if(err)
-				return res.status(500).send(err.toStrin()); 
+				return res.status(500).send(err.toStrin());
 
 			if(rowCount > 0)
 				return res.status(200).send();
@@ -1010,7 +1010,7 @@ var setRouteRfiddata = function(){
 
 		rfiddataDao.findAll(limit, offset, function(err, rfiddatas){
 			if(err)
-				return res.status(500).send({"message" : err.toString()}); 
+				return res.status(500).send({"message" : err.toString()});
 
 			if(rfiddatas.length == 0){
 				return res.status(200).json(rfiddatas);
@@ -1033,8 +1033,8 @@ var setRouteRfiddata = function(){
 				return getCollectorById(rfiddatas[index], cb);
 			}
 
-			getCollectorById(rfiddatas[index], cb); 
-		});			
+			getCollectorById(rfiddatas[index], cb);
+		});
 	});
 
 	router.get(expressRouteId, function(req, res){
@@ -1042,7 +1042,7 @@ var setRouteRfiddata = function(){
 
 		var limit = null;
 		var offset = null;
-		
+
 		if(req.query.limit){
 			limit = req.query.limit;
 			req.checkQuery('limit', 'invalid or out of boundaries').isInt({ min: 1, max: 50});
@@ -1058,7 +1058,7 @@ var setRouteRfiddata = function(){
 
 		rfiddataDao.findByRfidcode(req.params.rfidcode, limit, offset, function(err, rfiddatas){
 			if(err)
-				return res.status(500).send({"message" : err.toString()}); 
+				return res.status(500).send({"message" : err.toString()});
 
 			if(rfiddatas.length == 0){
 				return res.status(200).json(rfiddatas);
@@ -1071,7 +1071,7 @@ var setRouteRfiddata = function(){
 
 				collectorDao.findById(data.collectorId, function(err, collector){
 					if(err)
-						return res.status(500).send(err.toString()); 
+						return res.status(500).send(err.toString());
 
 					if(collector){
 						data.collector = collector;
@@ -1084,7 +1084,7 @@ var setRouteRfiddata = function(){
 			}
 
 			return res.status(200).send(rfiddatas);
-		});		
+		});
 	});
 }
 
@@ -1111,10 +1111,10 @@ var setRoutePermissions = function(){
 
 		permissions.findByToken(token, function(err, permissions){
 			if(err)
-				return res.status(500).send({"message" : err.toString()}); 
+				return res.status(500).send({"message" : err.toString()});
 
-			return res.status(200).send(permissions);				
-		});	
+			return res.status(200).send(permissions);
+		});
 	});
 }
 
@@ -1140,7 +1140,7 @@ var setRawUpload = function(){
 	        var buffer = Buffer.concat(data);
 	        console.log('deu');
 	    });
-	
+
 	});
 }
 
@@ -1155,7 +1155,7 @@ var setRouteManualImport = function(){
 
 		if(!req.file)
 			return res.status(400).send("We didnt receive you file");
-		
+
 		var file = req.file;
 
 		var underAppPath = '/restricted_media/media/manual_import/' + req.file.filename;
@@ -1177,7 +1177,7 @@ var setRouteManualImport = function(){
 
 			    	f.url = '/api/media/'+f.id;
 			    	f.save().then(function(f){
-						
+
 
 			    		fs.readFile(file.finalPath, function (err, data) {
 						    if (err){
@@ -1197,21 +1197,21 @@ var setRouteManualImport = function(){
 								if (err){
 									var error = "rfiddatadao router insert err : " + err;
 									logger.error(error);
-									res.status(500).send(error);
+									res.status(500).send({'summary': result, 'errors':err});
 								}
 								else{
-									res.status(200).send(result);
+									res.status(200).send({'summary': result});
 								}
 							});
-						});	
+						});
 
 			    	}).catch(function(e){
 			    		return res.status(500).send("error " + e);
 			    	});
 			    }).catch(function(e){
 			    	return res.status(500).send("error " + e);
-			    });			
-			
+			    });
+
 		});
 	});
 }
