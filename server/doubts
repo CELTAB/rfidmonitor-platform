@@ -1,0 +1,38 @@
+Ponto de coleta:
+- Coletores
+- Grupos
+- RFIDData
+- Packages
+
+Serviços:
+// - Autenticação/Sessão
+- Usuários
+- AppClient
+- Rotas
+- Permissões
+- Dynamic Entities
+- PlatformMedia
+
+Questões:
+Pacotes são importantes?
+  Sim, são...
+
+
+  // CREATE CUSTOM routes
+  var customRoute = {
+    method:'get',
+    route:'/teste/a',
+    handler: function(req, callback){
+      return callback(null, {message:'response for custom route'});
+    }
+  };
+
+  var customRoute2 = {
+    method:'post',
+    route:'/teste/a',
+    handler: function(req, callback){
+      return callback(null, {message:'response for custom route on post'});
+    }
+  };
+  Rfid.customRoute.push(customRoute);
+  Rfid.customRoute.push(customRoute2);

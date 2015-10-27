@@ -13,14 +13,14 @@ var PlatformSequelize = function PlatformSequelize(){
 	this.getSequelize = function(){
 		return sequelize;
 	}
- 
+
     if(PlatformSequelize.caller != PlatformSequelize.getInstance){
         throw new PlatformError("This object cannot be instanciated");
     }
 }
- 
+
 PlatformSequelize.instance = null;
- 
+
 
 PlatformSequelize.getInstance = function(){
     if(this.instance === null){
@@ -28,5 +28,5 @@ PlatformSequelize.getInstance = function(){
     }
     return this.instance;
 }
- 
+
 module.exports = PlatformSequelize.getInstance().getSequelize();

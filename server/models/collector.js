@@ -1,6 +1,6 @@
+'use strict';
 var SequelizeClass = require('sequelize');
-var sequelize = require(__base + 'controller/platformsequelize');
-
+var sequelize = require(__base + 'controller/database/platformsequelize');
 var Group = require(__base + 'models/group');
 
 var model = sequelize.define("Collector", {
@@ -39,9 +39,7 @@ var model = sequelize.define("Collector", {
 });
 
 model.belongsTo(Group, {foreignKey: {name: 'group_id', allowNull: false}});
-
 module.exports = model;
-
 //OBJECT EXAMPLE
 /*
 {
@@ -52,4 +50,4 @@ module.exports = model;
 	"mac":"8E-F3-81-5D-AD-E4",
 	"description":"Canal de aguas bravas",
 }
-*/	
+*/

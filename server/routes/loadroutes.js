@@ -1,26 +1,46 @@
+'use strict';
 var express = require('express');
-
-// var CollectorsRoute = require(__base + 'routes/collectors');
 var RoutingCore = require(__base + 'routes/routingcore');
 
-var LoadRoutes = function(){
-
-	router = express.Router();
-
-	// var GroupCtrl = require(__base + 'controller/groups');
-	// var CollectorCtrl = require(__base + 'controller/collectors');
-
-	var controllersPool = [];
+var LoadRoutes = function(baseUri){
+	var router = express.Router();
+	var ControllersPool = require(__base + 'controller/controllersModelPool');
+	var Controllers = new ControllersPool();
 
 	//Load Controllers
-	controllersPool.push(require(__base + 'controller/groups'));
-	controllersPool.push(require(__base + 'controller/collectors'));
-	controllersPool.push(require(__base + 'controller/users'));
+	var controllerPath = __base + 'controller/models';
+	Controllers.register(require(controllerPath + '/rfiddata'));
+	Controllers.register(require(controllerPath + '/group'));
+	Controllers.register(require(controllerPath + '/collector'));
+	Controllers.register(require(controllerPath + '/appclient'));
+	Controllers.register(require(controllerPath + '/user'));
+	Controllers.register(require(controllerPath + '/uriroute'));
+	Controllers.register(require(controllerPath + '/routeaccess'));
+
+	//Load Controller for dynamic entities
+	controllerPath = __base + 'controller/dynamic';
+	Controllers.register(require(controllerPath + '/register'));
+
+	var customRoutes = [];
+	var routeDePath = __base + 'routes/de';
+	var routeOriginal = require(routeDePath + '/original');
+	var routeMeta = require(routeDePath + '/meta');
+	var routeActive = require(routeDePath + '/active');
+	var routeDao = require(routeDePath + '/dedao');
+	var routeMedia = require(__base + 'routes/media');
+
+	customRoutes = customRoutes
+		.concat(routeOriginal)
+		.concat(routeActive)
+		.concat(routeMeta)
+		.concat(routeMedia)
+		.concat(routeDao);
+	//Create controllers based on all Saquelize models
+	// Controllers.loadControllers();
 
 	var _passFunctions = function(controller){
-
 		var custom = controller.custom;
-
+		/*
 		if(custom.find)
 			console.log("Tenho uma função personalizada para find");
 		else
@@ -40,7 +60,7 @@ var LoadRoutes = function(){
 			console.log("Tenho uma função personalizada para save");
 		else
 			console.log("NÃO Tenho uma função personalizada para save");
-		
+
 		if(custom.update)
 			console.log("Tenho uma função personalizada para update");
 		else
@@ -50,30 +70,28 @@ var LoadRoutes = function(){
 			console.log("Tenho uma função personalizada para remove");
 		else
 			console.log("NÃO Tenho uma função personalizada para remove");
-
-
+			*/
+			
 		return{
 			getOne: custom.getOne || custom.find || controller.find,
 			getAll: custom.getAll || custom.find || controller.find,
 			save: custom.save || controller.save,
 			update: custom.update || custom.save || controller.save,
 			remove: custom.remove || controller.remove,
-			name: controller.name
+			name: controller.name,
+			customRoute: controller.customRoute
 		}
 	};
 
-	var routingCore = new RoutingCore(router);
-	
-	controllersPool.forEach(function(controller){
+	var routingCore = new RoutingCore(router, baseUri || '');
+	var controllersPool = Controllers.getAll();
+	for(var key in controllersPool){
+		console.log("Registrando Rotas para " + key);
+		var controller = controllersPool[key];
+		routingCore.registerRoute(controller.name, _passFunctions(controller));
+	}
 
-		console.log("Registrando Rotas para " + controller.name.toLowerCase());
-		//TODO. Tudo bem fazer assim?
-		routingCore.registerRoute(controller.name.toLowerCase() + 's', _passFunctions(controller));
-	});
-
-	// routingCore.registerRoute("collectors", _passFunctions(CollectorCtrl));
-	// routingCore.registerRoute("groups", _passFunctions(GroupCtrl));
-
+	routingCore.registerCustomRoute(customRoutes);
 	return router;
 }
 

@@ -1,7 +1,9 @@
 var logger = require('winston');
+var routes = require(__base + 'controller/database/routes');
 
-var RoutingCore = function(router){
+var RoutingCore = function(router, baseUri){
 	this.router = router;
+	this.baseUri = baseUri || '';
 
 	this.registerRoute = function(routeName, functions){
 		// routeName: "produto"
@@ -17,15 +19,16 @@ var RoutingCore = function(router){
 				remove: "controllerFunctionName"
 			}
 		*/
-		
-		var _route = "/" + routeName;
-		var _routeId = _route + "/:id"; 
 
+		var _route = "/" + routeName;
+		var _routeId = _route + "/:id";
+		var dbRoute = this.baseUri + _route;
+		routes.register(dbRoute, routes.getMethods().GET);
 		this.router.get(_route, function(req, res){
 
 			var query = null;
 			if(req.query && req.query.q){
-				query = req.query.q;			
+				query = req.query.q;
 				try{
 					query = JSON.parse(query);
 				}catch(e){
@@ -50,6 +53,7 @@ var RoutingCore = function(router){
 			});
 		});
 
+		routes.register(dbRoute, routes.getMethods().POST);
 		this.router.post(_route, function(req, res){
 
 			if(req.body._id || req.body.id)
@@ -62,8 +66,9 @@ var RoutingCore = function(router){
 			});
 		});
 
+		routes.register(dbRoute, routes.getMethods().PUT);
 		this.router.put(_routeId, function(req, res){
-	
+
 			//TODO: Verificar por _id e tbm por id em todo o código que verifica ID
 			if(req.params.id != req.body._id && req.params.id != req.body.id)
 				return res.response(null, 400, "Anti-pattern PUT: params id is different of body id.");
@@ -75,6 +80,7 @@ var RoutingCore = function(router){
 			});
 		});
 
+		routes.register(dbRoute, routes.getMethods().DELETE);
 		this.router.delete(_routeId, function(req, res){
 
 			functions.remove(req.params.id, function(err, result){
@@ -83,6 +89,74 @@ var RoutingCore = function(router){
 				res.send(result);
 			});
 		});
+
+		//Need to create custom routes?
+		if(functions.customRoute && functions.customRoute.length > 0){
+			this.registerCustomRoute(functions.customRoute);
+		}
+	}
+
+	/*
+	Create custom routes, receives an objetc with the methos, route and handler for this custom route
+	*/
+	this.registerCustomRoute = function(customRoutesArray){
+		//object:
+		/*
+		{
+			getOne: ...
+			...
+			name: ...
+			customRoute: [
+				{
+					method: 'post',
+					route: 'rota/comlexa',
+					handler: [Function] //function(req, callback){return callback(errObj, responseObj)};
+					middler: [Function] // function(req, res, next) {return next();};
+				}
+			]
+		}
+		*/
+
+		customRoutesArray.forEach(function(route){
+			var method = route.method;
+			var defaultHandler = function(req, res){
+				route.handler(req, function(err, response, sendfile){
+					if(err){
+						return res.status(err.code).send(err);
+					}
+					if(sendfile)
+						return res[sendfile](response);
+
+					res.send(response);
+				});
+			}
+
+			if(!route.middler){
+				route.middler = function(req, res, next){
+					return next();
+				}
+			}
+
+			var rt = route.route.split('/:');
+			switch(method){
+				case 'get':
+					routes.register(this.baseUri + rt[0], routes.getMethods().GET);
+					this.router.get(route.route, route.middler, defaultHandler);
+					break;
+				case 'post':
+					routes.register(this.baseUri + rt[0], routes.getMethods().POST);
+					this.router.post(route.route, route.middler, defaultHandler);
+					break;
+				case 'put':
+					routes.register(this.baseUri + rt[0], routes.getMethods().PUT);
+					this.router.put(route.route, route.middler, defaultHandler);
+					break;
+				case 'delete':
+					routes.register(this.baseUri + rt[0], routes.getMethods().DELETE);
+					this.router.delete(route.route, route.middler, defaultHandler);
+					break;
+			}
+		}, this);
 	}
 }
 

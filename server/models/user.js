@@ -1,5 +1,7 @@
+'use strict';
 var SequelizeClass = require('sequelize');
-var sequelize = require(__base + 'controller/platformsequelize');
+var sequelize = require(__base + 'controller/database/platformsequelize');
+var Hash = require(__base + 'utils/hashing');
 
 var model = sequelize.define("User", {
 	name:{
@@ -16,21 +18,21 @@ var model = sequelize.define("User", {
 	username: {
 		type : SequelizeClass.STRING,
 		allowNull : false,
-		unique : true		
+		unique : true
 	},
 	password: {
 		type: SequelizeClass.STRING,
-		allowNull: false
-		// set: function(pass){
-		// 	this.setDataValue('password', Hash.createHash(pass));
-		// }
+		allowNull: false,
+		set: function(pass){
+			this.setDataValue('password', Hash.createHash(pass));
+		}
 	}
 },
 {
 	paranoid : true,
 	freezeTableName: true,
 	tableName: 'tb_plat_user',
-	defaultScope: 
+	defaultScope:
 		{
 			attributes : ['id', 'name', 'username', 'email'],
 			where: { deletedAt: null }
@@ -38,11 +40,11 @@ var model = sequelize.define("User", {
 	scopes:{
 		loginScope: {
 			attributes : ['id', 'username', 'password'],
-			where: { deletedAt: null}	
-		} 
+			where: { deletedAt: null}
+		}
 	},
 	instanceMethods: {
-    	clean: function()  { 
+    	clean: function()  {
     		var objUser = {};
     		objUser.id = this.getDataValue('id');
     		objUser.name = this.getDataValue('name');
@@ -53,11 +55,13 @@ var model = sequelize.define("User", {
     		return objUser;
     	},
     	isPasswordValid: function(pass){
-    		// var match = Hash.createHash(pass) == this.getDataValue('password');
-    		// return match;
+    		var match = Hash.createHash(pass) == this.getDataValue('password');
+    		return match;
     	}
   	}
 });
+
+module.exports = model;
 
 //OBJECT EXAMPLE
 /*
@@ -67,4 +71,4 @@ var model = sequelize.define("User", {
 	"username":"joninho",
 	"password":"jonios"
 }
-*/	
+*/

@@ -1,5 +1,6 @@
+'use strict';
 var SequelizeClass = require('sequelize');
-var sequelize = require(__base + 'controller/platformsequelize');
+var sequelize = require(__base + 'controller/database/platformsequelize');
 
 var model = sequelize.define("Group", {
 	name: {
@@ -36,6 +37,6 @@ module.exports = model;
 {
 	"name":"Itaipu",
 	"description":"Grupo Itaipu Binacional",
-	"isDefault":null	
+	"isDefault":null
 }
-*/	
+*/

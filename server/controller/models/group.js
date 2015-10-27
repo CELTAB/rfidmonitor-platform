@@ -1,12 +1,9 @@
 var logger = require('winston');
-
-var sequelize = require(__base + 'controller/platformsequelize');
-
-var GroupController = require(__base + 'controller/basemodelctrl');
+var sequelize = require(__base + 'controller/database/platformsequelize');
+var Controller = require(__base + 'controller/basemodelctrl');
 
 var GroupModel = sequelize.model('Group');
-
-var Group = new GroupController(GroupModel, 'Group');
+var Group = new Controller(GroupModel, 'groups');
 
 //To add customs functions, do as the follow example
 //Adding a custom function for save
