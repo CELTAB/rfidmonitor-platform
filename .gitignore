@@ -2,3 +2,4 @@ node_modules*
 logs/*
 ssl/*
 restricted_media/*
+server/restricted_media/*

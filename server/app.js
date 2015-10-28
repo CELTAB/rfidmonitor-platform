@@ -7,6 +7,7 @@ var http = require('http');
 // NOVO APP JS USADO APENAS PARA TESTES
 
 var LoadRouter = require(__base + 'routes/loadroutes');
+var LoadLoginRouter = require(__base + 'routes/loadloginroute');
 var SynchronizeDb = require(__base + 'controller/database/synchronizedb');
 
 SynchronizeDb.start(function(err){
@@ -45,6 +46,7 @@ SynchronizeDb.start(function(err){
 	var httpPort = 8180;
 
 	app.use('/api', new LoadRouter('/api'));
+	app.use(new LoadLoginRouter());
 
 	http.createServer(app).listen(httpPort, function(){
 		console.info("HTTP server listening on port %s", httpPort);

@@ -120,12 +120,12 @@ var RoutingCore = function(router, baseUri){
 		customRoutesArray.forEach(function(route){
 			var method = route.method;
 			var defaultHandler = function(req, res){
-				route.handler(req, function(err, response, sendfile){
+				route.handler(req, function(err, response, attr){
 					if(err){
 						return res.status(err.code).send(err);
 					}
-					if(sendfile)
-						return res[sendfile](response);
+					if(attr)
+						return res[attr](response);
 
 					res.send(response);
 				});

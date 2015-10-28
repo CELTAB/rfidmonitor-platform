@@ -21,8 +21,8 @@ var SynchronizeDb = function() {
 		require(model + '/platformmedia');
 
 		//TODO: Do not use {force: true} on production
-		sequelize.sync({force: true}).then(function(){
-		// sequelize.sync().then(function(){
+		// sequelize.sync({force: true}).then(function(){
+		sequelize.sync().then(function(){
 
 			//Models synchronized. Call done with no errors (null).
 			DEModelPool.loadDynamicEntities(function(error){

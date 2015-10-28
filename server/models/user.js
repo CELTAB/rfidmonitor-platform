@@ -39,7 +39,7 @@ var model = sequelize.define("User", {
 		},
 	scopes:{
 		loginScope: {
-			attributes : ['id', 'username', 'password'],
+			attributes : ['id', 'username', 'password', 'email'],
 			where: { deletedAt: null}
 		}
 	},
@@ -50,8 +50,7 @@ var model = sequelize.define("User", {
     		objUser.name = this.getDataValue('name');
     		objUser.email = this.getDataValue('email');
     		objUser.username = this.getDataValue('username');
-    		objUser.loginAllowed = this.getDataValue('loginAllowed');
-
+				objUser.token = this.token || undefined;
     		return objUser;
     	},
     	isPasswordValid: function(pass){
