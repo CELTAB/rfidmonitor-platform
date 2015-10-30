@@ -35,7 +35,21 @@ var model = sequelize.define("Collector", {
 {
 	paranoid : true,
 	freezeTableName: true,
-	tableName: 'tb_plat_collector'
+	tableName: 'tb_plat_collector',
+	scopes:{
+		byMac: function(macaddress){
+			return{
+				where: {mac: macaddress, deletedAt: null}
+			}
+		}
+	},
+	classMethods: {
+		statusEnum: {
+				ONLINE: 'ONLINE',
+				OFFLINE: 'OFFLINE',
+				UNKNOWN: 'UNKNOWN'
+			}
+	}
 });
 
 model.belongsTo(Group, {foreignKey: {name: 'group_id', allowNull: false}});

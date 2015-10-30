@@ -10,10 +10,6 @@ var model = sequelize.define("Package", {
   packageSize:{
     type: SequelizeClass.INTEGER,
     allowNull : false
-  },
-  timestamp:{
-    type: SequelizeClass.DATE,
-    allowNull: false
   }
 },
 {

@@ -8,9 +8,9 @@ var https = require('https');
 var fs = require('fs');
 var Cors = require('cors');
 // var session = require('client-sessions');
-
 // NOVO APP JS USADO APENAS PARA TESTES
 
+var Server = require(__base + 'controller/collector/server');
 var LoadRouter = require(__base + 'routes/loadroutes');
 var LoadLoginRouter = require(__base + 'routes/loadloginroute');
 var SynchronizeDb = require(__base + 'controller/database/synchronizedb');
@@ -78,6 +78,10 @@ SynchronizeDb.start(function(err){
 
 	app.use('/api', new LoadRouter('/api'));
 	app.use(new LoadLoginRouter());
+
+	//Create and start server for collectors
+	var server = new Server();
+	server.startServer();
 
 	https.createServer(options, app).listen(8143, function(){
 		logger.info("HTTPS server listening on port 8143");
