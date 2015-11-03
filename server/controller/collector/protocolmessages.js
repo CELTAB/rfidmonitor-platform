@@ -7,13 +7,17 @@ var PlatformError = require(__base + 'utils/platformerror');
 //LoadModules
 var RFIDData = require(__base + 'models/rfiddata');
 var Collector =  require(__base + 'models/collector');
+var CollectorCtrl =  require(__base + 'controller/models/collector');
+
+var Group =  require(__base + 'models/group');
+var RfidCtrl = require(__base + 'controller/models/rfiddata');
 // var CollectorDao = require('../dao/collectordao');
 // var RFIDDataDao = require('../dao/rfiddatadao');
 
 var ProtocolMessagesController = function(socket, setOnlineCollector){
 
-	var rfiddatadao = new RFIDDataDao();
-	var collectordao =  new CollectorDao();
+	// var rfiddatadao = new RFIDDataDao();
+	// var collectordao =  new CollectorDao();
 	var packCounter = 0;
 	var responses = 0;
 
@@ -41,37 +45,36 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 		var data = message.data;
 		logger.silly("handle_SYN\n Message: " + JSON.stringify(message));
 
-    // Collector.scope({method: ['byMac', data.macaddress]}).findOne()
-    Collector.findOne({where: {mac: data.macaddress}})
-    .then(function(collector){
-      if(collector){
-        logger.debug("Collector found. ID: " + collector.id);
-        collectorPool.updateStatusByMac(collector, Collector.statusEnum.ONLINE);
-        var ackObj = {id:collector.id, macaddress:collector.mac, name:collector.name};
-        sendObject(buildMessageObject("ACK-SYN", ackObj));
-      }else{
-        //Insert new collector
-        var newCollector = {};
-        newCollector.name = (!!data.name)? data.name : "Unknown";
-				newCollector.mac = data.macaddress;
+		try{
+	    // Collector.scope({method: ['byMac', data.macaddress]}).findOne()
+	    Collector.findOne({where: {mac: data.macaddress}})
+	    .then(function(collector){
+	      if(collector){
+	        logger.debug("Collector found. ID: " + collector.id);
+	        var ackObj = {id:collector.id, macaddress:collector.mac, name:collector.name};
+	        sendObject(buildMessageObject("ACK-SYN", ackObj));
+	      }else{
+	        //Insert new collector
+	        var newCollector = {};
+	        newCollector.name = (!!data.name)? data.name : "Unknown";
+					newCollector.mac = data.macaddress;
+					logger.debug("Collector not found. INSERTING: " + JSON.stringify(newCollector));
 
-				logger.debug("Collector not found. INSERTING: " + JSON.stringify(newCollector));
-        Collector.create(newCollector)
-        .then(function(collector){
-          newCollector.id = collector.id;
-					logger.debug("Collector inserted. new ID: " + newCollector.id);
-
-					collectorPool.updateStatusByMac(newCollector, Collector.statusEnum.OFFLINE);
-					sendObject(buildMessageObject("ACK-SYN", {id:newCollector.id, macaddress:newCollector.mac, name:newCollector.name}));
-        })
-        .catch(function(e){
-					logger.error("Error: " + e);
-        });
-    }
-  })
-  .catch(function(e){
-    logger.error("Error: " + e);
-  });
+					CollectorCtrl.save(newCollector, function(err, collector){
+						if(err){
+							logger.error(err);
+							return;
+						}
+						newCollector = collector;
+						logger.debug("Collector inserted. new ID: " + newCollector.id);
+						collectorPool.push(newCollector);
+						sendObject(buildMessageObject("ACK-SYN", {id:newCollector.id, macaddress:newCollector.mac, name:newCollector.name}));
+					});
+	    	}
+	  	});
+		}catch(e){
+		  logger.error("Error: " + e);
+		}
 };
 
 	// Complete handshake, update the collector status to Online
@@ -85,8 +88,9 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 		if(collectorPool.updateStatusByMac(collector, Collector.statusEnum.ONLINE)){
 			//return the mac address for the Server class.
 			logger.debug("Update Status to Online");
-			var collectorInfo = {id: data.id, macaddress: data.macaddress};
+			var collectorInfo = {id: data.id, mac: data.macaddress, name: data.name};
 			setOnlineCollector(collectorInfo);
+
 			/*Start the function that will monitoring the status of the collector.
   			@Param1: Informations about the collector, as id and macAddress
   			@Param2: A function to send the SYN-ALIVE message to this collector
@@ -109,7 +113,6 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 		packCounter++;
 		logger.debug("Packages Received: " + packCounter);
 
-    var RfidCtrl = require(__base + 'controller/models/rfiddata');
     RfidCtrl.save(message.data, function(err, md5diggest){
       if(err)
         logger.error("PROTOCOL MESSAGES err : " + err);

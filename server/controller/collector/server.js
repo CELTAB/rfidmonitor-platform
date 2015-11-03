@@ -18,8 +18,7 @@ var Server = function(){
 
 		var protocol = new ProtocolConnectionController(socket, function(collectorInfo){
 			//Set local variables to use as logger info when the connections is closed.
-			collector.mac = collectorInfo.macaddress;
-			collector.id = collectorInfo.id;
+			collector = collectorInfo;
 		});
 
 		var address = {};
@@ -29,12 +28,10 @@ var Server = function(){
   	logger.info("New connection from " + address.address);
 
   	var lostCollector = function(){
-		logger.info('Client with MAC ' + collector.mac + ' and ID ' + collector.id + ' Disconnected');
-
-		socket.isConnected = false;
-		protocol = null;
-
-		collectorPool.updateStatusByMac(collector, collector.statusEnum.OFFLINE);
+			logger.info('Client with MAC ' + collector.mac + ' and ID ' + collector.id + ' Disconnected');
+			socket.isConnected = false;
+			protocol = null;
+			collectorPool.updateStatusByMac(collector, Collector.statusEnum.OFFLINE);
   	}
 
 		socket.on('end', lostCollector);
@@ -42,6 +39,7 @@ var Server = function(){
 
 		socket.on('data', function(data) {
 			logger.debug('Server : data received.');
+			console.log('Server : data received.');
 			protocol.processData(data);
 		});
 

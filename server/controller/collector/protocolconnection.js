@@ -9,6 +9,11 @@ var ProtocolConnectionController = function(socket, setOnlineCollector){
   	return;
   }
 
+  //Initialzacion
+  var permanentDataBuffer = new Buffer(0);
+  var waitingForRemainingData = false;
+  var packetSize = 0;
+
   this.protocolmessages = new ProtocolMessagesController(socket, setOnlineCollector);
 
   this.resetBuffer = function(){
@@ -39,27 +44,27 @@ var ProtocolConnectionController = function(socket, setOnlineCollector){
 
   this.processDataBuffer = function(){
       if(!waitingForRemainingData){
-          logger.silly("processDataBuffer : Probably a new pkt.");
-          //new packet.
-		if(! (permanentDataBuffer.length >= 8)){
-			logger.silly("processDataBuffer : We dont have at least 8 bytes. wait more.");
-			return;
-		}
-          var buffer = [];
-          buffer = permanentDataBuffer.slice(0, 8);
-          permanentDataBuffer = permanentDataBuffer.slice(8, permanentDataBuffer.length);
-          packetSize = parseInt(buffer);
+        logger.silly("processDataBuffer : Probably a new pkt.");
+        //new packet.
+    		if(! (permanentDataBuffer.length >= 8)){
+    			logger.silly("processDataBuffer : We dont have at least 8 bytes. wait more.");
+    			return;
+    		}
+        var buffer = [];
+        buffer = permanentDataBuffer.slice(0, 8);
+        permanentDataBuffer = permanentDataBuffer.slice(8, permanentDataBuffer.length);
+        packetSize = parseInt(buffer);
 
-          if(isNaN(packetSize)){
-              this.debug_ignoredBuffer++;
-              logger.error("Sem Banana no buffer...");
-              // Package error, incorrect size information. Clear buffer and start over
-              this.resetBuffer();
-              return;
-          }
+        if(isNaN(packetSize)){
+            this.debug_ignoredBuffer++;
+            logger.error("Sem Banana no buffer...");
+            // Package error, incorrect size information. Clear buffer and start over
+            this.resetBuffer();
+            return;
+        }
 
-          logger.silly("processDataBuffer : New pkt found with size : " + packetSize);
-          waitingForRemainingData = true;
+        logger.silly("processDataBuffer : New pkt found with size : " + packetSize);
+        waitingForRemainingData = true;
       }
 
       logger.silly("processDataBuffer : permanentDataBuffer.length : " + permanentDataBuffer.length);

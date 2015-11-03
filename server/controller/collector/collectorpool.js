@@ -8,7 +8,9 @@ var CollectorPool = function CollectorPool(){
 	var pool = {};
 	Collector.findAll().then(function(collectors){
 		collectors.forEach(function(collector){
-			pool[collector.mac] = collector;
+			var c = collector.get({plain: true});
+			logger.silly("Load Collecor: " + c.name);
+			pool[c.mac] = c;
 		});
 		logger.debug("CollectorPool : pool populated from database : " + JSON.stringify(pool));
 	}).catch(function(e){
@@ -21,7 +23,7 @@ var CollectorPool = function CollectorPool(){
 
 	this.getStatusByMac = function(mac){
     if(pool[mac]){
-      return pool[mac].status;
+      return pool[mac].status || Collector.statusEnum.OFFLINE;
     }
     logger.debug("Collector pool getStatusByMac" + mac + " not found.");
     // return Collector.prototype.statusEnum.OFFLINE;
@@ -30,6 +32,7 @@ var CollectorPool = function CollectorPool(){
 
 	this.updateStatusByMac = function(collector, status){
 		if(this.isCollectorValid(collector)){
+			logger.debug("Setting status of " + collector.name + " to: " + status);
 			pool[collector.mac].status = status;
 			return true;
 		}
@@ -60,7 +63,8 @@ var CollectorPool = function CollectorPool(){
 	this.isCollectorValid = function(collector){
 		var regex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
 		if(collector.mac && regex.test(collector.mac)){
-			return true;
+			return pool[collector.mac];
+			// return true;
 		}
 		return false;
 	}

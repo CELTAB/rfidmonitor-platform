@@ -53,9 +53,9 @@ var insertSummary = function(rfiddata, collector, callback){
             callback();
           });
         };
-
         var datas = rfiddata.data;
         var index = 0;
+
         var next = function(err){
           if(err)
             return callback(err);
@@ -65,7 +65,7 @@ var insertSummary = function(rfiddata, collector, callback){
             index++;
             insert(rfid, next);
           }else{
-            return callback(null, newPk.md5diggest);
+            return callback(null, newPk.packageHash);
           }
         }
         next();
@@ -78,6 +78,16 @@ var insertSummary = function(rfiddata, collector, callback){
 };
 
 Rfid.save = function(rfiddata, callback){
+  var cb = callback;
+  callback = function(err, result){
+    if(err){
+      if(Rfid.custom.save)
+        return cb(err);
+      return cb({code: 500, error: err.toString(), message: 'RFIDDATA error'});
+    }
+    return cb(null, result);
+  }
+
   Collector.findOne({where: {mac: rfiddata.macaddress}})
   .then(function(collector){
     if(!collector){
@@ -91,16 +101,14 @@ Rfid.save = function(rfiddata, callback){
       .then(function(collector){
         newCollector.id = collector.id;
         logger.debug("Collector inserted. new ID: " + newCollector.id);
-
         return insertSummary(rfiddata.datasummary , newCollector, callback);
       })
       .catch(function(e){
         return callback(e);
       });
     }else{
-      return insertSummary(rfiddata.datasummary , newCollector, callback);
+      return insertSummary(rfiddata.datasummary , collector, callback);
     }
-    return callback(null, md5diggest);
   })
   .catch(function(e){
     return callback(e);

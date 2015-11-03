@@ -74,6 +74,9 @@ SynchronizeDb.start(function(err){
 		next();
 	});
 
+	//TODO: Create structure for public and private.
+	app.use('/', express.static('../web/private'));
+
 	var httpPort = 8180;
 
 	app.use('/api', new LoadRouter('/api'));
