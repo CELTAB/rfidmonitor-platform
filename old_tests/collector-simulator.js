@@ -173,7 +173,7 @@ var sendRfidDatas = function(){
 	// sendObject(buildMessageObject("DATA", data));
 }
 
-sendRfidDatas();
+// sendRfidDatas();
 /*
 {
   "datasummary": {

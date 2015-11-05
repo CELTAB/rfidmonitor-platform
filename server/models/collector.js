@@ -7,7 +7,7 @@ var model = sequelize.define("Collector", {
 	name: {
 		type : SequelizeClass.STRING,
 		allowNull : false,
-		unique : true,
+		unique: 'uq_name_mac',
 		field : 'name'
 	},
 	lat: {
@@ -23,7 +23,7 @@ var model = sequelize.define("Collector", {
 	mac: {
 		type : SequelizeClass.STRING,
 		allowNull : false,
-		unique: true,
+		unique: 'uq_name_mac',
 		field : 'mac'
 	},
 	description: {
@@ -52,7 +52,7 @@ var model = sequelize.define("Collector", {
 	}
 });
 
-model.belongsTo(Group, {foreignKey: {name: 'group_id', allowNull: false}});
+model.belongsTo(Group, {foreignKey: {name: 'groupId', allowNull: false}});
 module.exports = model;
 //OBJECT EXAMPLE
 /*

@@ -10,7 +10,7 @@ var CollectorCtrl = new Controller(CollectorModel, 'collectors');
 var Group = sequelize.model('Group');
 //Any custom functions goes here
 
-CollectorCtrl.custom['save'] = CollectorCtrl.save;
+CollectorCtrl.oldSave = CollectorCtrl.save;
 CollectorCtrl.custom['find'] = function(id, query, callback){
   CollectorCtrl.find(id, query, function(err, collectors){
     if(err)
@@ -25,8 +25,10 @@ CollectorCtrl.custom['find'] = function(id, query, callback){
         response.push(c);
       });
     }else{
-      response = collectors.get({plain: true});
-      response.status = collectorPool.getStatusByMac(collectors.mac);
+      if(collectors){
+        response = collectors.get({plain: true});
+        response.status = collectorPool.getStatusByMac(collectors.mac);
+      }
     }
     return callback(null, response);
   });
@@ -34,63 +36,54 @@ CollectorCtrl.custom['find'] = function(id, query, callback){
 
 CollectorCtrl.save = function(newCollector, callback){
   try{
-    if(newCollector.group_id){
-      return CollectorCtrl.custom.save(newCollector, function(err, collector){
-          if(err){
-            return callback(err);
-          }
+    var afterSave = function(err, collector){
+      if(err){
+        return callback(err);
+      }
+      logger.debug("Collector inserted. new ID: " + collector.id);
+      var c = collector.get({plain: true});
+      collectorPool.push(c);
+      return callback(null, c);
+    }
 
-          var c = collector.get({plain: true});
-          collectorPool.push(c);
-          return callback(null, c);
-      });
+    if(newCollector.groupId){
+      return CollectorCtrl.oldSave(newCollector, afterSave);
     }else{
       Group.find({where: {isDefault: true, deletedAt: null}})
       .then(function(group){
         if(group){
-          newCollector.group_id = group.id;
-          return CollectorCtrl.custom.save(newCollector, callback);
+          newCollector.groupId = group.id;
+          return CollectorCtrl.oldSave(newCollector, callback);
         }else{
           var defaultGroup = {isDefault: true, name: "Default Group", description: "Auto-generated default group"};
           Group.create(defaultGroup)
           .then(function(nGroup){
-            newCollector.group_id = nGroup.id;
-            return CollectorCtrl.custom.save(newCollector, callback);
+            newCollector.groupId = nGroup.id;
+            return CollectorCtrl.oldSave(newCollector, afterSave);
           });
         }
       });
     }
   }catch(e){
-    return callback('Error on save collector: ' + e.toString());
+    return errorHandler('Error on save collector: ' + e.toString(), 500, callback);
   }
 };
 
 CollectorCtrl.findOrCreate = function(collector, callback){
-
-  CollectorCtrl.find(bull, {where: {mac:collector.macaddress, deletedAt: null}},
-    function(err, collector){
+  CollectorCtrl.find(null, {where: {mac:collector.macaddress, deletedAt: null}},
+    function(err, collectorResult){
       if(err)
         return callback(err);
 
-      if(!collector){
+      if(collectorResult.length === 0){
         collector.name = (!!collector.name)? collector.name : 'Unknown';
         collector.mac = collector.macaddress;
-
         if(collector.id)
           delete collector.id;
         delete collector.macaddress;
-
-        CollectorCtrl.custom.save(collector, function(err, collector){
-          if(err){
-            return callback(err);
-          }
-
-          var c = collector.get({plain: true});
-          collectorPool.push(c);
-          return callback(null, c);
-        });
+        return CollectorCtrl.save(collector, callback);
       }else{
-        return callback(null, collector.get({plain: true}));
+        return callback(null, collectorResult[0].get({plain: true}));
       }
     });
 };

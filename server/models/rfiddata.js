@@ -20,10 +20,6 @@ var model = sequelize.define("Rfiddata", {
   serverReceivedDate:{
     type: SequelizeClass.DATE,
     allowNull: false
-  },
-  deletedAt : {
-    type : SequelizeClass.DATE,
-    unique : 'uq_name'
   }
 },
 {
@@ -32,8 +28,8 @@ var model = sequelize.define("Rfiddata", {
   tableName: 'tb_plat_rfiddata'
 });
 
-model.belongsTo(Collector, {foreignKey: {name: 'collector_id', allowNull: false}});
-model.belongsTo(Package, {foreignKey: {name: 'package_id', allowNull: false}});
+model.belongsTo(Collector, {foreignKey: {name: 'collectorId', allowNull: false}});
+model.belongsTo(Package, {foreignKey: {name: 'packageId', allowNull: false}});
 module.exports = model;
 
 //OBJECT EXAMPLE

@@ -2,23 +2,24 @@
 var SequelizeClass = require('sequelize');
 var sequelize = require(__base + 'controller/database/platformsequelize');
 var UriRoute = require(__base + 'models/uriroute');
+var AppClient = require(__base + 'models/appclient');
 
 var model = sequelize.define("RouteAccess", {
 	appClient: {
 		type : SequelizeClass.INTEGER,
 		allowNull : false,
-		field : 'app_client_id',
+		field : 'appClient',
 		references: {
-			model: 'tb_plat_app_client',
+			model: AppClient,
 			key:   "id"
 		}
 	},
 	uriRoute: {
 		type : SequelizeClass.INTEGER,
 		allowNull : false,
-		field : 'uri_route_id',
+		field : 'uriRoute',
 		references: {
-			model: sequelize.model('UriRoute'),
+			model: UriRoute,
 			key:   "id"
 		}
 	}
@@ -29,5 +30,14 @@ var model = sequelize.define("RouteAccess", {
 	tableName: 'tb_plat_route_access'
 });
 
-model.belongsTo(UriRoute, {foreignKey : {name: 'uri_route_id', allowNull: false}});
+model.belongsTo(AppClient, {foreignKey : {name: 'appClient', allowNull: false}});
+model.belongsTo(UriRoute, {foreignKey : {name: 'uriRoute', allowNull: false}});
 module.exports = model;
+
+//OBJECT EXAMPLE
+/*
+{
+	"appClient": 1,
+	"uriRoute":1
+}
+*/
