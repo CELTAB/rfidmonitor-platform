@@ -15,7 +15,7 @@ UserCtrl.custom['save'] = function(body, callback){
       return callback(err);
 
     var AppClient = sequelize.model('AppClient');
-    var app = {description: 'Default appClient for ' + user.username, user_id: user.id};
+    var app = {description: 'Default appClient for ' + user.username, userId: user.id};
     AppClient.create(app).then(function(appCreated){
       user = user.clean();
       user.appClient = appCreated;

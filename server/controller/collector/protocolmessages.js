@@ -25,6 +25,7 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 	this.processMessage = function(message){
 		switch(message.type){
 			case "SYN":
+			console.log(message);
 				handle_SYN(message);
 				break;
 			case "ACK":
@@ -44,34 +45,16 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 	var handle_SYN = function(message){
 		var data = message.data;
 		logger.silly("handle_SYN\n Message: " + JSON.stringify(message));
-
 		try{
-	    // Collector.scope({method: ['byMac', data.macaddress]}).findOne()
-	    Collector.findOne({where: {mac: data.macaddress}})
-	    .then(function(collector){
-	      if(collector){
-	        logger.debug("Collector found. ID: " + collector.id);
-	        var ackObj = {id:collector.id, macaddress:collector.mac, name:collector.name};
-	        sendObject(buildMessageObject("ACK-SYN", ackObj));
-	      }else{
-	        //Insert new collector
-	        var newCollector = {};
-	        newCollector.name = (!!data.name)? data.name : "Unknown";
-					newCollector.mac = data.macaddress;
-					logger.debug("Collector not found. INSERTING: " + JSON.stringify(newCollector));
+			CollectorCtrl.findOrCreate(data, function(err, collector){
+				if(err){
+					logger.error(err);
+					return;
+				}
 
-					CollectorCtrl.save(newCollector, function(err, collector){
-						if(err){
-							logger.error(err);
-							return;
-						}
-						newCollector = collector;
-						logger.debug("Collector inserted. new ID: " + newCollector.id);
-						collectorPool.push(newCollector);
-						sendObject(buildMessageObject("ACK-SYN", {id:newCollector.id, macaddress:newCollector.mac, name:newCollector.name}));
-					});
-	    	}
-	  	});
+				logger.debug("Collector inserted. new ID: " + collector.id);
+				sendObject(buildMessageObject("ACK-SYN", {id:collector.id, macaddress:collector.mac, name:collector.name}));
+			});
 		}catch(e){
 		  logger.error("Error: " + e);
 		}
@@ -85,6 +68,7 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
   		mac: data.macaddress,
   		name: data.name
     };
+
 		if(collectorPool.updateStatusByMac(collector, Collector.statusEnum.ONLINE)){
 			//return the mac address for the Server class.
 			logger.debug("Update Status to Online");
@@ -114,26 +98,15 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 		logger.debug("Packages Received: " + packCounter);
 
     RfidCtrl.save(message.data, function(err, md5diggest){
-      if(err)
+      if(err){
         logger.error("PROTOCOL MESSAGES err : " + err);
+				return;
+			}
 
       responses++;
   		sendObject(buildMessageObject("ACK-DATA", {md5diggest: [md5diggest]}));
   		logger.debug("Sent " + responses + " RESPONSES. UNITL NOW");
     });
-
-    //TODO: parei aqui
-
-		// rfiddatadao.insert(message.data, function(err,_md5diggest){
-		// 	if (err)
-		// 		logger.error("PROTOCOL MESSAGES err : " + err);
-		// 	else{
-		// 		//send back to collecting point an ACK-DATA message.
-		// 		responses++;
-		// 		sendObject(buildMessageObject("ACK-DATA", {md5diggest: [_md5diggest]}));
-		// 		logger.debug("Sent " + responses + " RESPONSES. UNITL NOW");
-		// 	}
-		// });
 	}
 
 	var buildMessage = function(message){

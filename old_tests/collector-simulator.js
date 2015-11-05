@@ -195,10 +195,12 @@ var sendRfidDatas = function(){
 	sendObject(buildMessageObject("DATA", data));
 	// sendObject(buildMessageObject("DATA", data));
 }
+
 while(xLoops > 0){
 	xLoops--;
 	sendRfidDatas();
 }
+
 /*
 {
   "datasummary": {

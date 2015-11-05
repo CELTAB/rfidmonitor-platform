@@ -27,7 +27,7 @@ var model = sequelize.define("AppClient", {
 	tableName: 'tb_plat_app_client'
 });
 
-model.belongsTo(User, {foreignKey: {name: 'user_id', allowNull: false}});
+model.belongsTo(User, {foreignKey: {name: 'userId', allowNull: false}});
 module.exports = model;
 
 //OBJECT EXAMPLE

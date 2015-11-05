@@ -26,7 +26,6 @@ var CollectorPool = function CollectorPool(){
       return pool[mac].status || Collector.statusEnum.OFFLINE;
     }
     logger.debug("Collector pool getStatusByMac" + mac + " not found.");
-    // return Collector.prototype.statusEnum.OFFLINE;
 		return Collector.statusEnum.OFFLINE;
   }
 
@@ -63,8 +62,7 @@ var CollectorPool = function CollectorPool(){
 	this.isCollectorValid = function(collector){
 		var regex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
 		if(collector.mac && regex.test(collector.mac)){
-			return pool[collector.mac];
-			// return true;
+			return true;
 		}
 		return false;
 	}

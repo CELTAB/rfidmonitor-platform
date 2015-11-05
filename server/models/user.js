@@ -65,9 +65,9 @@ module.exports = model;
 //OBJECT EXAMPLE
 /*
 {
-	"name":"Jonios",
-	"email":"jonios@maximo.com",
-	"username":"joninho",
-	"password":"jonios"
+	"name":"Jaime",
+	"email":"jaiminho@correios.com.br",
+	"username":"jaiminho",
+	"password":"jaiminho"
 }
 */

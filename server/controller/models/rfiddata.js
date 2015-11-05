@@ -4,6 +4,7 @@ var sequelize = require(__base + 'controller/database/platformsequelize');
 var BaseController = require(__base + 'controller/basemodelctrl');
 var errorHandler = require(__base + 'utils/errorhandler');
 
+var CollectorCtrl = require(__base + 'controller/models/collector');
 var Collector = sequelize.model('Collector');
 var Package = sequelize.model('Package');
 
@@ -43,8 +44,8 @@ var insertSummary = function(rfiddata, collector, callback){
           obj.rfidCode = rfid.identificationcode;
           obj.rfidReadDate = rfid.datetime;
           obj.serverReceivedDate = new Date();
-          obj.collector_id = collector.id;
-          obj.package_id = newPk.id;
+          obj.collectorId = collector.id;
+          obj.packageId = newPk.id;
 
           Rfid.defaultSave(obj, function(err, newRfid){
             if(err)
@@ -88,30 +89,16 @@ Rfid.save = function(rfiddata, callback){
     return cb(null, result);
   }
 
-  Collector.findOne({where: {mac: rfiddata.macaddress}})
-  .then(function(collector){
-    if(!collector){
-      //Insert new collector
-      var newCollector = {};
-      newCollector.name = (!!rfiddata.name)? rfiddata.name : "Unknown";
-      newCollector.mac = rfiddata.macaddress;
-
-      logger.debug("Collector not found. INSERTING: " + JSON.stringify(newCollector));
-      Collector.create(newCollector)
-      .then(function(collector){
-        newCollector.id = collector.id;
-        logger.debug("Collector inserted. new ID: " + newCollector.id);
-        return insertSummary(rfiddata.datasummary , newCollector, callback);
-      })
-      .catch(function(e){
-        return callback(e);
-      });
-    }else{
-      return insertSummary(rfiddata.datasummary , collector, callback);
+  var cole = {
+    macaddress: rfiddata.macaddress,
+    name: rfiddata.name
+  };
+  CollectorCtrl.findOrCreate(cole, function(err, collector){
+    if(err){
+      logger.error('Error: ' + err);
+      return callback(err);
     }
-  })
-  .catch(function(e){
-    return callback(e);
+    return insertSummary(rfiddata.datasummary , collector, callback);
   });
 }
 
