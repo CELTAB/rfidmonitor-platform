@@ -28,19 +28,31 @@ example code from
 http://www.hacksparrow.com/tcp-socket-programming-in-node-js.html.) */
 
 var randomchars = require('../server/utils/randomchars');
+var protocol = null;
 var net = require('net');
-var collector = {id: 1, macaddress: "78:2b:cb:c0:75:8e", name: "Collector-Simulator"};
+var collector = function(){
+	var i = randomInt(0,99);
+	return {id: 1, macaddress: "78:2b:cb:c0:75:"+i, name: "Collector-Simulator"+i};
+}
+
 
 var client = new net.Socket();
-client.connect(8124, '127.0.0.1', function() {
+client.connect(8124, '192.168.0.104', function() {
+// client.connect(8124, '127.0.0.1', function() {
 	console.log('Connected');
-	sendObject(buildMessageObject("SYN", collector));
+	protocol = new ProtocolConnectionController(client);
+	sendObject(buildMessageObject("SYN", collector()));
 });
 
 client.on('data', function(data) {
-	processMessage(data);
-	// sendObject(buildMessageObject("ACK", collector));
+	protocol.processData(data);
+	// processMessage(data);
+	// sendObject(buildMessageObject("ACK", collector()));
 	// client.destroy(); // kill client after server's response
+});
+
+client.on("error", function(err) {
+	console.log('PAU NA MÁQUINA: ' + err.toString());
 });
 
 client.on('close', function() {
@@ -51,17 +63,17 @@ client.on('close', function() {
 var processMessage = function(message){
 	console.log('Received: ' + message);
 
-	var permanentDataBuffer = message;
-	var packetSize = parseInt(permanentDataBuffer.slice(0, 8));
-	permanentDataBuffer = permanentDataBuffer.slice(8, permanentDataBuffer.length);
-	if(isNaN(packetSize)){
-			logger.error("Sem Banana no buffer...");
-			return;
-	}
-
-	var data = permanentDataBuffer.slice(0, packetSize).toString();
-	var message = {};
-	message = JSON.parse(data);
+	// var permanentDataBuffer = message;
+	// var packetSize = parseInt(permanentDataBuffer.slice(0, 8));
+	// permanentDataBuffer = permanentDataBuffer.slice(8, permanentDataBuffer.length);
+	// if(isNaN(packetSize)){
+	// 		logger.error("Sem Banana no buffer...");
+	// 		return;
+	// }
+	//
+	// var data = permanentDataBuffer.slice(0, packetSize).toString();
+	// var message = {};
+	// message = JSON.parse(data);
 
 	switch(message.type){
 		case "ACK-SYN":
@@ -84,12 +96,13 @@ var packagesSent = {};
 var sentCouter = 0;
 var receivedCouter = 0;
 var intervalTime = 7000;
-var xTimes = 3;
+var xLoops = 2010;
+var totalResponses = 0;
 //-------------------
 
 var sendAckMessage = function(message){
 	collector = message.data;
-	console.log(collector);
+	// console.log(collector);
 	sendObject(buildMessageObject("ACK", collector));
 }
 
@@ -99,14 +112,18 @@ var sendAckAliveMessage = function(message){
 }
 
 var ackdataHandler = function(message){
+	totalResponses++;
 	console.log(message);
-	receivedCouter++;
 
-	if(!packagesSent[message.data.md5diggest[0]])
-		console.log("Received diggest: " + message.data.md5diggest[0] + ". But is invalid!");
+	if(packagesSent[message.data.md5diggest[0]])
+		receivedCouter++;
+	else{
+		console.log('Received not a diggest response.');
+	}
 
-	console.log("Response received for " + receivedCouter + " Packages");
-	console.log("Missing " + (sentCouter - receivedCouter) + " Responses");
+	console.log("Total responses: " + totalResponses);
+	console.log("Diggest responses received for " + receivedCouter + " Packages");
+	console.log("Missing " + (sentCouter - receivedCouter) + " Diggest Responses");
 }
 
 var randomInt = function(min, max) {
@@ -138,11 +155,17 @@ var sendObject = function(object){
 	}
 
 	try{
+
+		if(object && object.data.datasummary && object.data.datasummary.md5diggest)
+			console.log('sending data ' + object.data.datasummary.md5diggest);
+		else {
+			console.log('sending data ');
+		}
+
 		var message = JSON.stringify(object);
-		console.log("sendMessage : " + message);
+		// console.log("sendMessage : " + message);
 
 		// if(client.isConnected){
-			console.log('sending data');
 			client.write(buildMessage(message));
 		// }
 
@@ -152,8 +175,8 @@ var sendObject = function(object){
 }
 
 var sendRfidDatas = function(){
-	var qdtPk = xTimes;
-	var data = collector;
+	var qdtPk = randomInt(1, 100);
+	var data = collector();
 	data.datasummary = {};
 	var dt = [];
 	while(qdtPk > 0){
@@ -165,15 +188,17 @@ var sendRfidDatas = function(){
 	}
 	data.datasummary.data = dt;
 	data.datasummary.md5diggest = randomchars.uid(32);
-	console.log(data);
+	// console.log(data);
 	packagesSent[data.datasummary.md5diggest] = data;
 	sentCouter++;
 
 	sendObject(buildMessageObject("DATA", data));
 	// sendObject(buildMessageObject("DATA", data));
 }
-
-sendRfidDatas();
+while(xLoops > 0){
+	xLoops--;
+	sendRfidDatas();
+}
 /*
 {
   "datasummary": {
@@ -194,3 +219,97 @@ sendRfidDatas();
   "name": "Celtab-Serial"
 }
 */
+
+var ProtocolConnectionController = function(socket){
+	    if (false === (this instanceof ProtocolConnectionController)) {
+        	console.log('Warning: ProtocolConnectionController constructor called without "new" operator');
+        	return;
+        }
+
+        this.resetBuffer = function(){
+            permanentDataBuffer = new Buffer(0);
+            waitingForRemainingData = false;
+            packetSize = 0;
+        }
+
+        this.resetBuffer();
+
+        this.debug_receivedObjs = 0;
+        this.debug_successJsonObjs = 0;
+        this.debug_brokenJsonObjs = 0;
+        this.debug_ignoredBuffer = 0;
+
+        this.consumeData = function(packet){
+        	this.debug_receivedObjs++;
+        	try {
+				var message = {};
+				message = JSON.parse(packet);
+				processMessage(message)
+				this.debug_successJsonObjs++;
+			}catch(e){
+				console.log("consumeData error : " +e);
+				this.debug_brokenJsonObjs++;
+				return;
+			}
+        }
+
+        this.processDataBuffer = function(){
+            if(!waitingForRemainingData){
+                // console.log("processDataBuffer : Probably a new pkt.");
+                //new packet.
+    			if(! (permanentDataBuffer.length >= 8)){
+    				// console.log("processDataBuffer : We dont have at least 8 bytes. wait more.");
+    				return;
+    			}
+                var buffer = [];
+                buffer = permanentDataBuffer.slice(0, 8);
+                permanentDataBuffer = permanentDataBuffer.slice(8, permanentDataBuffer.length);
+                packetSize = parseInt(buffer);
+
+                if(isNaN(packetSize)){
+                    this.debug_ignoredBuffer++;
+                    console.log("Sem Banana no buffer...");
+                    // Package error, incorrect size information. Clear buffer and start over
+                    this.resetBuffer();
+                    return;
+                }
+
+                // console.log("processDataBuffer : New pkt found with size : " + packetSize);
+                waitingForRemainingData = true;
+            }
+
+            // console.log("processDataBuffer : permanentDataBuffer.length : " + permanentDataBuffer.length);
+
+            if(permanentDataBuffer.length < packetSize){
+            	// console.log("processDataBuffer : We dont have all bytes to this packet. wait more.");
+            	return;
+            }
+
+            var data = permanentDataBuffer.slice(0, packetSize).toString();
+            // console.log("data : " + data);
+            permanentDataBuffer = permanentDataBuffer.slice(packetSize, permanentDataBuffer.length);
+            // console.log("processDataBuffer : permanentDataBuffer.length : " + permanentDataBuffer.length);
+
+            packetSize = 0;
+            waitingForRemainingData = false;
+
+            this.consumeData(data);
+
+            console.log("processDataBuffer : debug_receivedObjs: " + this.debug_receivedObjs +
+                " debug_successJsonObjs: " + this.debug_successJsonObjs +
+                " debug_brokenJsonObjs: " + this.debug_brokenJsonObjs +
+                " debug_ignoredBuffer: " + this.debug_ignoredBuffer
+            );
+        }
+
+        this.processData = function(data){
+
+        	// console.log("processData : NEW DATA RECEIVED: " + data.toString());
+
+	        permanentDataBuffer = Buffer.concat([permanentDataBuffer, data]);
+
+	        do {
+	        	this.processDataBuffer();
+	        }while(permanentDataBuffer.length > 8 && !waitingForRemainingData)
+        }
+}
