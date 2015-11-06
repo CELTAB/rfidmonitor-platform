@@ -53,7 +53,7 @@ CollectorCtrl.save = function(newCollector, callback){
       .then(function(group){
         if(group){
           newCollector.groupId = group.id;
-          return CollectorCtrl.oldSave(newCollector, callback);
+          return CollectorCtrl.oldSave(newCollector, afterSave);
         }else{
           var defaultGroup = {isDefault: true, name: "Default Group", description: "Auto-generated default group"};
           Group.create(defaultGroup)

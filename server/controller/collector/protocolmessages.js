@@ -7,17 +7,11 @@ var PlatformError = require(__base + 'utils/platformerror');
 //LoadModules
 var RFIDData = require(__base + 'models/rfiddata');
 var Collector =  require(__base + 'models/collector');
-var CollectorCtrl =  require(__base + 'controller/models/collector');
-
 var Group =  require(__base + 'models/group');
 var RfidCtrl = require(__base + 'controller/models/rfiddata');
-// var CollectorDao = require('../dao/collectordao');
-// var RFIDDataDao = require('../dao/rfiddatadao');
+var CollectorCtrl =  require(__base + 'controller/models/collector');
 
 var ProtocolMessagesController = function(socket, setOnlineCollector){
-
-	// var rfiddatadao = new RFIDDataDao();
-	// var collectordao =  new CollectorDao();
 	var packCounter = 0;
 	var responses = 0;
 
@@ -25,7 +19,6 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 	this.processMessage = function(message){
 		switch(message.type){
 			case "SYN":
-			console.log(message);
 				handle_SYN(message);
 				break;
 			case "ACK":
@@ -51,14 +44,14 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 					logger.error(err);
 					return;
 				}
-
-				logger.debug("Collector inserted. new ID: " + collector.id);
+				logger.info("Connecting to Collector with ID: " + collector.id + " and MAC: " + collector.mac);
+				setOnlineCollector(collector);
 				sendObject(buildMessageObject("ACK-SYN", {id:collector.id, macaddress:collector.mac, name:collector.name}));
 			});
 		}catch(e){
 		  logger.error("Error: " + e);
 		}
-};
+	};
 
 	// Complete handshake, update the collector status to Online
 	var handle_ACK = function(message){
@@ -68,12 +61,9 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
   		mac: data.macaddress,
   		name: data.name
     };
-
 		if(collectorPool.updateStatusByMac(collector, Collector.statusEnum.ONLINE)){
 			//return the mac address for the Server class.
-			logger.debug("Update Status to Online");
 			var collectorInfo = {id: data.id, mac: data.macaddress, name: data.name};
-			setOnlineCollector(collectorInfo);
 
 			/*Start the function that will monitoring the status of the collector.
   			@Param1: Informations about the collector, as id and macAddress
@@ -105,7 +95,7 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 
       responses++;
   		sendObject(buildMessageObject("ACK-DATA", {md5diggest: [md5diggest]}));
-  		logger.debug("Sent " + responses + " RESPONSES. UNITL NOW");
+  		logger.info("Sent " + responses + " RESPONSES. FOR: " + message.data.macaddress);
     });
 	}
 
@@ -154,12 +144,9 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 
 	//Function passed to collector monito. Used to close a connection when the collector don't listen to the SYN-ALIVE message
 	var socketInactive = function(){
-		logger.debug("Socket inactive.");
-
+		logger.debug("Socket inactive. Closing Connection");
 		if(socket.isConnected){
-			logger.debug("Close the connection");
 			socket.end();
-			// socket.close();
 			socket.destroy();
 		}
 	}

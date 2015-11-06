@@ -38,8 +38,7 @@ var Server = function(){
 		socket.on('close', lostCollector);
 
 		socket.on('data', function(data) {
-			logger.debug('Server : data received.');
-			console.log('Server : data received.');
+			// logger.debug('Server : data received.');
 			protocol.processData(data);
 		});
 

@@ -30,18 +30,24 @@ http://www.hacksparrow.com/tcp-socket-programming-in-node-js.html.) */
 var randomchars = require('../server/utils/randomchars');
 var protocol = null;
 var net = require('net');
-var collector = function(){
-	var i = randomInt(0,99);
-	return {id: 1, macaddress: "78:2b:cb:c0:75:"+i, name: "Collector-Simulator"+i};
+var collector = null;
+var collectorGenerator = function(){
+	if(collector){
+		return collector;
+	}else{
+		var i = randomInt(10,99);
+		collector = {id: 1, macaddress: "78:2b:cb:c0:75:"+i, name: "Collector-Simulator"+i};
+		return collector;
+	}
 }
 
 
 var client = new net.Socket();
-client.connect(8124, '192.168.0.104', function() {
-// client.connect(8124, '127.0.0.1', function() {
+	// client.connect(8124, '192.168.0.104', function() {
+client.connect(8124, '127.0.0.1', function() {
 	console.log('Connected');
 	protocol = new ProtocolConnectionController(client);
-	sendObject(buildMessageObject("SYN", collector()));
+	sendObject(buildMessageObject("SYN", collectorGenerator()));
 });
 
 client.on('data', function(data) {
@@ -61,7 +67,8 @@ client.on('close', function() {
 });
 
 var processMessage = function(message){
-	console.log('Received: ' + message);
+	console.log('Received: ');
+	console.log(message);
 
 	// var permanentDataBuffer = message;
 	// var packetSize = parseInt(permanentDataBuffer.slice(0, 8));
@@ -96,14 +103,17 @@ var packagesSent = {};
 var sentCouter = 0;
 var receivedCouter = 0;
 var intervalTime = 7000;
-var xLoops = 2010;
+var xLoops = 2500;
 var totalResponses = 0;
 //-------------------
 
 var sendAckMessage = function(message){
 	collector = message.data;
-	// console.log(collector);
 	sendObject(buildMessageObject("ACK", collector));
+	while(xLoops > 0){
+		xLoops--;
+		sendRfidDatas();
+	}
 }
 
 var sendAckAliveMessage = function(message){
@@ -148,6 +158,8 @@ var buildMessageObject = function(m_type, m_data){
 	return {type: m_type, data: m_data, datetime: getTimezonedISODateString()};
 }
 
+var globalPkgQdt = 0;
+
 var sendObject = function(object){
 	if(!client){
 		console.log("sendMessage without socket.")
@@ -156,8 +168,10 @@ var sendObject = function(object){
 
 	try{
 
-		if(object && object.data.datasummary && object.data.datasummary.md5diggest)
-			console.log('sending data ' + object.data.datasummary.md5diggest);
+		if(object && object.data.datasummary && object.data.datasummary.md5diggest){
+			// console.log('sending data ' + object.data.datasummary.md5diggest);
+			console.log("Registros: " + globalPkgQdt);
+		}
 		else {
 			console.log('sending data ');
 		}
@@ -176,7 +190,8 @@ var sendObject = function(object){
 
 var sendRfidDatas = function(){
 	var qdtPk = randomInt(1, 100);
-	var data = collector();
+	globalPkgQdt += qdtPk;
+	var data = collectorGenerator();
 	data.datasummary = {};
 	var dt = [];
 	while(qdtPk > 0){
@@ -194,11 +209,6 @@ var sendRfidDatas = function(){
 
 	sendObject(buildMessageObject("DATA", data));
 	// sendObject(buildMessageObject("DATA", data));
-}
-
-while(xLoops > 0){
-	xLoops--;
-	sendRfidDatas();
 }
 
 /*

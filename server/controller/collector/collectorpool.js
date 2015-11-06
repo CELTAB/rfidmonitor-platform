@@ -32,8 +32,12 @@ var CollectorPool = function CollectorPool(){
 	this.updateStatusByMac = function(collector, status){
 		if(this.isCollectorValid(collector)){
 			logger.debug("Setting status of " + collector.name + " to: " + status);
-			pool[collector.mac].status = status;
-			return true;
+			if(pool[collector.mac]){
+				pool[collector.mac].status = status;
+				return true;
+			}else{
+				logger.error('CollectorPool : updateStatusByMac : Collector not fond when it should be');
+			}
 		}
 		logger.error("CollectorPool : updateStatusByMac : invalid collector");
 		return false;
