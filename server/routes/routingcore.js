@@ -6,26 +6,22 @@ var RoutingCore = function(router, baseUri){
 	this.baseUri = baseUri || '';
 
 	this.registerRoute = function(routeName, functions){
-		// routeName: "produto"
-
-		// routeController: controller object
-
 		/* functions:
 			{
 				getOne: "controllerFunctionName",
 				getAll: "controllerFunctionName",
 				save: "controllerFunctionName",
 				update: "controllerFunctionName",
-				remove: "controllerFunctionName"
+				remove: "controllerFunctionName",
+				routeName: 'routeName',
+				customRoute: [{'route', 'functionHandler', 'midler'}]
 			}
 		*/
-
 		var _route = "/" + routeName;
 		var _routeId = _route + "/:id";
 		var dbRoute = this.baseUri + _route;
 		routes.register(dbRoute, routes.getMethods().GET);
 		this.router.get(_route, function(req, res){
-
 			var query = null;
 			if(req.query && req.query.q){
 				query = req.query.q;
@@ -55,7 +51,6 @@ var RoutingCore = function(router, baseUri){
 
 		routes.register(dbRoute, routes.getMethods().POST);
 		this.router.post(_route, function(req, res){
-
 			if(req.body._id || req.body.id)
 				return res.response(null, 400, "Anti-pattern POST: body contains _id");
 
@@ -68,8 +63,6 @@ var RoutingCore = function(router, baseUri){
 
 		routes.register(dbRoute, routes.getMethods().PUT);
 		this.router.put(_routeId, function(req, res){
-
-			//TODO: Verificar por _id e tbm por id em todo o código que verifica ID
 			if(req.params.id != req.body._id && req.params.id != req.body.id)
 				return res.response(null, 400, "Anti-pattern PUT: params id is different of body id.");
 
@@ -82,7 +75,6 @@ var RoutingCore = function(router, baseUri){
 
 		routes.register(dbRoute, routes.getMethods().DELETE);
 		this.router.delete(_routeId, function(req, res){
-
 			functions.remove(req.params.id, function(err, result){
 				if(err) return res.response(err.error, err.code, err.message);
 

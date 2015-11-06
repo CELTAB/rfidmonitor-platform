@@ -32,9 +32,13 @@ model.belongsTo(Collector, {foreignKey: {name: 'collectorId', allowNull: false}}
 model.belongsTo(Package, {foreignKey: {name: 'packageId', allowNull: false}});
 module.exports = model;
 
-//OBJECT EXAMPLE
+//OBJECT EXAMPLE - Is not possible to persiste RFIDData through http POST method
 /*
 {
- // Goes here
+  "rfidcode": 44332211,
+  "rfidReadDate": "2014-10-15T15:58:33",
+  "extraData":{},
+  "collectorId":1,
+  "packageId"
 }
 */

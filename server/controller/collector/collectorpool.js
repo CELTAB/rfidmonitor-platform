@@ -7,12 +7,14 @@ var Collector = require(__base + 'models/collector');
 var CollectorPool = function CollectorPool(){
 	var pool = {};
 	Collector.findAll().then(function(collectors){
+		var totalCollectors = 0;
 		collectors.forEach(function(collector){
 			var c = collector.get({plain: true});
 			logger.silly("Load Collecor: " + c.name);
 			pool[c.mac] = c;
+			totalCollectors++;
 		});
-		logger.debug("CollectorPool : pool populated from database : " + JSON.stringify(pool));
+		logger.debug("CollectorPool : pool populated from database with " + totalCollectors + ' collectors');
 	}).catch(function(e){
 		return new PlatformError("CollectorPool : Cannot get all collectors from database. Error: " + e);
 	});

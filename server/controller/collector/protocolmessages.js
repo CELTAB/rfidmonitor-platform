@@ -77,7 +77,7 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 	}
 
 	var handle_ACKALIVE = function(message){
-		logger.debug("handle_ACKALIVE");
+		logger.silly("handle_ACKALIVE");
 		//Update the collector monitor to status alive.
 		collectormonitor.setAlive();
 	}

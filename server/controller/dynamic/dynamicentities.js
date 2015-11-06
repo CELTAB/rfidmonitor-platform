@@ -1,6 +1,6 @@
+var logger = require('winston');
 var SequelizeClass = require('sequelize');
 var path = require('path');
-var logger = require('winston');
 //bug
 var pg = require('pg');
 delete pg.native;
@@ -27,14 +27,10 @@ var DynamicEntity = require(__base + 'models/dynamicentity');
 
 
 var DynamicEntities = function (){
-
-
-
 	deValidator = new DEValidator(sequelize);
 }
 
 var rollbackEntities = function(entities){
-
 	if(entities)
 		logger.debug('rollBackEntities on :' + entities);
 	else
@@ -42,30 +38,21 @@ var rollbackEntities = function(entities){
 
 	for (var i in entities){
 		var entity = entities[i];
-
 		logger.debug('rollbacking :' + entity);
-
 		DynamicEntity.findOne({where : {identifier : entity.identifier}})
 		.then(function(rec){
-
 			rec.destroy().then(function(rec){
-
 				logger.debug('rollback done.');
-
 			})
 			.catch(function(e){
 				logger.error('Error while trying to rollback entities on DynamicEntities on destroy : ' + e );
 			});
-
 		})
 		.catch(function(e){
 			logger.error('Error while trying to rollback entities on DynamicEntities on findOne : ' + e );
 		});
 	}
-
-
 }
-
 
 DynamicEntities.prototype.registerEntity = function(json, callback){
 	//Checks each object integrity
@@ -82,19 +69,14 @@ DynamicEntities.prototype.registerEntity = function(json, callback){
 			}
 
 			callback(errors); //errors can be null or something.
-
 		});
 	});
 }
 
 var buildDefinition = function(entity, callback){
-
 	var definition = {};
-
 	definition.identifier = entity.identifier;
-
 	definition.sequelizeModel = {} ;
-
 	definition.sequelizeOptions = {
 		paranoid : true,
 		freezeTableName: true,
@@ -114,7 +96,6 @@ var buildDefinition = function(entity, callback){
 	*/
 
 	var uniqueMap = {};
-
 	// Example : unique : [ ['abc', 'cde'] , ['def'] ]
 	for (var iu in entity.unique){
 		var uqConstraint = entity.unique[iu];
@@ -162,7 +143,6 @@ var buildDefinition = function(entity, callback){
 
 	logger.debug("Unique Map: " + JSON.stringify(uniqueMap));
 
-
 	for (var i in entity.structureList){
 		var field = entity.structureList[i];
 
@@ -180,20 +160,16 @@ var buildDefinition = function(entity, callback){
 				}
 			}
 
-			//TODO: AQUI.. Montar option
 			definition.sequelizeOptions.classMethods.associate.push({modelName: definition.identifier, targetName: field.name, foreignKey: field.identifier});
-
 		}else if(field.type == DEValidator.prototype.typesEnum.GROUP){
 
 			field.name = field.identifier;
 			field.identifier = field.identifier + '_group_id';
 
-			logger.warn('fix group table name to tb_plat_group  someday...');
-
 			definition.sequelizeModel[field.identifier] = {
 				type: 'Sequelize.INTEGER',
 				references: {
-					model: 'group', // Can be both a string representing the table name, or a reference to the model
+					model: 'tb_plat_group', // Can be both a string representing the table name, or a reference to the model
 					key:   "id"
 					//, deferrable: Sequelize.Deferrable.INITIALLY_IMMEDIATE
 				}
@@ -227,7 +203,6 @@ var buildDefinition = function(entity, callback){
 				//null means problem
 				return callback(null);
 			}
-
 		}
 
 		//Sets unique on the field if in the map
@@ -247,15 +222,9 @@ var buildDefinition = function(entity, callback){
 				}
 			}
 
-
 			rec.meta = JSON.stringify(entity, null, null);
-
-			console.log(rec);
-
 			rec.save().then(function(){
-
 				return callback(definition);
-
 			})
 			.catch(function(e){
 				var error = 'save error on DynamicEntities when saving meta: ' + e;
@@ -285,10 +254,7 @@ var registerModelsWhenReady = function(definitions, callback){
 
 			return callback(err)
 		}
-
-
 		return callback(null); //sucess
-
 	});
 }
 
@@ -298,22 +264,16 @@ var buildSequelizeModels = function(entities, callback){
 		return callback({"message" : "Error : buildSequelizeModels : empty entities array"});
 
 	var definitions = [];
-
 	var loopError = null;
 	var loopTotal = entities.length;
 	var loopCount = 0;
-
 	var definitionsMapperTmp = {};
 
-
 	for (var i in entities){
-
 		var entity = entities[i];
 		var definition = null;
 
-
 		buildDefinition(entity, function(definition){
-
 			if(!definition)
 				return callback({"message" : "Error : cannot build definitions"});
 
@@ -375,13 +335,8 @@ var buildSequelizeModels = function(entities, callback){
 				}
 				//else the callback was already called and a rollback will occur.
 			});
-
 		});
-
-
 	}
-
-
 }
 
 var isObject = function(a) {

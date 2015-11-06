@@ -12,12 +12,13 @@ var activeHandler = function(req, callback){
   var value = req.path.indexOf('deactivate') !== -1 ? false : true;
   DynamicEntity.findOne({
 		where: { identifier: req.params.entity}
-	}).then(function(entity){
-      if(!entity)
-        return errorHandler('Invalid Entity.', 400, callback);
+	})
+  .then(function(entity){
+    if(!entity)
+      return errorHandler('Invalid Entity.', 400, callback);
 
-      entity.active = value;
-      entity.save().then(function(ok){
+    entity.active = value;
+    entity.save().then(function(ok){
       return callback(null, 'OK');
     });
   })

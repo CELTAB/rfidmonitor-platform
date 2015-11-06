@@ -1,13 +1,10 @@
 var logger = require('winston');
 var validator = require('validator');
 var Sequelize = require('sequelize');
-// var Sequelize = require(__base + 'controller/database/platformsequelize');
 var PlatformError = require(__base + 'utils/platformerror');
 var DynamicEntity = require(__base + 'models/dynamicentity');
-// var DynamicEntity = Sequelize.model('DynamicEntity');
 
 var DEValidator = function (){
-
 }
 
 DEValidator.prototype.typesEnum = {
@@ -23,7 +20,6 @@ DEValidator.prototype.typesEnum = {
 	ID : "ID",
 	UNKNOWN : null
 }
-
 
 DEValidator.prototype.typesEnumToSequelize = function(type){
 	switch(type){
@@ -45,9 +41,6 @@ DEValidator.prototype.typesEnumToSequelize = function(type){
 		case DEValidator.prototype.typesEnum.DATETIME:
 			return 'Sequelize.DATE';
 			break;
-		// case DEValidator.prototype.typesEnum.ID:
-		// 	return Sequelize.STRING;
-			// break;
 		default:
 			throw new PlatformError("UNKNOWN DEValidator type to SEQUELIZE convertion ["+type+"]");
 	}
@@ -149,26 +142,20 @@ var validateEntityField = function(field, isRoot){
 }
 
 var searchForRepeatedIdentifiers = function(pool){
-
 	var controller = {};
-
 	for (var i in pool){
-
 		if(controller[pool[i].identifier])
 			return {"message" : "Error: entity name ["+pool[i].field+"] already in use"};
 
 		//Add the valid identifier to the controller obj to further checking.
 		controller[pool[i].identifier] = true;
-
 	}
-
 	//Repetition not found. Everything ok.
 	return null;
 }
 
 var splitAndUpdateRootObj = function(json){
 	//... Sub entidades sao recortadas da entidades pai, e no lugar fica o nome e o tipo apenas.
-
 	var newEntitiesSplit = [];
 
 	for (var i in json ){
@@ -204,26 +191,20 @@ var splitAndUpdateRootObj = function(json){
 				logger.warn("devalidator : splitAndUpdateRootObj : if this is not string could generate problems");
 			}
 		}
-
 		//Normalize the defaultReference field
 		rootObj.defaultReference = normalizeString(rootObj.defaultReference);
-
 		//Add the current obj udpated.
 		newEntitiesSplit.push(rootObj);
 	}
-
 	return newEntitiesSplit;
 }
 
-
 DEValidator.prototype.validateClientRootArray = function(json, callback){
-
 	/*
 	Verifica integridade do obj:
 	... Verifica campos minimos.
 	... Valida tipos.
 	*/
-
 	if(!json)
 		return callback({"message" : "Null object"}, null);
 
@@ -234,13 +215,11 @@ DEValidator.prototype.validateClientRootArray = function(json, callback){
 		return callback({"message" : "Empty Array"}, null);
 
 	for (var i in json){
-
 		var rootObj = json[i];
 		var errors = validateEntityField(rootObj, true);
 		if(errors)
 			return callback(errors, null);
 	}
-
 
 	/*
 	Encontra e separa as entidades.
@@ -250,10 +229,8 @@ DEValidator.prototype.validateClientRootArray = function(json, callback){
 	... Guarda no banco cada entidade nova em tuplas.
 	*/
 
-
 	var newEntities = splitAndUpdateRootObj(json);
 	// logger.debug("##" +JSON.stringify(newEntities, null , '\t'));
-
 	if(newEntities.length == 0){
 		logger.error('Unexpected behavior: newEntities list is empty after splitAndUpdateRootObj');
 		return callback({ "message" : "Unexpected behavior: newEntities list is empty after splitAndUpdateRootObj"}, null);
@@ -262,15 +239,12 @@ DEValidator.prototype.validateClientRootArray = function(json, callback){
 	var entitiesPool = [];
 	entitiesPool = entitiesPool.concat(newEntities);
 
-
 	DynamicEntity.findAll({attributes : ['original']}).then(function(entities){
-
 		// The entities from database are raw strings. The must be parsed.
 		for(var icer in entities){
 			entitiesPool.push(JSON.parse(entities[icer].original));
 		}
 		// logger.debug("##" +JSON.stringify(entitiesPool, null , '\t'));
-
 		//Find repeated names. Return errors if so.
 		var error = searchForRepeatedIdentifiers(entitiesPool);
 		if(error){
@@ -288,16 +262,12 @@ DEValidator.prototype.validateClientRootArray = function(json, callback){
 		}
 
 		DynamicEntity.bulkCreate(bulkArray).then(function(){
-
 			//No errors on validateClientRootArray
 			callback(null, newEntities);
-
-
 		}).catch(function(e){
 			logger.error('BulkCreate error on deValidator : ' +e);
 			return callback(e, newEntities);
 		});
-
 	}).catch(function(e){
 		logger.error('FindAll error on deValidator: ' + e);
 		return callback(e, null);
@@ -318,7 +288,6 @@ var findFieldByNameAndType = function(field, name, type){
 			return findFieldByNameAndType(f, name, type);
 	}
 	return false;
-
 }
 //not used anymore
 var createFieldMeta = function(field){
@@ -338,7 +307,6 @@ var createFieldMeta = function(field){
 
 		for(var iunq in field.unique){
 			for(var iunqb in field.unique[iunq]){
-
 				/*
 				If the unique key here refers to an entity, then we need to change its name adding _id, because it will be a foreign key.
 				Changing for example, 'cars' to 'cars_id', because it is an entity and a table 'tb_cars' will be created later, and this field
@@ -347,10 +315,8 @@ var createFieldMeta = function(field){
 				if(findFieldByNameAndType(field, field.unique[iunq][iunqb], DEValidator.prototype.typesEnum.ENTITY)){
 					field.unique[iunq][iunqb] += '_id';
 				}
-
 				field.unique[iunq][iunqb] = normalizeString(field.unique[iunq][iunqb]);
 			}
-
 		}
 
 		meta.dbPk = '_id';

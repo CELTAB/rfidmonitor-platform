@@ -57,7 +57,7 @@ var CollectorMonitor = function() {
   };
 
   this.setAlive = function(){
-    logger.debug("RFIDPLATFORM[DEBUG]: Collector " + collector.macaddress + " is alive.");
+    logger.debug("RFIDPLATFORM[DEBUG]: Collector " + collector.mac + " is alive.");
     collector.status = status.alive;
   };
 };

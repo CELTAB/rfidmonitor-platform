@@ -1,3 +1,4 @@
+'use strict';
 var logger = require('winston');
 var sequelize = require(__base + 'controller/database/platformsequelize');
 var Controller = require(__base + 'controller/basemodelctrl');
@@ -11,7 +12,7 @@ Group.custom['save'] = function(body, callback){
     return Group.save(body, callback);
   }
   try{
-  GroupModel.findOne({where: {isDefault: true}})
+    GroupModel.findOne({where: {isDefault: true}})
     .then(function(group){
       if(!group){
         body.isDefault = true;

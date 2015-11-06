@@ -1,5 +1,4 @@
 'use strict';
-
 var logger = require('winston');
 var path = require('path');
 var fs = require('fs');
@@ -26,7 +25,6 @@ var getHandler = function(req, callback){
 }
 
 var postHandler = function(req, callback){
-  logger.warn("remember to remove body parser because of this http://andrewkelley.me/post/do-not-use-bodyparser-with-express-js.html");
   if(!req.file)
     return errorHandler('We didnt receive your file', 400, callback);
 
@@ -50,10 +48,8 @@ var postHandler = function(req, callback){
             mimetype : file.mimetype
           })
         .then(function(f){
-
           f.url = '/api/media/'+f.id;
           f.save().then(function(f){
-
             return callback(null, {"mediaId" :f.id});
           }).catch(function(e){
             return errorHandler('Error: ' + e.toString(), 500, callback);

@@ -4,3 +4,4 @@ ssl/*
 restricted_media/*
 server/restricted_media/*
 server/config/ssl/*
+server/logs/*

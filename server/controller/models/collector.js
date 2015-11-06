@@ -8,7 +8,6 @@ var collectorPool = require(__base + 'controller/collector/collectorpool');
 var CollectorModel = sequelize.model('Collector');
 var CollectorCtrl = new Controller(CollectorModel, 'collectors');
 var Group = sequelize.model('Group');
-//Any custom functions goes here
 
 CollectorCtrl.oldSave = CollectorCtrl.save;
 CollectorCtrl.custom['find'] = function(id, query, callback){

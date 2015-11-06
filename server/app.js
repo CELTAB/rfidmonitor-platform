@@ -1,27 +1,53 @@
 global.__base = __dirname + '/';
-
+// Keep as firsts requires >>>
+var Logs = require(__base + 'utils/logs');
 var logger = require('winston');
+// <<< end of 'keep as first requires'
 var express = require('express');
 var bodyParser = require('body-parser');
 var http = require('http');
 var https = require('https');
 var fs = require('fs');
 var Cors = require('cors');
+//TODO: Implement permissions
+//TODO: Implement session
 // var session = require('client-sessions');
-// NOVO APP JS USADO APENAS PARA TESTES
 
+var args = process.argv;
+var debugConsole = false,
+debugFile = false,
+sillyConsole = false,
+sillyFile = false;
+// Verify parameters for logs configuration
+if(args.indexOf('--debugAll') > -1){
+	debugConsole = true;
+	debugFile = true;
+}else{
+	if(args.indexOf('--debugConsole') > -1){
+		debugConsole = true;
+	}else if (args.indexOf('--sillyConsole') > -1){
+		sillyConsole = true;
+	}
+
+	if(args.indexOf('--debugFile') > -1){
+		debugFile = true;
+	}else if (args.indexOf('--sillyFile') > -1){
+		sillyFile = true;
+	}
+}
+new Logs(debugConsole, debugFile, sillyConsole, sillyFile);
+
+//Load Components olny after logger had started
 var Server = require(__base + 'controller/collector/server');
 var LoadRouter = require(__base + 'routes/loadroutes');
 var LoadLoginRouter = require(__base + 'routes/loadloginroute');
 var SynchronizeDb = require(__base + 'controller/database/synchronizedb');
 
 SynchronizeDb.start(function(err){
-
 	if(err){
-		console.error("Erro to initialize Database: " + err);
+		logger.error("Erro to initialize Database: " + err);
 		return 1;
 	}
-
 	/*
 	How to generate ssl files. On terminal type:
 		openssl genrsa -out platform-key.pem 1024
@@ -34,10 +60,10 @@ SynchronizeDb.start(function(err){
 	};
 
 	var app = express();
-
 	app.use(Cors());
 	app.use(bodyParser.json({type: 'application/json'}));
 	app.use(bodyParser.urlencoded({limit: '5mb', extended: true}));
+	//TODO: create session
 
 	//Necessary headers to clients access.
 	app.all('*', function(req, res, next) {
@@ -78,6 +104,7 @@ SynchronizeDb.start(function(err){
 	app.use('/', express.static('../web/private'));
 
 	var httpPort = 8180;
+	var httpsPort = 8143;
 
 	app.use('/api', new LoadRouter('/api'));
 	app.use(new LoadLoginRouter());
@@ -86,7 +113,7 @@ SynchronizeDb.start(function(err){
 	var server = new Server();
 	server.startServer();
 
-	https.createServer(options, app).listen(8143, function(){
+	https.createServer(options, app).listen(httpsPort, function(){
 		logger.info("HTTPS server listening on port 8143");
 	});
 

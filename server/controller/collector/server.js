@@ -12,10 +12,8 @@ var Server = function(){
 	var server = net.createServer();
 	server.on('connection', function(socket) {
 		//base info about the collector
-		// var collector = new Collector();
     var collector = {};
 		socket.isConnected = true;
-
 		var protocol = new ProtocolConnectionController(socket, function(collectorInfo){
 			//Set local variables to use as logger info when the connections is closed.
 			collector = collectorInfo;
@@ -24,7 +22,6 @@ var Server = function(){
 		var address = {};
 		address.address = socket.remoteAddress;
 		address.port = socket.remotePort;
-
   	logger.info("New connection from " + address.address);
 
   	var lostCollector = function(){
@@ -38,7 +35,7 @@ var Server = function(){
 		socket.on('close', lostCollector);
 
 		socket.on('data', function(data) {
-			// logger.debug('Server : data received.');
+			logger.silly('Server : data received.' + JSON.stringify(data));
 			protocol.processData(data);
 		});
 
@@ -55,7 +52,7 @@ var Server = function(){
 	});
 
 	this.startServer = function(){
-		server.listen(8124, function() { //'listening' listener
+		server.listen(8124, function() {
 		  logger.info('RT Server bound on port 8124');
 		});
 	}
