@@ -8,30 +8,20 @@ var sequelize = require(__base + 'controller/database/platformsequelize');
 var LoadLoginRoutes = function(baseUri){
   var router = express.Router();
   var routingCore = new RoutingCore(router, baseUri || '');
-
   var loginHandler = function(req, callback){
 		if(!req.body.username || !req.body.password)
       return errorHandler('Missing username ou password', 400, callback);
-    try{
-        var User = sequelize.model("User");
-        User.scope('loginScope').findOne({where: {username: req.body.username}})
-        .then(function(user){
-          if(!user || !user.isPasswordValid(req.body.password))
-            return errorHandler('Invalid username or password', 400, callback);
 
-          var AppClient = sequelize.model('AppClient');
-          AppClient.find({where: {userId: user.id}}).then(function(app){
-            if(!app)
-              return errorHandler('Token not found for user ' + user.username, 400, callback);
+    var UserCtrl = require(__base + 'controller/models/user'); //Needs to be here.
+    UserCtrl.login(req.body, function(err, user){
+      if(err){
+        logger.error(err);
+        return callback(err);
+      }
 
-            user.token = app.token;
-            req.appSession.user = user.clean();
-            return callback(null, {message: user.clean()});
-          });
-        });
-    }catch(e){
-      return errorHandler('Internal Error: ' + e.toString(), 500, callback);
-    }
+      req.appSession.user = user;
+      return callback(null, user);
+    });
   };
 
   var logoutHandler = function(req, callback){

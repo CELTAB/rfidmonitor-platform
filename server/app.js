@@ -116,6 +116,16 @@ SynchronizeDb.start(function(err){
 	var apiRoutes = new LoadRouter(apiPath);
 	var login = new LoadLoginRouter();
 
+	// Redirect any connection on http to https (secure)
+	app.use('*', function(req, res, next){
+		if(!req.secure){
+			var host = req.headers.host.split(':')[0];
+			//TODO On production, remove the :8143 port. Should be 443 (native)
+			return res.redirect('https://' + host + ':' + httpsPort + req.originalUrl);
+		}
+		next();
+	});
+
 	//TODO: mudar de ../web para web quando app.js subir para o diretorio anterior
 	app.get('/', function(req, res){
 		res.redirect(webPath);
@@ -136,6 +146,7 @@ SynchronizeDb.start(function(err){
 	app.use(webPath, express.static('../web/private'));
 	app.use(loginPath, express.static('../web/public'));
 	app.use('/api/doc', express.static('../apidoc'));
+	// app.use(apiPath, tokenAuthentication);
 	app.use(apiPath, apiRoutes);
 	app.use(login.routes);
 
@@ -144,10 +155,10 @@ SynchronizeDb.start(function(err){
 	server.startServer();
 
 	https.createServer(options, app).listen(httpsPort, function(){
-		logger.info("HTTPS server listening on port 8143");
+		logger.info("HTTPS server listening on port %s", httpsPort);
 	});
 
-	// http.createServer(app).listen(httpPort, function(){
-	// 	console.info("HTTP server listening on port %s", httpPort);
-	// });
+	http.createServer(app).listen(httpPort, function(){
+		logger.info("HTTP server listening on port %s", httpPort);
+	});
 });
