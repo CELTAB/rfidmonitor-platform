@@ -1,6 +1,7 @@
 'use strict';
 var SequelizeClass = require('sequelize');
 var sequelize = require(__base + 'controller/database/platformsequelize');
+var randomChars = require(__base + 'utils/randomchars');
 
 var model = sequelize.define("PlatformMedia", {
 	url : {
@@ -11,7 +12,11 @@ var model = sequelize.define("PlatformMedia", {
 	path : {
 		type : SequelizeClass.STRING,
 		allowNull : false,
-		unique: true
+		unique: true,
+		set: function(path){
+			this.setDataValue('path', path);
+			this.setDataValue('uuid', randomChars.uid(64));
+		}
 	},
 	description : {
 		type : SequelizeClass.STRING
@@ -26,6 +31,11 @@ var model = sequelize.define("PlatformMedia", {
 		validate : {
 			isIn : [['IMAGE', 'PDF', 'RFID_IMPORT']]
 		}
+	},
+	uuid: {
+		type: SequelizeClass.STRING,
+		allowNull: false,
+		unique: true
 	}
 },
 {

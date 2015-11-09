@@ -103,7 +103,7 @@ var packagesSent = {};
 var sentCouter = 0;
 var receivedCouter = 0;
 var intervalTime = 7000;
-var xLoops = 2500;
+var xLoops = 5;
 var totalResponses = 0;
 //-------------------
 

@@ -181,11 +181,11 @@ var buildDefinition = function(entity, callback){
 			field.identifier = field.identifier + '_platform_media';
 
 			definition.sequelizeModel[field.identifier] = {
-				type: 'Sequelize.INTEGER',
+				type: 'Sequelize.STRING',
 				allowNull : true,
 				references: {
 					model: 'tb_plat_platform_media', // Can be both a string representing the table name, or a reference to the model
-					key:   "id"
+					key:   "uuid"
 					//, deferrable: Sequelize.Deferrable.INITIALLY_IMMEDIATE
 				}
 			}

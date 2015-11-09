@@ -11,7 +11,7 @@ var storage = multer.diskStorage({destination: appDir + '/restricted_media/tmp/'
 var upload = multer({ storage: storage });
 
 var getHandler = function(req, callback){
-  PlatformMedia.findOne({where : { id : req.params.id }})
+  PlatformMedia.findOne({where : { uuid : req.params.id }})
   .then(function(record){
     if(record){
       return callback(null, path.join(appDir, record.path), 'sendfile');
@@ -29,7 +29,14 @@ var postHandler = function(req, callback){
     return errorHandler('We didnt receive your file', 400, callback);
 
   var file = req.file;
-  var underAppPath = '/restricted_media/media/images/' + req.file.filename;
+  var lastIndexExt = file.originalname.lastIndexOf('.');
+
+  var fileExt = null;
+  if(lastIndexExt >= 0){
+    fileExt = file.originalname.substring(lastIndexExt);
+  }
+  var fileFinalName = file.filename + fileExt;
+  var underAppPath = '/restricted_media/media/images/' + fileFinalName;
 
   file.finalPath = appDir + underAppPath;
   fs.rename(req.file.path, file.finalPath, function(err){
@@ -42,15 +49,15 @@ var postHandler = function(req, callback){
         }
         PlatformMedia.create(
           {
-            url: file.filename,
+            url: fileFinalName,
             path : underAppPath,
             type: 'IMAGE',
             mimetype : file.mimetype
           })
         .then(function(f){
-          f.url = '/api/media/'+f.id;
+          f.url = '/api/media/'+f.uuid;
           f.save().then(function(f){
-            return callback(null, {"mediaId" :f.id});
+            return callback(null, {"mediaId" :f.uuid});
           }).catch(function(e){
             return errorHandler('Error: ' + e.toString(), 500, callback);
           });
