@@ -20,12 +20,12 @@ var LoadLoginRoutes = function(baseUri){
             return errorHandler('Invalid username or password', 400, callback);
 
           var AppClient = sequelize.model('AppClient');
-          AppClient.find({where: {user_id: user.id}}).then(function(app){
+          AppClient.find({where: {userId: user.id}}).then(function(app){
             if(!app)
               return errorHandler('Token not found for user ' + user.username, 400, callback);
-            //TODO: Set session information
-            // req.appSession.user = {id: user.id, username: user.username, email: user.email} || user.clean();
+
             user.token = app.token;
+            req.appSession.user = user.clean();
             return callback(null, {message: user.clean()});
           });
         });
@@ -35,9 +35,13 @@ var LoadLoginRoutes = function(baseUri){
   };
 
   var logoutHandler = function(req, callback){
-    //TODO: delete session information
-    // delete req.appSession.user;
+    delete req.appSession.user;
     return callback(null, '/login', 'redirect');
+  };
+
+  var _hasSession = function(req){
+    // return true; //Uncomment to use on test enviroment
+    return (req.appSession && req.appSession.user)? true: false;
   };
 
   var Route = require(__base + 'utils/customroute');
@@ -45,9 +49,12 @@ var LoadLoginRoutes = function(baseUri){
     new Route('post', '/login', loginHandler),
     new Route('post', '/logout', logoutHandler)
   ];
-
   routingCore.registerCustomRoute(routes);
-  return router;
+
+  return {
+    routes: router,
+    hasSession: _hasSession
+  };
 };
 
 module.exports = LoadLoginRoutes;

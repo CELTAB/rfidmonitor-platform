@@ -9,9 +9,8 @@ var http = require('http');
 var https = require('https');
 var fs = require('fs');
 var Cors = require('cors');
+var session = require('client-sessions');
 //TODO: Implement permissions
-//TODO: Implement session
-// var session = require('client-sessions');
 
 var args = process.argv;
 var debugConsole = false,
@@ -63,7 +62,15 @@ SynchronizeDb.start(function(err){
 	app.use(Cors());
 	app.use(bodyParser.json({type: 'application/json'}));
 	app.use(bodyParser.urlencoded({limit: '5mb', extended: true}));
-	//TODO: create session
+	app.use(session({
+		cookieName: 'appSession',
+		secret: 'eg[isfd-8yF9-7w2315df{}+Ijsli;;to8',
+		duration: 30 * 60 * 1000, //keep session for 30 minutes
+		activeDuration: 10 * 60 * 1000,
+		secure: true
+		// httpOnly: true,
+		// ephemeral: true
+	}));
 
 	//Necessary headers to clients access.
 	app.all('*', function(req, res, next) {
@@ -99,15 +106,38 @@ SynchronizeDb.start(function(err){
 		}
 		next();
 	});
-
-	//TODO: Create structure for public and private.
-	app.use('/', express.static('../web/private'));
-
 	var httpPort = 8180;
 	var httpsPort = 8143;
 
-	app.use('/api', new LoadRouter('/api'));
-	app.use(new LoadLoginRouter());
+	var loginPath = '/login',
+			webPath = '/web',
+			apiPath = '/api';
+
+	var apiRoutes = new LoadRouter(apiPath);
+	var login = new LoadLoginRouter();
+
+	//TODO: mudar de ../web para web quando app.js subir para o diretorio anterior
+	app.get('/', function(req, res){
+		res.redirect(webPath);
+	});
+	var redirectMidler = function(req, res, next){
+		if(req.originalUrl.indexOf(webPath) !== -1){
+			return login.hasSession(req)? next() : res.redirect(loginPath);
+		}else if(req.originalUrl.indexOf(loginPath) !== -1){
+			return login.hasSession(req)? res.redirect(webPath): next();
+		}else{
+			logger.error("Unknown Location");
+			return res.status(404).send({message: "Unknown Location"});
+		}
+	};
+
+	app.use(webPath, redirectMidler);
+	app.use(loginPath, redirectMidler);
+	app.use(webPath, express.static('../web/private'));
+	app.use(loginPath, express.static('../web/public'));
+	app.use('/api/doc', express.static('../apidoc'));
+	app.use(apiPath, apiRoutes);
+	app.use(login.routes);
 
 	//Create and start server for collectors
 	var server = new Server();

@@ -10,7 +10,7 @@ var BaseModelController = function(model, modelName){
 		logger.debug("Prepare default controller for " + _modelName);
 
 		var _handleError = function(err, operation, callback){
-			var errMessage = 'Error on ' + operation + 'document. ';
+			var errMessage = 'Error on ' + operation + ' document.';
 			logger.error(errMessage + err);
 			var errObj = {error: err.toString(), code: 500, message : errMessage};
 			return callback(errObj);
@@ -22,7 +22,7 @@ var BaseModelController = function(model, modelName){
 				if(!query)
 					query = {};
 
-				query.include = [{all: true}];
+				// query.include = query.include || [{all: true}];
 				if(id){
 					//findById
 					_Model.findById(id, query)
