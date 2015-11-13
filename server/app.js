@@ -156,7 +156,7 @@ SynchronizeDb.start(function(err){
 	app.use(webPath, redirectMidler);
 	app.use(loginPath, redirectMidler);
 	app.use(webPath, express.static('../web/private'));
-	app.use(loginPath, express.static('../web/public'));
+	app.use(loginPath, express.static('../web/public/login'));
 	app.use(apiPath, apiRoutes);
 	app.use(login.routes);
 
