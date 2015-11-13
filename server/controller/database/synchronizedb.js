@@ -2,6 +2,11 @@
 var logger = require('winston');
 var DEModelPool = require(__base + 'controller/dynamic/demodelpool');
 var sequelize = require(__base + 'controller/database/platformsequelize');
+//bug
+var pg = require('pg');
+delete pg.native;
+//end - bug
+
 var SynchronizeDb = function() {
 
 	var _start = function(done){
@@ -23,7 +28,14 @@ var SynchronizeDb = function() {
 			//Models synchronized. Call done with no errors (null).
 			DEModelPool.loadDynamicEntities(function(error){
 				if(error) return done(error);
-				done();
+
+				var User = sequelize.model('User');
+				User.findAll().then(function(result){
+					if(result.length > 0)
+						return done();
+
+						return createDefaultUser(done);
+				});
 			});
 		})
 		.catch(function(error){
@@ -36,5 +48,22 @@ var SynchronizeDb = function() {
 		start: _start
 	}
 }();
+
+var createDefaultUser = function(done){
+	var User = sequelize.model('User');
+	var AppClient = sequelize.model('AppClient');
+	try{
+		var defaultUser = {name: 'Default Administrator', username: 'admin', password: 'admin', email:'invalid@email.com'};
+		User.create(defaultUser).then(function(user){
+			var app = {description: 'Default appClient for ' + user.username, userId: user.id};
+			AppClient.create(app).then(function(appCreated){
+				return done();
+			});
+		});
+	}catch(e){
+		logger.error('Error on create default User and AppClient: ' + e.toString());
+		return done(e.toString());
+	}
+};
 
 module.exports = SynchronizeDb;

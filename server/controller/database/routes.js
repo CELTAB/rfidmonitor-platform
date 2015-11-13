@@ -28,7 +28,7 @@ var Routes = function Routes(){
   	if(!this.isMethodValid(method))
   		return new PlatformError("Routes: Invalid method ["+method+"] to register on database.");
 
-  	logger.info("Registering route: [" + path + "] - [" + method + "]");
+  	logger.debug("Registering route: [" + path + "] - [" + method + "]");
 
     SeqUriRoute
 		.findOrCreate({where: {path: path, method: method}, defaults: {path: path, method: method}})

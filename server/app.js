@@ -42,19 +42,18 @@ if(args.indexOf('--dev') > -1){
 	logger.warn('Starting on development mode');
 }
 
-//Load Components olny after logger had started
-var Server = require(__base + 'controller/collector/server');
-var LoadRouter = require(__base + 'routes/loadroutes');
-var LoadLoginRouter = require(__base + 'routes/loadloginroute');
 var SynchronizeDb = require(__base + 'controller/database/synchronizedb');
-
-var tokenAuthentication = require(__base + 'controller/tokenauthentication');
-
 SynchronizeDb.start(function(err){
 	if(err){
 		logger.error("Erro to initialize Database: " + err);
 		return 1;
 	}
+	//Load Components olny after logger had started
+	var Server = require(__base + 'controller/collector/server');
+	var LoadRouter = require(__base + 'routes/loadroutes');
+	var LoadLoginRouter = require(__base + 'routes/loadloginroute');
+	var tokenAuthentication = require(__base + 'controller/tokenauthentication');
+
 	/*
 	How to generate ssl files. On terminal type:
 		openssl genrsa -out platform-key.pem 1024
