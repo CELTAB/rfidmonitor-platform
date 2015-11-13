@@ -20,7 +20,7 @@
         <a href="#/"><i><b>Flex</b>Monitor</i></a>
       </div>
       <div class="login-box-body" ng-controller="loginController">
-        <p class="login-box-msg">Faça login para iniciar a sua sessão</p>
+        <p class="login-box-msg">Inform your credentials to start your session</p>
         <form>
           <div class="form-group has-feedback">
             <input type="text" class="form-control" placeholder="Username" ng-model="user.username">
@@ -56,7 +56,7 @@
 			angular.module('flexmonitorLogin', []).controller('loginController', function($scope, $http){
         $scope.login = function(user){
           $http.post(window.location.origin + '/login', user).success(function(data){
-            // localstorage.
+            localStorage.setItem('flexUser', angular.toJson(data));
             window.location = window.location.origin;
           }).error(function(data){
             $scope.errMessage = data.message;

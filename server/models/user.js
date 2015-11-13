@@ -39,7 +39,7 @@ var model = sequelize.define("User", {
 		},
 	scopes:{
 		loginScope: {
-			attributes : ['id', 'username', 'password', 'email'],
+			attributes : ['id', 'username', 'name', 'password', 'email'],
 			where: { deletedAt: null}
 		}
 	},
