@@ -95,7 +95,7 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 
       responses++;
   		sendObject(buildMessageObject("ACK-DATA", {md5diggest: [md5diggest]}));
-  		logger.info("Sent " + responses + " RESPONSES. FOR: " + message.data.macaddress);
+  		logger.silly("Sent " + responses + " RESPONSES. FOR: " + message.data.macaddress);
     });
 	}
 

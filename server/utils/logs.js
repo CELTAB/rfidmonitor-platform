@@ -46,7 +46,7 @@ var Logs = function(debugConsole, debugFile, sillyConsole, sillyFile){
 			winston.transports.Console,
 			{
 				name: 'consolewarn',
-				level: 'warn',
+				level: 'info',
 				json: false,
 				colorize: true,
 				silent: false,

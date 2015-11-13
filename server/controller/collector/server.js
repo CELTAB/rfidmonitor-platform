@@ -22,7 +22,7 @@ var Server = function(){
 		var address = {};
 		address.address = socket.remoteAddress;
 		address.port = socket.remotePort;
-  	logger.info("New connection from " + address.address);
+  	logger.debug("New connection from " + address.address);
 
   	var lostCollector = function(){
 			logger.info('Client with MAC ' + collector.mac + ' and ID ' + collector.id + ' Disconnected');

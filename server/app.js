@@ -1,4 +1,5 @@
-global.__base = __dirname + '/';
+global.__base = __dirname + '/'; //TODO: Change to '/server'
+global.__DevEnv = false;
 // Keep as firsts requires >>>
 var Logs = require(__base + 'utils/logs');
 var logger = require('winston');
@@ -10,7 +11,7 @@ var https = require('https');
 var fs = require('fs');
 var Cors = require('cors');
 var session = require('client-sessions');
-//TODO: Implement permissions
+var passport = require('passport');
 
 var args = process.argv;
 var debugConsole = false,
@@ -36,11 +37,18 @@ if(args.indexOf('--debugAll') > -1){
 }
 new Logs(debugConsole, debugFile, sillyConsole, sillyFile);
 
+if(args.indexOf('--dev') > -1){
+	global.__DevEnv = true;
+	logger.warn('Starting on development mode');
+}
+
 //Load Components olny after logger had started
 var Server = require(__base + 'controller/collector/server');
 var LoadRouter = require(__base + 'routes/loadroutes');
 var LoadLoginRouter = require(__base + 'routes/loadloginroute');
 var SynchronizeDb = require(__base + 'controller/database/synchronizedb');
+
+var tokenAuthentication = require(__base + 'controller/tokenauthentication');
 
 SynchronizeDb.start(function(err){
 	if(err){
@@ -62,6 +70,7 @@ SynchronizeDb.start(function(err){
 	app.use(Cors());
 	app.use(bodyParser.json({type: 'application/json'}));
 	app.use(bodyParser.urlencoded({limit: '5mb', extended: true}));
+	app.use(passport.initialize());
 	app.use(session({
 		cookieName: 'appSession',
 		secret: 'eg[isfd-8yF9-7w2315df{}+Ijsli;;to8',
@@ -126,7 +135,6 @@ SynchronizeDb.start(function(err){
 		next();
 	});
 
-	//TODO: mudar de ../web para web quando app.js subir para o diretorio anterior
 	app.get('/', function(req, res){
 		res.redirect(webPath);
 	});
@@ -141,12 +149,15 @@ SynchronizeDb.start(function(err){
 		}
 	};
 
+	app.use('/api/doc', express.static('../apidoc'));
+	var authenticate = new tokenAuthentication(app);
+	authenticate.useBearer(apiPath);
+
+	//TODO: mudar de ../web/* para web quando app.js subir para o diretorio anterior
 	app.use(webPath, redirectMidler);
 	app.use(loginPath, redirectMidler);
 	app.use(webPath, express.static('../web/private'));
 	app.use(loginPath, express.static('../web/public'));
-	app.use('/api/doc', express.static('../apidoc'));
-	// app.use(apiPath, tokenAuthentication);
 	app.use(apiPath, apiRoutes);
 	app.use(login.routes);
 
