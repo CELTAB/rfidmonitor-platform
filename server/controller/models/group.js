@@ -27,6 +27,9 @@ Group.custom['save'] = function(body, callback){
         group.isDefault = null;
         group.save().then(save);
       }
+    })
+    .catch(function(e){
+      return errorHandler(e.toString(), 500, callback);
     });
   }catch(e){
     return errorHandler(e.toString(), 500, callback);

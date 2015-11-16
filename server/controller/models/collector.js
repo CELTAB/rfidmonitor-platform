@@ -59,8 +59,16 @@ CollectorCtrl.save = function(newCollector, callback){
           .then(function(nGroup){
             newCollector.groupId = nGroup.id;
             return CollectorCtrl.oldSave(newCollector, afterSave);
+          })
+          .catch(function(e){
+            logger.error(e);
+            return afterSave(e);
           });
         }
+      })
+      .catch(function(e){
+        logger.error(e);
+        return afterSave(e);
       });
     }
   }catch(e){

@@ -71,6 +71,10 @@ var insertSummary = function(rfiddata, collector, callback){
         }
         next();
       });
+    })
+    .catch(function(e){
+      logger.error('Error inserSummary: ' + e.toString());
+      return callback(e);
     });
   }catch(e){
     logger.error('Error inserSummary: ' + e.toString());

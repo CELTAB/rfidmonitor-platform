@@ -27,25 +27,24 @@ UserCtrl.custom['save'] = function(body, callback){
 };
 
 UserCtrl.login = function(candidateUser, callback){
-  try{
-      var User = sequelize.model("User");
-      User.scope('loginScope').findOne({where: {username: candidateUser.username}})
-      .then(function(user){
-        if(!user || !user.isPasswordValid(candidateUser.password))
-          return errorHandler('Invalid username or password', 400, callback);
+  var User = sequelize.model("User");
+  User.scope('loginScope').findOne({where: {username: candidateUser.username}})
+  .then(function(user){
+    if(!user || !user.isPasswordValid(candidateUser.password))
+      return errorHandler('Invalid username or password', 400, callback);
 
-        var AppClient = sequelize.model('AppClient');
-        AppClient.find({where: {userId: user.id}}).then(function(app){
-          if(!app)
-            return errorHandler('Token not found for user ' + user.username, 400, callback);
+    var AppClient = sequelize.model('AppClient');
+    AppClient.find({where: {userId: user.id}}).then(function(app){
+      if(!app)
+        return errorHandler('Token not found for user ' + user.username, 400, callback);
 
-          user.token = app.token;
-          return callback(null, user.clean());
-        });
-      });
-  }catch(e){
+      user.token = app.token;
+      return callback(null, user.clean());
+    });
+  })
+  .catch(function(e){
     return errorHandler('Internal Error: ' + e.toString(), 500, callback);
-  }
+  });
 };
 
 module.exports = UserCtrl;

@@ -14,17 +14,19 @@ var model = sequelize.define("AppClient", {
 	description: {
 		type : SequelizeClass.STRING,
 		allowNull : false,
-		field : 'description',
-		set: function(desc){
-      		this.setDataValue('description', desc);
-      		this.setDataValue('token', Tokenizer.uid(32));
-		}
+		field : 'description'
 	}
 },
 {
 	paranoid : true,
 	freezeTableName: true,
-	tableName: 'tb_plat_app_client'
+	tableName: 'tb_plat_app_client',
+	hooks: {
+          beforeValidate: function (app) {
+							if(!app.token)
+								app.token = Tokenizer.uid(32);
+          }
+        }
 });
 
 model.belongsTo(User, {foreignKey: {name: 'userId', allowNull: false}});
@@ -33,7 +35,7 @@ module.exports = model;
 //OBJECT EXAMPLE
 /*
 {
-	"user_id": 1,
+	"userId": 1,
 	"description": "Any description here. Required."
 }
 */

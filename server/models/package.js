@@ -5,7 +5,8 @@ var sequelize = require(__base + 'controller/database/platformsequelize');
 var model = sequelize.define("Package", {
   packageHash:{
     type: SequelizeClass.STRING,
-    allowNull : false
+    allowNull : false,
+    unique: true
   },
   packageSize:{
     type: SequelizeClass.INTEGER,
