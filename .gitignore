@@ -1,4 +1,6 @@
 node_modules*
-server/restricted_media/*
+logs/*
+restricted_media/*
 server/config/ssl/*
 server/logs/*
+server/restricted_media/*

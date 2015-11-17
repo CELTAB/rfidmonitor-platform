@@ -1,4 +1,4 @@
-global.__base = __dirname + '/'; //TODO: Change to '/server'
+global.__base = __dirname + '/server/';
 global.__DevEnv = false;
 // Keep as firsts requires >>>
 var Logs = require(__base + 'utils/logs');
@@ -86,11 +86,9 @@ SynchronizeDb.start(function(err){
 	app.use(session({
 		cookieName: 'appSession',
 		secret: 'eg[isfd-8yF9-7w2315df{}+Ijsli;;to8',
-		duration: 30 * 60 * 1000, //keep session for 30 minutes
+		duration: 60 * 60 * 1000, //keep session for 60 minutes
 		activeDuration: 10 * 60 * 1000,
 		secure: true
-		// httpOnly: true,
-		// ephemeral: true
 	}));
 
 	//Necessary headers to clients access.
@@ -165,11 +163,10 @@ SynchronizeDb.start(function(err){
 	var authenticate = new tokenAuthentication(app);
 	authenticate.useBearer(apiPath);
 
-	//TODO: mudar de ../web/* para web quando app.js subir para o diretorio anterior
 	app.use(webPath, redirectMidler);
 	app.use(loginPath, redirectMidler);
-	app.use(webPath, express.static('../web/private'));
-	app.use(loginPath, express.static('../web/public/login'));
+	app.use(webPath, express.static('web/private'));
+	app.use(loginPath, express.static('web/public/login'));
 	app.use(apiPath, apiRoutes);
 	app.use(login.routes);
 

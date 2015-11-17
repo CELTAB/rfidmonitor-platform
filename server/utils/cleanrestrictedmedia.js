@@ -1,10 +1,10 @@
 'use strict';
 var logger = require('winston');
 var fs = require('fs');
-// var path = require('path');
-// var appDir = path.dirname(require.main.filename);
+var path = require('path');
+var appDir = path.dirname(require.main.filename);
 var cleanRestrictedMediaTmpSync = function(){
-	var dir = __base + '/restricted_media/tmp/';
+	var dir = appDir + '/restricted_media/tmp/';
 
 	fs.readdir(dir, function(err, files){
 		if(err)

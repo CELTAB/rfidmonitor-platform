@@ -92,7 +92,6 @@ DEModelPool.prototype.registerModel = function(modelDefinitions, callback){
     done++;
 
     if(done == countTotal){
-        //TODO: Aqui... -> model.belongsTo(SeqUriRoute, {foreignKey : 'uri_route_id'});
         for (var j in modelDefinitions){
           var modelDefinition = modelDefinitions[j];
           var associate = modelDefinition.sequelizeOptions.classMethods.associate;
