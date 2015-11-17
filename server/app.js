@@ -53,6 +53,12 @@ SynchronizeDb.start(function(err){
 	var LoadRouter = require(__base + 'routes/loadroutes');
 	var LoadLoginRouter = require(__base + 'routes/loadloginroute');
 	var tokenAuthentication = require(__base + 'controller/tokenauthentication');
+	var createDefaults = require(__base + 'controller/database/createdefaults');
+	//Create default credentials if no user is found
+	createDefaults(function(err){
+		if(err)
+			throw new Error('Error on create default credentials: ' + err);
+	});
 
 	/*
 	How to generate ssl files. On terminal type:
