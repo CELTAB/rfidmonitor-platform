@@ -60,6 +60,13 @@ SynchronizeDb.start(function(err){
 			throw new Error('Error on create default credentials: ' + err);
 	});
 
+	//Clean restricted_media directory
+	var cleanErrors = require(__base + 'utils/cleanrestrictedmedia')();
+	if(cleanErrors){
+		logger.error('Not able to clean restricted_media directory: ' + cleanErrors);
+		return 1;
+	}
+
 	/*
 	How to generate ssl files. On terminal type:
 		openssl genrsa -out platform-key.pem 1024
