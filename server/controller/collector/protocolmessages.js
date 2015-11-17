@@ -39,14 +39,24 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 		var data = message.data;
 		logger.silly("handle_SYN\n Message: " + JSON.stringify(message));
 		try{
-			CollectorCtrl.findOrCreate(data, function(err, collector){
-				if(err){
-					logger.error(err);
-					return;
+
+			CollectorCtrl.findOrCreate(data, function(collector){
+				if(collector.then){
+					collector.then(function(c){
+						logger.info("Connecting to Collector with ID: " + c.id + " and MAC: " + c.mac);
+						setOnlineCollector(c);
+						sendObject(buildMessageObject("ACK-SYN", {id:c.id, macaddress:c.mac, name:c.name}));
+					},
+					function(e){
+						logger.error('Error: ' + err);
+						return callback(err);
+					});
+				}else{
+					var c = collector;
+					logger.info("Connecting to Collector with ID: " + c.id + " and MAC: " + c.mac);
+					setOnlineCollector(c);
+					sendObject(buildMessageObject("ACK-SYN", {id:c.id, macaddress:c.mac, name:c.name}));
 				}
-				logger.info("Connecting to Collector with ID: " + collector.id + " and MAC: " + collector.mac);
-				setOnlineCollector(collector);
-				sendObject(buildMessageObject("ACK-SYN", {id:collector.id, macaddress:collector.mac, name:collector.name}));
 			});
 		}catch(e){
 		  logger.error("Error: " + e);

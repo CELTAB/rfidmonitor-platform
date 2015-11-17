@@ -70,6 +70,10 @@ var insertSummary = function(rfiddata, collector, callback){
           }
         }
         next();
+      })
+      .catch(function(e){
+        logger.error('Error inserSummary package: ' + e.toString());
+        return callback(e);
       });
     })
     .catch(function(e){
@@ -97,12 +101,18 @@ Rfid.save = function(rfiddata, callback){
     macaddress: rfiddata.macaddress,
     name: rfiddata.name
   };
-  CollectorCtrl.findOrCreate(cole, function(err, collector){
-    if(err){
-      logger.error('Error: ' + err);
-      return callback(err);
+  CollectorCtrl.findOrCreate(cole, function(collector){
+    if(collector.then){
+      collector.then(function(c){
+        return insertSummary(rfiddata.datasummary, c, callback);
+      },
+      function(e){
+        logger.error('Error: ' + err);
+        return callback(err);
+      });
+    }else{
+      return insertSummary(rfiddata.datasummary, collector, callback);
     }
-    return insertSummary(rfiddata.datasummary , collector, callback);
   });
 }
 

@@ -1,5 +1,0 @@
-TODO:
-
-- Ao registrar um novo coletor, linkar com grupo padrão (group_id)
-- Aterar campos de foreing_key para camelcase, mapeando com '_' na base de dados
-- RFIDs não estão sendo mostrados no get /api/rfiddatas

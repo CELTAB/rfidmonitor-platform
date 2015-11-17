@@ -12,7 +12,7 @@ var BaseModelController = function(model, modelName){
 		var _handleError = function(err, operation, callback){
 			var errMessage = 'Error on ' + operation + ' document.';
 			logger.error(errMessage + err);
-			var errObj = {error: err.toString(), code: 500, message : errMessage};
+			var errObj = {error: err, code: 500, message : errMessage};
 			return callback(errObj);
 		}
 

@@ -1,5 +1,6 @@
 'use strict';
 var logger = require('winston');
+var q = require('q');
 var sequelize = require(__base + 'controller/database/platformsequelize');
 var Controller = require(__base + 'controller/basemodelctrl');
 var errorHandler = require(__base + 'utils/errorhandler');
@@ -9,6 +10,7 @@ var CollectorModel = sequelize.model('Collector');
 var CollectorCtrl = new Controller(CollectorModel, 'collectors');
 var Group = sequelize.model('Group');
 
+var insertingMap = {};
 CollectorCtrl.oldSave = CollectorCtrl.save;
 CollectorCtrl.custom['find'] = function(id, query, callback){
   CollectorCtrl.find(id, query, function(err, collectors){
@@ -34,36 +36,35 @@ CollectorCtrl.custom['find'] = function(id, query, callback){
 };
 
 CollectorCtrl.save = function(newCollector, callback){
-  try{
+    var promise = insertingMap[newCollector.mac];
+    if(promise){
+      return callback(promise);
+    }
+
+    var deferred = q.defer();
+    insertingMap[newCollector.mac] = deferred.promise;
+    callback(deferred.promise);
     var afterSave = function(err, collector){
       if(err){
-        return callback(err);
+        logger.error('Error aqui: ' + JSON.stringify(err));
+        deferred.reject(err);
       }
       logger.debug("Collector inserted. new ID: " + collector.id);
       var c = collector.get({plain: true});
       collectorPool.push(c);
-      return callback(null, c);
+      deferred.resolve(c);
     }
 
     if(newCollector.groupId){
-      return CollectorCtrl.oldSave(newCollector, afterSave);
+      CollectorCtrl.oldSave(newCollector, afterSave);
     }else{
-      Group.find({where: {isDefault: true, deletedAt: null}})
+      Group.findOne({where: {isDefault: true, deletedAt: null}})
       .then(function(group){
         if(group){
           newCollector.groupId = group.id;
           return CollectorCtrl.oldSave(newCollector, afterSave);
         }else{
-          var defaultGroup = {isDefault: true, name: "Default Group", description: "Auto-generated default group"};
-          Group.create(defaultGroup)
-          .then(function(nGroup){
-            newCollector.groupId = nGroup.id;
-            return CollectorCtrl.oldSave(newCollector, afterSave);
-          })
-          .catch(function(e){
-            logger.error(e);
-            return afterSave(e);
-          });
+          throw new Error('Default Groud not found when it should be');
         }
       })
       .catch(function(e){
@@ -71,16 +72,13 @@ CollectorCtrl.save = function(newCollector, callback){
         return afterSave(e);
       });
     }
-  }catch(e){
-    return errorHandler('Error on save collector: ' + e.toString(), 500, callback);
-  }
 };
 
 CollectorCtrl.findOrCreate = function(collector, callback){
   CollectorCtrl.find(null, {where: {mac:collector.macaddress, deletedAt: null}},
     function(err, collectorResult){
       if(err)
-        return callback(err);
+        return callback(collectorResult);
 
       if(collectorResult.length === 0){
         collector.name = (!!collector.name)? collector.name : 'Unknown';
@@ -90,7 +88,10 @@ CollectorCtrl.findOrCreate = function(collector, callback){
         delete collector.macaddress;
         return CollectorCtrl.save(collector, callback);
       }else{
-        return callback(null, collectorResult[0].get({plain: true}));
+        // return callback(null, {then: function(cb){
+        //   cb(collectorResult[0].get({plain: true}));
+        // }});
+        return callback(collectorResult[0].get({plain: true}));
       }
     });
 };

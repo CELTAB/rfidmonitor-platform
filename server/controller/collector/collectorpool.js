@@ -23,6 +23,10 @@ var CollectorPool = function CollectorPool(){
 		return pool;
 	}
 
+	this.getCollectorByMac = function(mac){
+		return pool[mac];
+	}
+
 	this.getStatusByMac = function(mac){
     if(pool[mac]){
       return pool[mac].status || Collector.statusEnum.OFFLINE;
@@ -38,11 +42,12 @@ var CollectorPool = function CollectorPool(){
 				pool[collector.mac].status = status;
 				return true;
 			}else{
-				logger.error('CollectorPool : updateStatusByMac : Collector not fond when it should be');
+				return false;
 			}
+		}else{
+			logger.error("CollectorPool : updateStatusByMac : invalid collector");
+			return false;
 		}
-		logger.error("CollectorPool : updateStatusByMac : invalid collector");
-		return false;
 	}
 
   this.push = function(collector){

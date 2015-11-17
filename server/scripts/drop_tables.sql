@@ -1,10 +1,10 @@
-#DROP RFIDPLATFORM tables
-# To execute:
-# cd server/scripts
-# psql rfidplatform -U rfidplatform -f drop_tables.sql
+-- DROP RFIDPLATFORM tables
+-- To execute:
+-- cd server/scripts
+-- psql rfidplatform -U rfidplatform -f drop_tables.sql
 
-# To drop Dinamic Entities:
-# drop table tb_de_ (Name of the DE) cascade;
+-- To drop Dinamic Entities:
+-- drop table tb_de_ (Name of the DE) cascade;
 drop table tb_plat_access_token cascade;
 drop table tb_plat_app_client cascade;
 drop table tb_plat_collector cascade;
