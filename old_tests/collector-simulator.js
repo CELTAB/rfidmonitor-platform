@@ -37,13 +37,21 @@ var finalReport = function(){
 
 	var insertedRfidSoma = reportMap.insertedRfidBySecond.reduce(function(total, next){
 		return total+next;
-	}, 0);
+	}, 0);ch
 
 	console.log("================== FINAL REPORT ==================");
+	console.log("ARGS: " + args);
+	console.log("Collectors connected: " + reportMap.collectorsConnected);
 	console.log("~Seconds: " + reportMap.missingHistoryBySecond.length);
 	console.log("Average missing packages per second: " + (missingSoma / reportMap.missingHistoryBySecond.length));
 	console.log("Average inserted packages per second: " + (insertedPackageSoma / reportMap.insertedPackagesBySecond.length));
 	console.log("Average inserted rfid per second: " + (insertedRfidSoma / reportMap.insertedRfidBySecond.length));
+
+	reportMap.totalPackagesMissing = reportMap.totalPackagesSent - reportMap.totalPackagesReceived;
+	console.log("Total packages sent/received/missing: " + reportMap.totalPackagesSent + "/" + reportMap.totalPackagesReceived + "/" + reportMap.totalPackagesMissing);
+
+	reportMap.totalRfidMissing = reportMap.totalRfidSent - reportMap.totalRfidReceived;
+	console.log("Total rfid sent/received/missing: " + reportMap.totalRfidSent + "/" + reportMap.totalRfidReceived + "/" + reportMap.totalRfidMissing);
 	process.exit(0);
 }
 
@@ -140,7 +148,7 @@ function CollectorConnection(collectorId){
 		}
 	}
 
-	// this.client.connect(8124, '179.106.200.217', function() {
+	// this.client.connect(8124, '179.106.217.25', function() {
 	this.client.connect(8124, '127.0.0.1', function() {
 		reportMap.collectorsConnected++;
 		this.protocol = new ProtocolConnectionController(this.client, this);

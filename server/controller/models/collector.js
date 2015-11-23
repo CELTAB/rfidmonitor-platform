@@ -35,7 +35,7 @@ CollectorCtrl.custom['find'] = function(id, query, callback){
   });
 };
 
-CollectorCtrl.save = function(newCollector, callback){
+CollectorCtrl.promiseSave = function(newCollector, callback){
     var promise = insertingMap[newCollector.mac];
     if(promise){
       return callback(promise);
@@ -48,11 +48,12 @@ CollectorCtrl.save = function(newCollector, callback){
       if(err){
         logger.error('Error aqui: ' + JSON.stringify(err));
         deferred.reject(err);
+      }else{
+        logger.debug("Collector inserted. new ID: " + collector.id);
+        var c = collector.get({plain: true});
+        collectorPool.push(c);
+        deferred.resolve(c);
       }
-      logger.debug("Collector inserted. new ID: " + collector.id);
-      var c = collector.get({plain: true});
-      collectorPool.push(c);
-      deferred.resolve(c);
     }
 
     if(newCollector.groupId){
@@ -64,7 +65,7 @@ CollectorCtrl.save = function(newCollector, callback){
           newCollector.groupId = group.id;
           return CollectorCtrl.oldSave(newCollector, afterSave);
         }else{
-          throw new Error('Default Groud not found when it should be');
+          throw new Error('Default Group not found when it should be');
         }
       })
       .catch(function(e){
@@ -86,7 +87,7 @@ CollectorCtrl.findOrCreate = function(collector, callback){
         if(collector.id)
           delete collector.id;
         delete collector.macaddress;
-        return CollectorCtrl.save(collector, callback);
+        return CollectorCtrl.promiseSave(collector, callback);
       }else{
         // return callback(null, {then: function(cb){
         //   cb(collectorResult[0].get({plain: true}));

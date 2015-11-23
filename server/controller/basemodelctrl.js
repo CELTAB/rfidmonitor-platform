@@ -114,7 +114,7 @@ var BaseModelController = function(model, modelName){
 			save: _save,
 			remove: _remove,
 			name: _modelName,
-			custom: [],
+			custom: {},
 			customRoute: [],
 			isValid: function(){
 				return true;

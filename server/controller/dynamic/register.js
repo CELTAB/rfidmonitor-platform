@@ -2,7 +2,7 @@
 var sequelize = require(__base + 'controller/database/platformsequelize');
 var Controller = require(__base + 'controller/basemodelctrl');
 
-var DeCtrl = {name: 'de/register', custom: [], customRoute:[]};
+var DeCtrl = {name: 'de/register', custom: {}, customRoute:[]};
 DeCtrl.isValid = function(){return true};
 
 // This function can be placed inside utils

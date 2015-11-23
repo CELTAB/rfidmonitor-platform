@@ -159,7 +159,7 @@ SynchronizeDb.start(function(err){
 		}
 	};
 
-	app.use('/api/doc', express.static('../apidoc'));
+	app.use('/api/doc', express.static('apidoc'));
 	var authenticate = new tokenAuthentication(app);
 	authenticate.useBearer(apiPath);
 

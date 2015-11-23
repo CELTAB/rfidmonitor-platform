@@ -3,6 +3,7 @@ var logger = require('winston');
 var sequelize = require(__base + 'controller/database/platformsequelize');
 
 var User = sequelize.model('User');
+var Group = sequelize.model('Group');
 var CreateDefaults = function(done){
   /*
     If no active user is found it means that there's no way to access the system.
@@ -10,12 +11,33 @@ var CreateDefaults = function(done){
     Create and admin user and a token with access to ANY route with ANY method, full access.
   */
   User.findAll({where:{deletedAt:null}}).then(function(result){
-    if(result.length > 0)
-      return done();
+    if(result.length > 0){
+      return createDefaultGroup(done);
+    };
+
+    createDefaultGroup(function(err){
+      if(err) return done(err);
 
       return createDefaults(done);
+    });
   });
 };
+
+var createDefaultGroup = function(done){
+  Group.findOne({where: {isDefault: true, deletedAt: null}})
+  .then(function(group){
+    if(!group){
+      return defaultGroup(done);
+    }
+
+    return done();
+  })
+  .catch(function(e){
+    logger.error('Error on find default Group: ' + e);
+    return done(e);
+  });
+}
+
 var createDefaults = function(done){
   //Create default credentials for one can user the system as admin, at the first interaction
 	defaultUser(function(err, user){
@@ -63,5 +85,10 @@ var grantAccessAny = function(appClient, done){
     Access.create(grantAccess).then(handler.success).catch(handler.error);
 	})
 	.catch(handler.error);
+};
+var defaultGroup = function(done){
+  var handler = handlers('Group', done);
+  var defaultGroup = {name: 'Default Group', isDefault: true, description: 'Auto-generated Default Group'};
+  Group.create(defaultGroup).then(handler.success).catch(handler.error);
 };
 module.exports = CreateDefaults;
