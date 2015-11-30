@@ -40,7 +40,7 @@
     "q": "~1.4.1"
   },
   "apidoc": {
-    "title": "Custom apiDoc browser title",
-    "url": "https://api.github.com/v1"
+    "title": "RFIDMonitor Platform API Documentation",
+    "url": "https://localhost"
   }
 }

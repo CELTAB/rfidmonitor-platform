@@ -27,18 +27,12 @@ var insertSummary = function(rfiddata, collector, callback){
   }
 
   try{
-    Package.findOne({where:{packageHash:rfiddata.md5diggest}})
-    .then(function(pk){
-      if(pk)
-        return callback(null, rfiddata.md5diggest);
-
       var pack = {
         packageHash: rfiddata.md5diggest,
         packageSize: rfiddata.data.length
       };
       Package.create(pack)
       .then(function(newPk){
-
         var insert = function(rfid, callback){
           var obj = {};
           obj.rfidCode = rfid.identificationcode;
@@ -72,14 +66,13 @@ var insertSummary = function(rfiddata, collector, callback){
         next();
       })
       .catch(function(e){
+        if(e.name === "SequelizeUniqueConstraintError" && e.fields['packageHash']){
+          logger.debug("Package already on database");
+          return callback(null, rfiddata.md5diggest);
+        }
         logger.error('Error inserSummary package: ' + e.toString());
         return callback(e);
       });
-    })
-    .catch(function(e){
-      logger.error('Error inserSummary: ' + e.toString());
-      return callback(e);
-    });
   }catch(e){
     logger.error('Error inserSummary: ' + e.toString());
     return callback(e);

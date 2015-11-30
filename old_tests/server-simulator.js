@@ -14,7 +14,71 @@ var sequelize = new Sequelize(postgresConnectionString, {logging : false});
 
 var server = net.createServer();
 
+var Info = function(){
 
+  this.insertLevel1 = function(){
+    level1++;
+  };
+
+  this.insertLevel2 = function(){
+    level2++;
+  };
+
+  this.insertLevel3 = function(){
+    level3++;
+  };
+
+  this.insertLevel4 = function(){
+    level4++;
+  };
+
+  this.receivedData = function(){
+    data++;
+  };
+
+  this.collectorLevel1 = function(){
+    findCollector++;
+  }
+
+  this.collectorLevel2 = function(){
+    colectorInserted++;
+  }
+
+  this.groupLevel1 = function(){
+    buscaGroup++;
+  }
+  this.groupLevel2 = function(){
+    achouGroup++;
+  }
+  this.pacoteExiste = function(){
+    pacoteExistente++;
+  }
+  this.procurarPackage = function(){
+    mandouProcurarPackage++;
+  }
+  this.inserirRfid = function(){
+    mandouInserirRfid++;
+  }
+};
+
+var generalInfo = new Info();
+setInterval(function(){
+  console.log('-----------------------------');
+  // console.log("insertLevelFinish: " + insertLevelFinish);
+  console.log("Pacotes recebidos: " + data);
+  console.log("Buscar collectors: " + findCollector);
+  console.log("Coletores inseridos: " + level3);
+  console.log("Encontrou collectors: " + colectorInserted);
+  console.log("Procurar package na fila " + mandouProcurarPackage)
+  console.log("Pacotes inseridos: " + level1);
+  console.log("Pacotes Existentes: "+ pacoteExistente);
+  console.log("Mandou inserir RfidData: " + mandouInserirRfid);
+  console.log("RfidData inseridos: " + level2);
+  console.log('-----------------------------');
+}, 3000);
+
+var mandouProcurarPackage = 0;
+var mandouInserirRfid = 0;
 server.on('connection', function(sk){
 
   var protocol = new ProtocolConnectionController(sk);
@@ -131,19 +195,34 @@ var buildMessageObject = function(m_type, m_data){
   return {type: m_type, data: m_data, datetime: getTimezonedISODateString()};
 }
 
-var insertLevelFinish = 0;
-var insertLevel1 = 0;
-var insertLevel2 = 0;
-var insertLevel3 = 0;
-var insertLevel4 = 0;
+var level1 = 0;
+var level2 = 0;
+var level3 = 0;
+var level4 = 0;
+var data = 0;
 
-setInterval(function(){
-  console.log("insertLevelFinish: " + insertLevelFinish);
-  console.log("insertLevel1: " + insertLevel1);
-  console.log("insertLevel2: " + insertLevel2);
-  console.log("insertLevel3: " + insertLevel3);
-  console.log("insertLevel4: " + insertLevel4);
-}, 1000);
+var findCollector = 0;
+var colectorInserted = 0;
+
+var pacoteExistente = 0;
+
+var buscaGroup = 0;
+var achouGroup = 0;
+
+//
+var insertLevelFinish = 0;
+// var insertLevel1 = 0;
+// var insertLevel2 = 0;
+// var insertLevel3 = 0;
+// var insertLevel4 = 0;
+
+// setInterval(function(){
+//   console.log("insertLevelFinish: " + insertLevelFinish);
+//   console.log("insertLevel1: " + insertLevel1);
+//   console.log("insertLevel2: " + insertLevel2);
+//   console.log("insertLevel3: " + insertLevel3);
+//   console.log("insertLevel4: " + insertLevel4);
+// }, 1000);
 
 var finishedInsertingPackage = function(socket, errArray, md5diggest){
   insertLevelFinish++;
@@ -268,10 +347,10 @@ var insertRfiddataFromPackageSequelize = function(socket, pack, rfidArray){
           finishedInsertingPackage(socket, rfidInsertErrors, pack.packageHash);
           deferred.resolve(true);
         }
-        insertLevel4++;
+        generalInfo.insertLevel2();
         // return {newRfid.get({plain:true}), {transaction:t}};
       }).catch(function(error){
-        insertLevel4++;
+        // insertLevel4++;
         rfidInsertCounter--;
         rfidInsertErrors.push(error);
         console.log(error);
@@ -280,19 +359,20 @@ var insertRfiddataFromPackageSequelize = function(socket, pack, rfidArray){
           throw new Error('Rollback please');
         }
       });
+      generalInfo.inserirRfid();
     }
 
     return deferred.promise;
 
   }).then(function(result){
-    console.log(result);
+    // console.log(result);
     // t.commit();
   }).catch(function(err){
     console.log(err);
     // t.rollback();
   });
 
-  insertLevel3++;
+  // insertLevel3++;
 
 }
 
@@ -302,17 +382,19 @@ var insertPackageFromMessageSequelize = function(socket, collec, message){
     packageHash: rfiddata.md5diggest,
     packageSize: rfiddata.data.length
   }).then(function(newPack){
+    generalInfo.insertLevel1();
     insertRfiddataFromPackageSequelize(socket, newPack, rfiddata.data);
   })
   .catch(function(err){
     if(err.name === "SequelizeUniqueConstraintError"){
+      generalInfo.pacoteExiste();
       console.log("Package já existe. Não será inserido");
       finishedInsertingPackage(socket, [], rfiddata.md5diggest);
       return;
     }
     console.log(err);
   });
-  insertLevel2++;
+  generalInfo.procurarPackage();
 
   // var rfiddata = message.data.datasummary;
   //
@@ -344,6 +426,7 @@ var insertPackageFromMessageSequelize = function(socket, collec, message){
 
 
 var processReceivedDataSequelize = function(socket, message){
+  generalInfo.receivedData();
   var mac = message.data.macaddress;
 
   CollectorSeq.findOne({where : {'mac' : mac} })
@@ -356,18 +439,21 @@ var processReceivedDataSequelize = function(socket, message){
         'mac': mac
       }).then(function(newCollec){
         insertPackageFromMessageSequelize(socket, newCollec, message);
+        generalInfo.insertLevel3();
       })
       .catch(function(err){
         console.log(err);
       });
     }
-    else
-    insertPackageFromMessageSequelize(socket, collec, message);
+    else{
+      insertPackageFromMessageSequelize(socket, collec, message);
+      generalInfo.collectorLevel2();
+    }
   })
   .catch(function(err){
     console.log(err);
   });
-  insertLevel1++;
+  generalInfo.collectorLevel1();
 
   /*
   var mac = message.data.macaddress;
@@ -411,7 +497,7 @@ var insertRfiddataFromPackagePg = function(socket, pack, rfidArray){
 
     db.query(query, [obj.rfidCode, obj.rfidReadDate, obj.serverReceivedDate, obj.packageId, obj.extraData, new Date(), new Date()], function(err, result){
       rfidInsertCounter--;
-      insertLevel4++;
+      // insertLevel4++;
       if(err){
         console.log("insertRFIDData error: " + err);
         rfidInsertErrors.push(err);
@@ -424,7 +510,7 @@ var insertRfiddataFromPackagePg = function(socket, pack, rfidArray){
     });
   });
 
-  insertLevel3++;
+  // insertLevel3++;
 
 }
 
@@ -463,7 +549,7 @@ var insertPackageFromMessagePg = function(socket, collec, message){
       finishedInsertingPackage(socket, [], rfiddata.md5diggest);
     }
   });
-  insertLevel2++;
+  // insertLevel2++;
 }
 
 
@@ -502,7 +588,7 @@ var processReceivedDataPg = function(socket, message){
 
   });
 
-  insertLevel1++;
+  // insertLevel1++;
 };
 
 var processMessage = function(socket, message){

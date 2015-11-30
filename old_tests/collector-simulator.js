@@ -37,7 +37,7 @@ var finalReport = function(){
 
 	var insertedRfidSoma = reportMap.insertedRfidBySecond.reduce(function(total, next){
 		return total+next;
-	}, 0);ch
+	}, 0);
 
 	console.log("================== FINAL REPORT ==================");
 	console.log("ARGS: " + args);

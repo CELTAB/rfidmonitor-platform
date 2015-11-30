@@ -29,6 +29,10 @@ CollectorCtrl.custom['find'] = function(id, query, callback){
       if(collectors){
         response = collectors.get({plain: true});
         response.status = collectorPool.getStatusByMac(collectors.mac);
+      }else{
+        //If no collector is found, return with error code and messages
+        response = {error: 'Error on Collectors', code: 404, message: 'ID not found'};
+        return callback(response);
       }
     }
     return callback(null, response);

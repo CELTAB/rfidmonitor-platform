@@ -45,6 +45,8 @@ var RoutingCore = function(router, baseUri){
 			functions.getOne(req.params.id, null, function(err, result){
 				if(err) return res.response(err.error, err.code, err.message);
 
+				if(!result)
+					return res.response('Error on ' + routeName, 404, 'ID not found');
 				res.send(result);
 			});
 		});

@@ -72,12 +72,12 @@ var putHandler = function(req, callback){
 	if(req.params.id != req.body.id)
     return errorHandler('Divergent param ID & body ID', 400, callback);
 
+  var promises = promisesHandler(callback);
 	model.findById(req.body.id)
 	.then(function(entity){
 		if(!entity)
       return errorHandler('That register does not exist', 400, callback);
 
-    var promises = promisesHandler(callback);
 		entity.update(req.body)
 			.then(promises.success).catch(promises.error);
 	}).catch(promises.error);
@@ -88,13 +88,13 @@ var deleteHandler = function(req, callback){
   if(!model)
     return errorHandler('Invalid Entity', 400, callback);
 
+  var promises = promisesHandler(callback);
   model.findById(req.params.id)
   .then(function(entity){
 
     if(!entity)
       return errorHandler('That register does not exist', 400, callback);
 
-    var promises = promisesHandler(callback);
     entity.destroy()
       .then(function(entity){
         return callback(null, {"message" : "deleted"});
@@ -110,7 +110,7 @@ var routes = [
   new Route('get', routeStr + '/:id', getHandler),
   new Route('post', routeStr, postHandler),
   new Route('put', routeStr, putHandler),
-  new Route('delete', routeStr, deleteHandler)
+  new Route('delete', routeStr + '/:id', deleteHandler)
 ];
 
 module.exports = routes;
