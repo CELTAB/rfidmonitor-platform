@@ -12,7 +12,7 @@
 * curl -i https://localhost/api/collectors
 *
 * @apiExample Query Example:
-* curl -i https://localhost/api/collectors?q={"limit": 3}
+* curl -i https://localhost/api/collectors?q={"limit": 2}
 *
 * @apiSuccess {Object[]} collector       List of Collectors.
 *

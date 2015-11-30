@@ -103,7 +103,7 @@ define({ "api": [
       },
       {
         "title": "Query Example:",
-        "content": "curl -i https://localhost/api/collectors?q={\"limit\": 3}",
+        "content": "curl -i https://localhost/api/collectors?q={\"limit\": 2}",
         "type": "json"
       }
     ],
@@ -558,6 +558,1068 @@ define({ "api": [
     },
     "filename": "apidoc_source/collectors/updateCollector.js",
     "groupTitle": "Collectors",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Unauthorized",
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Forbidden",
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotFound",
+            "description": "<p>The required resource does not exist.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "UnauthorizedError:",
+          "content": "HTTP/1.1 401 Unauthorized\n\t\"Unauthorized\"",
+          "type": "json"
+        },
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n  \"message\": \"Token not allowed for this opperation\",\n  \"status\": 403,\n  \"error\": \"Get out dog.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ResponseError:",
+          "content": "HTTP/1.1 'Code & Message'\n{\n \"message\": \"Any Message here\",\n \"status\": 'code',\n \"error\": \"Detailed error here\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "delete",
+    "url": "/api/groups/:id",
+    "title": "5. Remove a Group",
+    "version": "1.0.0",
+    "name": "DeleteGroup",
+    "group": "Groups",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>Group of collectors. May be grouped by institutions, places, types of collectors, etc. Remove a groups from database.</p> ",
+    "parameter": {
+      "fields": {
+        "Param": [
+          {
+            "group": "Param",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "id",
+            "description": "<p>ID of the group.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n  {\n    \"id\": 1,\n    \"name\": \"Default Group\",\n    \"description\": \"Auto-generated Default Group\",\n    \"createdAt\": \"2015-11-23T16:50:22.064Z\",\n    \"updatedAt\": \"2015-11-23T16:50:22.064Z\",\n    \"deletedAt\": \"2015-11-27T17:55:12.910Z\",\n    \"isDefault\": null\n  }",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/groups/deleteGroup.js",
+    "groupTitle": "Groups",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Unauthorized",
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Forbidden",
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotFound",
+            "description": "<p>The required resource does not exist.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "UnauthorizedError:",
+          "content": "HTTP/1.1 401 Unauthorized\n\t\"Unauthorized\"",
+          "type": "json"
+        },
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n  \"message\": \"Token not allowed for this opperation\",\n  \"status\": 403,\n  \"error\": \"Get out dog.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ResponseError:",
+          "content": "HTTP/1.1 'Code & Message'\n{\n \"message\": \"Any Message here\",\n \"status\": 'code',\n \"error\": \"Detailed error here\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/api/groups",
+    "title": "1. Get array of Groups",
+    "version": "1.0.0",
+    "name": "GetGroups",
+    "group": "Groups",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>Group of collectors. May be grouped by institutions, places, types of collectors, etc. To get all groups or groups based on query, use this route.</p> ",
+    "examples": [
+      {
+        "title": "Example usage:",
+        "content": "https://localhost/api/groups",
+        "type": "json"
+      },
+      {
+        "title": "Query Example:",
+        "content": "https://localhost/api/groups?q={\"limit\": 2}",
+        "type": "json"
+      }
+    ],
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>Object[]</p> ",
+            "optional": false,
+            "field": "groups",
+            "description": "<p>List of Collectors.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n[\n  {\n    \"id\": 1,\n    \"name\": \"Default Group\",\n    \"description\": \"Auto-generated Default Group\",\n    \"createdAt\": \"2015-11-23T16:50:22.064Z\",\n    \"updatedAt\": \"2015-11-23T16:50:22.064Z\",\n    \"deletedAt\": null,\n    \"isDefault\": true\n  },\n  {\n    \"id\": 2,\n    \"name\": \"Itaipu\",\n    \"description\": \"All Collectors on Itaipu\",\n    \"createdAt\": \"2015-11-23T16:50:22.064Z\",\n    \"updatedAt\": \"2015-11-23T16:50:22.064Z\",\n    \"deletedAt\": null,\n    \"isDefault\": null\n  }\n]",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/groups/getAll.js",
+    "groupTitle": "Groups",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "optional": false,
+            "field": "q",
+            "description": "<p>(Query) Received all parameter defined by Sequelize documentations. Available <a href=\"http://docs.sequelizejs.com/en/latest/docs/querying/\" target=\"_blank\"> here.</a></p> "
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Unauthorized",
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Forbidden",
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotFound",
+            "description": "<p>The required resource does not exist.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "UnauthorizedError:",
+          "content": "HTTP/1.1 401 Unauthorized\n\t\"Unauthorized\"",
+          "type": "json"
+        },
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n  \"message\": \"Token not allowed for this opperation\",\n  \"status\": 403,\n  \"error\": \"Get out dog.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ResponseError:",
+          "content": "HTTP/1.1 'Code & Message'\n{\n \"message\": \"Any Message here\",\n \"status\": 'code',\n \"error\": \"Detailed error here\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/api/groups/:id",
+    "title": "2. Get only one Group",
+    "version": "1.0.0",
+    "name": "GetOneGroup",
+    "group": "Groups",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>Group of collectors. May be grouped by institutions, places, types of collectors, etc. To get one group using its ID, use this route.</p> ",
+    "parameter": {
+      "fields": {
+        "Param": [
+          {
+            "group": "Param",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "id",
+            "description": "<p>ID of the group.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "Id",
+            "description": "<p>Group ID on database.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "name",
+            "description": "<p>Name of the group.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "description",
+            "description": "<p>Defines the group.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>Date</p> ",
+            "optional": false,
+            "field": "createdAt",
+            "description": "<p>Creation date generated by Sequelize.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>Date</p> ",
+            "optional": false,
+            "field": "updatedAt",
+            "description": "<p>Last update of this group.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>Date</p> ",
+            "optional": false,
+            "field": "deletedAt",
+            "description": "<p>Null if group is not deleted or removal date.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>Boolean</p> ",
+            "optional": false,
+            "field": "isDefault",
+            "description": "<p>True for Group default or Null.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n  {\n    \"id\": 1,\n    \"name\": \"Default Group\",\n    \"description\": \"Auto-generated Default Group\",\n    \"createdAt\": \"2015-11-23T16:50:22.064Z\",\n    \"updatedAt\": \"2015-11-23T16:50:22.064Z\",\n    \"deletedAt\": null,\n    \"isDefault\": true\n  }",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/groups/getOne.js",
+    "groupTitle": "Groups",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Unauthorized",
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Forbidden",
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotFound",
+            "description": "<p>The required resource does not exist.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "UnauthorizedError:",
+          "content": "HTTP/1.1 401 Unauthorized\n\t\"Unauthorized\"",
+          "type": "json"
+        },
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n  \"message\": \"Token not allowed for this opperation\",\n  \"status\": 403,\n  \"error\": \"Get out dog.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ResponseError:",
+          "content": "HTTP/1.1 'Code & Message'\n{\n \"message\": \"Any Message here\",\n \"status\": 'code',\n \"error\": \"Detailed error here\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
+    "url": "/api/groups",
+    "title": "3. Create a new Group",
+    "version": "1.0.0",
+    "name": "PostGroup",
+    "group": "Groups",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>Group of collectors. May be grouped by institutions, places, types of collectors, etc. Insert a new groups into database.</p> ",
+    "examples": [
+      {
+        "title": "Object Example:",
+        "content": "{\n  \"name\": \"Group Name\",\n  \"description\": \"Group Description\",\n  \"createdAt\": \"2015-11-23T16:50:22.064Z\",\n  \"updatedAt\": \"2015-11-23T16:50:22.064Z\",\n  \"deletedAt\": null,\n  \"isDefault\": null\n}",
+        "type": "json"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Body": [
+          {
+            "group": "Body",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "name",
+            "description": "<p>Name of the Group {Required, Unique}.</p> "
+          },
+          {
+            "group": "Body",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "description",
+            "description": "<p>Defines the Group, by a simple description.</p> "
+          },
+          {
+            "group": "Body",
+            "type": "<p>Boolean</p> ",
+            "optional": false,
+            "field": "isDefault",
+            "description": "<p>True for default group, null otherwise {Unique}.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n  {\n    \"id\": 1,\n    \"name\": \"Group Name\",\n    \"description\": \"Group Description\",\n    \"createdAt\": \"2015-11-23T16:50:22.064Z\",\n    \"updatedAt\": \"2015-11-23T16:50:22.064Z\",\n    \"deletedAt\": null,\n    \"isDefault\": null\n  }",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/groups/newGroup.js",
+    "groupTitle": "Groups",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Unauthorized",
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Forbidden",
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotFound",
+            "description": "<p>The required resource does not exist.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "UnauthorizedError:",
+          "content": "HTTP/1.1 401 Unauthorized\n\t\"Unauthorized\"",
+          "type": "json"
+        },
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n  \"message\": \"Token not allowed for this opperation\",\n  \"status\": 403,\n  \"error\": \"Get out dog.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ResponseError:",
+          "content": "HTTP/1.1 'Code & Message'\n{\n \"message\": \"Any Message here\",\n \"status\": 'code',\n \"error\": \"Detailed error here\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "put",
+    "url": "/api/groups/:id",
+    "title": "4. Update an existing Group",
+    "version": "1.0.0",
+    "name": "PutGroup",
+    "group": "Groups",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>Group of collectors. May be grouped by institutions, places, types of collectors, etc. Use this URI to update a group from database.</p> ",
+    "parameter": {
+      "fields": {
+        "Param": [
+          {
+            "group": "Param",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "id",
+            "description": "<p>ID of the group.</p> "
+          }
+        ],
+        "Body": [
+          {
+            "group": "Body",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "name",
+            "description": "<p>Name of the Group {Required, Unique}.</p> "
+          },
+          {
+            "group": "Body",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "description",
+            "description": "<p>Defines the Group, by a simple description.</p> "
+          },
+          {
+            "group": "Body",
+            "type": "<p>Boolean</p> ",
+            "optional": false,
+            "field": "isDefault",
+            "description": "<p>True for default group, null otherwise {Unique}.</p> "
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "Object Example:",
+        "content": "{\n  \"id\": 1,\n  \"name\": \"Group Name\",\n  \"description\": \"Group Description\",\n  \"createdAt\": \"2015-11-23T16:50:22.064Z\",\n  \"updatedAt\": \"2015-11-23T16:50:22.064Z\",\n  \"deletedAt\": null,\n  \"isDefault\": true\n}",
+        "type": "json"
+      }
+    ],
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n  {\n    \"id\": 1,\n    \"name\": \"Group Name\",\n    \"description\": \"Group Description\",\n    \"createdAt\": \"2015-11-23T16:50:22.064Z\",\n    \"updatedAt\": \"2015-11-27T15:32:18.064Z\",\n    \"deletedAt\": null,\n    \"isDefault\": true\n  }",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/groups/updateGroup.js",
+    "groupTitle": "Groups",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Unauthorized",
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Forbidden",
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotFound",
+            "description": "<p>The required resource does not exist.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "UnauthorizedError:",
+          "content": "HTTP/1.1 401 Unauthorized\n\t\"Unauthorized\"",
+          "type": "json"
+        },
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n  \"message\": \"Token not allowed for this opperation\",\n  \"status\": 403,\n  \"error\": \"Get out dog.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ResponseError:",
+          "content": "HTTP/1.1 'Code & Message'\n{\n \"message\": \"Any Message here\",\n \"status\": 'code',\n \"error\": \"Detailed error here\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "delete",
+    "url": "/api/users/:id",
+    "title": "5. Remove a User",
+    "version": "1.0.0",
+    "name": "DeleteUser",
+    "group": "Users",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>Remove a User from database.</p> ",
+    "parameter": {
+      "fields": {
+        "Param": [
+          {
+            "group": "Param",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "id",
+            "description": "<p>ID of the user.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"id\": 1,\n  \"name\":\"Jaime\",\n  \"email\":\"jaiminho@correios.com.br\",\n  \"username\":\"jaiminho\",\n  \"deletedAt\": \"2015-11-27T17:55:12.910Z\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/users/deleteUser.js",
+    "groupTitle": "Users",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Unauthorized",
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Forbidden",
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotFound",
+            "description": "<p>The required resource does not exist.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "UnauthorizedError:",
+          "content": "HTTP/1.1 401 Unauthorized\n\t\"Unauthorized\"",
+          "type": "json"
+        },
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n  \"message\": \"Token not allowed for this opperation\",\n  \"status\": 403,\n  \"error\": \"Get out dog.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ResponseError:",
+          "content": "HTTP/1.1 'Code & Message'\n{\n \"message\": \"Any Message here\",\n \"status\": 'code',\n \"error\": \"Detailed error here\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/api/users/:id",
+    "title": "2. Get only one User",
+    "version": "1.0.0",
+    "name": "GetOneUser",
+    "group": "Users",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>Get one user from database by its ID.</p> ",
+    "parameter": {
+      "fields": {
+        "Param": [
+          {
+            "group": "Param",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "id",
+            "description": "<p>ID of the user.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "Id",
+            "description": "<p>User ID on database.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "name",
+            "description": "<p>Name of the User.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "email",
+            "description": "<p>E-mail to get in touch with the user.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "username",
+            "description": "<p>Username to log in the system.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "password",
+            "description": "<p>Password to log in the system.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"id\": 1,\n  \"name\":\"Jaime\",\n  \"email\":\"jaiminho@correios.com.br\",\n  \"username\":\"jaiminho\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/users/getOne.js",
+    "groupTitle": "Users",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Unauthorized",
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Forbidden",
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotFound",
+            "description": "<p>The required resource does not exist.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "UnauthorizedError:",
+          "content": "HTTP/1.1 401 Unauthorized\n\t\"Unauthorized\"",
+          "type": "json"
+        },
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n  \"message\": \"Token not allowed for this opperation\",\n  \"status\": 403,\n  \"error\": \"Get out dog.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ResponseError:",
+          "content": "HTTP/1.1 'Code & Message'\n{\n \"message\": \"Any Message here\",\n \"status\": 'code',\n \"error\": \"Detailed error here\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/api/users",
+    "title": "1. Get array of users",
+    "version": "1.0.0",
+    "name": "GetUsers",
+    "group": "Users",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>Get all users from database or a groups of users based on a query.</p> ",
+    "examples": [
+      {
+        "title": "Example usage:",
+        "content": "https://localhost/api/users",
+        "type": "json"
+      },
+      {
+        "title": "Query Example:",
+        "content": "https://localhost/api/users?q={\"limit\": 2}",
+        "type": "json"
+      }
+    ],
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>Object[]</p> ",
+            "optional": false,
+            "field": "user",
+            "description": "<p>List of Users.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n[\n{\n  \"id\": 1,\n  \"name\":\"Jaime\",\n  \"email\":\"jaiminho@correios.com.br\",\n  \"username\":\"jaiminho\"\n},\n{\n  \"id\": 2,\n  \"name\":\"Administrator\",\n  \"email\":\"invalid@mail.com.br\",\n  \"username\":\"admin\"\n}\n]",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/users/getAll.js",
+    "groupTitle": "Users",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "optional": false,
+            "field": "q",
+            "description": "<p>(Query) Received all parameter defined by Sequelize documentations. Available <a href=\"http://docs.sequelizejs.com/en/latest/docs/querying/\" target=\"_blank\"> here.</a></p> "
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Unauthorized",
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Forbidden",
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotFound",
+            "description": "<p>The required resource does not exist.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "UnauthorizedError:",
+          "content": "HTTP/1.1 401 Unauthorized\n\t\"Unauthorized\"",
+          "type": "json"
+        },
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n  \"message\": \"Token not allowed for this opperation\",\n  \"status\": 403,\n  \"error\": \"Get out dog.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ResponseError:",
+          "content": "HTTP/1.1 'Code & Message'\n{\n \"message\": \"Any Message here\",\n \"status\": 'code',\n \"error\": \"Detailed error here\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
+    "url": "/api/users",
+    "title": "3. Create a new User",
+    "version": "1.0.0",
+    "name": "PostUser",
+    "group": "Users",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>Insert a new User on database.</p> ",
+    "examples": [
+      {
+        "title": "Object Example:",
+        "content": "{\n  \"name\":\"Jaime\",\n  \"email\":\"jaiminho@correios.com.br\",\n  \"username\":\"jaiminho\",\n  \"password\":\"jaiminho\",\n}",
+        "type": "json"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Body": [
+          {
+            "group": "Body",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "name",
+            "description": "<p>Name of the User {Required, Unique}.</p> "
+          },
+          {
+            "group": "Body",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "email",
+            "description": "<p>Email to get in touch with the user {Required}.</p> "
+          },
+          {
+            "group": "Body",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "username",
+            "description": "<p>Username to log in the system {Required, Unique}.</p> "
+          },
+          {
+            "group": "Body",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "password",
+            "description": "<p>Password to log in the system {Required}.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"id\": 1,\n  \"name\":\"Jaime\",\n  \"email\":\"jaiminho@correios.com.br\",\n  \"username\":\"jaiminho\",\n  \"appClient\": {\n    \"token\": \"uNgZnpGeKpr8JPMM4i1WT0KuiaeSYRT7\",\n    \"description\":\"Default appClient for jaiminho\",\n    \"userId\": 1,\n    \"createdAt\": \"2015-11-23T16:50:22.064Z\",\n    \"updatedAt\": \"2015-11-23T16:50:22.064Z\",\n    \"deletedAt\": null\n  }\n  \"createdAt\": \"2015-11-23T16:50:22.064Z\",\n  \"updatedAt\": \"2015-11-23T16:50:22.064Z\",\n  \"deletedAt\": null\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/users/newUser.js",
+    "groupTitle": "Users",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Unauthorized",
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Forbidden",
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotFound",
+            "description": "<p>The required resource does not exist.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "UnauthorizedError:",
+          "content": "HTTP/1.1 401 Unauthorized\n\t\"Unauthorized\"",
+          "type": "json"
+        },
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n  \"message\": \"Token not allowed for this opperation\",\n  \"status\": 403,\n  \"error\": \"Get out dog.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ResponseError:",
+          "content": "HTTP/1.1 'Code & Message'\n{\n \"message\": \"Any Message here\",\n \"status\": 'code',\n \"error\": \"Detailed error here\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "put",
+    "url": "/api/users/:id",
+    "title": "4. Update an existing User",
+    "version": "1.0.0",
+    "name": "PutUser",
+    "group": "Users",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>Update a User from database.</p> ",
+    "parameter": {
+      "fields": {
+        "Param": [
+          {
+            "group": "Param",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "id",
+            "description": "<p>ID of the user.</p> "
+          }
+        ],
+        "Body": [
+          {
+            "group": "Body",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "name",
+            "description": "<p>Name of the User {Required, Unique}.</p> "
+          },
+          {
+            "group": "Body",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "email",
+            "description": "<p>Email to get in touch with the user {Required}.</p> "
+          },
+          {
+            "group": "Body",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "username",
+            "description": "<p>Username to log in the system {Required, Unique}.</p> "
+          },
+          {
+            "group": "Body",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "password",
+            "description": "<p>Password to log in the system {Required}.</p> "
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "Object Example:",
+        "content": "{\n  \"id\": 1,\n  \"name\":\"Jaime\",\n  \"email\":\"jaiminho@correios.com.br\",\n  \"username\":\"jaiminho\",\n  \"password\":\"jaiminho\"\n}",
+        "type": "json"
+      }
+    ],
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"id\": 1,\n  \"name\":\"Jaime\",\n  \"email\":\"jaiminho@correios.com.br\",\n  \"username\":\"jaiminho\",\n  \"updatedAt\": \"2015-11-27T15:32:18.064Z\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/users/updateUser.js",
+    "groupTitle": "Users",
     "error": {
       "fields": {
         "Error 4xx": [
