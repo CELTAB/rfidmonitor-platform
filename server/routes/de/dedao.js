@@ -26,29 +26,23 @@ var getHandler = function(req, callback){
     return errorHandler('Invalid Entity', 400, callback);
 
   var promises = promisesHandler(callback);
-  if(!req.params.id){
-    var query = null;
-    if(req.query && req.query.q){
-      query = req.query.q;
-      logger.debug(query);
+  var query = null;
+  if(req.query && req.query.q){
+    query = req.query.q;
+    logger.debug(query);
 
-      try{
-        query = JSON.parse(query);
-      }catch(e){
-        return errorHandler('Query parser error: ' + e.toString(), 400, callback);
-      }
+    try{
+      query = JSON.parse(query);
+    }catch(e){
+      return errorHandler('Query parser error: ' + e.toString(), 400, callback);
     }
-    if(!query)
-      query = {
-        include: [{all: true}]
-      };
-    model.findAll(query).then(promises.success).catch(promises.error);
+  }
+  if(!req.params.id){
+    model.findAll(query || {}).then(promises.success).catch(promises.error);
   }else{
-    model.findOne(
-		{
-			where : { id : req.params.id },
-			include: [{all: true}]
-		}).then(promises.success).catch(promises.error);
+    query = query || {};
+    query.where = {id: req.params.id};
+    model.findOne(query).then(promises.success).catch(promises.error);
   }
 }
 

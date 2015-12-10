@@ -30,7 +30,7 @@ DeCtrl.custom['save'] = function(body, callback){
   var dynamicEntities = new (require(__base + 'controller/dynamic/dynamicentities'))();
   dynamicEntities.registerEntity(body, function(errors){
     if(errors)
-      return callback({code: 500, error: 'errors : ' + JSON.stringify(errors), message: 'Error on save dynamic entity'});
+      return callback({code: 500, error: errors.message, message: 'Error on save dynamic entity'});
     return callback(null, {"message" : "OK"});
   });
 };

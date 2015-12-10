@@ -174,7 +174,7 @@ var buildDefinition = function(entity, callback){
 					//, deferrable: Sequelize.Deferrable.INITIALLY_IMMEDIATE
 				}
 			}
-
+			definition.sequelizeOptions.classMethods.associate.push({modelName: definition.identifier, targetName: 'Group', foreignKey: field.identifier});
 		}else if(field.type == DEValidator.prototype.typesEnum.IMAGE){
 
 			field.name = field.identifier;
