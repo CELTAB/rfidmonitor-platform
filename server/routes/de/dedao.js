@@ -28,7 +28,7 @@ var getHandler = function(req, callback){
   var promises = promisesHandler(callback);
   if(!req.params.id){
     var query = null;
-    if(req.uery && req.query.q){
+    if(req.query && req.query.q){
       query = req.query.q;
       logger.debug(query);
 
@@ -109,7 +109,7 @@ var routes = [
   new Route('get', routeStr, getHandler),
   new Route('get', routeStr + '/:id', getHandler),
   new Route('post', routeStr, postHandler),
-  new Route('put', routeStr, putHandler),
+  new Route('put', routeStr + '/:id', putHandler),
   new Route('delete', routeStr + '/:id', deleteHandler)
 ];
 

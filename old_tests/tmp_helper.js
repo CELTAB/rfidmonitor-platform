@@ -85,7 +85,7 @@ var Foo = sequelize.define('Foo', {
 var project = Project.build({
   title: 'my awesome project',
   description: 'woot woot. this will make me a rich man'
-}) 
+})
 var task = Task.build({
   title: 'specify the project idea',
   description: 'bla',
@@ -403,7 +403,7 @@ var testObj_complexFiveDeep = [
         "type" : "TEXT",
         "allowNull" : true
       }
-    ] 
+    ]
   },
   {
     "field" : "Carro2",
@@ -414,7 +414,7 @@ var testObj_complexFiveDeep = [
         "type" : "TEXT",
         "allowNull" : true
       }
-    ] 
+    ]
   }
 ]
 
@@ -435,7 +435,7 @@ var testObj_complexFiveDeep = [
         "type" : "IMAGE",
         "allowNull" : true
       }
-    ] 
+    ]
   }
 ]
 
@@ -459,6 +459,6 @@ var testObj_complexFiveDeep = [
         "type" : "GROUP",
         "allowNull" : true
       }
-    ] 
+    ]
   }
 ]
