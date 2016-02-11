@@ -1,3 +1,135 @@
+/**
+* @api {get} /api/rfiddatas 1. Get array of RFIDDatas
+* @apiVersion 1.0.0
+* @apiName GetRfidData
+* @apiGroup RFIDData
+* @apiPermission TokenAccess
+*
+* @apiDescription RFIDData records from collecting point, defined by collectors.
+*
+* @apiExample Example usage:
+* https://localhost/api/rfiddatas
+*
+* @apiExample Query Example:
+* https://localhost/api/rfiddatas?q={"where":{"rfidCode":"5555526"}, "limit":3, "include":[{"all":true}], "entity":"carro", "entityQuery":{"where":{"placa":"ABC-1234"}, "include":[{"all":true}]}}
+*
+* @apiExample Query Object example:
+q={
+  "where":{
+    "rfidCode":"5555526"
+  },
+  "limit":3,
+  "include":[{
+    "all":true
+  }],
+  "entity":"carro",
+  "embeddedRecords":true,
+  "entityQuery":{
+    "where":{
+      "placa":"ABC-1234"
+    },
+    "include":[{
+      "all":true
+    }]
+  }
+}
+*
+* @apiSuccess {Object[]} groups       List of RFIDData records.
+*
+* @apiUse defaultQuery
+* @apiParam entity (Inside "q" object) Search RFIDData linkin with this Dinamic entity. Mandatory if embeddedRecords is true.
+* @apiParam entityQuery (Inside "q" object) Search for all entities that match query defined by entityQuery parameter. Also receives sequelize queries (See <a href="http://docs.sequelizejs.com/en/latest/docs/querying/" target="_blank"> here</a>).
+* @apiParam embeddedRecords (Inside "q" object) For each found entity, based on entityQuery, it searcs the related rfid records to embed as an array.
+*
+* @apiSuccessExample Success-Response:
+*HTTP/1.1 200 OK
+[
+  {
+    "id": 1,
+    "rfidCode": "5555526",
+    "extraData": null,
+    "rfidReadDate": "2015-11-23T16:50:22.819Z",
+    "serverReceivedDate": "2015-11-23T16:50:26.850Z",
+    "createdAt": "2015-11-23T16:50:26.853Z",
+    "updatedAt": "2015-11-23T16:50:26.853Z",
+    "deletedAt": null,
+    "collectorId": 3,
+    "packageId": 2
+  },
+  {
+    "id": 2,
+    "rfidCode": "5555522",
+    "extraData": null,
+    "rfidReadDate": "2015-11-23T16:50:22.821Z",
+    "serverReceivedDate": "2015-11-23T16:50:26.852Z",
+    "createdAt": "2015-11-23T16:50:26.854Z",
+    "updatedAt": "2015-11-23T16:50:26.854Z",
+    "deletedAt": null,
+    "collectorId": 3,
+    "packageId": 1
+  }
+]
+*
+@apiSuccessExample Response with Entity:
+HTTP/1.1 200 OK
+[
+  {
+    "id": 1,
+    "rfidCode": "5555526",
+    "extraData": null,
+    "rfidReadDate": "2015-11-23T16:50:22.819Z",
+    "serverReceivedDate": "2015-11-23T16:50:26.850Z",
+    "createdAt": "2015-11-23T16:50:26.853Z",
+    "updatedAt": "2015-11-23T16:50:26.853Z",
+    "deletedAt": null,
+    "collectorId": 3,
+    "packageId": 2,
+    "entity": {
+      "id": 2,
+      "placa": "ABC-1234",
+      "chassi": "AS12345AJSD",
+      "foto_platform_media": null,
+      "pit": "5555526",
+      "motorista_id": 1,
+      "createdAt": "2015-12-04T19:09:03.206Z",
+      "updatedAt": "2015-12-04T19:09:03.206Z",
+      "deletedAt": null
+    }
+  }
+]
+
+@apiSuccessExample Response with Embedded Records:
+HTTP/1.1 200 OK
+{
+    "id": 2,
+    "placa": "ABC-1234",
+    "chassi": "AS12345AJSD",
+    "foto_platform_media": null,
+    "pit": "5555526",
+    "motorista_id": 1,
+    "createdAt": "2015-12-04T19:09:03.206Z",
+    "updatedAt": "2015-12-04T19:09:03.206Z",
+    "deletedAt": null,
+    "records": [
+      {
+        "id": 1,
+        "rfidCode": "5555526",
+        "extraData": null,
+        "rfidReadDate": "2015-11-23T16:50:22.819Z",
+        "serverReceivedDate": "2015-11-23T16:50:26.850Z",
+        "createdAt": "2015-11-23T16:50:26.853Z",
+        "updatedAt": "2015-11-23T16:50:26.853Z",
+        "deletedAt": null,
+        "collectorId": 3,
+        "packageId": 2
+      }
+    ]
+  }
+
+@apiUse defaultResponses
+*/
+
+
 /*
 Query example for seach RFIDData linkin with Dinamic entity
 https://localhost:8143/api/rfiddatas?q={"where":{"rfidCode":"5555526"}, "limit":3, "include":[{"all":true}], "entity":"carro", "entityQuery":{"where":{"placa":"ABC-1234"}, "include":[{"all":true}]}}

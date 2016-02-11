@@ -1,6 +1,530 @@
 define({ "api": [
   {
     "type": "delete",
+    "url": "/api/appclients/:id",
+    "title": "5. Remove an AppClient",
+    "version": "1.0.0",
+    "name": "DeleteAppClient",
+    "group": "AppClients",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>AppClients who have a token and can access resources.</p> ",
+    "parameter": {
+      "fields": {
+        "Param": [
+          {
+            "group": "Param",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "id",
+            "description": "<p>ID of the AppClient.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n  {\n    \"id\": 3,\n    \"token\": \"MACcN1GgtCXw3tyQqd1QkrT3GhwsWM4y\",\n    \"description\": \"Default appClient for jaiminho\",\n    \"createdAt\": \"2015-11-30T19:51:39.303Z\",\n    \"updatedAt\": \"2015-11-30T19:51:39.303Z\",\n    \"deletedAt\": \"2015-12-16T11:47:53.215Z\",\n    \"userId\": 3\n  }",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/appClients/deleteAppClient.js",
+    "groupTitle": "AppClients",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Unauthorized",
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Forbidden",
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotFound",
+            "description": "<p>The required resource does not exist.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "UnauthorizedError:",
+          "content": "HTTP/1.1 401 Unauthorized\n\t\"Unauthorized\"",
+          "type": "json"
+        },
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n  \"message\": \"Token not allowed for this opperation\",\n  \"status\": 403,\n  \"error\": \"Get out dog.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ResponseError:",
+          "content": "HTTP/1.1 'Code & Message'\n{\n \"message\": \"Any Message here\",\n \"status\": 'code',\n \"error\": \"Detailed error here\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/api/appclients",
+    "title": "1. Get array of AppClients",
+    "version": "1.0.0",
+    "name": "GetAppClients",
+    "group": "AppClients",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>AppClients who have a token and can access resources.</p> ",
+    "examples": [
+      {
+        "title": "Example usage:",
+        "content": "https://localhost/api/appclients",
+        "type": "json"
+      },
+      {
+        "title": "Query Example:",
+        "content": "https://localhost/api/appclients?q={\"limit\": 2, \"include\":[{\"all\":true}]}",
+        "type": "json"
+      }
+    ],
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>Object[]</p> ",
+            "optional": false,
+            "field": "appclients",
+            "description": "<p>List of AppClients.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n[\n  {\n    \"id\": 1,\n    \"token\": \"uNgZnpGeKpr8JPMM4i1WT0KuiaeSYRT7\",\n    \"description\": \"Default appClient for admin\",\n    \"createdAt\": \"2015-11-23T16:50:16.361Z\",\n    \"updatedAt\": \"2015-11-23T16:50:16.361Z\",\n    \"deletedAt\": null,\n    \"userId\": 2\n  },\n  {\n    \"id\": 2,\n    \"token\": \"XOdWlEcXZD54SMnHyWJyOego2KSdpIRK\",\n    \"description\": \"Default appClient for jaiminho\",\n    \"createdAt\": \"2015-11-25T12:06:57.660Z\",\n    \"updatedAt\": \"2015-11-25T12:06:57.660Z\",\n    \"deletedAt\": null,\n    \"userId\": 1\n  }\n]",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/appClients/getAll.js",
+    "groupTitle": "AppClients",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "optional": false,
+            "field": "q",
+            "description": "<p>(Query) Received all parameter defined by Sequelize documentations. Available <a href=\"http://docs.sequelizejs.com/en/latest/docs/querying/\" target=\"_blank\"> here.</a></p> "
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Unauthorized",
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Forbidden",
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotFound",
+            "description": "<p>The required resource does not exist.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "UnauthorizedError:",
+          "content": "HTTP/1.1 401 Unauthorized\n\t\"Unauthorized\"",
+          "type": "json"
+        },
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n  \"message\": \"Token not allowed for this opperation\",\n  \"status\": 403,\n  \"error\": \"Get out dog.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ResponseError:",
+          "content": "HTTP/1.1 'Code & Message'\n{\n \"message\": \"Any Message here\",\n \"status\": 'code',\n \"error\": \"Detailed error here\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/api/appclients/:id",
+    "title": "2. Get only one AppClient",
+    "version": "1.0.0",
+    "name": "GetOneAppClient",
+    "group": "AppClients",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>AppClients who have a token and can access resources.</p> ",
+    "parameter": {
+      "fields": {
+        "Param": [
+          {
+            "group": "Param",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "id",
+            "description": "<p>ID of the AppClient.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "Id",
+            "description": "<p>AppClient ID on database.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "token",
+            "description": "<p>Token that give access to resources.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "description",
+            "description": "<p>Defines the AppClient.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>Date</p> ",
+            "optional": false,
+            "field": "createdAt",
+            "description": "<p>Creation date generated by Sequelize.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>Date</p> ",
+            "optional": false,
+            "field": "updatedAt",
+            "description": "<p>Last update of this AppClient.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>Date</p> ",
+            "optional": false,
+            "field": "deletedAt",
+            "description": "<p>Null if appClient is not deleted or removal date.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "userId",
+            "description": "<p>ID of User related to this AppClient.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"id\": 1,\n  \"token\": \"uNgZnpGeKpr8JPMM4i1WT0KuiaeSYRT7\",\n  \"description\": \"Default appClient for admin\",\n  \"createdAt\": \"2015-11-23T16:50:16.361Z\",\n  \"updatedAt\": \"2015-11-23T16:50:16.361Z\",\n  \"deletedAt\": null,\n  \"userId\": 1\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/appClients/getOne.js",
+    "groupTitle": "AppClients",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Unauthorized",
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Forbidden",
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotFound",
+            "description": "<p>The required resource does not exist.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "UnauthorizedError:",
+          "content": "HTTP/1.1 401 Unauthorized\n\t\"Unauthorized\"",
+          "type": "json"
+        },
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n  \"message\": \"Token not allowed for this opperation\",\n  \"status\": 403,\n  \"error\": \"Get out dog.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ResponseError:",
+          "content": "HTTP/1.1 'Code & Message'\n{\n \"message\": \"Any Message here\",\n \"status\": 'code',\n \"error\": \"Detailed error here\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
+    "url": "/api/appclients",
+    "title": "3. Create a new AppClient",
+    "version": "1.0.0",
+    "name": "PostAppClient",
+    "group": "AppClients",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>AppClients who have a token and can access resources.</p> ",
+    "examples": [
+      {
+        "title": "Object Example:",
+        "content": "{\n  \"description\": \"Description for this appClient\",\n  \"userId\": 1\n}",
+        "type": "json"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Body": [
+          {
+            "group": "Body",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "description",
+            "description": "<p>Defines the AppClient, by a simple description {Required}.</p> "
+          },
+          {
+            "group": "Body",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "userId",
+            "description": "<p>ID of User related to this AppClient {Required}.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"id\": 4,\n  \"description\": \"Description for this appClient\",\n  \"userId\": 1,\n  \"token\": \"HGdWW1BLAVSc84lBfbMPe79gq9T46ZaL\",\n  \"updatedAt\": \"2015-12-15T13:06:41.834Z\",\n  \"createdAt\": \"2015-12-15T13:06:41.834Z\",\n  \"deletedAt\": null\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/appClients/newAppClient.js",
+    "groupTitle": "AppClients",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Unauthorized",
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Forbidden",
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotFound",
+            "description": "<p>The required resource does not exist.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "UnauthorizedError:",
+          "content": "HTTP/1.1 401 Unauthorized\n\t\"Unauthorized\"",
+          "type": "json"
+        },
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n  \"message\": \"Token not allowed for this opperation\",\n  \"status\": 403,\n  \"error\": \"Get out dog.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ResponseError:",
+          "content": "HTTP/1.1 'Code & Message'\n{\n \"message\": \"Any Message here\",\n \"status\": 'code',\n \"error\": \"Detailed error here\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "put",
+    "url": "/api/appclients/:id",
+    "title": "4. Update an existing AppClient",
+    "version": "1.0.0",
+    "name": "PutAppClient",
+    "group": "AppClients",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>AppClients who have a token and can access resources.</p> ",
+    "parameter": {
+      "fields": {
+        "Param": [
+          {
+            "group": "Param",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "id",
+            "description": "<p>ID of the AppClient.</p> "
+          }
+        ],
+        "Body": [
+          {
+            "group": "Body",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "ID",
+            "description": "<p>ID of the AppClient on database {Required}.</p> "
+          },
+          {
+            "group": "Body",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "description",
+            "description": "<p>Defines the AppClient, by a simple description {Required}.</p> "
+          },
+          {
+            "group": "Body",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "userId",
+            "description": "<p>ID of User related to this AppClient {Required}.</p> "
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "Object Example:",
+        "content": "{\n  \"id\": 1,\n  \"description\": \"Default appClient for admin, updated\",\n  \"userId\": 1\n}",
+        "type": "json"
+      }
+    ],
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n  {\n    \"id\": 1,\n    \"token\": \"uNgZnpGeKpr8JPMM4i1WT0KuiaeSYRT7\",\n    \"description\": \"Default appClient for admin, updated\",\n    \"createdAt\": \"2015-11-23T16:50:16.361Z\",\n    \"updatedAt\": \"2015-12-16T11:45:24.829Z\",\n    \"deletedAt\": null,\n    \"userId\": 1\n  }",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/appClients/updateAppClient.js",
+    "groupTitle": "AppClients",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Unauthorized",
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Forbidden",
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotFound",
+            "description": "<p>The required resource does not exist.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "UnauthorizedError:",
+          "content": "HTTP/1.1 401 Unauthorized\n\t\"Unauthorized\"",
+          "type": "json"
+        },
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n  \"message\": \"Token not allowed for this opperation\",\n  \"status\": 403,\n  \"error\": \"Get out dog.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ResponseError:",
+          "content": "HTTP/1.1 'Code & Message'\n{\n \"message\": \"Any Message here\",\n \"status\": 'code',\n \"error\": \"Detailed error here\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "delete",
     "url": "/api/collectors/:id",
     "title": "5. Remove a Collector",
     "version": "1.0.0",
@@ -601,6 +1125,141 @@ define({ "api": [
     }
   },
   {
+    "type": "post",
+    "url": "/api/de/register",
+    "title": "3. Create a new Dynamic Entity",
+    "version": "1.0.0",
+    "name": "PostDynamicEntity",
+    "group": "DynamicEntity",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>Dynamic Entities to related object with monitored RFID.</p> ",
+    "examples": [
+      {
+        "title": "Object Example:",
+        "content": "[\n  {\n      \"field\" : \"Car\",\n      \"type\" : \"ENTITY\",\n      \"unique\" : [[\"RFID Code\"]],\n      \"defaultReference\":\"Plate\",\n      \"structureList\" : [\n          {\n              \"field\" : \"RFID Code\",\n              \"type\" : \"RFIDCODE\",\n              \"description\" : \"Any description here\",\n              \"allowNull\" : false\n          },\n          {\n              \"field\" : \"Plate\",\n              \"type\" : \"TEXT\",\n              \"description\" : \"Any description here\",\n              \"allowNull\" : false\n          },\n          {\n              \"field\" : \"Manufacture Year\",\n              \"type\" : \"DATETIME\",\n              \"description\" : \"Any description here\",\n              \"allowNull\" : false\n          },\n          {\n              \"field\" : \"Driver\",\n              \"type\" : \"ENTITY\",\n              \"unique\" : [],\n              \"structureList\" : [\n                  {\n                      \"field\" : \"Full Name\",\n                      \"type\" : \"TEXT\",\n                      \"description\" : \"Any description here\",\n                      \"allowNull\" : false\n                  },\n                  {\n                      \"field\" : \"Age\",\n                      \"type\" : \"INTEGER\",\n                      \"description\" : \"Any description here\",\n                      \"allowNull\" : false\n                  }\n              ]\n          }\n      ]\n  }\n]",
+        "type": "json"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Body": [
+          {
+            "group": "Body",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "field",
+            "description": "<p>Defines the name for the Dynamic Entity, must be an unique name {Required, Unique}.</p> "
+          },
+          {
+            "group": "Body",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "type",
+            "description": "<p>Defines the type of the data field. Follows pre-defined types {Required}.</p> "
+          },
+          {
+            "group": "Body",
+            "type": "<p>Array</p> ",
+            "optional": false,
+            "field": "unique",
+            "description": "<p>Describe the field(s) that must have unique values {Required}.</p> "
+          },
+          {
+            "group": "Body",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "defaultReference",
+            "description": "<p>Same name of the field used to reference this entity. Only alllowed for fields with type ENTITY {Required}.</p> "
+          },
+          {
+            "group": "Body",
+            "type": "<p>Array</p> ",
+            "optional": false,
+            "field": "structureList",
+            "description": "<p>Defines a sub-entity with the same fields described here. Only alllowed for fields with type ENTITY {Required}.</p> "
+          },
+          {
+            "group": "Body",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "description",
+            "description": "<p>A short description for the given field. Used only for field with type different of ENTITY.</p> "
+          },
+          {
+            "group": "Body",
+            "type": "<p>Boolean</p> ",
+            "optional": false,
+            "field": "allowNull",
+            "description": "<p>Defines if wheather the field accepts null values. Used only for field with type different of ENTITY {Required}.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Types Example",
+          "content": "ENTITY: \"Used to create a new data type\"\nRFIDCODE: \"Relate the field with the RDIDData entity\"\nTEXT: \"Create a fiel that accept only text values (strings)\"\nDATETIME: \"Field to store a timestamp\"\nINTEGER: \"Field to store an integer value\"\nGROUP: \"Relate the field with the Group entity\"",
+          "type": "json"
+        },
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"message\": \"OK\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/dynamicEntities/getOne.js",
+    "groupTitle": "DynamicEntity",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Unauthorized",
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Forbidden",
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotFound",
+            "description": "<p>The required resource does not exist.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "UnauthorizedError:",
+          "content": "HTTP/1.1 401 Unauthorized\n\t\"Unauthorized\"",
+          "type": "json"
+        },
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n  \"message\": \"Token not allowed for this opperation\",\n  \"status\": 403,\n  \"error\": \"Get out dog.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ResponseError:",
+          "content": "HTTP/1.1 'Code & Message'\n{\n \"message\": \"Any Message here\",\n \"status\": 'code',\n \"error\": \"Detailed error here\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
     "type": "delete",
     "url": "/api/groups/:id",
     "title": "5. Remove a Group",
@@ -1130,6 +1789,378 @@ define({ "api": [
         }
       ]
     }
+  },
+  {
+    "type": "delete",
+    "url": "/api/rfiddatas/:id",
+    "title": "5. Remove an existing RFIData",
+    "version": "1.0.0",
+    "name": "DeleteRfidData",
+    "group": "RFIDData",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>You are not allowed to make any change on rfidDatas.</p> ",
+    "error": {
+      "examples": [
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n \"message\": \"You are not allowed to make any change on rfidDatas\",\n \"status\": 403,\n \"error\": \"Not Allowed\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/rfiddatas/updates.js",
+    "groupTitle": "RFIDData"
+  },
+  {
+    "type": "get",
+    "url": "/api/rfiddatas/:id",
+    "title": "2. Get only one RFID Record",
+    "version": "1.0.0",
+    "name": "GetOneRfidData",
+    "group": "RFIDData",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>RFIDData records from collecting point, defined by collectors.</p> ",
+    "parameter": {
+      "fields": {
+        "Param": [
+          {
+            "group": "Param",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "id",
+            "description": "<p>ID of the RFIDData record.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "Id",
+            "description": "<p>RFIDData ID on database.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "rfidCode",
+            "description": "<p>RFID code.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>Date</p> ",
+            "optional": false,
+            "field": "rfidReadDate",
+            "description": "<p>Read date and time from collector.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>Date</p> ",
+            "optional": false,
+            "field": "serverReceivedDate",
+            "description": "<p>Server recived Date and time.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>Date</p> ",
+            "optional": false,
+            "field": "createdAt",
+            "description": "<p>Date time of creation record on database, defined by sequelize.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>Date</p> ",
+            "optional": false,
+            "field": "updatedAt",
+            "description": "<p>Last update of this RFIDData (same as createdAt, because it will never change).</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>Date</p> ",
+            "optional": false,
+            "field": "deletedAt",
+            "description": "<p>Null if RFIDData is not deleted or removal date.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "collectorId",
+            "description": "<p>ID of the collector.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "packageId",
+            "description": "<p>ID of the package, used only by back-end.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "extraData",
+            "description": "<p>Any other information (Dynamic purpouses).</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n \"id\": 1,\n \"rfidCode\": \"5555526\",\n \"extraData\": null,\n \"rfidReadDate\": \"2015-11-23T16:50:22.819Z\",\n \"serverReceivedDate\": \"2015-11-23T16:50:26.850Z\",\n \"createdAt\": \"2015-11-23T16:50:26.853Z\",\n \"updatedAt\": \"2015-11-23T16:50:26.853Z\",\n \"deletedAt\": null,\n \"collectorId\": 3,\n \"packageId\": 2\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/rfiddatas/getOne.js",
+    "groupTitle": "RFIDData",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Unauthorized",
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Forbidden",
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotFound",
+            "description": "<p>The required resource does not exist.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "UnauthorizedError:",
+          "content": "HTTP/1.1 401 Unauthorized\n\t\"Unauthorized\"",
+          "type": "json"
+        },
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n  \"message\": \"Token not allowed for this opperation\",\n  \"status\": 403,\n  \"error\": \"Get out dog.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ResponseError:",
+          "content": "HTTP/1.1 'Code & Message'\n{\n \"message\": \"Any Message here\",\n \"status\": 'code',\n \"error\": \"Detailed error here\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/api/rfiddatas",
+    "title": "1. Get array of RFIDDatas",
+    "version": "1.0.0",
+    "name": "GetRfidData",
+    "group": "RFIDData",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>RFIDData records from collecting point, defined by collectors.</p> ",
+    "examples": [
+      {
+        "title": "Example usage:",
+        "content": "https://localhost/api/rfiddatas",
+        "type": "json"
+      },
+      {
+        "title": "Query Example:",
+        "content": "https://localhost/api/rfiddatas?q={\"where\":{\"rfidCode\":\"5555526\"}, \"limit\":3, \"include\":[{\"all\":true}], \"entity\":\"carro\", \"entityQuery\":{\"where\":{\"placa\":\"ABC-1234\"}, \"include\":[{\"all\":true}]}}",
+        "type": "json"
+      },
+      {
+        "title": "Query Object example:",
+        "content": "q={\n  \"where\":{\n    \"rfidCode\":\"5555526\"\n  },\n  \"limit\":3,\n  \"include\":[{\n    \"all\":true\n  }],\n  \"entity\":\"carro\",\n  \"embeddedRecords\":true,\n  \"entityQuery\":{\n    \"where\":{\n      \"placa\":\"ABC-1234\"\n    },\n    \"include\":[{\n      \"all\":true\n    }]\n  }\n}",
+        "type": "json"
+      }
+    ],
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>Object[]</p> ",
+            "optional": false,
+            "field": "groups",
+            "description": "<p>List of RFIDData records.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n[\n  {\n    \"id\": 1,\n    \"rfidCode\": \"5555526\",\n    \"extraData\": null,\n    \"rfidReadDate\": \"2015-11-23T16:50:22.819Z\",\n    \"serverReceivedDate\": \"2015-11-23T16:50:26.850Z\",\n    \"createdAt\": \"2015-11-23T16:50:26.853Z\",\n    \"updatedAt\": \"2015-11-23T16:50:26.853Z\",\n    \"deletedAt\": null,\n    \"collectorId\": 3,\n    \"packageId\": 2\n  },\n  {\n    \"id\": 2,\n    \"rfidCode\": \"5555522\",\n    \"extraData\": null,\n    \"rfidReadDate\": \"2015-11-23T16:50:22.821Z\",\n    \"serverReceivedDate\": \"2015-11-23T16:50:26.852Z\",\n    \"createdAt\": \"2015-11-23T16:50:26.854Z\",\n    \"updatedAt\": \"2015-11-23T16:50:26.854Z\",\n    \"deletedAt\": null,\n    \"collectorId\": 3,\n    \"packageId\": 1\n  }\n]",
+          "type": "json"
+        },
+        {
+          "title": "Response with Entity:",
+          "content": "HTTP/1.1 200 OK\n[\n  {\n    \"id\": 1,\n    \"rfidCode\": \"5555526\",\n    \"extraData\": null,\n    \"rfidReadDate\": \"2015-11-23T16:50:22.819Z\",\n    \"serverReceivedDate\": \"2015-11-23T16:50:26.850Z\",\n    \"createdAt\": \"2015-11-23T16:50:26.853Z\",\n    \"updatedAt\": \"2015-11-23T16:50:26.853Z\",\n    \"deletedAt\": null,\n    \"collectorId\": 3,\n    \"packageId\": 2,\n    \"entity\": {\n      \"id\": 2,\n      \"placa\": \"ABC-1234\",\n      \"chassi\": \"AS12345AJSD\",\n      \"foto_platform_media\": null,\n      \"pit\": \"5555526\",\n      \"motorista_id\": 1,\n      \"createdAt\": \"2015-12-04T19:09:03.206Z\",\n      \"updatedAt\": \"2015-12-04T19:09:03.206Z\",\n      \"deletedAt\": null\n    }\n  }\n]",
+          "type": "json"
+        },
+        {
+          "title": "Response with Embedded Records:",
+          "content": "HTTP/1.1 200 OK\n{\n    \"id\": 2,\n    \"placa\": \"ABC-1234\",\n    \"chassi\": \"AS12345AJSD\",\n    \"foto_platform_media\": null,\n    \"pit\": \"5555526\",\n    \"motorista_id\": 1,\n    \"createdAt\": \"2015-12-04T19:09:03.206Z\",\n    \"updatedAt\": \"2015-12-04T19:09:03.206Z\",\n    \"deletedAt\": null,\n    \"records\": [\n      {\n        \"id\": 1,\n        \"rfidCode\": \"5555526\",\n        \"extraData\": null,\n        \"rfidReadDate\": \"2015-11-23T16:50:22.819Z\",\n        \"serverReceivedDate\": \"2015-11-23T16:50:26.850Z\",\n        \"createdAt\": \"2015-11-23T16:50:26.853Z\",\n        \"updatedAt\": \"2015-11-23T16:50:26.853Z\",\n        \"deletedAt\": null,\n        \"collectorId\": 3,\n        \"packageId\": 2\n      }\n    ]\n  }",
+          "type": "json"
+        }
+      ]
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "optional": false,
+            "field": "entity",
+            "description": "<p>(Inside &quot;q&quot; object) Search RFIDData linkin with this Dinamic entity. Mandatory if embeddedRecords is true.</p> "
+          },
+          {
+            "group": "Parameter",
+            "optional": false,
+            "field": "entityQuery",
+            "description": "<p>(Inside &quot;q&quot; object) Search for all entities that match query defined by entityQuery parameter. Also receives sequelize queries (See <a href=\"http://docs.sequelizejs.com/en/latest/docs/querying/\" target=\"_blank\"> here</a>).</p> "
+          },
+          {
+            "group": "Parameter",
+            "optional": false,
+            "field": "embeddedRecords",
+            "description": "<p>(Inside &quot;q&quot; object) For each found entity, based on entityQuery, it searcs the related rfid records to embed as an array.</p> "
+          },
+          {
+            "group": "Parameter",
+            "optional": false,
+            "field": "q",
+            "description": "<p>(Query) Received all parameter defined by Sequelize documentations. Available <a href=\"http://docs.sequelizejs.com/en/latest/docs/querying/\" target=\"_blank\"> here.</a></p> "
+          }
+        ]
+      }
+    },
+    "filename": "apidoc_source/rfiddatas/getAll.js",
+    "groupTitle": "RFIDData",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Unauthorized",
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Forbidden",
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotFound",
+            "description": "<p>The required resource does not exist.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "UnauthorizedError:",
+          "content": "HTTP/1.1 401 Unauthorized\n\t\"Unauthorized\"",
+          "type": "json"
+        },
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n  \"message\": \"Token not allowed for this opperation\",\n  \"status\": 403,\n  \"error\": \"Get out dog.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ResponseError:",
+          "content": "HTTP/1.1 'Code & Message'\n{\n \"message\": \"Any Message here\",\n \"status\": 'code',\n \"error\": \"Detailed error here\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
+    "url": "/api/rfiddatas",
+    "title": "3. Create a new RFIDData",
+    "version": "1.0.0",
+    "name": "PostRfidData",
+    "group": "RFIDData",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>You are not allowed to make any change on rfidDatas.</p> ",
+    "error": {
+      "examples": [
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n \"message\": \"You are not allowed to make any change on rfidDatas\",\n \"status\": 403,\n \"error\": \"Not Allowed\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/rfiddatas/updates.js",
+    "groupTitle": "RFIDData"
+  },
+  {
+    "type": "put",
+    "url": "/api/rfiddatas/:id",
+    "title": "4. Update an existing RFIData",
+    "version": "1.0.0",
+    "name": "PutRfidData",
+    "group": "RFIDData",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>You are not allowed to make any change on rfidDatas.</p> ",
+    "error": {
+      "examples": [
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n \"message\": \"You are not allowed to make any change on rfidDatas\",\n \"status\": 403,\n \"error\": \"Not Allowed\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/rfiddatas/updates.js",
+    "groupTitle": "RFIDData"
   },
   {
     "type": "delete",
