@@ -91,7 +91,7 @@ var deleteHandler = function(req, callback){
 
     entity.destroy()
       .then(function(entity){
-        return callback(null, {"message" : "deleted"});
+        return callback(null, entity);
       })
       .catch(promises.error);
   }).catch(promises.error);

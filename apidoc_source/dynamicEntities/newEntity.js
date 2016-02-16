@@ -1,5 +1,5 @@
 /**
- @api {post} /api/de/register 3. Create a new Dynamic Entity
+ @api {post} /api/de/register 1. Create a new Dynamic Entity
  @apiVersion 1.0.0
  @apiName PostDynamicEntity
  @apiGroup DynamicEntity
@@ -37,6 +37,7 @@
                 "field" : "Driver",
                 "type" : "ENTITY",
                 "unique" : [],
+                "defaultReference":"Full Name",
                 "structureList" : [
                     {
                         "field" : "Full Name",

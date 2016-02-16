@@ -14,7 +14,7 @@
 * @apiExample Query Example:
 * https://localhost/api/groups?q={"limit": 2}
 *
-* @apiSuccess {Object[]} groups       List of Collectors.
+* @apiSuccess {Object[]} groups       List of Groups.
 *
 * @apiUse defaultQuery
 *

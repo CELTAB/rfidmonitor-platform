@@ -1125,9 +1125,437 @@ define({ "api": [
     }
   },
   {
+    "type": "put",
+    "url": "/api/de/activate/:entity",
+    "title": "7. Activate a Dynamic Entity",
+    "version": "1.0.0",
+    "name": "ActivateEntity",
+    "group": "DynamicEntity",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>Activates an inactive entity. Is allowed use only activated entities.</p> ",
+    "examples": [
+      {
+        "title": "Example usage:",
+        "content": "https://localhost/api/de/deactivate/driver",
+        "type": "json"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Param": [
+          {
+            "group": "Param",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "entity",
+            "description": "<p>Name (identifier) of the Dynami Entity.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n\"OK\"",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/dynamicEntities/active/activate.js",
+    "groupTitle": "DynamicEntity"
+  },
+  {
+    "type": "put",
+    "url": "/api/de/deactivate/:entity",
+    "title": "6. Deactivate a Dynamic Entity",
+    "version": "1.0.0",
+    "name": "DeactivateEntity",
+    "group": "DynamicEntity",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>Deactivates an active entity. Is allowed use only activated entities.</p> ",
+    "examples": [
+      {
+        "title": "Example usage:",
+        "content": "https://localhost/api/de/activate/driver",
+        "type": "json"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Param": [
+          {
+            "group": "Param",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "entity",
+            "description": "<p>Name (identifier) of the Dynami Entity.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n\"OK\"",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/dynamicEntities/active/deactivate.js",
+    "groupTitle": "DynamicEntity"
+  },
+  {
+    "type": "get",
+    "url": "/api/de/meta",
+    "title": "4. Get array of Meta informations",
+    "version": "1.0.0",
+    "name": "GetMeta",
+    "group": "DynamicEntity",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>Group of meta informations used to define each dynamic entity.</p> ",
+    "examples": [
+      {
+        "title": "Example usage:",
+        "content": "https://localhost/api/de/meta",
+        "type": "json"
+      }
+    ],
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>Object[]</p> ",
+            "optional": false,
+            "field": "meta",
+            "description": "<p>Meta Informations.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n[\n  {\n    \"field\": \"Driver\",\n    \"type\": \"ENTITY\",\n    \"unique\": [],\n    \"defaultReference\": \"full_name\",\n    \"structureList\": [\n      {\n        \"field\": \"Full Name\",\n        \"type\": \"TEXT\",\n        \"description\": \"Any description here\",\n        \"allowNull\": false,\n        \"identifier\": \"full_name\",\n        \"name\": \"full_name\"\n      },\n      {\n        \"field\": \"Age\",\n        \"type\": \"INTEGER\",\n        \"description\": \"Any description here\",\n        \"allowNull\": false,\n        \"identifier\": \"age\",\n        \"name\": \"age\"\n      }\n    ],\n    \"identifier\": \"driver\"\n  },\n  {\n    \"field\": \"Car\",\n    \"type\": \"ENTITY\",\n    \"unique\": [\n      [\n        \"rfid_code\"\n      ]\n    ],\n    \"defaultReference\": \"plate\",\n    \"structureList\": [\n      {\n        \"field\": \"RFID Code\",\n        \"type\": \"RFIDCODE\",\n        \"description\": \"Any description here\",\n        \"allowNull\": false,\n        \"identifier\": \"rfid_code\",\n        \"name\": \"rfid_code\"\n      },\n      {\n        \"field\": \"Plate\",\n        \"type\": \"TEXT\",\n        \"description\": \"Any description here\",\n        \"allowNull\": false,\n        \"identifier\": \"plate\",\n        \"name\": \"plate\"\n      },\n      {\n        \"field\": \"Manufacture Year\",\n        \"type\": \"DATETIME\",\n        \"description\": \"Any description here\",\n        \"allowNull\": false,\n        \"identifier\": \"manufacture_year\",\n        \"name\": \"manufacture_year\"\n      },\n      {\n        \"field\": \"Driver\",\n        \"type\": \"ENTITY\",\n        \"defaultReference\": \"full_name\",\n        \"identifier\": \"driver_id\",\n        \"name\": \"driver\"\n      }\n    ],\n    \"identifier\": \"car\"\n  }\n]",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/dynamicEntities/meta/getAllMetas.js",
+    "groupTitle": "DynamicEntity",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Unauthorized",
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Forbidden",
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotFound",
+            "description": "<p>The required resource does not exist.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "UnauthorizedError:",
+          "content": "HTTP/1.1 401 Unauthorized\n\t\"Unauthorized\"",
+          "type": "json"
+        },
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n  \"message\": \"Token not allowed for this opperation\",\n  \"status\": 403,\n  \"error\": \"Get out dog.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ResponseError:",
+          "content": "HTTP/1.1 'Code & Message'\n{\n \"message\": \"Any Message here\",\n \"status\": 'code',\n \"error\": \"Detailed error here\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/api/de/original/:entity",
+    "title": "5. Get one Meta information",
+    "version": "1.0.0",
+    "name": "GetOneMeta",
+    "group": "DynamicEntity",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>Given an entity name, return the meta informatation used to define this dynamic entity.</p> ",
+    "parameter": {
+      "fields": {
+        "Param": [
+          {
+            "group": "Param",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "entity",
+            "description": "<p>Name (identifier) of the Dynami Entity.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"field\": \"Driver\",\n  \"type\": \"ENTITY\",\n  \"unique\": [],\n  \"defaultReference\": \"full_name\",\n  \"structureList\": [\n    {\n      \"field\": \"Full Name\",\n      \"type\": \"TEXT\",\n      \"description\": \"Any description here\",\n      \"allowNull\": false,\n      \"identifier\": \"full_name\",\n      \"name\": \"full_name\"\n    },\n    {\n      \"field\": \"Age\",\n      \"type\": \"INTEGER\",\n      \"description\": \"Any description here\",\n      \"allowNull\": false,\n      \"identifier\": \"age\",\n      \"name\": \"age\"\n    }\n  ],\n  \"identifier\": \"driver\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/dynamicEntities/meta/getOneMeta.js",
+    "groupTitle": "DynamicEntity",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Unauthorized",
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Forbidden",
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotFound",
+            "description": "<p>The required resource does not exist.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "UnauthorizedError:",
+          "content": "HTTP/1.1 401 Unauthorized\n\t\"Unauthorized\"",
+          "type": "json"
+        },
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n  \"message\": \"Token not allowed for this opperation\",\n  \"status\": 403,\n  \"error\": \"Get out dog.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ResponseError:",
+          "content": "HTTP/1.1 'Code & Message'\n{\n \"message\": \"Any Message here\",\n \"status\": 'code',\n \"error\": \"Detailed error here\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/api/de/original/:entity",
+    "title": "3. Get one Original definition",
+    "version": "1.0.0",
+    "name": "GetOneOriginal",
+    "group": "DynamicEntity",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>Given an entity name, return the original definitions used to create this dynamic entity.</p> ",
+    "parameter": {
+      "fields": {
+        "Param": [
+          {
+            "group": "Param",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "entity",
+            "description": "<p>Name (identifier) of the Dynami Entity.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"field\": \"Driver\",\n  \"type\": \"ENTITY\",\n  \"unique\": [],\n  \"defaultReference\": \"full_name\",\n  \"structureList\": [\n    {\n      \"field\": \"Full Name\",\n      \"type\": \"TEXT\",\n      \"description\": \"Any description here\",\n      \"allowNull\": false,\n      \"identifier\": \"full_name\"\n    },\n    {\n      \"field\": \"Age\",\n      \"type\": \"INTEGER\",\n      \"description\": \"Any description here\",\n      \"allowNull\": false,\n      \"identifier\": \"age\"\n    }\n  ],\n  \"identifier\": \"driver\",\n  \"active\": true\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/dynamicEntities/original/getOneOriginal.js",
+    "groupTitle": "DynamicEntity",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Unauthorized",
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Forbidden",
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotFound",
+            "description": "<p>The required resource does not exist.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "UnauthorizedError:",
+          "content": "HTTP/1.1 401 Unauthorized\n\t\"Unauthorized\"",
+          "type": "json"
+        },
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n  \"message\": \"Token not allowed for this opperation\",\n  \"status\": 403,\n  \"error\": \"Get out dog.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ResponseError:",
+          "content": "HTTP/1.1 'Code & Message'\n{\n \"message\": \"Any Message here\",\n \"status\": 'code',\n \"error\": \"Detailed error here\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/api/de/original",
+    "title": "2. Get array of Original definitions",
+    "version": "1.0.0",
+    "name": "GetOriginals",
+    "group": "DynamicEntity",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>Group of original definitions used to create each dynamic entity.</p> ",
+    "examples": [
+      {
+        "title": "Example usage:",
+        "content": "https://localhost/api/de/original",
+        "type": "json"
+      }
+    ],
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>Object[]</p> ",
+            "optional": false,
+            "field": "original",
+            "description": "<p>Original definitions.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n[\n  {\n    \"field\": \"Driver\",\n    \"type\": \"ENTITY\",\n    \"unique\": [],\n    \"defaultReference\": \"full_name\",\n    \"structureList\": [\n      {\n        \"field\": \"Full Name\",\n        \"type\": \"TEXT\",\n        \"description\": \"Any description here\",\n        \"allowNull\": false,\n        \"identifier\": \"full_name\"\n      },\n      {\n        \"field\": \"Age\",\n        \"type\": \"INTEGER\",\n        \"description\": \"Any description here\",\n        \"allowNull\": false,\n        \"identifier\": \"age\"\n      }\n    ],\n    \"identifier\": \"driver\",\n    \"active\": true\n  },\n  {\n    \"field\": \"Car\",\n    \"type\": \"ENTITY\",\n    \"unique\": [\n      [\n        \"rfid_code\"\n      ]\n    ],\n    \"defaultReference\": \"plate\",\n    \"structureList\": [\n      {\n        \"field\": \"RFID Code\",\n        \"type\": \"RFIDCODE\",\n        \"description\": \"Any description here\",\n        \"allowNull\": false,\n        \"identifier\": \"rfid_code\"\n      },\n      {\n        \"field\": \"Plate\",\n        \"type\": \"TEXT\",\n        \"description\": \"Any description here\",\n        \"allowNull\": false,\n        \"identifier\": \"plate\"\n      },\n      {\n        \"field\": \"Manufacture Year\",\n        \"type\": \"DATETIME\",\n        \"description\": \"Any description here\",\n        \"allowNull\": false,\n        \"identifier\": \"manufacture_year\"\n      },\n      {\n        \"field\": \"Driver\",\n        \"type\": \"ENTITY\",\n        \"defaultReference\": \"full_name\",\n        \"identifier\": \"driver\"\n      }\n    ],\n    \"identifier\": \"car\",\n    \"active\": true\n  }\n]",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/dynamicEntities/original/getAllOriginals.js",
+    "groupTitle": "DynamicEntity",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Unauthorized",
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Forbidden",
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotFound",
+            "description": "<p>The required resource does not exist.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "UnauthorizedError:",
+          "content": "HTTP/1.1 401 Unauthorized\n\t\"Unauthorized\"",
+          "type": "json"
+        },
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n  \"message\": \"Token not allowed for this opperation\",\n  \"status\": 403,\n  \"error\": \"Get out dog.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ResponseError:",
+          "content": "HTTP/1.1 'Code & Message'\n{\n \"message\": \"Any Message here\",\n \"status\": 'code',\n \"error\": \"Detailed error here\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
     "type": "post",
     "url": "/api/de/register",
-    "title": "3. Create a new Dynamic Entity",
+    "title": "1. Create a new Dynamic Entity",
     "version": "1.0.0",
     "name": "PostDynamicEntity",
     "group": "DynamicEntity",
@@ -1142,7 +1570,7 @@ define({ "api": [
     "examples": [
       {
         "title": "Object Example:",
-        "content": "[\n  {\n      \"field\" : \"Car\",\n      \"type\" : \"ENTITY\",\n      \"unique\" : [[\"RFID Code\"]],\n      \"defaultReference\":\"Plate\",\n      \"structureList\" : [\n          {\n              \"field\" : \"RFID Code\",\n              \"type\" : \"RFIDCODE\",\n              \"description\" : \"Any description here\",\n              \"allowNull\" : false\n          },\n          {\n              \"field\" : \"Plate\",\n              \"type\" : \"TEXT\",\n              \"description\" : \"Any description here\",\n              \"allowNull\" : false\n          },\n          {\n              \"field\" : \"Manufacture Year\",\n              \"type\" : \"DATETIME\",\n              \"description\" : \"Any description here\",\n              \"allowNull\" : false\n          },\n          {\n              \"field\" : \"Driver\",\n              \"type\" : \"ENTITY\",\n              \"unique\" : [],\n              \"structureList\" : [\n                  {\n                      \"field\" : \"Full Name\",\n                      \"type\" : \"TEXT\",\n                      \"description\" : \"Any description here\",\n                      \"allowNull\" : false\n                  },\n                  {\n                      \"field\" : \"Age\",\n                      \"type\" : \"INTEGER\",\n                      \"description\" : \"Any description here\",\n                      \"allowNull\" : false\n                  }\n              ]\n          }\n      ]\n  }\n]",
+        "content": "[\n  {\n      \"field\" : \"Car\",\n      \"type\" : \"ENTITY\",\n      \"unique\" : [[\"RFID Code\"]],\n      \"defaultReference\":\"Plate\",\n      \"structureList\" : [\n          {\n              \"field\" : \"RFID Code\",\n              \"type\" : \"RFIDCODE\",\n              \"description\" : \"Any description here\",\n              \"allowNull\" : false\n          },\n          {\n              \"field\" : \"Plate\",\n              \"type\" : \"TEXT\",\n              \"description\" : \"Any description here\",\n              \"allowNull\" : false\n          },\n          {\n              \"field\" : \"Manufacture Year\",\n              \"type\" : \"DATETIME\",\n              \"description\" : \"Any description here\",\n              \"allowNull\" : false\n          },\n          {\n              \"field\" : \"Driver\",\n              \"type\" : \"ENTITY\",\n              \"unique\" : [],\n              \"defaultReference\":\"Full Name\",\n              \"structureList\" : [\n                  {\n                      \"field\" : \"Full Name\",\n                      \"type\" : \"TEXT\",\n                      \"description\" : \"Any description here\",\n                      \"allowNull\" : false\n                  },\n                  {\n                      \"field\" : \"Age\",\n                      \"type\" : \"INTEGER\",\n                      \"description\" : \"Any description here\",\n                      \"allowNull\" : false\n                  }\n              ]\n          }\n      ]\n  }\n]",
         "type": "json"
       }
     ],
@@ -1215,8 +1643,536 @@ define({ "api": [
         }
       ]
     },
-    "filename": "apidoc_source/dynamicEntities/getOne.js",
+    "filename": "apidoc_source/dynamicEntities/newEntity.js",
     "groupTitle": "DynamicEntity",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Unauthorized",
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Forbidden",
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotFound",
+            "description": "<p>The required resource does not exist.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "UnauthorizedError:",
+          "content": "HTTP/1.1 401 Unauthorized\n\t\"Unauthorized\"",
+          "type": "json"
+        },
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n  \"message\": \"Token not allowed for this opperation\",\n  \"status\": 403,\n  \"error\": \"Get out dog.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ResponseError:",
+          "content": "HTTP/1.1 'Code & Message'\n{\n \"message\": \"Any Message here\",\n \"status\": 'code',\n \"error\": \"Detailed error here\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "delete",
+    "url": "/api/de/dao/:entity/:id",
+    "title": "5. Remove a Record",
+    "version": "1.0.0",
+    "name": "DeleteRecord",
+    "group": "DynamicRecords",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>Delete an existing record from a dynamic entity table, given its ID.</p> ",
+    "parameter": {
+      "fields": {
+        "Param": [
+          {
+            "group": "Param",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "entity",
+            "description": "<p>Dynamic entity name.</p> "
+          },
+          {
+            "group": "Param",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "id",
+            "description": "<p>ID of the user.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n  {\n    \"id\": 1,\n    \"full_name\": \"Jaime themailman\",\n    \"age\": 57,\n    \"createdAt\": \"2016-02-16T13:44:47.225Z\",\n    \"updatedAt\": \"2016-02-16T13:44:47.225Z\",\n    \"deletedAt\": \"2016-02-16T15:38:25.424Z\"\n  }",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/dynamicDao/delete.js",
+    "groupTitle": "DynamicRecords",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Unauthorized",
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Forbidden",
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotFound",
+            "description": "<p>The required resource does not exist.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "UnauthorizedError:",
+          "content": "HTTP/1.1 401 Unauthorized\n\t\"Unauthorized\"",
+          "type": "json"
+        },
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n  \"message\": \"Token not allowed for this opperation\",\n  \"status\": 403,\n  \"error\": \"Get out dog.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ResponseError:",
+          "content": "HTTP/1.1 'Code & Message'\n{\n \"message\": \"Any Message here\",\n \"status\": 'code',\n \"error\": \"Detailed error here\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/api/de/dao/:entity/:id",
+    "title": "2. Get one record",
+    "version": "1.0.0",
+    "name": "GetOneRecord",
+    "group": "DynamicRecords",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>Get only one record from a dynamic entity table.</p> ",
+    "examples": [
+      {
+        "title": "Example usage:",
+        "content": "https://localhost/api/de/dao/driver/2",
+        "type": "json"
+      },
+      {
+        "title": "Query Example:",
+        "content": "https://localhost/api/de/dao/driver/2?q={\"limit\": 2}",
+        "type": "json"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Param": [
+          {
+            "group": "Param",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "entity",
+            "description": "<p>Dynamic entity name.</p> "
+          },
+          {
+            "group": "Param",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "id",
+            "description": "<p>ID of the user.</p> "
+          }
+        ],
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "optional": false,
+            "field": "q",
+            "description": "<p>(Query) Received all parameter defined by Sequelize documentations. Available <a href=\"http://docs.sequelizejs.com/en/latest/docs/querying/\" target=\"_blank\"> here.</a></p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>Object[]</p> ",
+            "optional": false,
+            "field": "record",
+            "description": "<p>One record from the dynamic entity table, based on ID end/or query.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"id\": 2,\n  \"full_name\": \"Chavo del Ocho\",\n  \"age\": 8,\n  \"createdAt\": \"2016-02-16T13:47:30.537Z\",\n  \"updatedAt\": \"2016-02-16T13:47:30.537Z\",\n  \"deletedAt\": null\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/dynamicDao/get.js",
+    "groupTitle": "DynamicRecords",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Unauthorized",
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Forbidden",
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotFound",
+            "description": "<p>The required resource does not exist.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "UnauthorizedError:",
+          "content": "HTTP/1.1 401 Unauthorized\n\t\"Unauthorized\"",
+          "type": "json"
+        },
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n  \"message\": \"Token not allowed for this opperation\",\n  \"status\": 403,\n  \"error\": \"Get out dog.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ResponseError:",
+          "content": "HTTP/1.1 'Code & Message'\n{\n \"message\": \"Any Message here\",\n \"status\": 'code',\n \"error\": \"Detailed error here\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/api/de/dao/:entity",
+    "title": "1. Get array of records",
+    "version": "1.0.0",
+    "name": "GetRecords",
+    "group": "DynamicRecords",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>Get all records from a dynamic entity table.</p> ",
+    "examples": [
+      {
+        "title": "Example usage:",
+        "content": "https://localhost/api/de/dao/driver",
+        "type": "json"
+      },
+      {
+        "title": "Query Example:",
+        "content": "https://localhost/api/de/dao/driver?q={\"limit\": 2}",
+        "type": "json"
+      }
+    ],
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>Object[]</p> ",
+            "optional": false,
+            "field": "records",
+            "description": "<p>List of records from the dynamic entity table.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n[\n  {\n    \"id\": 1,\n    \"full_name\": \"Jaime themailman\",\n    \"age\": 57,\n    \"createdAt\": \"2016-02-16T13:44:47.225Z\",\n    \"updatedAt\": \"2016-02-16T13:44:47.225Z\",\n    \"deletedAt\": null\n  },\n  {\n    \"id\": 2,\n    \"full_name\": \"Chavo del Ocho\",\n    \"age\": 8,\n    \"createdAt\": \"2016-02-16T13:47:30.537Z\",\n    \"updatedAt\": \"2016-02-16T13:47:30.537Z\",\n    \"deletedAt\": null\n  }\n]",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/dynamicDao/get.js",
+    "groupTitle": "DynamicRecords",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "optional": false,
+            "field": "q",
+            "description": "<p>(Query) Received all parameter defined by Sequelize documentations. Available <a href=\"http://docs.sequelizejs.com/en/latest/docs/querying/\" target=\"_blank\"> here.</a></p> "
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Unauthorized",
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Forbidden",
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotFound",
+            "description": "<p>The required resource does not exist.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "UnauthorizedError:",
+          "content": "HTTP/1.1 401 Unauthorized\n\t\"Unauthorized\"",
+          "type": "json"
+        },
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n  \"message\": \"Token not allowed for this opperation\",\n  \"status\": 403,\n  \"error\": \"Get out dog.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ResponseError:",
+          "content": "HTTP/1.1 'Code & Message'\n{\n \"message\": \"Any Message here\",\n \"status\": 'code',\n \"error\": \"Detailed error here\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
+    "url": "/api/de/dao/:entity",
+    "title": "3. Create a new record",
+    "version": "1.0.0",
+    "name": "PostRecord",
+    "group": "DynamicRecords",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>Insert a new record on the given dynamic entity table.</p> ",
+    "examples": [
+      {
+        "title": "Example usage:",
+        "content": "https://localhost/api/de/dao/driver",
+        "type": "json"
+      },
+      {
+        "title": "Object Example:",
+        "content": "{\n    \"full_name\": \"Jaime Themailman\",\n    \"age\": 57\n}",
+        "type": "json"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Body": [
+          {
+            "group": "Body",
+            "type": "<p>Fields</p> ",
+            "optional": false,
+            "field": "field",
+            "description": "<p>Field defined on dynamic entity creation {May be required and unique}.</p> "
+          },
+          {
+            "group": "Body",
+            "type": "<p>Values</p> ",
+            "optional": false,
+            "field": "value",
+            "description": "<p>Value fot the given field.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"id\": 1,\n  \"full_name\": \"Jaime themailman\",\n  \"age\": 57,\n  \"updatedAt\": \"2016-02-16T13:44:47.225Z\",\n  \"createdAt\": \"2016-02-16T13:44:47.225Z\",\n  \"deletedAt\": null\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/dynamicDao/post.js",
+    "groupTitle": "DynamicRecords",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Unauthorized",
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Forbidden",
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotFound",
+            "description": "<p>The required resource does not exist.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "UnauthorizedError:",
+          "content": "HTTP/1.1 401 Unauthorized\n\t\"Unauthorized\"",
+          "type": "json"
+        },
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n  \"message\": \"Token not allowed for this opperation\",\n  \"status\": 403,\n  \"error\": \"Get out dog.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ResponseError:",
+          "content": "HTTP/1.1 'Code & Message'\n{\n \"message\": \"Any Message here\",\n \"status\": 'code',\n \"error\": \"Detailed error here\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "put",
+    "url": "/api/de/dao/:entity/:id",
+    "title": "4. Update an existing record",
+    "version": "1.0.0",
+    "name": "PutRecord",
+    "group": "DynamicRecords",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>Update a record from a dinamic entity table.</p> ",
+    "parameter": {
+      "fields": {
+        "Param": [
+          {
+            "group": "Param",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "entity",
+            "description": "<p>Dynamic entity name.</p> "
+          },
+          {
+            "group": "Param",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "id",
+            "description": "<p>ID of the user.</p> "
+          }
+        ],
+        "Body": [
+          {
+            "group": "Body",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "ID",
+            "description": "<p>ID of the record on dynamic table;</p> "
+          },
+          {
+            "group": "Body",
+            "type": "<p>Fields</p> ",
+            "optional": false,
+            "field": "field",
+            "description": "<p>Field defined on dynamic entity creation {May be required and unique}.</p> "
+          },
+          {
+            "group": "Body",
+            "type": "<p>Values</p> ",
+            "optional": false,
+            "field": "value",
+            "description": "<p>Value fot the given field.</p> "
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "Object Example:",
+        "content": "{\n  \"id\": 2,\n  \"full_name\": \"Chavo del Ocho\",\n  \"age\": 9\n}",
+        "type": "json"
+      }
+    ],
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"id\": 2,\n  \"full_name\": \"Chavo del Ocho\",\n  \"age\": 9,\n  \"createdAt\": \"2016-02-16T13:47:30.537Z\",\n  \"updatedAt\": \"2016-02-16T15:34:49.456Z\",\n  \"deletedAt\": null\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/dynamicDao/put.js",
+    "groupTitle": "DynamicRecords",
     "error": {
       "fields": {
         "Error 4xx": [
@@ -1375,7 +2331,7 @@ define({ "api": [
             "type": "<p>Object[]</p> ",
             "optional": false,
             "field": "groups",
-            "description": "<p>List of Collectors.</p> "
+            "description": "<p>List of Groups.</p> "
           }
         ]
       },

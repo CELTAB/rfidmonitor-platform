@@ -9,7 +9,7 @@ var metaHandler = function(req, callback){
     DynamicEntity.findOne({where : { identifier : req.params.entity }})
     .then(function(entity){
       if(entity){
-        return callback(null, entity);
+        return callback(null, JSON.parse(entity.meta));
       }else{
         return errorHandler('Entity not found', 400, callback);
       }
