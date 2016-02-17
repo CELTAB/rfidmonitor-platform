@@ -3280,6 +3280,753 @@ define({ "api": [
   },
   {
     "type": "delete",
+    "url": "/api/routeaccess/:id",
+    "title": "5. Remove a RouteAccess",
+    "version": "1.0.0",
+    "name": "DeleteRouteAccess",
+    "group": "RouteAccess",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>Remove an existing RouteAccess from database.</p> ",
+    "parameter": {
+      "fields": {
+        "Param": [
+          {
+            "group": "Param",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "id",
+            "description": "<p>ID of the RouteAccess.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n  {\n    \"id\": 2,\n    \"appClient\": 1,\n    \"uriRoute\": 2,\n    \"createdAt\": \"2016-02-17T12:56:46.999Z\",\n    \"updatedAt\": \"2016-02-17T12:59:04.510Z\",\n    \"deletedAt\": \"2016-02-17T13:01:55.123Z\"\n  }",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/routes/routeaccess/deleteAccess.js",
+    "groupTitle": "RouteAccess",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Unauthorized",
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Forbidden",
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotFound",
+            "description": "<p>The required resource does not exist.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "UnauthorizedError:",
+          "content": "HTTP/1.1 401 Unauthorized\n\t\"Unauthorized\"",
+          "type": "json"
+        },
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n  \"message\": \"Token not allowed for this opperation\",\n  \"status\": 403,\n  \"error\": \"Get out dog.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ResponseError:",
+          "content": "HTTP/1.1 'Code & Message'\n{\n \"message\": \"Any Message here\",\n \"status\": 'code',\n \"error\": \"Detailed error here\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/api/routeaccess/:id",
+    "title": "2. Get only one AccessRoute",
+    "version": "1.0.0",
+    "name": "GetOneRouteAccess",
+    "group": "RouteAccess",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>Get one especific relation between a appClient and a route with a especific access method, that gives access to this route for the appClient.</p> ",
+    "parameter": {
+      "fields": {
+        "Param": [
+          {
+            "group": "Param",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "id",
+            "description": "<p>ID of the routeaccess.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "Id",
+            "description": "<p>RouteAccess ID on database.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "appClient",
+            "description": "<p>ID of the appClient that has this permission.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "uriRoute",
+            "description": "<p>ID of the route that this appClient is allowed to Access.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "deletedAt",
+            "description": "<p>Deletion datetime or null.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "createdAt",
+            "description": "<p>Creation datetime.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "updatedAt",
+            "description": "<p>Last update datetime, or creation datetime.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"id\": 1,\n  \"appClient\": 1,\n  \"uriRoute\": 2,\n  \"createdAt\": \"2016-02-11T12:42:54.875Z\",\n  \"updatedAt\": \"2016-02-11T12:42:54.875Z\",\n  \"deletedAt\": null\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/routes/routeaccess/getOne.js",
+    "groupTitle": "RouteAccess",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Unauthorized",
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Forbidden",
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotFound",
+            "description": "<p>The required resource does not exist.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "UnauthorizedError:",
+          "content": "HTTP/1.1 401 Unauthorized\n\t\"Unauthorized\"",
+          "type": "json"
+        },
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n  \"message\": \"Token not allowed for this opperation\",\n  \"status\": 403,\n  \"error\": \"Get out dog.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ResponseError:",
+          "content": "HTTP/1.1 'Code & Message'\n{\n \"message\": \"Any Message here\",\n \"status\": 'code',\n \"error\": \"Detailed error here\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/api/routeaccess",
+    "title": "1. Get array of Access permissions",
+    "version": "1.0.0",
+    "name": "GetRouteAccess",
+    "group": "RouteAccess",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>Get all relations between a appClient and a route with a especific access method, that gives access to this route for the appClient.</p> ",
+    "examples": [
+      {
+        "title": "Example usage:",
+        "content": "https://localhost/api/routeaccess",
+        "type": "json"
+      },
+      {
+        "title": "Query Example:",
+        "content": "https://localhost/api/routeaccess?q={\"limit\": 1}",
+        "type": "json"
+      }
+    ],
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>Object[]</p> ",
+            "optional": false,
+            "field": "routeaccess",
+            "description": "<p>List of relations between user and route.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n  [\n    {\n      \"id\": 1,\n      \"appClient\": 1,\n      \"uriRoute\": 2,\n      \"createdAt\": \"2016-02-11T12:42:54.875Z\",\n      \"updatedAt\": \"2016-02-11T12:42:54.875Z\",\n      \"deletedAt\": null\n    }\n  ]",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/routes/routeaccess/getAll.js",
+    "groupTitle": "RouteAccess",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "optional": false,
+            "field": "q",
+            "description": "<p>(Query) Received all parameter defined by Sequelize documentations. Available <a href=\"http://docs.sequelizejs.com/en/latest/docs/querying/\" target=\"_blank\"> here.</a></p> "
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Unauthorized",
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Forbidden",
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotFound",
+            "description": "<p>The required resource does not exist.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "UnauthorizedError:",
+          "content": "HTTP/1.1 401 Unauthorized\n\t\"Unauthorized\"",
+          "type": "json"
+        },
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n  \"message\": \"Token not allowed for this opperation\",\n  \"status\": 403,\n  \"error\": \"Get out dog.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ResponseError:",
+          "content": "HTTP/1.1 'Code & Message'\n{\n \"message\": \"Any Message here\",\n \"status\": 'code',\n \"error\": \"Detailed error here\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "post",
+    "url": "/api/routeaccess",
+    "title": "3. Create a new RouteAccess",
+    "version": "1.0.0",
+    "name": "PostRouteAccess",
+    "group": "RouteAccess",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>Create a new relation between a URI Route and an appClient that gives acces to this resource for the appClient.</p> ",
+    "examples": [
+      {
+        "title": "Object Example:",
+        "content": "{\n  \"appClient\":1,\n  \"uriRoute\": 1\n}",
+        "type": "json"
+      }
+    ],
+    "parameter": {
+      "fields": {
+        "Body": [
+          {
+            "group": "Body",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "appClient",
+            "description": "<p>ID of the related appClient {Required}.</p> "
+          },
+          {
+            "group": "Body",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "uriRoute",
+            "description": "<p>ID of the URI Route to give access for {Required}.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n  {\n    \"id\": 2,\n    \"appClient\": 1,\n    \"uriRoute\": 1,\n    \"updatedAt\": \"2016-02-17T12:56:46.999Z\",\n    \"createdAt\": \"2016-02-17T12:56:46.999Z\",\n    \"deletedAt\": null\n  }",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/routes/routeaccess/newRouteAccess.js",
+    "groupTitle": "RouteAccess",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Unauthorized",
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Forbidden",
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotFound",
+            "description": "<p>The required resource does not exist.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "UnauthorizedError:",
+          "content": "HTTP/1.1 401 Unauthorized\n\t\"Unauthorized\"",
+          "type": "json"
+        },
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n  \"message\": \"Token not allowed for this opperation\",\n  \"status\": 403,\n  \"error\": \"Get out dog.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ResponseError:",
+          "content": "HTTP/1.1 'Code & Message'\n{\n \"message\": \"Any Message here\",\n \"status\": 'code',\n \"error\": \"Detailed error here\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "put",
+    "url": "/api/routeaccess/:id",
+    "title": "4. Update an existing RouteAccess",
+    "version": "1.0.0",
+    "name": "PutRouteAccess",
+    "group": "RouteAccess",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>Update a RouteAccess from database.</p> ",
+    "parameter": {
+      "fields": {
+        "Param": [
+          {
+            "group": "Param",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "id",
+            "description": "<p>ID of the existing RouteAccess.</p> "
+          }
+        ],
+        "Body": [
+          {
+            "group": "Body",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "id",
+            "description": "<p>ID of the existing RouteAccess {Required}.</p> "
+          },
+          {
+            "group": "Body",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "appClient",
+            "description": "<p>ID of the new related appClient {Required}.</p> "
+          },
+          {
+            "group": "Body",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "uriRoute",
+            "description": "<p>ID of the new URI Route to give access for {Required}.</p> "
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "Object Example:",
+        "content": "{\n  \"id\": 2,\n  \"appClient\":1,\n  \"uriRoute\": 2\n}",
+        "type": "json"
+      }
+    ],
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n  {\n    \"id\": 2,\n    \"appClient\": 1,\n    \"uriRoute\": 2,\n    \"createdAt\": \"2016-02-17T12:56:46.999Z\",\n    \"updatedAt\": \"2016-02-17T12:59:04.510Z\",\n    \"deletedAt\": null\n  }",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/routes/routeaccess/updateAccess.js",
+    "groupTitle": "RouteAccess",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Unauthorized",
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Forbidden",
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotFound",
+            "description": "<p>The required resource does not exist.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "UnauthorizedError:",
+          "content": "HTTP/1.1 401 Unauthorized\n\t\"Unauthorized\"",
+          "type": "json"
+        },
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n  \"message\": \"Token not allowed for this opperation\",\n  \"status\": 403,\n  \"error\": \"Get out dog.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ResponseError:",
+          "content": "HTTP/1.1 'Code & Message'\n{\n \"message\": \"Any Message here\",\n \"status\": 'code',\n \"error\": \"Detailed error here\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/api/routes/:id",
+    "title": "2. Get only one Route",
+    "version": "1.0.0",
+    "name": "GetOneRoute",
+    "group": "Routes",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>Get one Route available to consume and its respective access method.</p> ",
+    "parameter": {
+      "fields": {
+        "Param": [
+          {
+            "group": "Param",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "id",
+            "description": "<p>ID of the route.</p> "
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>Number</p> ",
+            "optional": false,
+            "field": "Id",
+            "description": "<p>Route ID on database.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "path",
+            "description": "<p>URI of the Route.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "method",
+            "description": "<p>Access method for this URI.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "deletedAt",
+            "description": "<p>Deletion datetime or null.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "createdAt",
+            "description": "<p>Creation datetime.</p> "
+          },
+          {
+            "group": "Success 200",
+            "type": "<p>String</p> ",
+            "optional": false,
+            "field": "updatedAt",
+            "description": "<p>Last update datetime, or creation datetime.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n  {\n    \"id\": 1,\n    \"path\": \"/api/rfiddatas\",\n    \"method\": \"POST\",\n    \"deletedAt\": null,\n    \"createdAt\": \"2016-02-11T12:42:54.362Z\",\n    \"updatedAt\": \"2016-02-11T12:42:54.362Z\"\n  }",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/routes/uriRoutes/getOne.js",
+    "groupTitle": "Routes",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Unauthorized",
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Forbidden",
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotFound",
+            "description": "<p>The required resource does not exist.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "UnauthorizedError:",
+          "content": "HTTP/1.1 401 Unauthorized\n\t\"Unauthorized\"",
+          "type": "json"
+        },
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n  \"message\": \"Token not allowed for this opperation\",\n  \"status\": 403,\n  \"error\": \"Get out dog.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ResponseError:",
+          "content": "HTTP/1.1 'Code & Message'\n{\n \"message\": \"Any Message here\",\n \"status\": 'code',\n \"error\": \"Detailed error here\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/api/routes",
+    "title": "1. Get array of routes",
+    "version": "1.0.0",
+    "name": "GetRoutes",
+    "group": "Routes",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>Get all routes available to consume from server and its respective access Methods.</p> ",
+    "examples": [
+      {
+        "title": "Example usage:",
+        "content": "https://localhost/api/routes",
+        "type": "json"
+      },
+      {
+        "title": "Query Example:",
+        "content": "https://localhost/api/routes?q={\"limit\": 4}",
+        "type": "json"
+      }
+    ],
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>Object[]</p> ",
+            "optional": false,
+            "field": "routes",
+            "description": "<p>List of available routes and respective access Methods.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n[\n  {\n    \"id\": 1,\n    \"path\": \"/api/rfiddatas\",\n    \"method\": \"POST\",\n    \"deletedAt\": null,\n    \"createdAt\": \"2016-02-11T12:42:54.362Z\",\n    \"updatedAt\": \"2016-02-11T12:42:54.362Z\"\n  },\n  {\n    \"id\": 6,\n    \"path\": \"/api/groups\",\n    \"method\": \"GET\",\n    \"deletedAt\": null,\n    \"createdAt\": \"2016-02-11T12:42:54.504Z\",\n    \"updatedAt\": \"2016-02-11T12:42:54.504Z\"\n  },\n  {\n    \"id\": 11,\n    \"path\": \"/api/collectors\",\n    \"method\": \"POST\",\n    \"deletedAt\": null,\n    \"createdAt\": \"2016-02-11T12:42:54.543Z\",\n    \"updatedAt\": \"2016-02-11T12:42:54.543Z\"\n  },\n  {\n    \"id\": 16,\n    \"path\": \"/api/appclients\",\n    \"method\": \"PUT\",\n    \"deletedAt\": null,\n    \"createdAt\": \"2016-02-11T12:42:54.583Z\",\n    \"updatedAt\": \"2016-02-11T12:42:54.583Z\"\n  }\n]",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/routes/uriRoutes/get.js",
+    "groupTitle": "Routes",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "optional": false,
+            "field": "q",
+            "description": "<p>(Query) Received all parameter defined by Sequelize documentations. Available <a href=\"http://docs.sequelizejs.com/en/latest/docs/querying/\" target=\"_blank\"> here.</a></p> "
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Unauthorized",
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Forbidden",
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotFound",
+            "description": "<p>The required resource does not exist.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "UnauthorizedError:",
+          "content": "HTTP/1.1 401 Unauthorized\n\t\"Unauthorized\"",
+          "type": "json"
+        },
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n  \"message\": \"Token not allowed for this opperation\",\n  \"status\": 403,\n  \"error\": \"Get out dog.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ResponseError:",
+          "content": "HTTP/1.1 'Code & Message'\n{\n \"message\": \"Any Message here\",\n \"status\": 'code',\n \"error\": \"Detailed error here\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "delete",
     "url": "/api/users/:id",
     "title": "5. Remove a User",
     "version": "1.0.0",

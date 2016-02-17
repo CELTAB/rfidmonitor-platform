@@ -4,6 +4,7 @@ var path = require('path');
 var fs = require('fs');
 var PlatformMedia = require(__base + 'models/platformmedia');
 var appDir = path.dirname(require.main.filename);
+appDir = appDir + "/server";
 var errorHandler = require(__base + 'utils/errorhandler');
 
 var multer  = require('multer');
