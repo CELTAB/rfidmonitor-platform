@@ -3,7 +3,7 @@ var winston = require('winston');
 
 var logsDir = 'logs/';
 
-var Logs = function(debugConsole, debugFile, verboseConsole, verboseFile){
+var Logs = function(debugConsole, debugFile, verboseConsole, verboseFile, sillyConsole, sillyFile){
 
 	/*
 	silly: 0, -> print all above
@@ -39,6 +39,18 @@ var Logs = function(debugConsole, debugFile, verboseConsole, verboseFile){
 			{
 				name: 'consoledebug',
 				level: 'debug',
+				json: false,
+				colorize: true,
+				handleExceptions: true,
+			}
+		);
+	}else if(sillyConsole){
+		console.log("Printing silly messages on Console");
+		winston.add(
+			winston.transports.Console, 
+			{
+				name: 'sillydebug',
+				level: 'silly',
 				json: false,
 				colorize: true,
 				handleExceptions: true,
@@ -100,6 +112,22 @@ var Logs = function(debugConsole, debugFile, verboseConsole, verboseFile){
 				name: 'dailyverbose',
 				filename: logsDir + 'verbose.log',
 				level: 'verbose',
+				datePattern: '.dd',
+				maxsize: 1024 * 1024 * 5,
+				maxFiles: 10, 
+				json: false
+			}
+		);
+	}
+
+	if(sillyFile){
+		console.log("Printing silly messages on File");
+		winston.add(
+			winston.transports.DailyRotateFile, 
+			{
+				name: 'dailysilly',
+				filename: logsDir + 'silly.log',
+				level: 'silly',
 				datePattern: '.dd',
 				maxsize: 1024 * 1024 * 5,
 				maxFiles: 10, 

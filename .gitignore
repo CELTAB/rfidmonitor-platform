@@ -1,3 +1,4 @@
 node_modules*
 logs/*
 ssl/*
+restricted_media/*

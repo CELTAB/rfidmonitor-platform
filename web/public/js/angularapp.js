@@ -1,1 +1,0 @@
-angular.module("rfidplatform", ["ngMessages", "ngRoute", "ngCookies"]);

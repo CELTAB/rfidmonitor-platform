@@ -39,10 +39,10 @@ var ProtocolConnectionController = function(socket, setOnlineCollector){
 
         this.processDataBuffer = function(){
             if(!waitingForRemainingData){
-                logger.debug("processDataBuffer : Probably a new pkt.");
+                logger.silly("processDataBuffer : Probably a new pkt.");
                 //new packet.
     			if(! (permanentDataBuffer.length >= 8)){	
-    				logger.debug("processDataBuffer : We dont have at least 8 bytes. wait more.");				
+    				logger.silly("processDataBuffer : We dont have at least 8 bytes. wait more.");				
     				return;
     			}
                 var buffer = [];
@@ -58,21 +58,21 @@ var ProtocolConnectionController = function(socket, setOnlineCollector){
                     return;
                 }
 
-                logger.debug("processDataBuffer : New pkt found with size : " + packetSize);
+                logger.silly("processDataBuffer : New pkt found with size : " + packetSize);
                 waitingForRemainingData = true;
             }
 
-            logger.debug("processDataBuffer : permanentDataBuffer.length : " + permanentDataBuffer.length);
+            logger.silly("processDataBuffer : permanentDataBuffer.length : " + permanentDataBuffer.length);
 
             if(permanentDataBuffer.length < packetSize){
-            	logger.debug("processDataBuffer : We dont have all bytes to this packet. wait more.");
+            	logger.silly("processDataBuffer : We dont have all bytes to this packet. wait more.");
             	return;
             }
 
             var data = permanentDataBuffer.slice(0, packetSize).toString();
-            logger.debug("data : " + data);
+            logger.silly("data : " + data);
             permanentDataBuffer = permanentDataBuffer.slice(packetSize, permanentDataBuffer.length);
-            logger.debug("processDataBuffer : permanentDataBuffer.length : " + permanentDataBuffer.length);
+            logger.silly("processDataBuffer : permanentDataBuffer.length : " + permanentDataBuffer.length);
 
             packetSize = 0;
             waitingForRemainingData = false;
@@ -88,7 +88,7 @@ var ProtocolConnectionController = function(socket, setOnlineCollector){
 
         this.processData = function(data){
         	
-        	logger.debug("processData : NEW DATA RECEIVED: " + data.toString());
+        	logger.silly("processData : NEW DATA RECEIVED: " + data.toString());
 
 	        permanentDataBuffer = Buffer.concat([permanentDataBuffer, data]);
 

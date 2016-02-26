@@ -32,7 +32,7 @@ var fromDbObj = function(dbObj){
     r.extraData = dbObj.extra_data;
 
     return r;
-} 
+}
 
 var insertSummary = function(rfiddata, collector, summaryCallback){
 
@@ -51,7 +51,7 @@ var insertSummary = function(rfiddata, collector, summaryCallback){
             packagedao.insert(pkObj, function(err, pk_id){
                 if(err){
                     logger.error("RFIDATADAO insertSummary. ERROR: " + err);
-                    return;
+                    return callback(err, null);
                 }
 
                 totalDataCount = rfiddata.data.length;
@@ -73,21 +73,24 @@ var insertSummary = function(rfiddata, collector, summaryCallback){
                     insertRFIDData(rfidObject, function(err){
                         if(err){
                             logger.error("Error: " + err);
-                            return;
+                            return summaryCallback(err, null);
                         }
 
                         dataCount++;
                         if(dataCount == totalDataCount)
-                            summaryCallback(null, rfiddata.md5diggest);
+                        	summaryCallback(null, { new : true , md5diggest : rfiddata.md5diggest});
+                          //summaryCallback(null, rfiddata.md5diggest);
                     });
                 }
             });
         }else{
             //The server already has the package with this hash, so send the ACK-DATA to the collector to confirm persistence.
             logger.info("Package already has the hash pesisted. ACK-DATA needed.");
-            summaryCallback(null, rfiddata.md5diggest);
+            summaryCallback(null, { new : false, md5diggest : rfiddata.md5diggest});
+
+            // summaryCallback(null, rfiddata.md5diggest);
         }
-    });     
+    });
 }
 
 var insertRFIDData = function(rfiddata, summaryCallback){
@@ -95,7 +98,7 @@ var insertRFIDData = function(rfiddata, summaryCallback){
     var query = "INSERT INTO rfiddata (rfid_read_date, rfidcode, collector_id, extra_data, package_id, server_received_date) VALUES ($1, $2, $3, $4, $5, $6) RETURNING ID";
 
     db.query(query, [rfiddata.rfidReadDate, rfiddata.rfidcode, rfiddata.collectorId, rfiddata.extraData, rfiddata.packageId, rfiddata.serverReceivedDate], function(err, result){
-        
+
         if(err){
             logger.error("insertRFIDData error: " + err);
             return summaryCallback(err);
@@ -120,6 +123,45 @@ var existsByHash = function(hash,callback){
     });
 }
 
+RFIDDataDao.prototype.insertArray = function(array, callback){
+    var total = array.length;
+
+    logger.debug('array total length: ' + total)
+
+    if(total == 0){
+        return callback("empty array", null);
+    }
+
+    var count = 0;
+    var globalError = [];
+    var repeatedRfiddata = 0;
+    var newRfiddata = 0;
+    var errorRfiddata = 0;
+
+    for (var i in array){
+
+        this.insert(array[i], function(err, result){
+            count ++;
+
+            if(err){
+								globalError.push({error : err });
+                errorRfiddata++;
+            }else{
+                if(result.new)
+                    newRfiddata++;
+                else
+                    repeatedRfiddata++;
+            }
+            if(count === total){
+							var returnGlobalError = globalError.length > 0 ? globalError : null;
+              return callback(returnGlobalError, { 'received' : total, 'inserted' : newRfiddata, 'discardedByRepetition': repeatedRfiddata, 'discardedByError' : errorRfiddata});
+            }
+        });
+
+    }
+
+}
+
 RFIDDataDao.prototype.insert = function(obj, callback){
 
 	collectorDao.findByMac(obj.macaddress, function(err, collector){
@@ -138,20 +180,25 @@ RFIDDataDao.prototype.insert = function(obj, callback){
 
             try{
                 /*
-                    If the collector does not exists, we try to insert it again. 
+                    If the collector does not exists, we try to insert it again.
                     But if wee receive a uniqueError the collector is search one more time.
 
                     It's done this way because when the collector send a LOT of DATA packages with an unknown collector mac, the server will try to insert this collector before save the Rfidadata.
-                    But, the problem happens if a new package arraives with the same collector mac before the insertion of the previous one. 
+                    But, the problem happens if a new package arraives with the same collector mac before the insertion of the previous one.
                     So, the next instance of this code will try to search but don't find again bacause the insertion is not done yet.
                 */
                 collectorDao.insertOrFindByMacUniqueError(collectorObj, function(err, collectorId){
 
+                    if(err)
+                        return callback(err, null);
+
+                    logger.warn("missing error handling on rfidatadao collectorDao.insertOrFindByMacUniqueError");
+
                     if(collectorId == null){
-                        logger.error(err);
-                        return;
+                        logger.error('collector null');
+                        return callback('collector null', null);
                     }
-                        
+
                     collectorObj.id = collectorId;
                     insertSummary(obj.datasummary, collectorObj, callback);
                 });

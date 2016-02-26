@@ -96,16 +96,16 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 
 		collector.id = data.id;
 		collector.mac = data.macaddress;
-		collector.name = data.name; 
+		collector.name = data.name;
 
 		if(collectorPool.updateStatusByMac(collector, collector.statusEnum.ONLINE)){
 			//return the mac address for the Server class.
 			logger.debug("Update Status to Online");
-			
+
 			var collectorInfo = {id:data.id, macaddress:data.macaddress};
 
 			setOnlineCollector(collectorInfo);
-			
+
 			/*Start the function that will monitoring the status of the collector.
 			@Param1: Informations about the collector, as id and macAddress
 			@Param2: A function to send the SYN-ALIVE message to this collector
@@ -125,7 +125,7 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 	}
 
 	var handle_DATA = function(message){
-		logger.debug("handle_DATA raw message: " + JSON.stringify(message,null,"\t"));
+		logger.silly("handle_DATA raw message: " + JSON.stringify(message,null,"\t"));
 		packCounter++;
 		logger.debug("Packages Received: " + packCounter);
 
@@ -135,7 +135,7 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 			else{
 				//send back to collecting point an ACK-DATA message.
 				responses++;
-				sendObject(buildMessageObject("ACK-DATA", {md5diggest: [_md5diggest]}));			
+				sendObject(buildMessageObject("ACK-DATA", {md5diggest: [_md5diggest]}));
 				logger.debug("Sent " + responses + " RESPONSES. UNITL NOW");
 			}
 		});
@@ -148,10 +148,17 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 		return newMessage;
 	}
 
+	var getTimezonedISODateString = function(){
+		var date = new Date();
+		//Subtracts the timezone hours to local time.
+		date.setHours(date.getHours() - (date.getTimezoneOffset() / 60) );
+		return date.toISOString();
+	}
+
 	var buildMessageObject = function(m_type, m_data){
 		// logger.error("HORA ATUAL - ARRUMAR ISSO (Formato que o rasp não consegue atualizar)>>>> " + (new Date()));
 		// return {type: m_type, data: m_data, datetime: (new Date()).toISOString()};
-		return {type: m_type, data: m_data, datetime: new Date().toString()};
+		return {type: m_type, data: m_data, datetime: getTimezonedISODateString()};
 	}
 
 	var sendObject = function(object){
@@ -162,7 +169,7 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 
 		try{
 			var message = JSON.stringify(object);
-			logger.debug("sendMessage : " + message);
+			logger.silly("sendMessage : " + message);
 
 			if(socket.isConnected)
 				socket.write(buildMessage(message));
@@ -175,7 +182,7 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 
 	//Function passed to collector monitor
 	var sendSynAliveMessage = function(){
-		var syn_alive = { type:"SYN-ALIVE", data: {}, datetime: (new Date()).toISOString() };
+		var syn_alive = { type:"SYN-ALIVE", data: {}, datetime: getTimezonedISODateString() };
 		sendObject(syn_alive);
 	}
 
@@ -222,7 +229,7 @@ handle_DATA raw message: {
 	"type": "DATA"
 }
 
-NEW FORMAT: 
+NEW FORMAT:
 
 handle_DATA raw message: {
 	"data": {
@@ -231,7 +238,7 @@ handle_DATA raw message: {
 				{
 					"datetime": "2014-10-15T15:58:33",
 					"rfidcode": 44332211,
-					"extra_data":{ 
+					"extra_data":{
 									"idantena": 1
 								}
 				}
