@@ -1,6 +1,6 @@
 {
   "name": "RFIDMonitorPlatform",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "A prototype version of RFIDMonitor Platform system",
   "author": [
     {
@@ -20,30 +20,27 @@
   "engines": {
     "node": "0.12.2"
   },
-  "main": "server.js",
+  "main": "app.js",
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "~1.12.3",
     "chai": "~3.0.0",
     "client-sessions": "^0.7.0",
     "cors": "^2.6.1",
-    "ejs": "^2.3.2",
     "express": "4.1.1",
     "express-session": "^1.11.3",
-    "express-validator": "^2.13.0",
     "multer": "^1.0.3",
-    "oauth2orize": "^1.0.1",
     "passport": "^0.2.2",
-    "passport-http": "^0.2.2",
     "passport-http-bearer": "^1.0.1",
     "pg": "~4.3.0",
     "pg-hstore": "^2.3.2",
     "sequelize": "^3.6.0",
     "validator": "^3.43.0",
-    "winston": "^1.0.0"
+    "winston": "^1.0.0",
+    "q": "~1.4.1"
   },
   "apidoc": {
-    "title": "Custom apiDoc browser title",
-    "url": "https://api.github.com/v1"
+    "title": "RFIDMonitor Platform API Documentation",
+    "url": ""
   }
 }

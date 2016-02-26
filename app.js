@@ -1,135 +1,103 @@
-// Keep as firsts requires >>> 
-var Logs = require('./utils/logs').Logs;
+global.__base = __dirname + '/server/';
+global.__DevEnv = false;
+// Keep as firsts requires >>>
+var Logs = require(__base + 'utils/logs');
 var logger = require('winston');
 // <<< end of 'keep as first requires'
-
 var express = require('express');
-var https = require('https');
-var http = require('http');
-var fs = require('fs');
-// var session = require('express-session');
-var session = require('client-sessions');
-var ejs = require('ejs');
-var passport = require('passport');
 var bodyParser = require('body-parser');
-var expressValidator = require('express-validator');
+var http = require('http');
+var https = require('https');
+var fs = require('fs');
 var Cors = require('cors');
-
-var PlatformRouter = require('./controllers/platformrouter');
-var DERouter = require('./controllers/derouter');
-var Server = require('./utils/server');
-var Collector = require('./models/collector');
-
-var WebRouter = require('./controllers/webrouter');
+var session = require('client-sessions');
+var passport = require('passport');
 
 var args = process.argv;
-var debugConsole = false;
-var debugFile = false;
-var verboseConsole = false;
-var verboseFile = false;
-var sillyConsole = false;
-var sillyFile = false;
-
+var debugConsole = false,
+debugFile = false,
+sillyConsole = false,
+sillyFile = false;
+// Verify parameters for logs configuration
 if(args.indexOf('--debugAll') > -1){
 	debugConsole = true;
 	debugFile = true;
 }else{
 	if(args.indexOf('--debugConsole') > -1){
 		debugConsole = true;
-	}else if (args.indexOf('--verboseConsole') > -1){
-		verboseConsole = true;
+	}else if (args.indexOf('--sillyConsole') > -1){
+		sillyConsole = true;
 	}
 
 	if(args.indexOf('--debugFile') > -1){
 		debugFile = true;
-	}else if (args.indexOf('--verboseFile') > -1){
-		verboseFile = true;
-	}	
+	}else if (args.indexOf('--sillyFile') > -1){
+		sillyFile = true;
+	}
+}
+new Logs(debugConsole, debugFile, sillyConsole, sillyFile);
+
+if(args.indexOf('--dev') > -1){
+	global.__DevEnv = true;
+	logger.warn('Starting on development mode');
 }
 
-
-new Logs(debugConsole, debugFile, verboseConsole, verboseFile, sillyConsole, sillyFile);
-var server = new Server();
-server.startServer();
-
-//-- clean tmp restricted_media/tmp
-
-	var cleanErrors = require('./utils/baseutils').cleanRestrictedMediaTmpSync();
-
-	if(cleanErrors){
+var SynchronizeDb = require(__base + 'controller/database/synchronizedb');
+SynchronizeDb.start(function(err){
+	if(err){
+		logger.error("Erro to initialize Database: " + err);
 		return 1;
 	}
+	//Load Components olny after logger had started
+	var Server = require(__base + 'controller/collector/server');
+	var LoadRouter = require(__base + 'routes/loadroutes');
+	var LoadLoginRouter = require(__base + 'routes/loadloginroute');
+	var tokenAuthentication = require(__base + 'controller/tokenauthentication');
+	var createDefaults = require(__base + 'controller/database/createdefaults');
+	//Create default credentials if no user is found
+	createDefaults(function(err){
+		if(err)
+			throw new Error('Error on create default credentials: ' + err);
+	});
 
-//-- end of clean tmp restricted_media/tmp
-
-//--------------------
-// Verify database and default user creation
-require('./utils/baseutils').InitiateDb.start(function(err){
-
-	if(err){
-		logger.error("Error loading models: " + err);
+	//Clean restricted_media directory
+	var cleanErrors = require(__base + 'utils/cleanrestrictedmedia')();
+	if(cleanErrors){
+		logger.error('Not able to clean restricted_media directory: ' + cleanErrors);
 		return 1;
 	}
 
 	/*
 	How to generate ssl files. On terminal type:
 		openssl genrsa -out platform-key.pem 1024
-	 	openssl req -new -key platform-key.pem -out platform-cert-req.csr
-	 	openssl x509 -req -in platform-cert-req.csr -signkey platform-key.pem -out platform-cert.pem
+		openssl req -new -key platform-key.pem -out platform-cert-req.csr
+		openssl x509 -req -in platform-cert-req.csr -signkey platform-key.pem -out platform-cert.pem
 	*/
 	var options = {
-	  key: fs.readFileSync('ssl/platform-key.pem'),
-	  cert: fs.readFileSync('ssl/platform-cert.pem')
+		key: fs.readFileSync(__base + 'config/ssl/platform-key.pem'),
+		cert: fs.readFileSync(__base + 'config/ssl/platform-cert.pem')
 	};
 
 	var app = express();
-
 	app.use(Cors());
-
 	app.use(bodyParser.json({type: 'application/json'}));
-	app.use(bodyParser.urlencoded({limit: '5mb', extended : true}));
-
-	app.use(expressValidator({
-	  	customValidators: {
-		    isArray: function(value) {
-		        return Array.isArray(value);
-		    },
-		    gte: function(param, num) {
-		        return param >= num;
-		    },
-		    isCollectorStatus: function(status){
-		    	return new Collector().setStatusEnum(status) != 'UNKNOWN';
-		    },
-		    isMac: function(mac){
-		    	var regex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
-		    	return regex.test(mac);
-		    },
-		    isUndefined: function(field){
-		    	return (typeof field === "undefined");
-		    }
-	    }
-	}));// this line must be immediately after express.bodyParser()!
-
+	app.use(bodyParser.urlencoded({limit: '5mb', extended: true}));
 	app.use(passport.initialize());
-
-	// Use this configuration.
 	app.use(session({
-	  cookieName: 'appSession',
-	  secret: 'eg[isfd-8yF9-7w2315df{}+Ijsli;;to8',
-	  duration: 30 * 60 * 1000,
-	  activeDuration: 5 * 60 * 1000
-	  // httpOnly: true,
-	  // secure: true,
-	  // ephemeral: true
+		cookieName: 'appSession',
+		secret: 'eg[isfd-8yF9-7w2315df{}+Ijsli;;to8',
+		duration: 60 * 60 * 1000, //keep session for 60 minutes
+		activeDuration: 10 * 60 * 1000,
+		secure: true
 	}));
 
 	//Necessary headers to clients access.
 	app.all('*', function(req, res, next) {
-	  res.header('Access-Control-Allow-Origin', '*');
-	  res.header('Access-Control-Allow-Credentials', 'true');
-	  res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
-	  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-	  next();
+		res.header('Access-Control-Allow-Origin', '*');
+		res.header('Access-Control-Allow-Credentials', 'true');
+		res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
+		res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+		next();
 	});
 
 	app.all('*', function(req, res, next){
@@ -137,77 +105,80 @@ require('./utils/baseutils').InitiateDb.start(function(err){
 		next();
 	});
 
-	//app.all('*', function(req, res, next){
-
-		// if(req.url == "/web/login"){
-		// 	logger.info("Fazendo Login...");
-		// 	return next();
-		// }else if(req.appSession && req.appSession.user){
-		// 	logger.info("HAS SESSION - " + JSON.stringify(req.appSession));
-		// 	return next();
-
-		// }else if(req.headers.authorization){
-		// 	logger.info("TEM TOKEN: " + req.headers.authorization);
-			//return next();
-
-		// }else{
-		// 	logger.info("Não pode continuar...");
-		// 	return res.status(401).send({message: "Not Authorized"});
-		// }
-	//});
+	//Definir se será usado
+	app.all('*', function(req, res, next){
+		res.response = function(error, responseStatus, message){
+			var sendMessage = {message: message, status: responseStatus};
+			if(error){
+				sendMessage.error = error;
+			}
+			return res.status(responseStatus).send(sendMessage);
+		};
+		next();
+	});
 
 	app.use(function(err, req, res, next) {
 		//This functions gets some erros like 'bodyParser errors'.
 		//To check if it is bodyparser error, remove the response below and just call next().
 		if(err){
-			return res.status(400).json({"error" : err});
+			return res.status(400).send({message: "Something wrong with your object", error: err.toString(), status: 400});
+		}
+		next();
+	});
+	var httpPort = 8180;
+	var httpsPort = 8143;
+
+	var loginPath = '/login',
+			webPath = '/web',
+			apiPath = '/api';
+
+	var apiRoutes = new LoadRouter(apiPath);
+	var login = new LoadLoginRouter();
+
+	// Redirect any connection on http to https (secure)
+	app.use('*', function(req, res, next){
+		if(!req.secure){
+			var host = req.headers.host.split(':')[0];
+			//TODO On production, remove the :8143 port. Should be 443 (native)
+			return res.redirect('https://' + host + ':' + httpsPort + req.originalUrl);
 		}
 		next();
 	});
 
-	// app.get('/', function(req, res){
-	// 	//Redirect to /web when the GET request to / arrives
-	// 	res.redirect('/web');
-	// });
-
-	var isSessionAuthorized = function(req,res,next){
-		//check session
-		// ...
-		if(req.appSession && req.appSession.user){
-			logger.info("HAS SESSION - " + JSON.stringify(req.appSession));
-			return next();
+	app.get('/', function(req, res){
+		res.redirect(webPath);
+	});
+	var redirectMidler = function(req, res, next){
+		if(req.originalUrl.indexOf(webPath) !== -1){
+			return login.hasSession(req)? next() : res.redirect(loginPath);
+		}else if(req.originalUrl.indexOf(loginPath) !== -1){
+			return login.hasSession(req)? res.redirect(webPath): next();
+		}else{
+			logger.error("Unknown Location");
+			return res.status(404).send({message: "Unknown Location"});
 		}
-
-		logger.info("Redirect to login");
-		return res.redirect('/login');
-		// return res.status(401).send("User need to Login");
-		//If ok...
-		// next();
 	};
 
-	// app.get('/', isSessionAuthorized);
-	//Serve as static all files inside web/public folder
-	app.use('/login', express.static('web/public'));
-
-	app.get('/', isSessionAuthorized);
-	app.use('/', express.static('web/restricted'));
-
-	// var WebRouter = require('./controllers/webrouter');
-	app.use('/web', new WebRouter());
-
 	app.use('/api/doc', express.static('apidoc'));
+	var authenticate = new tokenAuthentication(app);
+	authenticate.useBearer(apiPath);
 
-	app.use('/api', new PlatformRouter());
-	app.use('/api', new DERouter());
+	app.use(webPath, redirectMidler);
+	app.use(loginPath, redirectMidler);
+	app.use(webPath, express.static('web/private'));
+	app.use(loginPath, express.static('web/public/login'));
+	app.use(apiPath, apiRoutes);
+	app.use(login.routes);
 
-	https.createServer(options, app).listen(8143);
+	//Create and start server for collectors
+	var server = new Server();
+	server.startServer();
 
-	// prepare redirection from http to https
-	var httpPort = 8180;
-	http.createServer(function(req, res){
-		res.writeHead(301, { "Location": "https://" + req.headers['host'] + req.url });
-    	res.end();
-	}).listen(httpPort, function(){
-		logger.info("HTTP server listening on port " + httpPort);
+	https.createServer(options, app).listen(httpsPort, function(){
+		logger.info("HTTPS server listening on port %s", httpsPort);
+	});
+
+	http.createServer(app).listen(httpPort, function(){
+		logger.info("HTTP server listening on port %s", httpPort);
 	});
 });

@@ -1,0 +1,94 @@
+//Object Example
+[
+  {
+    "formId":0,
+    "field":"Carro",
+    "type":"ENTITY",
+    "description":"",
+    "unique":[],
+    "defaultReference":"Placa",
+    "structureList":[
+      {
+      "formId":1,
+      "field":"Placa",
+      "type":"TEXT",
+      "description":"",
+      "allowNull":false,
+      "unique":false
+      },
+      {
+        "formId":2,
+        "field":"Chassi",
+        "type":"TEXT",
+        "description":"",
+        "allowNull":false,
+        "unique":false
+      },
+      {
+        "formId":3,
+        "field":"Foto",
+        "type":"IMAGE",
+        "description":"",
+        "allowNull":false,
+        "unique":false
+      },
+      {
+        "formId":4,
+        "field":"PIT",
+        "type":"RFIDCODE",
+        "description":"",
+        "allowNull":false,
+        "unique":false
+      },
+      {
+        "formId":5,
+        "field":"Motorista",
+        "type":"ENTITY",
+        "description":"",
+        "unique":[],
+        "defaultReference":"Nome",
+        "structureList":[
+            {
+            "formId":6,
+            "field":"Nome",
+            "type":"TEXT",
+            "description":"",
+            "allowNull":false,
+            "unique":false
+            },
+            {
+              "formId":7,
+              "field":"Data Nascimento",
+              "type":"DATETIME",
+              "description":"",
+              "allowNull":false,
+              "unique":false
+            },
+            {
+              "formId":8,
+              "field":"Instituição",
+              "type":"GROUP",
+              "description":"",
+              "allowNull":false,
+              "unique":false
+            }
+          ]
+        }
+      ]
+  }
+]
+
+//Motorista
+{
+  "data_nascimento":"Thu Dec 10 2015 14:49:27 GMT-0200 (BRST)",
+  "nome":"Thiago Bitencourt",
+  "instituicao_group_id":1
+}
+
+//Carro
+{
+  "placa":"ABC-1234",
+  "chassi":"ASDK123123",
+  "pit":"5555526",
+  "motorista_id":1
+}
