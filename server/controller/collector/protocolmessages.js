@@ -66,23 +66,6 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 	// Complete handshake, update the collector status to Online
 	var handle_ACK = function(message){
 		var data = message.data;
-<<<<<<< HEAD:controllers/protocol-messages.js
-
-		var collector = new Collector();
-
-		collector.id = data.id;
-		collector.mac = data.macaddress;
-		collector.name = data.name;
-
-		if(collectorPool.updateStatusByMac(collector, collector.statusEnum.ONLINE)){
-			//return the mac address for the Server class.
-			logger.debug("Update Status to Online");
-
-			var collectorInfo = {id:data.id, macaddress:data.macaddress};
-
-			setOnlineCollector(collectorInfo);
-
-=======
 		var collector = {
   		id: data.id,
   		mac: data.macaddress,
@@ -91,8 +74,6 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 		if(collectorPool.updateStatusByMac(collector, Collector.statusEnum.ONLINE)){
 			//return the mac address for the Server class.
 			var collectorInfo = {id: data.id, mac: data.macaddress, name: data.name};
-
->>>>>>> unstable:server/controller/collector/protocolmessages.js
 			/*Start the function that will monitoring the status of the collector.
   			@Param1: Informations about the collector, as id and macAddress
   			@Param2: A function to send the SYN-ALIVE message to this collector
@@ -115,21 +96,10 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 		packCounter++;
 		logger.debug("Packages Received: " + packCounter);
 
-<<<<<<< HEAD:controllers/protocol-messages.js
-		rfiddatadao.insert(message.data, function(err,_md5diggest){
-			if (err)
-				logger.error("PROTOCOL MESSAGES err : " + err);
-			else{
-				//send back to collecting point an ACK-DATA message.
-				responses++;
-				sendObject(buildMessageObject("ACK-DATA", {md5diggest: [_md5diggest]}));
-				logger.debug("Sent " + responses + " RESPONSES. UNITL NOW");
-=======
     RfidCtrl.save(message.data, function(err, md5diggest){
       if(err){
         logger.error("PROTOCOL MESSAGES err : " + err);
 				return;
->>>>>>> unstable:server/controller/collector/protocolmessages.js
 			}
 
       responses++;
@@ -153,11 +123,6 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 	}
 
 	var buildMessageObject = function(m_type, m_data){
-<<<<<<< HEAD:controllers/protocol-messages.js
-		// logger.error("HORA ATUAL - ARRUMAR ISSO (Formato que o rasp não consegue atualizar)>>>> " + (new Date()));
-		// return {type: m_type, data: m_data, datetime: (new Date()).toISOString()};
-=======
->>>>>>> unstable:server/controller/collector/protocolmessages.js
 		return {type: m_type, data: m_data, datetime: getTimezonedISODateString()};
 	}
 
