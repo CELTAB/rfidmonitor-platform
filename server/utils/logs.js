@@ -1,7 +1,7 @@
 'use strict';
 var fs = require('fs');
 var winston = require('winston');
-var logsDir = 'logs/';
+var logsDir = 'server/logs/';
 var Logs = function(debugConsole, debugFile, sillyConsole, sillyFile){
 	/*
 	silly: 0, -> print all above
