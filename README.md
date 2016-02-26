@@ -1,10 +1,10 @@
-# RFIDMonitor
+# RFIDMonitor Platform
 This project aims to provide a full solution for RFID monitoring. The project is divided in two fundamental parts:
 * Collecting Point (Embedded)
   * [RFIDMonitor] [RFIDMonitor]
   * [RFIDMonitorDaemon] [RFIDMonitor]
 * Desktop
-    * DeskApp [RFIDMonitor]
+    * [DeskApp] [RFIDMonitor]
 * Server
     * RFIDMonitor Platform
 
