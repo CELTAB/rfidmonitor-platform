@@ -1,0 +1,61 @@
+<!--  @author Mohamad Abu Ali <mohamad@abuali.com.br> -->
+<div class="row">
+	<div class="col-sm-12">
+		<div class="box box-info">
+			<div class="box-body">
+				<div class="row">
+					<div class="col-sm-3">
+						<div class="form-group">
+							<label class="col-sm-4 control-label">Campo:</label>
+							<div class="col-sm-8">
+								<input type="text" class="form-control" ng-model="entity.field">
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-3">
+	          <div class="form-group">
+	            <label class="col-sm-4 control-label">Descrição:</label>
+	            <div class="col-sm-8">
+	              <input type="text" class="form-control" ng-model="entity.description">
+	            </div>
+	          </div>
+	        </div>
+					<div class="col-sm-2">
+						<div class="form-group">
+						  <label class="col-sm-4 control-label">Tipo:</label>
+						  <div class="col-sm-8">
+						    <select class="form-control select2"
+						          ng-options="field.type as field.name for field in fields"
+						          ng-model="entity.type">
+						    </select>
+						  </div>
+						</div>
+					</div>
+					<div class="col-sm-2">
+						<div class="form-group">
+							 <div class="checkbox">
+				          <label>
+				            <input type="checkbox" ng-model="entity.allowNull"> Aceita Nulo
+				          </label>
+				        </div>
+						</div>
+					</div>
+					<div class="col-sm-1">
+						<div class="form-group">
+							 <div class="checkbox">
+				          <label>
+				            <input type="checkbox" ng-model="entity.unique"> Único
+				          </label>
+				        </div>
+						</div>
+					</div>
+					<div class="col-sm-1">
+						<div class="box-tools pull-right">
+		          <button type="button" class="btn btn-box-tool" data-widget="remove" ng-click="removeField(entity.formId)"><i class="fa fa-times"></i></button>
+		        </div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

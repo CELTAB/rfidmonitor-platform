@@ -1,0 +1,49 @@
+<!--  @author Mohamad Abu Ali <mohamad@abuali.com.br> -->
+<div class="row">
+  <div class="col-sm-12">
+    <div class="box box-danger">
+      <div class="box-body">
+        <div class="row">
+          <div class="col-sm-2">
+            <div class="form-group">
+              <label class="col-sm-5 control-label">Entidade:</label>
+              <div class="col-sm-7">
+                <input type="text" class="form-control" ng-model="entity.field">
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-3">
+            <div class="form-group">
+              <label class="col-sm-5 control-label">Descrição:</label>
+              <div class="col-sm-7">
+                <input type="text" class="form-control" ng-model="entity.description">
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-2">
+            <div class="form-group">
+              <label class="col-sm-5 control-label">Ref.Padrão:</label>
+              <div class="col-sm-7">
+                <select class="form-control select2"
+                  ng-model="entity.defaultReference"
+                  ng-options="field.field as field.field for field in entity.structureList">
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-4">
+            <div class="form-group">
+                <button class="btn btn-danger" ng-click="addEntity(entity.formId)"><i class="glyphicon glyphicon-plus"></i> Entidade</button>
+                <button class="btn btn-info" ng-click="addInput(entity.formId)"><i class="glyphicon glyphicon-plus"></i> Campo</button>
+            </div>
+          </div>
+          <div class="col-sm-1">
+						<div class="box-tools pull-right">
+		          <button type="button" class="btn btn-box-tool" data-widget="remove" ng-click="removeField(entity.formId)"><i class="fa fa-times"></i></button>
+		        </div>
+					</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

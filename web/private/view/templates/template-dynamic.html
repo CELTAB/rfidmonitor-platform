@@ -1,0 +1,12 @@
+<!--  @author Mohamad Abu Ali <mohamad@abuali.com.br> -->
+<div ng-if="entity.type === 'ENTITY'">
+	<div ng-include="'view/templates/template-entity.html'"></div>
+</div>
+
+<div ng-if="entity.type !== 'ENTITY'">
+	<div ng-include="'view/templates/template-input.html'"></div>
+</div>
+
+<ul ng-if="entity.structureList" style="list-style-type:none">
+  <li ng-repeat="entity in entity.structureList" ng-include="'view/templates/template-dynamic.html'"></li>
+</ul>

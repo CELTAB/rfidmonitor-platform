@@ -1,0 +1,19 @@
+{
+  "name": "public",
+  "version": "1.0.0",
+  "license": "MIT",
+  "authors": [
+    "Mohamad Abu Ali <mohamad@abuali.com.br>"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "AdminLTE": "admin-lte#2.3.2",
+    "angular": "1.5.0"
+  }
+}

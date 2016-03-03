@@ -1,0 +1,54 @@
+<!--  @author Mohamad Abu Ali <mohamad@abuali.com.br> -->
+<style type="text/css">
+  .angular-google-map-container { height: 400px; }
+</style>
+
+<section class="content-header">
+  <h1>Coletores</h1>
+</section>
+
+<section class="content">
+  <div class="row">
+    <div class="col-xs-12">
+
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Lista de Coletores</h3>
+          <button class="btn btn-success pull-right" ng-click="newCollector()"><i class="glyphicon glyphicon-plus"></i> Novo Coletor</button>
+          <div class="pull-right">
+              &nbsp
+              &nbsp
+          </div>
+          <div class="input-group pull-right" style="width: 150px;">
+            <input type="text" ng-model="filterValue" class="form-control pull-right" placeholder="Busca" ng-enter="filter()"/>
+            <div class="input-group-btn">
+              <button ng-click="filter()" class="btn btn-default" >
+                <i class="fa fa-search"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="box-body">
+          <div ui-grid="collectorsGridOptions" ui-grid-pagination ui-grid-resize-columns ui-grid-move-columns ui-grid-pinning ui-grid-selection ui-grid-exporter ui-grid-auto-resize class="grid"></div>
+        </div>
+      </div>
+
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Mapa dos Coletores</h3>
+        </div>
+        <div class="box-body">
+          <ui-gmap-google-map center='map.center' zoom='map.zoom' options='map.options' aria-label="Google map">
+            <ui-gmap-marker ng-repeat="marker in markers"
+              coords="marker.coords" options="marker.options" events="marker.events" idkey="marker.id">
+              <ui-gmap-window>
+                <div>{{marker.window.title}}</div>
+              </ui-gmap-window>
+            </ui-gmap-marker>
+          </ui-gmap-google-map>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>

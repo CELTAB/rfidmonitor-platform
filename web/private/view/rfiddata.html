@@ -1,0 +1,133 @@
+<!--  @author Mohamad Abu Ali <mohamad@abuali.com.br> -->
+<section class="content-header">
+  <h1>Rfiddata</h1>
+</section>
+
+<section class="content">
+  <div class="box box-default">
+    <div class="box-header with-border">
+      <h3 class="box-title">Busca</h3>
+    </div>
+
+    <div class="form-horizontal">
+      <div class="box-body">
+
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Código:</label>
+          <div class="col-sm-6">
+            <tags-input ng-model="search.rfidCodes"
+              add-on-paste="true"
+              placeholder="Adicionar Código Rfid">
+             <auto-complete source="loadRfiddataCode($query)" min-length="1" debounce-delay="500" ></auto-complete>
+           </tags-input>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Coletor:</label>
+          <div class="col-sm-6">
+            <select class="form-control select2" ng-model="search.collectorId">
+              <option value="">Todos os Coletores</option>
+               <option ng-repeat="collector in collectors"
+                        value="{{collector.id}}">
+                  {{collector.name}}
+                </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Intervalo de Leitura:</label>
+          <label class="col-sm-1 control-label">De:</label>
+          <div class="col-sm-2">
+            <input type="text" class="form-control" ng-model="search.fromDate" ui-date-mask>
+          </div>
+          <label class="col-sm-1 control-label">Para:</label>
+          <div class="col-sm-2">
+            <input type="text" class="form-control" ng-model="search.toDate" ui-date-mask>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Entidade:</label>
+          <div class="col-sm-6">
+            <select class="form-control select2" ng-model="search.entity" ng-change="getEntityStructure()" >
+              <option value=""></option>
+               <option ng-repeat="entity in rfidEntities"
+                        value="{{entity.identifier}}">
+                  {{entity.field}}
+                </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group" ng-repeat="structure in entityStructure.structureList" ng-if="structure.type !== 'RFIDCODE'">
+            <label class="col-sm-2 control-label" >{{structure.field}}:</label>
+            <div class="col-sm-6">
+
+              <input type="text" class="form-control"
+                ng-model="search.entityQuery.where[structure.identifier]"
+                ng-if="structure.type === 'TEXT'">
+
+              <input type="number" class="form-control"
+                ng-model="search.entityQuery.where[structure.identifier]"
+                ng-if="structure.type === 'DOUBLE'">
+
+              <input type="number" class="form-control"
+                ng-model="search.entityQuery.where[structure.identifier]"
+                ng-if="structure.type === 'INTEGER'">
+
+              <!-- @TODO se a data for invalida motsrar na view -->
+              <input type="text" class="form-control"
+        				ng-model="search.entityQuery.where[structure.identifier]"
+        				ng-if="structure.type === 'DATETIME'" ui-date-mask>
+
+              <select  class="form-control select2"
+                ng-if="structure.type === 'ENTITY'"
+                ng-model="search.entityQuery.where[structure.identifier]"
+                ng-options="value.id as value[structure.defaultReference] for value in entityOptions[structure.name]">
+                <option value="">Todos</option>
+              </select>
+
+              <select  class="form-control select2"
+                ng-if="structure.type === 'GROUP'"
+                ng-model="search.entityQuery.where[structure.identifier]"
+                ng-options="group.id as group.name for group in groups">
+                <option value="">Todos</option>
+              </select>
+
+              <div ng-if="structure.type === 'IMAGE'">
+                <label class="radio-inline"> <input type="radio" ng-model="search.entityQuery.where[structure.identifier]" ng-value="undefined" selected> Com e sem imagens </label>
+                <label class="radio-inline"> <input type="radio" ng-model="search.entityQuery.where[structure.identifier]" ng-value="{$ne:null}"> Somente com imagens </label>
+                <label class="radio-inline"> <input type="radio" ng-model="search.entityQuery.where[structure.identifier]" ng-value="{$eq:null}"> Somente sem imagens </label>
+              </div>
+
+            </div>
+        </div>
+
+      <div class="callout callout-danger" ng-if="errorMessage">
+        <h4>Erro!</h4>
+        <p>{{ errorMessage }}</p>
+      </div>
+
+      <div class="box-footer">
+        <button type="button" ng-click="limpar()" class="btn btn-default">Limpar</button>
+        <button type="button" ng-click="buscar()" class="btn btn-success pull-right">Buscar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Lista de Rfiddata</h3>
+        </div>
+        <div class="box-body">
+          <div ui-grid="rfiddataGridOptions" ui-grid-pagination ui-grid-exporter class="grid"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
