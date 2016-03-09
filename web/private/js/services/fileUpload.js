@@ -7,7 +7,7 @@ app.factory('fileUpload', function ($http, Restangular) {
     var fd = new FormData();
     fd.append('image', file);
     return Restangular.all('media').post(fd, {}, {'Content-Type': undefined});
-  }
+  };
   return {
     uploadFile: _uploadFile
   };

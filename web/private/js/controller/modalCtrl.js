@@ -51,7 +51,7 @@ app.controller('modalCtrl', function($rootScope, $scope, $uibModalInstance, Rest
 
 	var _isUndefinedOrNull = function(val) {
 		return angular.isUndefined(val) || val === null;
-	}
+	};
 
 	var _checkFiles = function(entity){
 
@@ -66,24 +66,25 @@ app.controller('modalCtrl', function($rootScope, $scope, $uibModalInstance, Rest
   		}
   	}
 
-  	if(filesTotal != 0){
-			for (var prop in entity){
-				(function(){
-					var _prop = prop;
-					if(entity[_prop] instanceof File){
-		  			fileUpload.uploadFile(entity[_prop])
-		  			.then(function(response){
-		  				filesCount++;
-		  				entity[_prop] = response.mediaId;
-		  				if(filesCount === filesTotal){
-		  					_saveEntity(entity);
-		  				}
-		  			}, function(response){
-		  				// @TODO enviar para view o erro
-		  				console.log(response);
-		  			});
-		  		};
-				})();
+		var _upload = function(entity, _prop){
+			if(entity[_prop] instanceof File){
+				fileUpload.uploadFile(entity[_prop])
+				.then(function(response){
+					filesCount++;
+					entity[_prop] = response.mediaId;
+					if(filesCount === filesTotal){
+						_saveEntity(entity);
+					}
+				}, function(response){
+					// @TODO enviar para view o erro
+					console.log(response);
+				});
+			}
+		};
+
+  	if(filesTotal !== 0){
+			for (var _prop in entity){
+				_upload(entity, _prop);
 	  	}
   	}else{
   		_saveEntity(entity);

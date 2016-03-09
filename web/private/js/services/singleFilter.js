@@ -46,5 +46,5 @@ app.factory('singleFilter', function() {
       _filterValue = filterValue;
       _columns = columns;
     }
-  }
+  };
 });

@@ -71,8 +71,8 @@ app.controller('rfiddataCtrl', function($rootScope, $scope, $interval, $log, $q,
 	});
 
 	$scope.getEntityStructure = function(){
-		$scope.search.entityQuery = undefined;;
-		if($scope.search.entity != ""){
+		$scope.search.entityQuery = undefined;
+		if($scope.search.entity !== ""){
 				$scope.search.entityQuery = {include : [{all : true}]};
 				$scope.entityStructure = angular.copy($rootScope.metaDynamics[$scope.search.entity]);
 				$scope.entityOptions = {};
@@ -87,8 +87,8 @@ app.controller('rfiddataCtrl', function($rootScope, $scope, $interval, $log, $q,
 				});
 		}else{
 			$scope.search.entity = undefined;
-			$scope.search.entityQuery = undefined;;
-			$scope.entityStructure = undefined;;
+			$scope.search.entityQuery = undefined;
+			$scope.entityStructure = undefined;
 		}
 	};
 
@@ -140,7 +140,7 @@ app.controller('rfiddataCtrl', function($rootScope, $scope, $interval, $log, $q,
 		query.q.include = [{"all":true}];
 		query.q.where = {};
 
-		if($scope.search.collectorId != ""){
+		if($scope.search.collectorId !== ""){
 				query.q.where.collectorId = angular.copy($scope.search.collectorId);
 		}
 		if(rfids.length){
@@ -149,48 +149,28 @@ app.controller('rfiddataCtrl', function($rootScope, $scope, $interval, $log, $q,
 		}
 
 		// @TODO arrumar data quando so tem inicio ou so tem fim, ou somente um dia
-		if($scope.search.fromDate != "" && $scope.search.toDate != ""){
-			console.log('caindo no 1');
-			$scope.search.toDate.setHours(23)
+		if($scope.search.fromDate !== "" && $scope.search.toDate !== ""){
+			$scope.search.toDate.setHours(23);
 			$scope.search.toDate.setMinutes(59);
 			$scope.search.toDate.setSeconds(59);
 			query.q.where.rfidReadDate = {};
 			query.q.where.rfidReadDate.$between = [angular.copy($scope.search.fromDate), angular.copy($scope.search.toDate)];
 		}
 
-		if($scope.search.fromDate != ""){
-			console.log('caindo no 2');
+		if($scope.search.fromDate !== ""){
 			var now = new Date();
 			$scope.search.toDate = now;
 			query.q.where.rfidReadDate = {};
 			query.q.where.rfidReadDate.$between = [angular.copy($scope.search.fromDate), angular.copy($scope.search.toDate)];
 		}
-		// else{
-		// 	console.log('caindo no 2 1/2');
-		// 	var now = new Date(0);
-		// 	$scope.search.fromDate = now;
-		// 	query.q.where.rfidReadDate = {};
-		// 	query.q.where.rfidReadDate.$between = [angular.copy($scope.search.fromDate), angular.copy($scope.search.toDate)];
-		// 	console.log('fromDate vazio', $scope.search.fromDate);
-		// }
 
-		// if($scope.search.toDate != ""){
-		// 	console.log('caindo no 3');
-		// 	var now = new Date();
-		// 	$scope.search.toDate.setHours(23)
-		// 	$scope.search.toDate.setMinutes(59);
-		// 	$scope.search.toDate.setSeconds(59);
-		// 	query.q.where.rfidReadDate = {};
-		// 	query.q.where.rfidReadDate.$between = [now, angular.copy($scope.search.toDate)];
-		// }
-
-		if($scope.search.entity != ""){
+		if($scope.search.entity !== ""){
 			query.q.entity = angular.copy($scope.search.entity);
 		}else{
 			$scope.search.entity = undefined;
 		}
 
-		if(angular.isDefined($scope.search.entityQuery) && $scope.search.entityQuery != ""){
+		if(angular.isDefined($scope.search.entityQuery) && $scope.search.entityQuery !== ""){
 			if(angular.isDefined($scope.search.entityQuery.where)){
 				angular.forEach($scope.search.entityQuery.where, function(value, key){
 					if(value === "" || value === null){
@@ -202,8 +182,6 @@ app.controller('rfiddataCtrl', function($rootScope, $scope, $interval, $log, $q,
 		}else{
 			$scope.search.entityQuery = undefined;
 		}
-
-		// $scope.query = query;
 
 		rfiddataService.getList(query).then(function(response){
 			$scope.rfiddataGridOptions.columnDefs = angular.copy(defaultRfidGrid);
