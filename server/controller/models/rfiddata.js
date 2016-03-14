@@ -303,6 +303,16 @@ Rfid.save = function(rfiddata, callback){
   });
 }
 
+//Extra rout for count RFIDData Records
+var Route = require(__base + 'utils/customroute');
+var countHandler = function(req, callback){
+  var query = req.query.q? JSON.parse(req.query.q) : undefined;
+  RfidModel.findAndCountAll(query).then(function(result){
+    return callback(null, {total: result.count});
+  });
+}
+Rfid.customRoute = [new Route('get', '/count/rfiddatas', countHandler)];
+
 module.exports = Rfid;
 
 /* RFIDDATA OBJ

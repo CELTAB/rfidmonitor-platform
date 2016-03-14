@@ -2935,6 +2935,109 @@
   },
   {
     "type": "get",
+    "url": "/api/count/rfiddatas",
+    "title": "6. Get a count of RFIDDatas",
+    "version": "1.0.0",
+    "name": "GetCountRfidData",
+    "group": "RFIDData",
+    "permission": [
+      {
+        "name": "TokenAccess",
+        "title": "The Client must have a token that allows it to get access on this resource.",
+        "description": ""
+      }
+    ],
+    "description": "<p>Get only the total of RFIDData records by the given query</p> ",
+    "examples": [
+      {
+        "title": "Example usage:",
+        "content": "https://localhost/api/count/rfiddatas",
+        "type": "json"
+      },
+      {
+        "title": "Query Example:",
+        "content": "https://localhost/api/count/rfiddatas?q={\"where\":{\"rfidCode\":\"5555526\"}}",
+        "type": "json"
+      }
+    ],
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "<p>Object</p> ",
+            "optional": false,
+            "field": "total",
+            "description": "<p>Total count of RFIDData records.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{\n  \"total\": 504\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "apidoc_source/rfiddatas/count.js",
+    "groupTitle": "RFIDData",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "optional": false,
+            "field": "q",
+            "description": "<p>(Query) Received all parameter defined by Sequelize documentations. Available <a href=\"http://docs.sequelizejs.com/en/latest/docs/querying/\" target=\"_blank\"> here.</a></p> "
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Unauthorized",
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Forbidden",
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+          },
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "NotFound",
+            "description": "<p>The required resource does not exist.</p> "
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "UnauthorizedError:",
+          "content": "HTTP/1.1 401 Unauthorized\n\t\"Unauthorized\"",
+          "type": "json"
+        },
+        {
+          "title": "ForbiddenError:",
+          "content": "HTTP/1.1 403 Forbidden\n{\n  \"message\": \"Token not allowed for this opperation\",\n  \"status\": 403,\n  \"error\": \"Get out dog.\"\n}",
+          "type": "json"
+        },
+        {
+          "title": "ResponseError:",
+          "content": "HTTP/1.1 'Code & Message'\n{\n \"message\": \"Any Message here\",\n \"status\": 'code',\n \"error\": \"Detailed error here\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
     "url": "/api/rfiddatas/:id",
     "title": "2. Get only one RFID Record",
     "version": "1.0.0",
