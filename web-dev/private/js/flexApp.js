@@ -35,7 +35,13 @@ app.config(function($routeProvider, $locationProvider, RestangularProvider, apiI
 
 	$routeProvider
 		.when('/', {
-			templateUrl: 'view/dashboard.html'
+			redirectTo: function () {
+        return "/dashboard";
+      }
+		})
+		.when('/dashboard', {
+			templateUrl: 'view/dashboard.html',
+			controller: 'dashboardCtrl'
 		})
 		.when('/users', {
 			templateUrl: 'view/users.html',
