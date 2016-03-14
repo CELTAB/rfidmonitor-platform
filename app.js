@@ -163,8 +163,7 @@ SynchronizeDb.start(function(err){
 	app.use('*', function(req, res, next){
 		if(!req.secure){
 			var host = req.headers.host.split(':')[0];
-			//TODO On production, remove the :8143 port. Should be 443 (native)
-			return res.redirect('https://' + host + ':' + httpsPort + req.originalUrl);
+			return res.redirect('https://' + host + req.originalUrl);
 		}
 		next();
 	});
@@ -183,14 +182,14 @@ SynchronizeDb.start(function(err){
 		}
 	};
 
-	app.use('/api/doc', express.static('apidoc'));
+	app.use('/api/doc', express.static(__dirname + '/apidoc'));
 	var authenticate = new tokenAuthentication(app);
 	authenticate.useBearer(apiPath);
 
 	app.use(webPath, redirectMidler);
 	app.use(loginPath, redirectMidler);
-	app.use(webPath, express.static('web/private'));
-	app.use(loginPath, express.static('web/public/login'));
+	app.use(webPath, express.static(__dirname + '/web/private'));
+	app.use(loginPath, express.static(__dirname + '/web/public/login'));
 	app.use(apiPath, apiRoutes);
 	app.use(login.routes);
 
