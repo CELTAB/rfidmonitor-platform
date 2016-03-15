@@ -49,40 +49,52 @@ CollectorCtrl.custom['find'] = function(id, query, callback){
         order: [['rfidReadDate', 'DESC']]
       }).then(function(records){
 
-        var response = {};
+        var response = {
+          year: 0,
+          month: 0,
+          week: 0,
+          daily: 0
+        };
         //filtar por dia, semana, mes e ano.
         // myDate.setDate(myDate.getDate() - 1); //dia
         // myDate.setDate(myDate.getDate() - 7); //Semana
         // myDate.setMonth(myDate.getMonth() - 1); //Mes. Em JS mes são representados por inteiros, de 0 a 11 e não de 1 a 12.
         // myDate.setFullYear(myDate.getFullYear() - 1);
+
         var now = new Date();
-        now.setDate(now.getDate() - 1);
-        var daily = records.filter(function(el){
-            return now.getTime() <= new Date(el.rfidReadDate).getTime();
-        });
-        response.daily = daily.length;
-
-        now = new Date();
-        now.setDate(now.getDate() - 7);
-        var week = records.filter(function(el){
-            return now.getTime() <= new Date(el.rfidReadDate).getTime();
-        });
-        response.week = week.length;
-
-        now = new Date();
-        now.setMonth(now.getMonth() - 1);
-        var month = records.filter(function(el){
-            return now.getTime() <= new Date(el.rfidReadDate).getTime();
-        });
-        response.month = month.length;
-
-        now = new Date();
         now.setFullYear(now.getFullYear() - 1);
         var year = records.filter(function(el){
             return now.getTime() <= new Date(el.rfidReadDate).getTime();
         });
         response.year = year.length;
 
+        if(year.length > 0) {
+          now = new Date();
+          now.setMonth(now.getMonth() - 1);
+          var month = year.filter(function(el){
+              return now.getTime() <= new Date(el.rfidReadDate).getTime();
+          });
+          response.month = month.length;
+
+          if(month.length > 0) {
+            now = new Date();
+            now.setDate(now.getDate() - 7);
+            var week = month.filter(function(el){
+                return now.getTime() <= new Date(el.rfidReadDate).getTime();
+            });
+            response.week = week.length;
+
+            if(week.length > 0) {
+              now = new Date();
+              now.setDate(now.getDate() - 1);
+              var daily = week.filter(function(el){
+                  return now.getTime() <= new Date(el.rfidReadDate).getTime();
+              });
+              response.daily = daily.length;
+            }
+          }
+        }
+        response.total = records.length;
         return callback(null, response);
       },
       function(err){
