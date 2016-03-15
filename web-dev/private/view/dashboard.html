@@ -1,0 +1,49 @@
+<!--  @author Mohamad Abu Ali <mohamad@abuali.com.br> -->
+<section class="content-header">
+  <h1>Dashboard</h1>
+</section>
+
+<section class="content">
+
+  <div class="row">
+    <div class="col-md-3" ng-repeat="collector in collectors">
+      <div class="box box-widget widget-user">
+        <div class="widget-user-header">
+          <h3 class="widget-user-username">{{collector.name}}</h3>
+          <h5 class="widget-user-desc">{{collector.description}}</h5>
+          <span class="label" ng-class="{'label-success': collector.status == 'ONLINE', 'label-danger': collector.status == 'OFFLINE', 'label-warning': collector.status == 'UNKNOWN'}">{{collector.status}}</span>
+        </div>
+
+        <div class="box-footer">
+          <div class="row">
+            <div class="col-sm-3 border-right">
+              <div class="description-block">
+                <h5 class="description-header">Dia</h5>
+                <span class="description-text">10</span>
+              </div>
+            </div>
+            <div class="col-sm-3 border-right">
+              <div class="description-block">
+                <h5 class="description-header">Semana</h5>
+                <span class="description-text">20</span>
+              </div>
+            </div>
+            <div class="col-sm-3 border-right">
+              <div class="description-block">
+                <h5 class="description-header">Mes</h5>
+                <span class="description-text">50</span>
+              </div>
+            </div>
+            <div class="col-sm-3">
+              <div class="description-block">
+                <h5 class="description-header">Ano</h5>
+                <span class="description-text">1200</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
