@@ -1,21 +1,24 @@
-## To Solve the dependancy install Bower
+# RFIDWeb Platform
+This interface web of RFIDMonitor Platform
+* private
+* public
+
+### Version
+1.0.0
+
+### Requirements
+- NodeJS >= v4.2.2
+- Npm >= v2.14.7
+- Grunt >= v0.4.5
+
+### Installation
 
 ```sh
-$ npm install -g bower
+$ git clone [git-repo-url] rfidmonitor-platform
+$ sudo npm install -g grunt grunt-cli
+$ cd web-dev
+$ npm install
+$ grunt prod
 ```
 
-Bower depends on [Node.js](http://nodejs.org/) and [npm](http://npmjs.org/). Also make sure that [git](http://git-scm.com/) is installed as some bower
-packages require it to be fetched and installed.
-
-
-## Usage
-
-See complete command line reference at [bower.io/docs/api/](http://bower.io/docs/api/)
-
-### Installing packages and dependencies
-
-```sh
-# install dependencies listed in bower.json
-$ bower instal
-```
-
+[RFIDMonitor]: <https://github.com/CELTAB/rfidmonitor>
