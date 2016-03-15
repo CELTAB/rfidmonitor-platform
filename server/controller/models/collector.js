@@ -33,6 +33,7 @@ var collectorPool = require(__base + 'controller/collector/collectorpool');
 var CollectorModel = sequelize.model('Collector');
 var CollectorCtrl = new Controller(CollectorModel, 'collectors');
 var Group = sequelize.model('Group');
+var RFIDData = sequelize.model('Rfiddata');
 
 var insertingMap = {};
 CollectorCtrl.oldSave = CollectorCtrl.save;
@@ -41,25 +42,97 @@ CollectorCtrl.custom['find'] = function(id, query, callback){
     if(err)
       return callback(err);
 
+    var prepareDash = function(collector, callback) {
+      RFIDData.findAll({
+        where: {collectorId: collector.id},
+        attributes: ['rfidCode', 'rfidReadDate'],
+        order: [['rfidReadDate', 'DESC']]
+      }).then(function(records){
+
+        var response = {};
+        //filtar por dia, semana, mes e ano.
+        // myDate.setDate(myDate.getDate() - 1); //dia
+        // myDate.setDate(myDate.getDate() - 7); //Semana
+        // myDate.setMonth(myDate.getMonth() - 1); //Mes. Em JS mes são representados por inteiros, de 0 a 11 e não de 1 a 12.
+        // myDate.setFullYear(myDate.getFullYear() - 1);
+        var now = new Date();
+        now.setDate(now.getDate() - 1);
+        var daily = records.filter(function(el){
+            return now.getTime() <= new Date(el.rfidReadDate).getTime();
+        });
+        response.daily = daily.length;
+
+        now = new Date();
+        now.setDate(now.getDate() - 7);
+        var week = records.filter(function(el){
+            return now.getTime() <= new Date(el.rfidReadDate).getTime();
+        });
+        response.week = week.length;
+
+        now = new Date();
+        now.setMonth(now.getMonth() - 1);
+        var month = records.filter(function(el){
+            return now.getTime() <= new Date(el.rfidReadDate).getTime();
+        });
+        response.month = month.length;
+
+        now = new Date();
+        now.setFullYear(now.getFullYear() - 1);
+        var year = records.filter(function(el){
+            return now.getTime() <= new Date(el.rfidReadDate).getTime();
+        });
+        response.year = year.length;
+
+        return callback(null, response);
+      },
+      function(err){
+          return callback({err: err.toString(), code: 500, message: "Error on count RFIDData records"});
+      });
+    };
+
     var response = {};
     if(Array.isArray(collectors)){
       response = [];
+      var collectorBack = 0;
       collectors.forEach(function(collector){
         var c = collector.get({plain: true});
         c.status = collectorPool.getStatusByMac(collector.mac);
-        response.push(c);
-      });
+
+        if(query && query.dashboard === true) {
+          prepareDash(c, function(err, records) {
+              if(err)
+                return callback(err);
+              c.records = records;
+              response.push(c);
+              collectorBack++;
+              if(collectorBack === collectors.length)
+                return callback(null, response);
+          });
+        }else{
+          response.push(c);
+        }
+      }, this);
+
+      if(!query || query.dashboard !== true)
+        return callback(null, response);
+
     }else{
       if(collectors){
         response = collectors.get({plain: true});
         response.status = collectorPool.getStatusByMac(collectors.mac);
+        //Always return dashboard information for ID search
+        prepareDash(response, function(err, records) {
+            if(err)
+              return callback(err);
+            response.records = records;
+            return callback(null, response);
+        });
       }else{
         //If no collector is found, return with error code and messages
         response = {error: 'Error on Collectors', code: 404, message: 'ID not found'};
         return callback(response);
       }
     }
-    return callback(null, response);
   });
 };
 

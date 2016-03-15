@@ -172,7 +172,7 @@ function CollectorConnection(collectorId){
 		}
 	}
 
-	// this.client.connect(8124, '179.106.217.25', function() {
+	// this.client.connect(8124, '192.168.1.10', function() {
 	this.client.connect(8124, '127.0.0.1', function() {
 		reportMap.collectorsConnected++;
 		this.protocol = new ProtocolConnectionController(this.client, this);
@@ -325,7 +325,9 @@ function CollectorConnection(collectorId){
 		while(qdtPk > 0){
 			var rfidobj = {};
 			rfidobj.identificationcode = "55555" + randomInt(10, 99);
-			rfidobj.datetime = new Date();
+			var readTime = new Date();
+			readTime.setDate(readTime.getDate() - randomInt(0,500)); //rfidReadDate random
+			rfidobj.datetime =
 			dt.push(rfidobj);
 			qdtPk--;
 		}
