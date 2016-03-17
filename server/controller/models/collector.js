@@ -53,8 +53,20 @@ CollectorCtrl.custom['find'] = function(id, query, callback){
           year: 0,
           month: 0,
           week: 0,
-          daily: 0
+          daily: 0,
+          lastYear: {}
         };
+
+        var today = new Date();
+        var start = new Date();
+          start.setMonth(start.getMonth() - 12);
+          start.setDate(start.getDate() - (start.getDate() - 1));
+          start.setMonth(start.getMonth() + 1);
+        while(start.getTime() <= today.getTime()){
+          var key = (start.getMonth() + 1) + "-" + (start.getFullYear());
+          response.lastYear[key] = 0;
+          start.setMonth(start.getMonth() + 1);
+        }
         //filtar por dia, semana, mes e ano.
         // myDate.setDate(myDate.getDate() - 1); //dia
         // myDate.setDate(myDate.getDate() - 7); //Semana
@@ -93,6 +105,15 @@ CollectorCtrl.custom['find'] = function(id, query, callback){
               response.daily = daily.length;
             }
           }
+          year.forEach(function(el) {
+            var tmpDate = new Date(el.rfidReadDate);
+            var key = (tmpDate.getMonth() + 1) + "-" + (tmpDate.getFullYear());
+            var has = response.lastYear[key];
+            if (has)
+              response.lastYear[key] += 1;
+            else
+              response.lastYear[key] = 1;
+          });
         }
         response.total = records.length;
         return callback(null, response);
