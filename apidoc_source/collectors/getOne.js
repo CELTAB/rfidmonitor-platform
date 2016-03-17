@@ -21,6 +21,7 @@
 * @apiSuccess {Date} deletedAt       Null if collector is not deleted or removal date.
 * @apiSuccess {Number} groupId       ID of related group.
 * @apiSuccess {String} status       Status ONLINE or OFFLINE.
+* @apiSuccess {Object} records       Information about records readed from the past year, until now
 *
 *
 * @apiSuccessExample Success-Response:
@@ -36,7 +37,14 @@
 *     "updatedAt": "2015-11-23T16:50:22.064Z",
 *     "deletedAt": null,
 *     "groupId": 1,
-*     "status": "ONLINE"
+*     "status": "ONLINE",
+*     "records": {
+*       "year": 98,
+*       "month": 98,
+*       "week": 98,
+*       "daily": 98,
+*       "total": 98
+*     }
 *   }
 *
 * @apiUse defaultResponses

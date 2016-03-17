@@ -12,11 +12,12 @@
 * curl -i https://localhost/api/collectors
 *
 * @apiExample Query Example:
-* curl -i https://localhost/api/collectors?q={"limit": 2}
+* curl -i https://localhost/api/collectors?q={"limit": 2, "dashboard": true}
 *
 * @apiSuccess {Object[]} collector       List of Collectors.
 *
 * @apiUse defaultQuery
+* @apiParam dashboard (Inside "q" object) Returns number of records readed from the past year until now.
 *
 * @apiSuccessExample Success-Response:
 *HTTP/1.1 200 OK
@@ -32,7 +33,14 @@
 *     "updatedAt": "2015-11-23T16:50:22.064Z",
 *     "deletedAt": null,
 *     "groupId": 1,
-*     "status": "OFFLINE"
+*     "status": "OFFLINE",
+*     "records": {
+*       "year": 98,
+*       "month": 98,
+*       "week": 98,
+*       "daily": 98,
+*       "total": 98
+*     }
 *   },
 *   {
 *     "id": 2,
@@ -45,7 +53,14 @@
 *     "updatedAt": "2015-11-23T16:50:22.066Z",
 *     "deletedAt": null,
 *     "groupId": 1,
-*     "status": "ONLINE"
+*     "status": "ONLINE",
+*     "records": {
+*       "year": 190,
+*       "month": 98,
+*       "week": 50,
+*       "daily": 15,
+*       "total": 210
+*     }
 *   }
 *]
 *
