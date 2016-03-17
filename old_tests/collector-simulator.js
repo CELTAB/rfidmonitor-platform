@@ -25,7 +25,7 @@
 var net = require('net');
 
 var PACKAGES_QUANTITY = 50; // total number of packages must be sent.
-var RFIDDATA_QUANTITY = 10; // max number of RFIDData (that is random) per package;
+var RFIDDATA_QUANTITY = 3; // max number of RFIDData (that is random) per package;
 var CONNECTION_QUANTITY = 2; // number of connections/collectors;
 var SEND_INTERVAL_MIN = 500;
 var SEND_INTERVAL_MAX = 5000; // interval in miliseconds each socket send must be done;
@@ -327,6 +327,7 @@ function CollectorConnection(collectorId){
 			rfidobj.identificationcode = "55555" + randomInt(10, 99);
 			var readTime = new Date();
 			readTime.setDate(readTime.getDate() - randomInt(0,500)); //rfidReadDate random
+			readTime.setMonth(readTime.getMonth() - randomInt(0,11));
 			rfidobj.datetime =
 			dt.push(rfidobj);
 			qdtPk--;
