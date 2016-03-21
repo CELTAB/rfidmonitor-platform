@@ -279,7 +279,7 @@ Rfid.save = function(rfiddata, callback){
     if(err){
       if(Rfid.custom.save)
         return cb(err);
-      return cb({code: 500, error: err.toString(), message: 'RFIDDATA error'});
+      return cb({code: 500, error: err, message: 'RFIDDATA error'});
     }
     return cb(null, result);
   }
@@ -301,6 +301,46 @@ Rfid.save = function(rfiddata, callback){
       return insertSummary(rfiddata.datasummary, collector, callback);
     }
   });
+}
+
+Rfid.bulkSave = function(array, callback){
+  var total = array.length;
+  logger.debug('array total length: ' + total)
+
+    if(total === 0){
+      return errorHandler('The data array is empty.', 400, callback);
+    }
+
+    var count = 0;
+    var globalError = [];
+    var repeatedRfiddata = 0;
+    var newRfiddata = 0;
+    var errorRfiddata = 0;
+
+    array.forEach(function(data) {
+
+      Rfid.save(data, function(err, result) {
+        count ++;
+        if(err){
+            globalError.push({error : err });
+            errorRfiddata++;
+        }else{
+          newRfiddata++;
+        }
+        if(count === total){
+          var returnGlobalError = null;
+          if(globalError.length > 0) {
+            returnGlobalError = {};
+            for (var i = 0; i < globalError.length; i++)
+              if (globalError[i] !== undefined) returnGlobalError[i] = globalError[i];
+          }
+          // var returnGlobalError = globalError.length > 0? globalError : null;
+          return callback(returnGlobalError, { 'received' : total, 'inserted' : newRfiddata, 'discardedByRepetition': repeatedRfiddata, 'discardedByError' : errorRfiddata});
+        }
+
+      });
+
+    });
 }
 
 //Extra rout for count RFIDData Records

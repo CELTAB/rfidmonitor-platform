@@ -35,6 +35,50 @@ var multer  = require('multer');
 var storage = multer.diskStorage({destination: appDir + '/restricted_media/tmp/'});
 var upload = multer({ storage: storage });
 
+var importMedia = function(req, type, mediaPath, callback) {
+  if(!req.file)
+    return errorHandler('We didnt receive your file', 400, callback);
+
+    var file = req.file;
+    var lastIndexExt = file.originalname.lastIndexOf('.');
+
+    var fileExt = null;
+    if(lastIndexExt >= 0){
+      fileExt = file.originalname.substring(lastIndexExt);
+    }
+    var fileFinalName = file.filename + fileExt;
+    var underAppPath = '/restricted_media/media/' + mediaPath + '/' + fileFinalName;
+
+    file.finalPath = appDir + underAppPath;
+    fs.rename(req.file.path, file.finalPath, function(err){
+      if (err)
+        return errorHandler('Internal Error: ' + err.toString(), 500, callback);
+
+      fs.readFile(file.finalPath, function (err, data) {
+          if (err){
+            return errorHandler('Error read: ' + err.toString(), 500, callback);
+          }
+          PlatformMedia.create(
+            {
+              url: fileFinalName,
+              path : underAppPath,
+              type: type,
+              mimetype : file.mimetype
+            })
+          .then(function(f){
+            f.url = '/api/media/'+f.uuid;
+            f.save().then(function(f){
+              return callback(null, {mediaId :f.uuid, file: data});
+            }).catch(function(e){
+              return errorHandler('Error: ' + e.toString(), 500, callback);
+            });
+          }).catch(function(e){
+            return errorHandler('Error: ' + e.toString(), 500, callback);
+          });
+      });
+    });
+}
+
 var getHandler = function(req, callback){
   PlatformMedia.findOne({where : { uuid : req.params.id }})
   .then(function(record){
@@ -50,54 +94,40 @@ var getHandler = function(req, callback){
 }
 
 var postHandler = function(req, callback){
-  if(!req.file)
-    return errorHandler('We didnt receive your file', 400, callback);
+  importMedia(req, 'IMAGE', 'image' ,function(err, result) {
+    if (err) return callback(err);
 
-  var file = req.file;
-  var lastIndexExt = file.originalname.lastIndexOf('.');
-
-  var fileExt = null;
-  if(lastIndexExt >= 0){
-    fileExt = file.originalname.substring(lastIndexExt);
-  }
-  var fileFinalName = file.filename + fileExt;
-  var underAppPath = '/restricted_media/media/images/' + fileFinalName;
-
-  file.finalPath = appDir + underAppPath;
-  fs.rename(req.file.path, file.finalPath, function(err){
-    if (err)
-      return errorHandler('Internal Error: ' + err.toString(), 500, callback);
-
-    fs.readFile(file.finalPath, function (err, data) {
-        if (err){
-          return errorHandler('Error read: ' + err.toString(), 500, callback);
-        }
-        PlatformMedia.create(
-          {
-            url: fileFinalName,
-            path : underAppPath,
-            type: 'IMAGE',
-            mimetype : file.mimetype
-          })
-        .then(function(f){
-          f.url = '/api/media/'+f.uuid;
-          f.save().then(function(f){
-            return callback(null, {"mediaId" :f.uuid});
-          }).catch(function(e){
-            return errorHandler('Error: ' + e.toString(), 500, callback);
-          });
-        }).catch(function(e){
-          return errorHandler('Error: ' + e.toString(), 500, callback);
-        });
-    });
+    callback(null, {mediaId: result.mediaId});
   });
 }
+
+var importHandler = function(req, callback) {
+  importMedia(req, 'RFID_IMPORT', 'rfid_import' ,function(err, result) {
+    if (err) return callback(err);
+
+    var parsedData = null;
+    try{
+    	parsedData = JSON.parse(result.file);
+    }catch(e){
+      return errorHandler('The file format is incorrect. Error: ' + e.toString(), 400, callback);
+    }
+
+    logger.warn('todo : REGISTER on database the file info.');
+    var Rfid = require(__base + 'controller/models/rfiddata');
+    Rfid.bulkSave(parsedData, function(err, result) {
+      if (err) return errorHandler(err, 400, callback);
+
+      return callback(null, result);
+    });
+  });
+};
 
 var Route = require(__base + 'utils/customroute');
 var routeStr = '/media';
 var routes = [
   new Route('get', routeStr + '/:id', getHandler),
-  new Route('post', routeStr, postHandler, upload.single('image'))
+  new Route('post', routeStr, postHandler, upload.single('image')),
+  new Route('post', '/import', importHandler, upload.single('rfidimport')),
 ];
 
 module.exports = routes;
