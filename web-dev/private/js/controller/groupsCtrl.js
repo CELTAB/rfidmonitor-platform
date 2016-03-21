@@ -2,13 +2,13 @@
 ** @author Mohamad Abu Ali <mohamad@abuali.com.br>
 */
 var app = angular.module('flexApp');
-app.controller('groupsCtrl', function($rootScope, $scope, $interval, $log, Restangular, singleFilter){
+app.controller('groupsCtrl', function($rootScope, $scope, Restangular, singleFilter){
 
 	var groupsService = Restangular.service('groups');
 
   	$scope.groupsScopeProvider = {
 			details: function(row){
-				$rootScope.openModal('group', '', 'view/modal/groupModalDetail.html', 'Detalhes Grupo', Restangular.copy(row.entity), null, groupsService, null, loadGroups, null);
+				$rootScope.openModal('group', 'view/modal/groupModalDetail.html', 'Detalhes Grupo', Restangular.copy(row.entity), null, groupsService, null, loadGroups, null);
 			}
   	};
 
@@ -46,7 +46,7 @@ app.controller('groupsCtrl', function($rootScope, $scope, $interval, $log, Resta
 	loadGroups();
 
 	$scope.newGroup = function(){
-       $rootScope.openModal('group', 'lg', 'view/modal/groupModalForm.html', 'Novo Grupo', {}, null, groupsService, null, loadGroups, null);
+       $rootScope.openModal('group', 'view/modal/groupModalForm.html', 'Novo Grupo', {}, null, groupsService, null, loadGroups, null);
     };
 
     $scope.filter = function(){

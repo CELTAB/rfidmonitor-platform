@@ -2,7 +2,7 @@
 ** @author Mohamad Abu Ali <mohamad@abuali.com.br>
 */
 var app = angular.module('flexApp');
-app.controller('flexCtrl', function($rootScope, $scope, $http, $uibModal, $log, $location, Restangular){
+app.controller('flexCtrl', function($rootScope, $scope, $http, $location, $uibModal, Restangular){
 
   $scope.user = angular.fromJson(localStorage.getItem('flexUser'));
 
@@ -40,11 +40,10 @@ app.controller('flexCtrl', function($rootScope, $scope, $http, $uibModal, $log, 
 
 	$rootScope.loadMetaDynamics();
 
-  $rootScope.openModal = function(type, size, template, title, entity, groups, service, structureList, loadDataTableGrid, dynamicEntities, users){
+  $rootScope.openModal = function(type, template, title, entity, groups, service, structureList, loadDataTableGrid, dynamicEntities, users){
 		$uibModal.open({
 			animation: true,
 			templateUrl: template,
-			size: size,
 			controller: 'modalCtrl',
 			resolve: {
 				type: function(){

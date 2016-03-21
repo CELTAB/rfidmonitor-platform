@@ -12,7 +12,7 @@ app.controller('dynamicCtrl', function($rootScope, $scope, $routeParams, Restang
 
 	$scope.dynamicScopeProvider = {
 		details: function(row){
-			$rootScope.openModal('dynamic', '', 'view/modal/dynamicModalDetail.html', 'Detalhes '+$scope.dynamicEntity.field, Restangular.copy(row.entity), $scope.groups, dynamicService, $scope.dynamicEntity.structureList, loadDynamics, $scope.dynamicEntities);
+			$rootScope.openModal('dynamic', 'view/modal/dynamicModalDetail.html', 'Detalhes '+$scope.dynamicEntity.field, Restangular.copy(row.entity), $scope.groups, dynamicService, $scope.dynamicEntity.structureList, loadDynamics, $scope.dynamicEntities);
 		}
 	};
 
@@ -96,7 +96,7 @@ app.controller('dynamicCtrl', function($rootScope, $scope, $routeParams, Restang
 	});
 
 	$scope.newDynamic = function(){
-		$rootScope.openModal($scope.dynamicEntity.identifier, '', 'view/modal/dynamicModalForm.html', $scope.dynamicEntity.field, {}, $scope.groups, dynamicService, $scope.dynamicEntity.structureList, loadDynamics, $scope.dynamicEntities);
+		$rootScope.openModal($scope.dynamicEntity.identifier, 'view/modal/dynamicModalForm.html', $scope.dynamicEntity.field, {}, $scope.groups, dynamicService, $scope.dynamicEntity.structureList, loadDynamics, $scope.dynamicEntities);
 	};
 
 

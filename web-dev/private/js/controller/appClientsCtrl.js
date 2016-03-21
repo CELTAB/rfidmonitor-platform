@@ -2,25 +2,22 @@
 ** @author Mohamad Abu Ali <mohamad@abuali.com.br>
 */
 var app = angular.module('flexApp');
-app.controller('appClientsCtrl', function($rootScope, $scope, $interval, $log, Restangular, singleFilter){
+app.controller('appClientsCtrl', function($rootScope, $scope, Restangular, singleFilter){
 
 	var appClientsService = Restangular.service('appclients');
 	var usersService = Restangular.service('users');
 
-	usersService.getList().then(function(response){
-		 $scope.users = response;
-	});
+	var loadUsers = function(){
+		usersService.getList().then(function(response){
+			 $scope.users = response;
+		});
+	};
 
-	// @TODO corregir a lista de usuarios na interface de edicao de appClientes
-	// var usersService = Restangular.service('users');
-	//
-	// usersService.getList().then(function(response){
-	// 	 $scope.users = response;
-	// });
+	loadUsers();
 
 	$scope.appClientsScopeProvider = {
 		details: function(row){
-			$rootScope.openModal('appClients', '', 'view/modal/appClientsModalDetail.html', 'Detalhes AppClients', Restangular.copy(row.entity), null, appClientsService, null, loadAppClients, null, $scope.users);
+			$rootScope.openModal('appClients', 'view/modal/appClientsModalDetail.html', 'Detalhes AppClients', Restangular.copy(row.entity), null, appClientsService, null, loadAppClients, null, $scope.users);
 		}
 	};
 
@@ -57,7 +54,7 @@ app.controller('appClientsCtrl', function($rootScope, $scope, $interval, $log, R
 	loadAppClients();
 
 	$scope.newAppClients = function(){
-       $rootScope.openModal('appClients', 'lg', 'view/modal/appClientsModalForm.html', 'Novo AppClients', {}, null, appClientsService, null, loadAppClients, null, $scope.users);
+       $rootScope.openModal('appClients', 'view/modal/appClientsModalForm.html', 'Novo AppClients', {}, null, appClientsService, null, loadAppClients, null, $scope.users);
     };
 
   $scope.filter = function(){

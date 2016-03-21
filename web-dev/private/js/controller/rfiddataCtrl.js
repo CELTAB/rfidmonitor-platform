@@ -2,7 +2,7 @@
 ** @author Mohamad Abu Ali <mohamad@abuali.com.br>
 */
 var app = angular.module('flexApp');
-app.controller('rfiddataCtrl', function($rootScope, $scope, $interval, $log, $q, Restangular){
+app.controller('rfiddataCtrl', function($rootScope, $scope, $q, Restangular){
 
 	var rfiddataService = Restangular.service('rfiddatas');
 	var collectorService = Restangular.service('collectors');

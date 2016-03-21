@@ -2,13 +2,13 @@
 ** @author Mohamad Abu Ali <mohamad@abuali.com.br>
 */
 var app = angular.module('flexApp');
-app.controller('usersCtrl', function($rootScope, $scope, $interval, $log, Restangular, singleFilter){
+app.controller('usersCtrl', function($rootScope, $scope, Restangular, singleFilter){
 
 	var usersService = Restangular.service('users');
 
   	$scope.usersScopeProvider = {
   		details: function(row){
-  			$rootScope.openModal('user', '', 'view/modal/userModalDetail.html', 'Detalhes Usuário', Restangular.copy(row.entity), null, usersService, null, loadUsers, null);
+  			$rootScope.openModal('user', 'view/modal/userModalDetail.html', 'Detalhes Usuário', Restangular.copy(row.entity), null, usersService, null, loadUsers, null);
   		}
   	};
 
@@ -44,12 +44,12 @@ app.controller('usersCtrl', function($rootScope, $scope, $interval, $log, Restan
 	loadUsers();
 
 	$scope.newUser = function(){
-       $rootScope.openModal('user', '', 'view/modal/userModalForm.html', 'Novo Usuário', {}, null, usersService, null, loadUsers, null);
+       $rootScope.openModal('user', 'view/modal/userModalForm.html', 'Novo Usuário', {}, null, usersService, null, loadUsers, null);
     };
 
-    $scope.filter = function(){
-    	singleFilter.values($scope.filterValue, ['name', 'description', 'email']);
-    	$scope.gridApi.grid.refresh();
-    };
+  $scope.filter = function(){
+  	singleFilter.values($scope.filterValue, ['name', 'description', 'email']);
+  	$scope.gridApi.grid.refresh();
+  };
 
 });

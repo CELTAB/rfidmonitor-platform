@@ -13,7 +13,7 @@ app.controller('dynamicEntitiesCtrl', function($rootScope, $scope, Restangular, 
   $scope.dynamicEntitiesScopeProvider = {
     details: function(row){
       var service = row.entity.active ? deactivateOne : activateOne;
-      $rootScope.openModal('dynamicEntities', '', 'view/modal/dynamicEntitiesModalDetail.html', 'Detalhes Entidade Dinamica', Restangular.copy(row.entity), null, service, null, loadDynamicEntities, null);
+      $rootScope.openModal('dynamicEntities', 'view/modal/dynamicEntitiesModalDetail.html', 'Detalhes Entidade Dinamica', Restangular.copy(row.entity), null, service, null, loadDynamicEntities, null);
     }
   };
 

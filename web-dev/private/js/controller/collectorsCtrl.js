@@ -2,7 +2,7 @@
 ** @author Mohamad Abu Ali <mohamad@abuali.com.br>
 */
 var app = angular.module('flexApp');
-app.controller('collectorsCtrl', function($scope, $interval, $log, Restangular, singleFilter){
+app.controller('collectorsCtrl', function($scope, Restangular, singleFilter, mapCenter){
 
 	var collectorsService = Restangular.service('collectors');
 	var groupsService = Restangular.service('groups');
@@ -13,7 +13,7 @@ app.controller('collectorsCtrl', function($scope, $interval, $log, Restangular, 
 
 	$scope.collectorsScopeProvider = {
 		details: function(row){
-			 $scope.openModal('collector', '', 'view/modal/collectorModalDetail.html', 'Detalhes Coletor', Restangular.copy(row.entity), $scope.groups, collectorsService, null, loadCollectors);
+			 $scope.openModal('collector', 'view/modal/collectorModalDetail.html', 'Detalhes Coletor', Restangular.copy(row.entity), $scope.groups, collectorsService, null, loadCollectors);
 		}
 	};
 
@@ -67,7 +67,7 @@ app.controller('collectorsCtrl', function($scope, $interval, $log, Restangular, 
 	loadCollectors();
 
 	$scope.newCollector = function(){
-		$scope.openModal('collector', '', 'view/modal/collectorModalForm.html', 'Novo Coletor', {}, $scope.groups, collectorsService, null, loadCollectors);
+		$scope.openModal('collector', 'view/modal/collectorModalForm.html', 'Novo Coletor', {}, $scope.groups, collectorsService, null, loadCollectors);
 	};
 
  	$scope.filter = function(){
@@ -76,7 +76,7 @@ app.controller('collectorsCtrl', function($scope, $interval, $log, Restangular, 
     };
 
 	$scope.map = {
-		center: { latitude: -25.428006, longitude: -54.584640 },
+		center: { latitude: mapCenter.lat, longitude: mapCenter.lng },
 		zoom: 14
 	};
 
