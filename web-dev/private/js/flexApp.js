@@ -24,6 +24,7 @@ var app = angular.module('flexApp',
 	'ui.grid.exporter']);
 
 app.constant('apiInfo', {	baseUrl: window.location.origin + '/api' });
+app.constant('mapCenter', { lat: -25.428006, lng: -54.584640 });
 
 app.config(function($routeProvider, $locationProvider, RestangularProvider, apiInfo) {
 
