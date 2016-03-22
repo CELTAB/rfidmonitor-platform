@@ -53,7 +53,7 @@ var model = sequelize.define("PlatformMedia", {
 		type : SequelizeClass.STRING,
 		allowNull : false,
 		validate : {
-			isIn : [['IMAGE', 'PDF', 'RFID_IMPORT']]
+			isIn : [['IMAGE', 'FILE', 'RFID_IMPORT']]
 		}
 	},
 	uuid: {
