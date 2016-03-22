@@ -7,7 +7,7 @@
 <div class="modal-body form-horizontal">
 
   <div class="form-group">
-		<label class="col-sm-3 control-label">Name:</label>
+		<label class="col-sm-3 control-label">Name: (*)</label>
 		<div class="col-sm-9">
 		  <input type="text" id="name" class="form-control" ng-model="entity.name">
 		</div>
@@ -26,6 +26,12 @@
 			<toggle-switch ng-model="entity.isDefault" on-label="Sim" off-label="Não"></toggle-switch>
 		</div>
  	</div>
+
+  <div class="form-group ">
+    <div class="col-sm-3 pull-right">
+      <small>(*) campos obrigatório.</small>
+    </div>
+  </div>
 
   <div class="callout callout-danger" ng-if="errorMessage">
     <h4>Erro!</h4>

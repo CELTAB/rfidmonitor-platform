@@ -7,7 +7,7 @@
 <div class="modal-body form-horizontal">
 
     <div class="form-group">
-		<label class="col-sm-3 control-label">Name:</label>
+		<label class="col-sm-3 control-label">Name: (*)</label>
 		<div class="col-sm-9">
 		  <input type="text" id="name" class="form-control" ng-model="entity.name">
 		</div>
@@ -21,7 +21,7 @@
  	</div>
 
  	<div class="form-group">
-		<label class="col-sm-3 control-label">Group:</label>
+		<label class="col-sm-3 control-label">Group: (*)</label>
 		<div class="col-sm-9">
 			<select class="form-control select2" ng-model="entity.groupId" style="width: 100%;">
 				 <option ng-selected="{{group.id === entity.Group.id}}"
@@ -35,7 +35,7 @@
  	</div>
 
  	<div class="form-group">
-		<label class="col-sm-3 control-label">MAC:</label>
+		<label class="col-sm-3 control-label">MAC: (*)</label>
 		<div class="col-sm-9">
 		  <input class="form-control" ng-model="entity.mac">
 		</div>
@@ -63,6 +63,12 @@
 			</div>
 		</div>
  	</div>
+
+  <div class="form-group ">
+    <div class="col-sm-3 pull-right">
+      <small>(*) campos obrigatório.</small>
+    </div>
+  </div>
 
   <div class="callout callout-danger" ng-if="errorMessage">
     <h4>Erro!</h4>

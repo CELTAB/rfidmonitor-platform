@@ -7,42 +7,42 @@
 
   <div class="row">
     <div class="col-md-3" ng-repeat="collector in collectors">
-      <div class="box box-widget widget-user">
+      <div class="box widget-user">
         <div class="widget-user-header">
-          <h3 class="widget-user-username">{{collector.name}}</h3>
-          <h5 class="widget-user-desc">{{collector.description}}</h5>
-          <span class="label" ng-class="{'label-success': collector.status == 'ONLINE', 'label-danger': collector.status == 'OFFLINE', 'label-warning': collector.status == 'UNKNOWN'}">{{collector.status}}</span>
+          <h3 class="widget-user-username">{{::collector.name}}</h3>
+          <h5 class="widget-user-desc">{{::collector.description}}</h5>
+          <span class="label" ng-class="{'label-success': collector.status == 'ONLINE', 'label-danger': collector.status == 'OFFLINE', 'label-warning': collector.status == 'UNKNOWN'}">{{::collector.status}}</span>
         </div>
 
         <div class="box-footer">
           <div class="row">
             <h4 style="text-align: center">
-              <b>Total de registros:</b> {{collector.records.total}}
+              <b>Total de registros:</b> {{::collector.records.total}}
             </h4>
           </div>
           <div class="row">
             <div class="col-sm-3 border-right">
               <div class="description-block">
                 <h5 class="description-header">Diário</h5>
-                <span class="description-text">{{collector.records.daily}}</span>
+                <span class="description-text">{{::collector.records.daily}}</span>
               </div>
             </div>
             <div class="col-sm-3 border-right">
               <div class="description-block">
                 <h5 class="description-header">Semanal</h5>
-                <span class="description-text">{{collector.records.week}}</span>
+                <span class="description-text">{{::collector.records.week}}</span>
               </div>
             </div>
             <div class="col-sm-3 border-right">
               <div class="description-block">
                 <h5 class="description-header">Mensal</h5>
-                <span class="description-text">{{collector.records.month}}</span>
+                <span class="description-text">{{::collector.records.month}}</span>
               </div>
             </div>
             <div class="col-sm-3">
               <div class="description-block">
                 <h5 class="description-header">Anual</h5>
-                <span class="description-text">{{collector.records.year}}</span>
+                <span class="description-text">{{::collector.records.year}}</span>
               </div>
             </div>
           </div>
@@ -58,7 +58,7 @@
           <h3 class="box-title">Total de registros por coletor</h3>
         </div>
         <div class="box-body">
-          <canvas id="doughnut" class="chart chart-doughnut" chart-data="dataChartCollector"
+          <canvas class="chart chart-doughnut" chart-data="dataChartCollector"
             chart-labels="seriesRfid" chart-legend="true" style="height:300px"></canvas>
         </div>
       </div>
@@ -69,9 +69,8 @@
           <h3 class="box-title">Total de registros por mês do último ano</h3>
         </div>
         <div class="box-body">
-          <canvas id="line" class="chart chart-line" chart-data="dataRfid"
-           chart-labels="labelsRfid" chart-series="seriesRfid" chart-legend="true" style="height:300px">
-          </canvas>
+          <canvas class="chart chart-line" chart-data="dataRfid" chart-labels="labelsRfid"
+            chart-series="seriesRfid" chart-legend="true" style="height:325px"></canvas>
         </div>
       </div>
     </div>
