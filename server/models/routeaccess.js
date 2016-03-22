@@ -33,6 +33,7 @@ var model = sequelize.define("RouteAccess", {
 		type : SequelizeClass.INTEGER,
 		allowNull : false,
 		field : 'appClient',
+		unique : 'uq_app_route',
 		references: {
 			model: AppClient,
 			key:   "id"
@@ -42,6 +43,7 @@ var model = sequelize.define("RouteAccess", {
 		type : SequelizeClass.INTEGER,
 		allowNull : false,
 		field : 'uriRoute',
+		unique : 'uq_app_route',
 		references: {
 			model: UriRoute,
 			key:   "id"
