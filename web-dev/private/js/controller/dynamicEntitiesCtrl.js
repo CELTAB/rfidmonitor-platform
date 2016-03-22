@@ -18,8 +18,9 @@ app.controller('dynamicEntitiesCtrl', function($rootScope, $scope, Restangular, 
   };
 
   $scope.dynamicEntitiesGridOptions = {
-      paginationPageSizes: [5, 10],
-      paginationPageSize: 5,
+      paginationPageSizes: [20, 50, 100],
+      paginationPageSize: 20,
+      minRowsToShow: 21,
       multiSelect: false,
       enableRowSelection: true,
       enableSelectAll: false,

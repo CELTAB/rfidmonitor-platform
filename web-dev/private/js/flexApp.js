@@ -76,6 +76,10 @@ app.config(function($routeProvider, $locationProvider, RestangularProvider, apiI
 			templateUrl: 'view/rfiddata.html',
 			controller: 'rfiddataCtrl'
 		})
+		.when('/importfile', {
+			templateUrl: 'view/importfile.html',
+			controller: 'importfileCtrl'
+		})
 		.when('/:dynamicUrl', {
 			templateUrl: 'view/dynamic.html',
 			controller: 'dynamicCtrl'

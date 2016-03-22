@@ -87,10 +87,11 @@
             <li class="hide" ng-class="{ active: isActive('/routeAccess')}"><a href="#/routeAccess"><i class="fa fa-sitemap"></i> <span>Rotas de Acesso</span></a></li>
             <li ng-class="{ active: isActive('/dynamicEntities')}"><a href="#/dynamicEntities"><i class="fa fa-recycle"></i> <span>Entidades Dinâmicas</span></a></li>
             <li class="header">Usuário</li>
-            <li ng-class="{ active: isActive('/')}"><a href="#/"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a></li>
+            <li ng-class="{ active: isActive('/dashboard')}"><a href="#/"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a></li>
             <li ng-class="{ active: isActive('/groups')}"><a href="#/groups"><i class="fa fa-cubes"></i> <span>Grupos</span></a></li>
             <li ng-class="{ active: isActive('/collectors')}"><a href="#/collectors"><i class="fa fa-map-marker"></i> <span>Coletores</span></a></li>
             <li ng-class="{ active: isActive('/rfiddata')}"><a href="#/rfiddata"><i class="fa fa-database"></i> <span>RfidData</span></a></li>
+            <li ng-class="{ active: isActive('/importfile')}"><a href="#/importfile"><i class="fa fa-upload"></i> <span>Importação Manual</span></a></li>
             <li class="header">Registros Dinâmicos</li>
             <li ng-class="{ active: isActive('/{{meta.identifier}}')}" ng-repeat="meta in metaDynamics">
               <a ng-href="#/{{meta.identifier}}">
@@ -149,8 +150,10 @@
     <script type="text/javascript" src="js/controller/dynamicEntityAddCtrl.js"></script>
     <script type="text/javascript" src="js/controller/appClientsCtrl.js"></script>
     <script type="text/javascript" src="js/controller/routeAccessCtrl.js"></script>
+    <script type="text/javascript" src="js/controller/importfileCtrl.js"></script>
     <script type="text/javascript" src="js/services/singleFilter.js"></script>
     <script type="text/javascript" src="js/services/fileUpload.js"></script>
+    <script type="text/javascript" src="js/services/fileImport.js"></script>
     <script type="text/javascript" src="js/directives/enter.js"></script>
     <script type="text/javascript" src="js/directives/imageSource.js"></script>
     <script type="text/javascript" src="js/directives/fileModel.js"></script>

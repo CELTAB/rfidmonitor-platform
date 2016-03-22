@@ -56,20 +56,20 @@
           <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
               <li class="dropdown user user-menu">
-                <a href="#/" class="dropdown-toggle" data-toggle="dropdown">
+                <a role="button" class="dropdown-toggle" data-toggle="dropdown">
                   <span class="hidden-xs">{{user.name}}</span>
                 </a>
                 <ul class="dropdown-menu">
                   <li class="user-header">
                     <p>
-                      <small>Nome: {{user.name}}</small>
-                      <small>Usuário: {{user.username}}</small>
-                      <small>E-mail: {{user.email}}</small>
+                      <strong>Nome: {{user.name}}</strong><br>
+                      <strong>Usuário: {{user.username}}</strong><br>
+                      <strong>E-mail: {{user.email}}</strong><br>
                     </p>
                   </li>
                   <li class="user-footer">
                     <div class="pull-right">
-                      <a class="btn btn-default btn-flat" ng-click="logout()">Sign out</a>
+                      <a class="btn btn-default btn-flat" ng-click="logout()">Sair</a>
                     </div>
                   </li>
                 </ul>
@@ -87,7 +87,7 @@
             <li class="hide" ng-class="{ active: isActive('/routeAccess')}"><a href="#/routeAccess"><i class="fa fa-sitemap"></i> <span>Rotas de Acesso</span></a></li>
             <li ng-class="{ active: isActive('/dynamicEntities')}"><a href="#/dynamicEntities"><i class="fa fa-recycle"></i> <span>Entidades Dinâmicas</span></a></li>
             <li class="header">Usuário</li>
-            <li ng-class="{ active: isActive('/')}"><a href="#/"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a></li>
+            <li ng-class="{ active: isActive('/dashboard')}"><a href="#/"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a></li>
             <li ng-class="{ active: isActive('/groups')}"><a href="#/groups"><i class="fa fa-cubes"></i> <span>Grupos</span></a></li>
             <li ng-class="{ active: isActive('/collectors')}"><a href="#/collectors"><i class="fa fa-map-marker"></i> <span>Coletores</span></a></li>
             <li ng-class="{ active: isActive('/rfiddata')}"><a href="#/rfiddata"><i class="fa fa-database"></i> <span>RfidData</span></a></li>
@@ -109,8 +109,6 @@
     <!-- Bower Components -->
     <script type="text/javascript" src="bower_components/AdminLTE/plugins/jQuery/jQuery-2.1.4.min.js"></script>
     <script type="text/javascript" src="bower_components/AdminLTE/bootstrap/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="bower_components/AdminLTE/plugins/datatables/jquery.dataTables.min.js"></script>
-    <script type="text/javascript" src="bower_components/AdminLTE/plugins/datatables/dataTables.bootstrap.min.js"></script>
     <script type="text/javascript" src="bower_components/AdminLTE/plugins/slimScroll/jquery.slimscroll.min.js"></script>
     <script type="text/javascript" src="bower_components/AdminLTE/plugins/fastclick/fastclick.min.js"></script>
     <script type="text/javascript" src="bower_components/AdminLTE/dist/js/app.min.js" type="text/javascript"></script>
