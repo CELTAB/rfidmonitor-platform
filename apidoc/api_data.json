@@ -3723,13 +3723,20 @@
     "examples": [
       {
         "title": "Object Example:",
-        "content": "{\n  \"appClient\":1,\n  \"uriRoute\": 1\n}",
+        "content": "[\n  {\n    \"appClient\":1,\n    \"uriRoute\": 1\n  }\n]",
         "type": "json"
       }
     ],
     "parameter": {
       "fields": {
         "Body": [
+          {
+            "group": "Body",
+            "type": "<p>Array</p> ",
+            "optional": false,
+            "field": "All",
+            "description": "<p>relation between appClient and uriRoute to be persisted {Required}.</p> "
+          },
           {
             "group": "Body",
             "type": "<p>Number</p> ",
@@ -3751,7 +3758,7 @@
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n  {\n    \"id\": 2,\n    \"appClient\": 1,\n    \"uriRoute\": 1,\n    \"updatedAt\": \"2016-02-17T12:56:46.999Z\",\n    \"createdAt\": \"2016-02-17T12:56:46.999Z\",\n    \"deletedAt\": null\n  }",
+          "content": "HTTP/1.1 200 OK\n  {\n    \"message\": \"OK\",\n    \"total\": 1\n  }",
           "type": "json"
         }
       ]
