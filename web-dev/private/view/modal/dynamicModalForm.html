@@ -33,24 +33,17 @@
 				file-model="entity[structure.identifier]"
 				ng-if="structure.type === 'IMAGE'">
 
-			<select class="form-control select2"
-				ng-model="entity[structure.identifier]"
-				ng-if="structure.type === 'GROUP'">
-			 	<option ng-repeat="group in groups"
-            value="{{group.id}}">
-			      {{group.name}}
-			    </option>
-			</select>
+      <select class="form-control select2"
+              ng-model="entity[structure.identifier]"
+              ng-options="group.id as group.name for group in groups"
+              ng-if="structure.type === 'GROUP'">
+      </select>
 
-			<select class="form-control select2"
-					ng-model="entity[structure.identifier]"
-					ng-if="structure.type === 'ENTITY'">
-					<option ng-selected="{{de.id == entity[structure.identifier]}}"
-			 			ng-repeat="de in dynamicEntities[structure.name]"
-			 			value="{{de.id}}">
-	      			{{de[structure.defaultReference]}}
-	    		</option>
-			</select>
+      <select class="form-control select2"
+              ng-model="entity[structure.identifier]"
+              ng-options="de.id as de[structure.defaultReference] for de in dynamicEntities[structure.name]"
+              ng-if="structure.type === 'ENTITY'">
+      </select>
 
  		</div>
  	</div>

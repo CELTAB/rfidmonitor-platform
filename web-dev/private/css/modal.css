@@ -12,18 +12,3 @@
      border-top-left-radius: 5px;
      border-top-right-radius: 5px;
 }
-.modal-header-primary {
-    background-color: #3c8dbc;
-}
-.modal-header-info {
-    background-color: #00c0ef;
-}
-.modal-header-warning {
-    background-color: #f39c12;
-}
-.modal-header-danger {
-    background-color: #f56954;
-}
-.modal-header-success {
-    background-color: #00a65a;
-}

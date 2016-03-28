@@ -66,17 +66,19 @@ app.controller('dynamicCtrl', function($rootScope, $scope, $routeParams, Restang
 	    case 'DATETIME':
 		    $scope.dynamicGridOptions.columnDefs.push(
 					{ name: value.identifier,
-					  cellFilter:'date:"dd/MM/yyyy"',
+						cellFilter:'date:"dd/MM/yyyy - HH:mm:ss"',
     			  type:'date',
 					  displayName: value.field
 					}
 				);
         break;
  	    case 'GROUP':
-	      $scope.dynamicGridOptions.columnDefs.push(
-					{ name: 'Group.name', displayName: value.field }
+				$scope.dynamicGridOptions.columnDefs.push(
+					{ name: value.name+'.name',
+						displayName: value.field
+					}
 				);
-				filterOptions.push('Group');
+				filterOptions.push(value.name);
 				filterOptions.push('name');
 	      groupsService.getList().then(function(response){
 					$scope.groups = response;

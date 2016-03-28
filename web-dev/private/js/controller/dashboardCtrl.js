@@ -25,12 +25,12 @@ app.controller('dashboardCtrl', function($scope, Restangular){
 
 					var lastYear = collector.records.lastYear;
 					var last = [];
-					for(attr in lastYear){
+					for(var attr in lastYear){
 						last.push(lastYear[attr]);
 					}
 					$scope.dataRfid.push(last);
 				});
-				for(attr in $scope.collectors[0].records.lastYear){
+				for(var attr in $scope.collectors[0].records.lastYear){
 					$scope.labelsRfid.push(attr);
 				}
 			}

@@ -51,7 +51,7 @@ app.controller('dynamicEntityAddCtrl', function($rootScope, $scope, Restangular)
         $rootScope.go('/dynamicEntities');
         $scope.formsFields = [];
         }, function(response) {
-          $scope.errorMessage = response;
+          $scope.errorMessage = response.data;
       });
     };
 
