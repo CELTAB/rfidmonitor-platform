@@ -33,7 +33,7 @@ var promisesHandler = function(callback){
     var attrName = null;
     for (var attr in obj) {
       if (attr.indexOf("_group_id") != -1) {
-        attrName = attr.replace("_id", "");
+        attrName = attr.replace("_group_id", "");
       }
     }
     return attrName;
