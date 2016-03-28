@@ -31,9 +31,9 @@ var promisesHandler = function(callback){
   var _cb = callback;
   var embeddedEntityRename = function(obj) {
     var attrName = null;
-    for (attr in obj) {
+    for (var attr in obj) {
       if (attr.indexOf("_group_id") != -1) {
-        attrName = attr.splice("_id")[0];
+        attrName = attr.replace("_group_id", "");
       }
     }
     return attrName;
@@ -44,8 +44,10 @@ var promisesHandler = function(callback){
         var response = [];
         result.forEach(function(el) {
           var elB = el.get({plain: true});
-          if(el.Group)
+          if(el.Group) {
             elB[embeddedEntityRename(elB)] = elB.Group;
+            delete elB.Group;
+          }
           response.push(elB);
         });
         return _cb(null, response);
@@ -54,8 +56,10 @@ var promisesHandler = function(callback){
         return errorHandler('Record not found', 400, _cb);
       }
       var elB = result.get({plain: true});
-      if(el.Group)
+      if(result.Group) {
         elB[embeddedEntityRename(elB)] = elB.Group;
+        delete elB.Group;
+      }
       return _cb(null, elB);
     },
     error: function(err){
