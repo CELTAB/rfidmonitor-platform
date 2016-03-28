@@ -56,7 +56,7 @@ var promisesHandler = function(callback){
         return errorHandler('Record not found', 400, _cb);
       }
       var elB = result.get({plain: true});
-      if(el.Group) {
+      if(result.Group) {
         elB[embeddedEntityRename(elB)] = elB.Group;
         delete elB.Group;
       }
