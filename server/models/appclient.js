@@ -42,7 +42,6 @@ var model = sequelize.define("AppClient", {
 	},
 	def: {
 		type : SequelizeClass.BOOLEAN,
-		unique : true,
 		allowNull : true,
 		field : 'def'
 	}
