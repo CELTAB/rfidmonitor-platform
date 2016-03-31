@@ -29,6 +29,8 @@ var errorHandler = require(__base + 'utils/errorhandler');
 
 var UserModel = sequelize.model('User');
 var UserCtrl = new Controller(UserModel, 'users');
+var RouteAccess = sequelize.model('RouteAccess');
+var UriRoute = sequelize.model('UriRoute');
 
 UserCtrl.custom['save'] = function(body, callback){
   if(body.id || body._id)
@@ -62,8 +64,32 @@ UserCtrl.login = function(candidateUser, callback){
       if(!app)
         return errorHandler('Token not found for user ' + user.username, 400, callback);
 
+      //TODO: get back here. Not Working
       user.token = app.token;
-      return callback(null, user.clean());
+      RouteAccess.find({where: {appClient: app.id}, include:[{model: UriRoute}]})
+      .then(function(routes) {
+        if (Array.isArray(routes)) {
+          var res = [];
+          routes.forEach(function(route) {
+            var tmp = route.get({plain: true}).UriRoute;
+            delete tmp.deletedAt;
+            delete tmp.createdAt;
+            delete tmp.updatedAt;
+            res.push(tmp);
+          });
+          user.routes = res;
+        } else {
+            var tmp = routes.get({plain: true}).UriRoute;
+            delete tmp.deletedAt;
+            delete tmp.createdAt;
+            delete tmp.updatedAt;
+            user.routes = [tmp];
+        }
+        return callback(null, user.clean());
+      })
+      .catch(function(err) {
+        return errorHandler('Error on load routes' + err.toString(), 500, callback);
+      });
     });
   })
   .catch(function(e){
