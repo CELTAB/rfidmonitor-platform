@@ -24,9 +24,11 @@
 
 var net = require('net');
 
+var DAYS_AGO = 365; //Random Records from DAYS_AGO until now
+var MONTHS_AGO = Math.floor(DAYS_AGO / 30);
 var PACKAGES_QUANTITY = 50; // total number of packages must be sent.
 var RFIDDATA_QUANTITY = 3; // max number of RFIDData (that is random) per package;
-var CONNECTION_QUANTITY = 2; // number of connections/collectors;
+var CONNECTION_QUANTITY = 4; // number of connections/collectors;
 var SEND_INTERVAL_MIN = 500;
 var SEND_INTERVAL_MAX = 5000; // interval in miliseconds each socket send must be done;
 var PACKAGES_PER_SEND = 1; // number of packages per SEND_INTERVAL;
@@ -326,9 +328,9 @@ function CollectorConnection(collectorId){
 			var rfidobj = {};
 			rfidobj.identificationcode = "55555" + randomInt(10, 99);
 			var readTime = new Date();
-			readTime.setDate(readTime.getDate() - randomInt(0,500)); //rfidReadDate random
-			readTime.setMonth(readTime.getMonth() - randomInt(0,11));
-			rfidobj.datetime =
+			readTime.setDate(readTime.getDate() - randomInt(0, DAYS_AGO)); //rfidReadDate random
+			readTime.setMonth(readTime.getMonth() - randomInt(0, MONTHS_AGO));
+			rfidobj.datetime = readTime;
 			dt.push(rfidobj);
 			qdtPk--;
 		}
@@ -472,6 +474,26 @@ var argRfidIndex = args.indexOf('--rfiddata');
 var argPackagePerSendIndex = args.indexOf('--packagePerSend');
 var argSendIntervalMinIndex = args.indexOf('--sendIntervalMin');
 var argSendIntervalMaxIndex = args.indexOf('--sendIntervalMax');
+var argDaysAgo = args.indexOf('--daysAgo');
+var argMonthsAgo = args.indexOf('--monthsAgo');
+
+if (argDaysAgo > -1) {
+	var value = args[argDaysAgo+1];
+	if (isNaN(value)) {
+		console.log('Days Ago argument is invalid. Aborting.');
+		return;
+	}
+	DAYS_AGO = value;
+}
+
+if (argMonthsAgo > -1) {
+	var value = args[argMonthsAgo+1];
+	if (isNaN(value)) {
+		console.log('Months Ago argument is invalid. Aborting.');
+		return;
+	}
+	MONTHS_AGO = value;
+}
 
 if(argConnectionsIndex > -1){
 	var value = args[argConnectionsIndex+1];
