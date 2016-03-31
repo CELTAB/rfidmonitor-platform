@@ -32,20 +32,31 @@ var AccessCtrl = new Controller(AccessModel, 'routeaccess');
 
 AccessCtrl.custom['save'] = function(body, callback){
   if (Array.isArray(body) && body.length > 0) {
-    AccessModel.bulkCreate(body)
+
+    var appId = body[0].appClient;
+    AccessModel.destroy({where: {appClient: appId, deletedAt: null}})
     .then(function() {
-      return callback(null, {message: "OK", total: body.length});
+
+      AccessModel.bulkCreate(body)
+      .then(function() {
+        return callback(null, {message: "OK", total: body.length});
+      })
+      .catch(function(e){
+        if (e.name.indexOf("SequelizeUniqueConstraintError") !== -1) {
+          var code = 400;
+          var errMes = e.message;
+          e.errors.forEach(function(err) {
+            errMes += ". " + err.type + ": " + err.path;
+          });
+        }
+        return errorHandler(errMes || e.toString(), code || 500, callback);
+      });
+
     })
-    .catch(function(e){
-      if (e.name.indexOf("SequelizeUniqueConstraintError") !== -1) {
-        var code = 400;
-        var errMes = e.message;
-        e.errors.forEach(function(err) {
-          errMes += ". " + err.type + ": " + err.path;
-        });
-      }
-      return errorHandler(errMes || e.toString(), code || 500, callback);
+    .catch(function(err) {
+      return errorHandler("Error on remove previous route access", 500, callback);
     });
+
   } else {
     return errorHandler("Object invalid or empty. Must be an array", 400, callback);
   }

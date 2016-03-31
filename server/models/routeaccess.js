@@ -48,6 +48,10 @@ var model = sequelize.define("RouteAccess", {
 			model: UriRoute,
 			key:   "id"
 		}
+	},
+	deletedAt : {
+		type : SequelizeClass.DATE,
+		unique : 'uq_app_route'
 	}
 },
 {
