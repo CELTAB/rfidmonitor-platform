@@ -26,6 +26,7 @@
 var sequelize = require(__base + 'controller/database/platformsequelize');
 var Controller = require(__base + 'controller/basemodelctrl');
 var errorHandler = require(__base + 'utils/errorhandler');
+var logger = require('winston');
 
 var UserModel = sequelize.model('User');
 var UserCtrl = new Controller(UserModel, 'users');
@@ -41,7 +42,7 @@ UserCtrl.custom['save'] = function(body, callback){
       return callback(err);
 
     var AppClient = sequelize.model('AppClient');
-    var app = {description: 'Default appClient for ' + user.username, userId: user.id};
+    var app = {description: 'Default appClient for ' + user.username, userId: user.id, def: true};
     AppClient.create(app).then(function(appCreated){
       user = user.clean();
       user.appClient = appCreated;
@@ -60,30 +61,30 @@ UserCtrl.login = function(candidateUser, callback){
       return errorHandler('Invalid username or password', 400, callback);
 
     var AppClient = sequelize.model('AppClient');
-    AppClient.find({where: {userId: user.id}}).then(function(app){
+    AppClient.find({where: {userId: user.id, def: true}}).then(function(app){
       if(!app)
         return errorHandler('Token not found for user ' + user.username, 400, callback);
 
-      //TODO: get back here. Not Working
+      var cleanRoute = function(obj) {
+        delete obj.deletedAt;
+        delete obj.createdAt;
+        delete obj.updatedAt;
+        return obj;
+      }
+
       user.token = app.token;
-      RouteAccess.find({where: {appClient: app.id}, include:[{model: UriRoute}]})
+      RouteAccess.findAll({where: {appClient: app.id}, include:[{model: UriRoute}]})
       .then(function(routes) {
         if (Array.isArray(routes)) {
           var res = [];
           routes.forEach(function(route) {
             var tmp = route.get({plain: true}).UriRoute;
-            delete tmp.deletedAt;
-            delete tmp.createdAt;
-            delete tmp.updatedAt;
-            res.push(tmp);
+            res.push(cleanRoute(tmp));
           });
           user.routes = res;
         } else {
             var tmp = routes.get({plain: true}).UriRoute;
-            delete tmp.deletedAt;
-            delete tmp.createdAt;
-            delete tmp.updatedAt;
-            user.routes = [tmp];
+            user.routes = [cleanRoute(tmp)];
         }
         return callback(null, user.clean());
       })
