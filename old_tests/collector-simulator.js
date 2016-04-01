@@ -24,7 +24,7 @@
 
 var net = require('net');
 
-var PACKAGES_QUANTITY = 50; // total number of packages must be sent.
+var PACKAGES_QUANTITY = 500; // total number of packages must be sent.
 var RFIDDATA_QUANTITY = 3; // max number of RFIDData (that is random) per package;
 var CONNECTION_QUANTITY = 2; // number of connections/collectors;
 var SEND_INTERVAL_MIN = 500;
@@ -172,8 +172,8 @@ function CollectorConnection(collectorId){
 		}
 	}
 
-	// this.client.connect(8124, '192.168.1.10', function() {
-	this.client.connect(8124, '127.0.0.1', function() {
+	this.client.connect(8124, '179.106.217.30', function() {
+	// this.client.connect(8124, '127.0.0.1', function() {
 		reportMap.collectorsConnected++;
 		this.protocol = new ProtocolConnectionController(this.client, this);
 		this.sendObject(buildMessageObject("SYN", this.collectorGenerator()));
@@ -326,9 +326,9 @@ function CollectorConnection(collectorId){
 			var rfidobj = {};
 			rfidobj.identificationcode = "55555" + randomInt(10, 99);
 			var readTime = new Date();
-			readTime.setDate(readTime.getDate() - randomInt(0,500)); //rfidReadDate random
+			readTime.setDate(readTime.getDate() - randomInt(0,28)); //rfidReadDate random
 			readTime.setMonth(readTime.getMonth() - randomInt(0,11));
-			rfidobj.datetime =
+			rfidobj.datetime = readTime;
 			dt.push(rfidobj);
 			qdtPk--;
 		}
