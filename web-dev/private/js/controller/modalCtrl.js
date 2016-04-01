@@ -22,7 +22,6 @@ app.controller('modalCtrl', function($rootScope, $scope, $uibModalInstance, Rest
 			$uibModalInstance.close();
 			loadDataTableGrid();
   	}, function(response) {
-	  	console.log("Error with status code", response.status);
 	  	$scope.errorMessage = response.data;
 		});
   };
@@ -100,7 +99,6 @@ app.controller('modalCtrl', function($rootScope, $scope, $uibModalInstance, Rest
 				$uibModalInstance.dismiss();
 				loadDataTableGrid();
 	  	}, function(response) {
-			  console.log("Error with status code", response.status);
 			  $scope.errorMessage = response.data;
 			});
 		} else {
@@ -108,7 +106,6 @@ app.controller('modalCtrl', function($rootScope, $scope, $uibModalInstance, Rest
 				$uibModalInstance.dismiss();
 				loadDataTableGrid();
 	  	}, function(response) {
-			  console.log("Error with status code", response.status);
 			  $scope.errorMessage = response.data;
 			});
 		}
