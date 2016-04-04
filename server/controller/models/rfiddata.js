@@ -229,8 +229,12 @@ var insertSummary = function(rfiddata, collector, callback){
       .then(function(newPk){
         var insert = function(rfid, callback){
           var obj = {};
+
           obj.rfidCode = rfid.identificationcode;
-          obj.rfidReadDate = rfid.datetime;
+          var tmpDate = new Date(rfid.datetime);
+          tmpDate.setHours(tmpDate.getHours() + (tmpDate.getTimezoneOffset() / 60));
+          obj.rfidReadDate = tmpDate;
+
           obj.serverReceivedDate = new Date();
           obj.collectorId = collector.id;
           obj.packageId = newPk.id;

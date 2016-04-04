@@ -95,17 +95,22 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
   		mac: data.macaddress,
   		name: data.name
     };
-		if(collectorPool.updateStatusByMac(collector, Collector.statusEnum.ONLINE)){
-			//return the mac address for the Server class.
-			var collectorInfo = {id: data.id, mac: data.macaddress, name: data.name};
-			/*Start the function that will monitoring the status of the collector.
-  			@Param1: Informations about the collector, as id and macAddress
-  			@Param2: A function to send the SYN-ALIVE message to this collector
-  			@Param3: A function to close the connection with this socket if is not responding.
-			*/
-			collectormonitor.startMonitor(collectorInfo, sendSynAliveMessage, socketInactive);
-		}else{
-			logger.error("Collector not found. Cannot update status to ONLINE");
+
+		if (collector.mac) {
+			logger.info("Update collector datetime: " + data.success);
+
+			if(collectorPool.updateStatusByMac(collector, Collector.statusEnum.ONLINE)){
+				//return the mac address for the Server class.
+				var collectorInfo = {id: data.id, mac: data.macaddress, name: data.name};
+				/*Start the function that will monitoring the status of the collector.
+	  			@Param1: Informations about the collector, as id and macAddress
+	  			@Param2: A function to send the SYN-ALIVE message to this collector
+	  			@Param3: A function to close the connection with this socket if is not responding.
+				*/
+				collectormonitor.startMonitor(collectorInfo, sendSynAliveMessage, socketInactive);
+			}else{
+				logger.error("Collector not found. Cannot update status to ONLINE");
+			}
 		}
 	}
 
@@ -113,6 +118,20 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 		logger.silly("handle_ACKALIVE");
 		//Update the collector monitor to status alive.
 		collectormonitor.setAlive();
+
+		var dateNow = new Date();
+		var collectorDate = new Date(message.datetime);
+		collectorDate.setHours(collectorDate.getHours() + (collectorDate.getTimezoneOffset() / 60));
+		/* Update collector time if different from the server */
+		if ((dateNow.getFullYear() !== collectorDate.getFullYear())
+				|| (dateNow.getMonth() !== collectorDate.getMonth())
+				|| (dateNow.getDay() !== collectorDate.getDay())
+				|| (dateNow.getHours() !== collectorDate.getHours())
+				|| (dateNow.getMinutes() !== collectorDate.getMinutes())
+			) {
+				logger.warn("Sending DATETIME message");
+				sendObject(buildMessageObject("DATETIME", {}));
+		}
 	}
 
 	var handle_DATA = function(message){
