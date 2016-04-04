@@ -66,10 +66,6 @@ var model = sequelize.define("RfidImport", {
     type : SequelizeClass.STRING,
     allowNull : true
   },
-  errorString : {
-    type : SequelizeClass.STRING,
-    allowNull : true
-  },
   serverReceivedDate:{
     type: SequelizeClass.DATE,
     allowNull: false
