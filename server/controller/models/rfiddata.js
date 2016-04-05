@@ -284,11 +284,7 @@ var insertSummaryDescriptive = function(rfiddata, collector, callback){
     logger.warn("Empty package received. send ACK-DATA");
     return callback(null, rfiddata.md5diggest);
   }
-// try{
-// }catch(e){
-//   logger.error('Error insertSummary: ' + e.toString());
-//   return callback(e);
-// }
+
   var pack = {
     packageHash: rfiddata.md5diggest,
     packageSize: rfiddata.data.length
@@ -358,83 +354,6 @@ var insertSummaryDescriptive = function(rfiddata, collector, callback){
     return callback(e);
   });
 
-};
-
-var insertSummaryDescriptiveB = function(rfiddata, collector, callback){
-
-  if(rfiddata.data.length === 0){
-    logger.warn("Empty package received. send ACK-DATA");
-    return callback(null, rfiddata.md5diggest);
-  }
-
-  try{
-      var pack = {
-        packageHash: rfiddata.md5diggest,
-        packageSize: rfiddata.data.length
-      };
-      sequelize.transaction().then(function(t){
-
-        return Package.create(pack, {transaction:t})
-        .then(function(newPk){
-
-          var insert = function(rfid, callback){
-
-            var obj = {};
-            obj.rfidCode = rfid.identificationcode;
-            obj.rfidReadDate = rfid.datetime;
-            obj.serverReceivedDate = new Date();
-            obj.collectorId = collector.id;
-            obj.packageId = newPk.id;
-
-            return RfidModel.create(obj, {transaction:t})
-  					.then(function(newDoc){
-              callback();
-  					})
-  					.catch(function(err){
-  						return callback(err);
-  					});
-          };
-
-          var datas = rfiddata.data;
-          var index = 0;
-
-          var next = function(err){
-            if(err){
-              t.rollback();
-              return callback(err, {hash: newPk.packageHash});
-            }
-
-            if(datas[index]){
-              var rfid = datas[index];
-              index++;
-              insert(rfid, next);
-            }else{
-              t.commit();
-              return callback(null, {hash: newPk.packageHash, size: pack.packageSize, new : true});
-            }
-          }
-
-          return next();
-        })
-        .catch(function(e){
-          if(e.name === "SequelizeUniqueConstraintError" && e.fields['packageHash']){
-            logger.debug("Package already on database");
-            return callback(null, {hash: rfiddata.md5diggest, size: pack.packageSize, repeated: true});
-          }
-          logger.error('Error inserSummary package: ' + e.toString());
-          return callback(e);
-        });
-
-      })
-      .catch(function(e){
-        logger.error("insertSummaryDescriptive transaction error " + e);
-        return callback(e);
-      }); //transaction
-
-  }catch(e){
-    logger.error('Error insertSummary: ' + e.toString());
-    return callback(e);
-  }
 };
 
 Rfid.save = function(rfiddata, callback){
