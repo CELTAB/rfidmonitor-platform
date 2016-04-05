@@ -44,6 +44,7 @@ var SynchronizeDb = function() {
 		require(model + '/routeaccess');
 		require(model + '/dynamicentity');
 		require(model + '/platformmedia');
+		require(model + '/rfidimport');
 		// sequelize.sync({force: true}).then(function(){
 		sequelize.sync().then(function(){
 			//Models synchronized. Call done with no errors (null).

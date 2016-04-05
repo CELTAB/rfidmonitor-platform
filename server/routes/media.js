@@ -68,7 +68,7 @@ var importMedia = function(req, type, mediaPath, callback) {
           .then(function(f){
             f.url = '/api/media/'+f.uuid;
             f.save().then(function(f){
-              return callback(null, {mediaId :f.uuid, file: data});
+              return callback(null, {mediaId :f.uuid, file: data, obj : f});
             }).catch(function(e){
               return errorHandler('Error: ' + e.toString(), 500, callback);
             });
@@ -112,9 +112,9 @@ var importHandler = function(req, callback) {
       return errorHandler('The file format is incorrect. Error: ' + e.toString(), 400, callback);
     }
 
-    logger.warn('todo : REGISTER on database the file info.');
     var Rfid = require(__base + 'controller/models/rfiddata');
-    Rfid.bulkSave(parsedData, function(err, result) {
+
+    Rfid.manualImport(parsedData, result.obj.id, function(err, result) {
       if (err) return errorHandler(err, 400, callback);
 
       return callback(null, result);

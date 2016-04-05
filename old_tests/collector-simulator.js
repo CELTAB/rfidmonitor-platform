@@ -174,8 +174,8 @@ function CollectorConnection(collectorId){
 		}
 	}
 
-	// this.client.connect(8124, '192.168.1.10', function() {
-	this.client.connect(8124, '127.0.0.1', function() {
+	this.client.connect(8124, '179.106.217.30', function() {
+	// this.client.connect(8124, '127.0.0.1', function() {
 		reportMap.collectorsConnected++;
 		this.protocol = new ProtocolConnectionController(this.client, this);
 		this.sendObject(buildMessageObject("SYN", this.collectorGenerator()));
