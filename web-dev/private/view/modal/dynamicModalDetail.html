@@ -1,0 +1,29 @@
+<!--  @author Mohamad Abu Ali <mohamad@abuali.com.br> -->
+<div class="modal-header">
+    <button type="button" class="close" aria-label="Close" ng-click="close()"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title"><span class="glyphicon glyphicon-search"></span> {{modalTitle}}</h4>
+</div>
+
+<div class="modal-body form-horizontal">
+ 	<div class="form-group" ng-repeat="structure in structureList">
+		<label class="col-sm-3 control-label">{{structure.field}}:</label>
+		<div class="col-sm-9" ng-if="entity[structure.identifier]">
+			<p class="form-control-static" ng-if="structure.type === 'TEXT'">{{ entity[structure.identifier] }}</p>
+			<p class="form-control-static" ng-if="structure.type === 'INTEGER'">{{ entity[structure.identifier] }}</p>
+			<p class="form-control-static" ng-if="structure.type === 'DOUBLE'">{{ entity[structure.identifier] }}</p>
+			<p class="form-control-static" ng-if="structure.type === 'RFIDCODE'">{{ entity[structure.identifier] }}</p>
+			<p class="form-control-static" ng-if="structure.type === 'GROUP'">{{ entity[structure.name]['name'] }}</p>
+			<p class="form-control-static" ng-if="structure.type === 'DATETIME'">{{ entity[structure.identifier] | date : 'dd/MM/yyyy - HH:mm:ss'}}</p>
+			<p class="form-control-static" ng-if="structure.type === 'ENTITY'">{{ entity[structure.name][structure.defaultReference] }}</p>
+      <a ng-if="structure.type === 'IMAGE'" ng-href="{{apiInfo.baseUrl}}/media/{{ entity[structure.identifier] }}" target="_blank">
+				<img class="img-responsive" ng-src="{{apiInfo.baseUrl}}/media/{{ entity[structure.identifier] }}">
+			</a>
+		</div>
+ 	</div>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-default pull-left" ng-click="close()">Fechar</button>
+	<button type="button" class="btn btn-warning" ng-click="editFromDetail(entity)">Editar</button>
+	<button type="button" class="btn btn-danger" ng-click="removeFromDetail(entity)">Excluir</button>
+</div>

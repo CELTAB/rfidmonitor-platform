@@ -29,14 +29,38 @@ var errorHandler = require(__base + 'utils/errorhandler');
 
 var promisesHandler = function(callback){
   var _cb = callback;
+  var embeddedEntityRename = function(obj) {
+    var attrName = null;
+    for (var attr in obj) {
+      if (attr.indexOf("_group_id") != -1) {
+        attrName = attr.replace("_group_id", "");
+      }
+    }
+    return attrName;
+  };
   return{
     success: function(result){
-      if(Array.isArray(result))
-        return _cb(null, result);
+      if(Array.isArray(result)) {
+        var response = [];
+        result.forEach(function(el) {
+          var elB = el.get({plain: true});
+          if(el.Group) {
+            elB[embeddedEntityRename(elB)] = elB.Group;
+            delete elB.Group;
+          }
+          response.push(elB);
+        });
+        return _cb(null, response);
+      }
       if(!result){
         return errorHandler('Record not found', 400, _cb);
       }
-      return _cb(null, result);
+      var elB = result.get({plain: true});
+      if(result.Group) {
+        elB[embeddedEntityRename(elB)] = elB.Group;
+        delete elB.Group;
+      }
+      return _cb(null, elB);
     },
     error: function(err){
       return errorHandler(err.toString(), 500, _cb);

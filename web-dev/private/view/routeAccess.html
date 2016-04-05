@@ -1,0 +1,68 @@
+<!--  @author Mohamad Abu Ali <mohamad@abuali.com.br> -->
+<section class="content-header">
+  <h1>Rotas de Acesso</h1>
+</section>
+
+<section class="content">
+  <div class="box box-default">
+    <div class="box-header with-border">
+      <h3 class="box-title">Configurações de Rotas de Acesso</h3>
+    </div>
+
+    <div class="form-horizontal">
+      <div class="box-body">
+
+        <div class="form-group">
+          <div class="col-sm-6">
+            <label class="col-sm-4 control-label">App Client / Usuário:</label>
+            <div class="col-sm-8">
+              <select class="form-control select2" ng-model="entity.appClient">
+                <option value="">Selecione um appClient</option>
+                 <option ng-repeat="appClient in appClients"
+                          value="{{appClient.id}}">
+                    {{appClient.User.name}} - {{appClient.description}}
+                  </option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="col-sm-6">
+            <label class="col-sm-4 control-label">Rotas:</label>
+            <div class="col-sm-8">
+              <select class="form-control select2" ng-model="entity.uriRoute">
+                <option value="">Selecione uma Rota</option>
+                 <option ng-repeat="route in routes"
+                          value="{{route.id}}">
+                    {{route.method}} -> {{route.path}}
+                  </option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="col-sm-6">
+            <div class="callout callout-success" ng-if="successMessage">
+              {{successMessage}}
+            </div>
+            <div class="callout callout-danger" ng-if="errorMessage">
+              <h4>Erro!</h4>
+              <p>{{ errorMessage.error }}</p>
+            </div>
+          </div>
+        </div>
+
+      <div class="box-footer">
+          <div class="col-sm-3">
+              <button type="button" ng-click="clear()" class="btn col-sm-3 btn-default">Limpar</button>
+          </div>
+          <div class="col-sm-3">
+              <button type="button" ng-click="save()" class="btn btn-success pull-right">Salvar</button>
+          </div>
+      </div>
+    </div>
+  </div>
+
+</section>

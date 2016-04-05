@@ -1,0 +1,67 @@
+<!--  @author Mohamad Abu Ali <mohamad@abuali.com.br> -->
+<div class="modal-header">
+  <button type="	button" class="close" aria-label="Close" ng-click="close()"><span aria-hidden="true">&times;</span></button>
+  <h4 class="modal-title"><span class="glyphicon" ng-class="entity.id ? 'glyphicon-edit' : 'glyphicon-plus'"></span> {{modalTitle}}</h4>
+</div>
+
+<div class="modal-body form-horizontal">
+
+ 	<div class="form-group" ng-repeat="structure in structureList">
+		<label class="col-sm-3 control-label">{{structure.field}}: <span ng-if="!structure.allowNull">(*)</span></label>
+		<div class="col-sm-9">
+			<input type="text" class="form-control"
+				ng-model="entity[structure.identifier]"
+				ng-if="structure.type === 'TEXT'">
+
+			<input type="number" class="form-control"
+				ng-model="entity[structure.identifier]"
+				ng-if="structure.type === 'DOUBLE'">
+
+			<input type="number" class="form-control"
+				ng-model="entity[structure.identifier]"
+				ng-if="structure.type === 'INTEGER'">
+
+			<input type="text" class="form-control"
+				ng-model="entity[structure.identifier]"
+				ng-if="structure.type === 'RFIDCODE'">
+
+			<input type="text" class="form-control"
+				ng-model="entity[structure.identifier]"
+				ng-if="structure.type === 'DATETIME'" ui-date-mask>
+
+			<input type="file" class="form-control"
+				file-model="entity[structure.identifier]"
+				ng-if="structure.type === 'IMAGE'">
+
+      <select class="form-control select2"
+              ng-model="entity[structure.identifier]"
+              ng-options="group.id as group.name for group in groups"
+              ng-if="structure.type === 'GROUP'">
+      </select>
+
+      <select class="form-control select2"
+              ng-model="entity[structure.identifier]"
+              ng-options="de.id as de[structure.defaultReference] for de in dynamicEntities[structure.name]"
+              ng-if="structure.type === 'ENTITY'">
+      </select>
+
+ 		</div>
+ 	</div>
+
+  <div class="form-group ">
+    <div class="col-sm-3 pull-right">
+      <small>(*) campos obrigatório.</small>
+    </div>
+  </div>
+
+  <div class="callout callout-danger" ng-if="errorMessage">
+    <h4>Erro!</h4>
+    <p>{{ errorMessage.error }}</p>
+	</div>
+
+</div>
+
+<div class="modal-footer">
+	<button type="button" class="btn btn-default pull-left" ng-click="close()">Fechar</button>
+	<button type="button" class="btn btn-success" ng-click="save(entity)">Salvar</button>
+</div>

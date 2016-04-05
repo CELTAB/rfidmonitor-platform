@@ -30,4 +30,10 @@ var Controller = require(__base + 'controller/basemodelctrl');
 var AppClientModel = sequelize.model('AppClient');
 var AppClientCtrl = new Controller(AppClientModel, 'appclients');
 //Any custom functions goes here
+
+AppClientCtrl.custom['save'] = function(body, callback){
+    body.def = body.def ? body.def : null;
+    return AppClientCtrl.save(body, callback);
+};
+
 module.exports = AppClientCtrl;

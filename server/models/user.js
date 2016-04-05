@@ -75,6 +75,7 @@ var model = sequelize.define("User", {
     		objUser.email = this.getDataValue('email');
     		objUser.username = this.getDataValue('username');
 				objUser.token = this.token || undefined;
+				objUser.routes = this.routes || [];
     		return objUser;
     	},
     	isPasswordValid: function(pass){

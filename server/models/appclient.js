@@ -39,6 +39,11 @@ var model = sequelize.define("AppClient", {
 		type : SequelizeClass.STRING,
 		allowNull : false,
 		field : 'description'
+	},
+	def: {
+		type : SequelizeClass.BOOLEAN,
+		allowNull : true,
+		field : 'def'
 	}
 },
 {

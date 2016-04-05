@@ -142,9 +142,12 @@ var validateEntityField = function(field, isRoot){
 
 			for(var ie in field["structureList"]){
 				var entityField = field["structureList"][ie];
-
 				if(defaultReference && defaultReference == entityField.field){
-					defaultRefOk = true;
+					if(entityField["allowNull"] === true) {
+						errors.push({field : "defaultReference", error : "defaultReference field cannot allow null"});
+					}else{
+							defaultRefOk = true;
+					}
 				}
 
 				var e = validateEntityField(entityField, false);

@@ -153,8 +153,9 @@ SynchronizeDb.start(function(err){
 	var httpsPort = 8143;
 
 	var loginPath = '/login',
-			webPath = '/web',
 			apiPath = '/api';
+
+	var webPath = global.__DevEnv? '/web-dev' : '/web';
 
 	var apiRoutes = new LoadRouter(apiPath);
 	var login = new LoadLoginRouter();
@@ -188,8 +189,15 @@ SynchronizeDb.start(function(err){
 
 	app.use(webPath, redirectMidler);
 	app.use(loginPath, redirectMidler);
-	app.use(webPath, express.static(__dirname + '/web/private'));
-	app.use(loginPath, express.static(__dirname + '/web/public/login'));
+
+	if(global.__DevEnv){
+		app.use(webPath, express.static('web-dev/private'));
+		app.use(loginPath, express.static('web-dev/public/login'));
+	}else{
+			app.use(webPath, express.static('web/private'));
+			app.use(loginPath, express.static('web/public/login'));
+	}
+
 	app.use(apiPath, apiRoutes);
 	app.use(login.routes);
 

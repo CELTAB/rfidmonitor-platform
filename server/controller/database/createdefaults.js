@@ -94,7 +94,7 @@ var defaultUser = function(done){
 var defaultAppClient = function(user, done){
 	var AppClient = sequelize.model('AppClient');
 	var handler = handlers('AppClient', done);
-	var app = {description: 'Default appClient for ' + user.username, userId: user.id};
+	var app = {description: 'Default appClient for ' + user.username, userId: user.id, def: true};
 	AppClient.create(app).then(handler.success).catch(handler.error);
 };
 //Create permission allow admin user access ANY route with ANY method
