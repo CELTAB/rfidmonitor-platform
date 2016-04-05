@@ -16,3 +16,4 @@ drop table tb_plat_rfiddata cascade;
 drop table tb_plat_route_access cascade;
 drop table tb_plat_uri_route cascade;
 drop table tb_plat_user cascade;
+drop table tb_plat_rfidimport;
