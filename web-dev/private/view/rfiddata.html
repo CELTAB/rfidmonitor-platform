@@ -40,11 +40,21 @@
           <label class="col-sm-2 control-label">Intervalo de Leitura:</label>
           <label class="col-sm-1 control-label">De:</label>
           <div class="col-sm-2">
-            <input type="text" class="form-control" ng-model="search.fromDate" ui-date-mask>
+            <p class="input-group">
+                <input type="text" class="form-control" datetime-picker="dd/MM/yyyy" ng-model="search.fromDate" is-open="isOpenFrom" enable-time="false" max-date="search.toDate" />
+            <span class="input-group-btn">
+                <button type="button" class="btn btn-default" ng-click="isOpenFrom = true"><i class="fa fa-calendar"></i></button>
+            </span>
+            </p>
           </div>
           <label class="col-sm-1 control-label">Para:</label>
           <div class="col-sm-2">
-            <input type="text" class="form-control" ng-model="search.toDate" ui-date-mask>
+            <p class="input-group">
+                <input type="text" class="form-control" datetime-picker="dd/MM/yyyy" ng-model="search.toDate" is-open="isOpenTo" enable-time="false" min-date="search.fromDate" />
+            <span class="input-group-btn">
+                <button type="button" class="btn btn-default" ng-click="isOpenTo = true"><i class="fa fa-calendar"></i></button>
+            </span>
+            </p>
           </div>
         </div>
 
@@ -77,10 +87,26 @@
                 ng-model="search.entityQuery.where[structure.identifier]"
                 ng-if="structure.type === 'INTEGER'">
 
-              <!-- @TODO se a data for invalida motsrar na view -->
-              <input type="text" class="form-control"
-        				ng-model="search.entityQuery.where[structure.identifier]"
-        				ng-if="structure.type === 'DATETIME'" ui-date-mask>
+              <div ng-if="structure.type === 'DATETIME'">
+                <label class="col-sm-2 control-label">De:</label>
+                <div class="col-sm-4">
+                  <p class="input-group">
+                      <input type="text" class="form-control" datetime-picker="dd/MM/yyyy" ng-model="search.entityQuery.where[structure.identifier].from" is-open="isOpenFrom" enable-time="false" max-date="search.entityQuery.where[structure.identifier].to" />
+                  <span class="input-group-btn">
+                      <button type="button" class="btn btn-default" ng-click="isOpenFrom = true"><i class="fa fa-calendar"></i></button>
+                  </span>
+                  </p>
+                </div>
+                <label class="col-sm-2 control-label">Para:</label>
+                <div class="col-sm-4">
+                  <p class="input-group">
+                      <input type="text" class="form-control" datetime-picker="dd/MM/yyyy" ng-model="search.entityQuery.where[structure.identifier].to" is-open="isOpenTo" enable-time="false" min-date="search.entityQuery.where[structure.identifier].from" />
+                  <span class="input-group-btn">
+                      <button type="button" class="btn btn-default" ng-click="isOpenTo = true"><i class="fa fa-calendar"></i></button>
+                  </span>
+                  </p>
+                </div>
+              </div>
 
               <select  class="form-control select2"
                 ng-if="structure.type === 'ENTITY'"

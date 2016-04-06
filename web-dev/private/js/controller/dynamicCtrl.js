@@ -105,6 +105,13 @@ app.controller('dynamicCtrl', function($rootScope, $scope, $routeParams, Restang
 	var loadDynamics = function(){
 		dynamicService.getList({q: {"include":[{"all":true}]}}).then(function(response){
   			$scope.dynamicGridOptions.data = response;
+				angular.forEach($scope.dynamicEntity.structureList, function(structure){
+					if(structure.type === "DATETIME"){
+						angular.forEach($scope.dynamicGridOptions.data, function(row){
+							row[structure.identifier] ? new Date(row[structure.identifier]) : undefined;
+						});
+					}
+				});
 		});
 	};
 

@@ -25,9 +25,12 @@
 				ng-model="entity[structure.identifier]"
 				ng-if="structure.type === 'RFIDCODE'">
 
-			<input type="text" class="form-control"
-				ng-model="entity[structure.identifier]"
-				ng-if="structure.type === 'DATETIME'" ui-date-mask>
+      <p class="input-group" ng-init="isOpen = false" ng-if="structure.type === 'DATETIME'">
+        <input type="text" class="form-control" datetime-picker="dd/MM/yyyy - HH:mm:ss" datepicker-options="" ng-model="entity[structure.identifier]" is-open="isOpen"  />
+        <span class="input-group-btn">
+            <button type="button" class="btn btn-default" ng-click="isOpen = !isOpen"><i class="fa fa-calendar"></i></button>
+        </span>
+      </p>
 
 			<input type="file" class="form-control"
 				file-model="entity[structure.identifier]"
