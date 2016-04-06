@@ -139,14 +139,18 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 		packCounter++;
 		logger.debug("Packages Received: " + packCounter);
 
-    RfidCtrl.save(message.data, function(err, md5diggest){
+    RfidCtrl.save(message.data, function(err, result){
+
+			logger.warn("===============================");
+			logger.warn(result);
+
       if(err){
         logger.error("PROTOCOL MESSAGES err : " + err);
 				return;
 			}
 
       responses++;
-  		sendObject(buildMessageObject("ACK-DATA", {md5diggest: [md5diggest]}));
+  		sendObject(buildMessageObject("ACK-DATA", {md5diggest: [result.hash]}));
   		logger.silly("Sent " + responses + " RESPONSES. FOR: " + message.data.macaddress);
     });
 	}

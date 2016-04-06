@@ -174,8 +174,8 @@ function CollectorConnection(collectorId){
 		}
 	}
 
-	this.client.connect(8124, '179.106.217.30', function() {
-	// this.client.connect(8124, '127.0.0.1', function() {
+	// this.client.connect(8124, '179.106.217.30', function() {
+	this.client.connect(8124, '127.0.0.1', function() {
 		reportMap.collectorsConnected++;
 		this.protocol = new ProtocolConnectionController(this.client, this);
 		this.sendObject(buildMessageObject("SYN", this.collectorGenerator()));
@@ -327,6 +327,7 @@ function CollectorConnection(collectorId){
 		while(qdtPk > 0){
 			var rfidobj = {};
 			rfidobj.identificationcode = "55555" + randomInt(10, 99);
+			// rfidobj.identificationcode = null;
 			var readTime = new Date();
 			readTime.setDate(readTime.getDate() - randomInt(0, DAYS_AGO)); //rfidReadDate random
 			readTime.setMonth(readTime.getMonth() - randomInt(0, MONTHS_AGO));
@@ -336,7 +337,7 @@ function CollectorConnection(collectorId){
 		}
 		data.datasummary.data = dt;
 		data.datasummary.md5diggest = randomchars.uid(32);
-		// data.datasummary.md5diggest = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+		// data.datasummary.md5diggest = "a123";
 		this.packagesSent[data.datasummary.md5diggest] = totalRFID;
 		this.sentCouter++;
 		reportMap.totalPackagesSent++;

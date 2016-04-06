@@ -216,69 +216,6 @@ Rfid.custom['find'] = function(id, query, callback){
 };
 
 var insertSummary = function(rfiddata, collector, callback){
-  if(rfiddata.data.length === 0){
-    logger.warn("Empty package received. send ACK-DATA");
-    return callback(null, rfiddata.md5diggest);
-  }
-
-  try{
-      var pack = {
-        packageHash: rfiddata.md5diggest,
-        packageSize: rfiddata.data.length
-      };
-      Package.create(pack)
-      .then(function(newPk){
-        var insert = function(rfid, callback){
-          var obj = {};
-
-          obj.rfidCode = rfid.identificationcode;
-          var tmpDate = new Date(rfid.datetime);
-          tmpDate.setHours(tmpDate.getHours() + (tmpDate.getTimezoneOffset() / 60));
-          obj.rfidReadDate = tmpDate;
-
-          obj.serverReceivedDate = new Date();
-          obj.collectorId = collector.id;
-          obj.packageId = newPk.id;
-
-          Rfid.defaultSave(obj, function(err, newRfid){
-            if(err)
-              return callback(err.error);
-
-            callback();
-          });
-        };
-        var datas = rfiddata.data;
-        var index = 0;
-
-        var next = function(err){
-          if(err)
-            return callback(err);
-
-          if(datas[index]){
-            var rfid = datas[index];
-            index++;
-            insert(rfid, next);
-          }else{
-            return callback(null, newPk.packageHash);
-          }
-        }
-        next();
-      })
-      .catch(function(e){
-        if(e.name === "SequelizeUniqueConstraintError" && e.fields['packageHash']){
-          logger.debug("Package already on database");
-          return callback(null, rfiddata.md5diggest);
-        }
-        logger.error('Error inserSummary package: ' + e.toString());
-        return callback(e);
-      });
-  }catch(e){
-    logger.error('Error inserSummary: ' + e.toString());
-    return callback(e);
-  }
-};
-
-var insertSummaryDescriptive = function(rfiddata, collector, callback){
 
   if(rfiddata.data.length === 0){
     logger.warn("Empty package received. send ACK-DATA");
@@ -350,27 +287,18 @@ var insertSummaryDescriptive = function(rfiddata, collector, callback){
     });
 
   }).catch(function(e){
-    logger.error("insertSummaryDescriptive transaction error " + e);
+    logger.error("insertSummary transaction error " + e);
     return callback(e);
   });
 
 };
 
 Rfid.save = function(rfiddata, callback){
-  var cb = callback;
-  callback = function(err, result){
-    if(err){
-      if(Rfid.custom.save)
-        return cb(err);
-      return cb({code: 500, error: err, message: 'RFIDDATA error'});
-    }
-    return cb(null, result);
-  }
-
   var cole = {
     macaddress: rfiddata.macaddress,
     name: rfiddata.name
   };
+
   CollectorCtrl.findOrCreate(cole, function(collector){
     if(collector.then){
       collector.then(function(c){
@@ -378,39 +306,14 @@ Rfid.save = function(rfiddata, callback){
       },
       function(e){
         logger.error('Error: ' + err);
-        return callback(err);
-      });
-    }else{
-      return insertSummary(rfiddata.datasummary, collector, callback);
-    }
-  });
-}
-
-Rfid.importSave = function(rfiddata, callback){
-  var cole = {
-    macaddress: rfiddata.macaddress,
-    name: rfiddata.name
-  };
-
-  CollectorCtrl.findOrCreate(cole, function(collector){
-    if(collector.then){
-      collector.then(function(c){
-        return insertSummaryDescriptive(rfiddata.datasummary, c, callback);
-      },
-      function(e){
-        logger.error('Error: ' + err);
         return callback(err, {hash : rfiddata.datasummary.md5diggest});
       });
     }else{
 
-      return insertSummaryDescriptive(rfiddata.datasummary, collector, callback);
+      return insertSummary(rfiddata.datasummary, collector, callback);
     }
   });
 }
-
-Rfid.bulkSave = function(packageArray, callback){
-  return errorHandler('NOT IMPLEMENTED YET', 500, callback);
-};
 
 Rfid.importBulkSave = function(packageArray, callback){
 
@@ -433,7 +336,7 @@ Rfid.importBulkSave = function(packageArray, callback){
   packageArray.forEach(function(pack) {
     rfidImport.receivedRfids += pack.datasummary.data.length;
 
-    Rfid.importSave(pack, function(err, result) {
+    Rfid.save(pack, function(err, result) {
       rfidImport.processedPackages++;
 
       if(err){
@@ -456,7 +359,7 @@ Rfid.importBulkSave = function(packageArray, callback){
 
           rfidImport.discardedByRepetitionPackagesList.push(result.hash);
         }else{
-          return errorHandler('importSave result object not correctly described.', 500, callback);
+          return errorHandler('save result object not correctly described.', 500, callback);
         }
       }
       if(rfidImport.processedPackages === rfidImport.receivedPackages){
