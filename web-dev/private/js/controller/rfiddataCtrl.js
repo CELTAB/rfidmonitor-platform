@@ -206,7 +206,19 @@ app.controller('rfiddataCtrl', function($rootScope, $scope, $q, Restangular){
 					}
 				});
 			}
-			$scope.rfiddataGridOptions.data = response.plain();
+
+			// @TODO pagination for rfidCode
+			if($scope.hexa){
+				$scope.rfiddataGridOptions.columnDefs.push({ name: 'rfidCode_hexa', displayName: 'Código Hexa'});
+				$scope.rfiddataGridOptions.data = [];
+				angular.forEach(response.plain(), function(row){
+					row.rfidCode_hexa = parseInt(row.rfidCode).toString(16);
+					$scope.rfiddataGridOptions.data.push(row);
+				});
+			}else{
+				 $scope.rfiddataGridOptions.data = response.plain();
+			}
+
 		}, function(response){
 			$scope.errorMessage = response;
 		});

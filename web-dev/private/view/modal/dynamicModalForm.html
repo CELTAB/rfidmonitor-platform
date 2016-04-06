@@ -21,9 +21,20 @@
 				ng-model="entity[structure.identifier]"
 				ng-if="structure.type === 'INTEGER'">
 
-			<input type="text" class="form-control"
-				ng-model="entity[structure.identifier]"
-				ng-if="structure.type === 'RFIDCODE'">
+      <div ng-if="structure.type === 'RFIDCODE'">
+        <label class="col-sm-2 control-label">Decimal:</label>
+        <div class="col-sm-4">
+          <p class="input-group">
+            <input type="text" class="form-control" name="decimal" ng-model="entity[structure.identifier]" rfid-code="entity[structure.identifier+'_hexa']">
+          </p>
+        </div>
+        <label class="col-sm-2 control-label">Hexa:</label>
+        <div class="col-sm-4">
+          <p class="input-group">
+            <input type="text" class="form-control" name="hexa" ng-model="entity[structure.identifier+'_hexa']" rfid-code="entity[structure.identifier]">
+          </p>
+        </div>
+      </div>
 
       <p class="input-group" ng-init="isOpen = false" ng-if="structure.type === 'DATETIME'">
         <input type="text" class="form-control" datetime-picker="dd/MM/yyyy - HH:mm:ss" datepicker-options="" ng-model="entity[structure.identifier]" is-open="isOpen"  />

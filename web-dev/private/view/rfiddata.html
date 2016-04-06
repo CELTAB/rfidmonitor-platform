@@ -24,6 +24,16 @@
         </div>
 
         <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-6 checkbox" >
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" ng-model="hexa"> Mostrar Código em HEXA
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
           <label class="col-sm-2 control-label">Coletor:</label>
           <div class="col-sm-6">
             <select class="form-control select2" ng-model="search.collectorId">
@@ -91,18 +101,18 @@
                 <label class="col-sm-2 control-label">De:</label>
                 <div class="col-sm-4">
                   <p class="input-group">
-                      <input type="text" class="form-control" datetime-picker="dd/MM/yyyy" ng-model="search.entityQuery.where[structure.identifier].from" is-open="isOpenFrom" enable-time="false" max-date="search.entityQuery.where[structure.identifier].to" />
+                      <input type="text" class="form-control" datetime-picker="dd/MM/yyyy" ng-model="search.entityQuery.where[structure.identifier].from" is-open="isOpenFrom[structure.identifier]" enable-time="false" max-date="search.entityQuery.where[structure.identifier].to" />
                   <span class="input-group-btn">
-                      <button type="button" class="btn btn-default" ng-click="isOpenFrom = true"><i class="fa fa-calendar"></i></button>
+                      <button type="button" class="btn btn-default" ng-click="isOpenFrom[structure.identifier] = true"><i class="fa fa-calendar"></i></button>
                   </span>
                   </p>
                 </div>
                 <label class="col-sm-2 control-label">Para:</label>
                 <div class="col-sm-4">
                   <p class="input-group">
-                      <input type="text" class="form-control" datetime-picker="dd/MM/yyyy" ng-model="search.entityQuery.where[structure.identifier].to" is-open="isOpenTo" enable-time="false" min-date="search.entityQuery.where[structure.identifier].from" />
+                      <input type="text" class="form-control" datetime-picker="dd/MM/yyyy" ng-model="search.entityQuery.where[structure.identifier].to" is-open="isOpenTo[structure.identifier]" enable-time="false" min-date="search.entityQuery.where[structure.identifier].from" />
                   <span class="input-group-btn">
-                      <button type="button" class="btn btn-default" ng-click="isOpenTo = true"><i class="fa fa-calendar"></i></button>
+                      <button type="button" class="btn btn-default" ng-click="isOpenTo[structure.identifier] = true"><i class="fa fa-calendar"></i></button>
                   </span>
                   </p>
                 </div>

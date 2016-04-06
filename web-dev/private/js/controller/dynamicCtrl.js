@@ -61,7 +61,11 @@ app.controller('dynamicCtrl', function($rootScope, $scope, $routeParams, Restang
 	      $scope.dynamicGridOptions.columnDefs.push(
 					{ name: value.identifier, displayName: value.field }
 				);
+				$scope.dynamicGridOptions.columnDefs.push(
+					{ name: value.identifier+'_hexa', displayName: value.field+' HEXA' }
+				);
 				filterOptions.push(value.identifier);
+				filterOptions.push(value.identifier+'_hexa');
 	      break;
 	    case 'DATETIME':
 		    $scope.dynamicGridOptions.columnDefs.push(
@@ -105,12 +109,15 @@ app.controller('dynamicCtrl', function($rootScope, $scope, $routeParams, Restang
 	var loadDynamics = function(){
 		dynamicService.getList({q: {"include":[{"all":true}]}}).then(function(response){
   			$scope.dynamicGridOptions.data = response;
-				angular.forEach($scope.dynamicEntity.structureList, function(structure){
-					if(structure.type === "DATETIME"){
-						angular.forEach($scope.dynamicGridOptions.data, function(row){
-							row[structure.identifier] ? new Date(row[structure.identifier]) : undefined;
-						});
-					}
+				angular.forEach($scope.dynamicGridOptions.data, function(row){
+					angular.forEach($scope.dynamicEntity.structureList, function(structure){
+						if(structure.type === 'RFIDCODE'){
+							row[structure.identifier+'_hexa'] = parseInt(row[structure.identifier]).toString(16);
+						}
+						if(structure.type === "DATETIME"){
+							row[structure.identifier] = row[structure.identifier] ? new Date(row[structure.identifier]) : undefined;
+						}
+					});
 				});
 		});
 	};
