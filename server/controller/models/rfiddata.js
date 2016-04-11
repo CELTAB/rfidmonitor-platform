@@ -84,15 +84,17 @@ var getEntities = function(query, codesRelated){
     if(!entityQuery.where)
      entityQuery.where = {};
     entityQuery.where[entityField] = {$in: codesRelated};
+
     try{
       var model = sequelize.model(query.entity);
-      model.findAll(entityQuery)
+      model.findAndCountAll(entityQuery)
       .then(function(result){
         var responseObj = {};
-        result.forEach(function(element){
+        result.rows.forEach(function(element){
           responseObj[element[entityField]] = element;
         });
-        deferred.resolve(responseObj);
+        result.data = responseObj;
+        deferred.resolve(result);
       })
       .catch(function(e){
         var errMessage = {error: e.toString(), code: 500, message:"Error on find Entities"};
@@ -138,19 +140,31 @@ var embeddedRecords = function(query, callback){
           query.where.rfidCode = el[entityField];
 
           query.order = query.order || [['rfidReadDate', 'DESC']];
-
-          Rfid.find(null, query, function(err, records){
-            if(err)
-              return callback(err);
-
+          //TODO: This might result in a problem in the future.
+          RfidModel.findAndCountAll(query)
+          .then(function(records) {
             var res = el.get({plain: true});
             res.records = records;
             response.push(res);
-            // return callback(null, res);
             size++;
             if(size === ety.length)
               return callback(null, response);
+          })
+          .catch(function(err) {
+            return callback({error: err.toString(), code: 500, message:"Error on find RFIDDatas for Embedded Records"});
           });
+          // Rfid.find(null, query, function(err, records){
+          //   if(err)
+          //     return callback(err);
+          //
+          //   var res = el.get({plain: true});
+          //   res.records = records;
+          //   response.push(res);
+          //   // return callback(null, res);
+          //   size++;
+          //   if(size === ety.length)
+          //     return callback(null, response);
+          // });
        });
     })
     .catch(function(e){
@@ -159,59 +173,88 @@ var embeddedRecords = function(query, callback){
   });
 };
 
+var
+
 var embeddedEntity = function(query, callback){
-  Rfid.find(null, query, function(err, records){
-    if(err)
-    return callback(err);
+    var hasEntityQuery = query.entityQuery ? true : false;
+    //TODO: Parei aqui. Problema macabro com limit
+    RfidModel.findAndCountAll(query)
+    .then(function(result) {
+      var records = result.rows;
+      if(records.length > 0 && (query && query.entity)){
+        var tmpObj = {};
+        var codesRelated = records.filter(function(current){
+          if(tmpObj[current.rfidCode])
+            return false;
 
-    if(records.length > 0 && query && query.entity){
-      var tmpObj = {};
-      var codesRelated = records.filter(function(current){
-        if(tmpObj[current.rfidCode])
-          return false;
+          tmpObj[current.rfidCode] = current;
+          return true;
+        })
+        .map(function(current){return current.rfidCode});
+        getEntities(query, codesRelated)
+        .then(function(data){
 
-        tmpObj[current.rfidCode] = current;
-        return true;
-      })
-      .map(function(current){return current.rfidCode});
-
-      getEntities(query, codesRelated)
-      .then(function(data){
-
-        var responseObj = [];
-        records.forEach(function(record){
-          var entity = data[record.rfidCode];
-          if(entity){
-            var tmp = record.get({plain:true});
-            tmp.entity = entity;
-            delete tmp.Package;
-            responseObj.push(tmp);
+          var data = data.data;
+          var responseObj = [];
+          records.forEach(function(record){
+            var entity = data[record.rfidCode];
+            if(entity){
+              var tmp = record.get({plain:true});
+              tmp.entity = entity;
+              delete tmp.Package;
+              responseObj.push(tmp);
+            }
+          });
+          result.rows = responseObj;
+          if (hasEntityQuery) {
+            var newResponse = {count: responseObj.length, rows:[]};
+            var start = query.offset || 0;
+            if (query.limit > responseObj.length)
+              newResponse.rows = responseObj.splice(start, query.limit);
+            else
+              newResponse.rows = responseObj;
+            return callback(null, [newResponse]);
           }
-        });
-        return callback(null, responseObj);
-      },
-      function(err){
-        return callback(err);
-      });
+          return callback(null, [result]);
 
-    }else{
-      return callback(null, records);
-    }
-  });
+        }, function(err) { //Node promise, not Sequelize catch function
+          return callback(err);
+        });
+      } else {
+        return callback(null, [result]);
+      }
+    })
+    .catch(function(err) {
+      return callback({error: err.toString(), code: 500, message:"Error on find RFIDDatas"});
+    });
 };
+
+var LIMIT_MIN_RFIDDATA = 1;
+var LIMIT_MAX_RFIDDATA = 500;
 
 Rfid.custom['find'] = function(id, query, callback){
   // select * from tb_plat_rfiddata as rfid, tb_de_carro as carro where rfid."rfidCode" = carro.pit;
   // return Rfid.find(id, query, callback); //Just go ahead
   if(id){
     return Rfid.find(id, query, callback);
-  }else if(query && query.embeddedRecords === true){
-    if(query.entity)
-      return embeddedRecords(query, callback);
-    else
-      return callback({error: "To query with embeddedRecords been true, the 'entity' parameter is mandatory", code: 400, message: "Missing entity parameter"});
-  }else{
-    return embeddedEntity(query, callback);
+  }else if(query) {
+    // Valid query
+    if (query.limit && (query.limit < LIMIT_MIN_RFIDDATA || query.limit > LIMIT_MAX_RFIDDATA))
+      return callback({error: "The limit is less than minimum or greater than the maximum allowed value", code: 400, message: "Invalid limit value"});
+
+    if (query.offset && query.offset < 0)
+      return callback({error: "The offset must be greater than zero", code: 400, message: "Invalid offset value"});
+    query.limit = query.limit || LIMIT_MAX_RFIDDATA; //Default limit
+    query.offset = query.offset || null;
+
+    if(query.embeddedRecords === true) {
+      if(query.entity)
+        return embeddedRecords(query, callback);
+      else
+        return callback({error: "To query with embeddedRecords been true, the 'entity' parameter is mandatory", code: 400, message: "Missing entity parameter"});
+    } else {
+      return embeddedEntity(query, callback);
+    }
   }
 };
 
