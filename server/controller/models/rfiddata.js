@@ -208,12 +208,12 @@ var paginateRfid = function(query, callback) {
       .then(function(data){
         var data = data.data;
         result.rows = attachEntity(records, data);
-        return callback(null, [result]);
+        return callback(null, result);
       }, function(err) { //Node promise, not Sequelize catch function
         return callback(err);
       });
     } else {
-      return callback(null, [result]);
+      return callback(null, result);
     }
   })
   .catch(function(err) {
@@ -241,12 +241,12 @@ var paginateEntity = function(query, callback) {
           newResponse.rows = responseObj.splice(start, limit);
         else
           newResponse.rows = responseObj;
-        return callback(null, [newResponse]);
+        return callback(null, newResponse);
       }, function(err) { //Node promise, not Sequelize catch function
         return callback(err);
       });
     } else {
-      return callback(null, [result]);
+      return callback(null, result);
     }
   }, function(err) { //Node promise, not Sequelize catch function
     return callback(err);

@@ -123,7 +123,7 @@ CollectorCtrl.custom['find'] = function(id, query, callback){
       });
     };
 
-    var collectors = result[0].rows || result;
+    var collectors = result.rows || result;
     var response = {};
     if(Array.isArray(collectors)){
       response = [];
@@ -218,9 +218,9 @@ CollectorCtrl.findOrCreate = function(collector, callback){
   CollectorCtrl.find(null, {where: {mac:collector.macaddress, deletedAt: null}},
     function(err, collectorResult){
       if(err)
-        return callback(collectorResult);
-
-      if(collectorResult.length === 0){
+        return callback(err);
+      collectorResult = collectorResult.rows || [];
+      if(Array.isArray(collectorResult) && !collectorResult.length === 0){
         collector.name = (!!collector.name)? collector.name : 'Unknown';
         collector.mac = collector.macaddress;
         if(collector.id)

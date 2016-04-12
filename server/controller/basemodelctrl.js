@@ -60,7 +60,7 @@ var BaseModelController = function(model, modelName){
 					//find all
 					// return callback(null, query);
 					_Model.findAndCountAll(query).then(function(docs){
-						return callback(null, [docs]);
+						return callback(null, docs);
 					}).catch(function(err){
 						logger.warn(err);
 						return _handleError(err, operation, callback);
