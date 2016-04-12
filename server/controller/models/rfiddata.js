@@ -173,60 +173,92 @@ var embeddedRecords = function(query, callback){
   });
 };
 
-var
+var codesRelated = function(records) {
+  var tmpObj = {};
+  return records.filter(function(current){
+    if(tmpObj[current.rfidCode])
+      return false;
 
-var embeddedEntity = function(query, callback){
-    var hasEntityQuery = query.entityQuery ? true : false;
-    //TODO: Parei aqui. Problema macabro com limit
-    RfidModel.findAndCountAll(query)
-    .then(function(result) {
-      var records = result.rows;
-      if(records.length > 0 && (query && query.entity)){
-        var tmpObj = {};
-        var codesRelated = records.filter(function(current){
-          if(tmpObj[current.rfidCode])
-            return false;
+    tmpObj[current.rfidCode] = current;
+    return true;
+  })
+  .map(function(current){return current.rfidCode});
+}
 
-          tmpObj[current.rfidCode] = current;
-          return true;
-        })
-        .map(function(current){return current.rfidCode});
-        getEntities(query, codesRelated)
-        .then(function(data){
+var attachEntity = function(records, data) {
+  var responseObj = [];
+  records.forEach(function(record){
+    var entity = data[record.rfidCode];
+    if(entity){
+      var tmp = record.get({plain:true});
+      tmp.entity = entity;
+      delete tmp.Package;
+      responseObj.push(tmp);
+    }
+  });
+  return responseObj;
+}
 
-          var data = data.data;
-          var responseObj = [];
-          records.forEach(function(record){
-            var entity = data[record.rfidCode];
-            if(entity){
-              var tmp = record.get({plain:true});
-              tmp.entity = entity;
-              delete tmp.Package;
-              responseObj.push(tmp);
-            }
-          });
-          result.rows = responseObj;
-          if (hasEntityQuery) {
-            var newResponse = {count: responseObj.length, rows:[]};
-            var start = query.offset || 0;
-            if (query.limit > responseObj.length)
-              newResponse.rows = responseObj.splice(start, query.limit);
-            else
-              newResponse.rows = responseObj;
-            return callback(null, [newResponse]);
-          }
-          return callback(null, [result]);
-
-        }, function(err) { //Node promise, not Sequelize catch function
-          return callback(err);
-        });
-      } else {
+var paginateRfid = function(query, callback) {
+  RfidModel.findAndCountAll(query)
+  .then(function(result) {
+    var records = result.rows;
+    if(records.length > 0 && (query && query.entity)){
+      getEntities(query, codesRelated(records))
+      .then(function(data){
+        var data = data.data;
+        result.rows = attachEntity(records, data);
         return callback(null, [result]);
-      }
-    })
-    .catch(function(err) {
-      return callback({error: err.toString(), code: 500, message:"Error on find RFIDDatas"});
-    });
+      }, function(err) { //Node promise, not Sequelize catch function
+        return callback(err);
+      });
+    } else {
+      return callback(null, [result]);
+    }
+  })
+  .catch(function(err) {
+    return callback({error: err.toString(), code: 500, message:"Error on find RFIDDatas"});
+  });
+}
+
+var paginateEntity = function(query, callback) {
+  var limit = query.limit;
+  var offset = query.offset;
+  query.limit = undefined;
+  query.offset = undefined;
+
+  RfidModel.findAll(query)
+  .then(function(result) {
+    var records = result;
+    if(records.length > 0 && (query && query.entity)){
+      getEntities(query, codesRelated(records))
+      .then(function(data){
+        var data = data.data;
+        var responseObj = attachEntity(records, data);
+        var newResponse = {count: responseObj.length, rows:[]};
+        var start = offset || 0;
+        if (limit < responseObj.length)
+          newResponse.rows = responseObj.splice(start, limit);
+        else
+          newResponse.rows = responseObj;
+        return callback(null, [newResponse]);
+      }, function(err) { //Node promise, not Sequelize catch function
+        return callback(err);
+      });
+    } else {
+      return callback(null, [result]);
+    }
+  }, function(err) { //Node promise, not Sequelize catch function
+    return callback(err);
+  });
+}
+
+var embeddedEntity = function(query, callback) {
+  if(query.entityQuery) {
+    return paginateEntity(query, callback);
+  } else {
+    return paginateRfid(query, callback);
+  }
 };
 
 var LIMIT_MIN_RFIDDATA = 1;
