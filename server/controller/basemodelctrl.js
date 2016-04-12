@@ -58,10 +58,11 @@ var BaseModelController = function(model, modelName){
 					});
 				}else{
 					//find all
-					// _Model.findAndCountAll(query).then(function(docs){
-					_Model.findAll(query).then(function(docs){
-						return callback(null, docs);
+					// return callback(null, query);
+					_Model.findAndCountAll(query).then(function(docs){
+						return callback(null, [docs]);
 					}).catch(function(err){
+						logger.warn(err);
 						return _handleError(err, operation, callback);
 					});
 				}
