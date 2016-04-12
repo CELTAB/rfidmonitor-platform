@@ -40,9 +40,10 @@ var promisesHandler = function(callback){
   };
   return{
     success: function(result){
-      if(Array.isArray(result)) {
+      var records = result.rows || result;
+      if(Array.isArray(records)) {
         var response = [];
-        result.forEach(function(el) {
+        records.forEach(function(el) {
           var elB = el.get({plain: true});
           if(el.Group) {
             elB[embeddedEntityRename(elB)] = elB.Group;
@@ -50,13 +51,14 @@ var promisesHandler = function(callback){
           }
           response.push(elB);
         });
-        return _cb(null, response);
+        result.rows = response;
+        return _cb(null, result);
       }
-      if(!result){
+      if(!records){
         return errorHandler('Record not found', 400, _cb);
       }
-      var elB = result.get({plain: true});
-      if(result.Group) {
+      var elB = records.get({plain: true});
+      if(records.Group) {
         elB[embeddedEntityRename(elB)] = elB.Group;
         delete elB.Group;
       }
@@ -86,7 +88,7 @@ var getHandler = function(req, callback){
     }
   }
   if(!req.params.id){
-    model.findAll(query || {}).then(promises.success).catch(promises.error);
+    model.findAndCountAll(query || {}).then(promises.success).catch(promises.error);
   }else{
     query = query || {};
     query.where = {id: req.params.id};
