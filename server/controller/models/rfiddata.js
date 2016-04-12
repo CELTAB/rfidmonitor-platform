@@ -263,6 +263,7 @@ var embeddedEntity = function(query, callback) {
 
 var LIMIT_MIN_RFIDDATA = 1;
 var LIMIT_MAX_RFIDDATA = 500;
+var LIMIT_DEFAULT = 20;
 
 Rfid.custom['find'] = function(id, query, callback){
   // select * from tb_plat_rfiddata as rfid, tb_de_carro as carro where rfid."rfidCode" = carro.pit;
@@ -276,7 +277,7 @@ Rfid.custom['find'] = function(id, query, callback){
 
     if (query.offset && query.offset < 0)
       return callback({error: "The offset must be greater than zero", code: 400, message: "Invalid offset value"});
-    query.limit = query.limit || LIMIT_MAX_RFIDDATA; //Default limit
+    query.limit = query.limit || LIMIT_DEFAULT; //Default limit
     query.offset = query.offset || null;
 
     if(query.embeddedRecords === true) {

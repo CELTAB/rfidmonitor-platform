@@ -38,7 +38,7 @@ var RFIDData = sequelize.model('Rfiddata');
 var insertingMap = {};
 CollectorCtrl.oldSave = CollectorCtrl.save;
 CollectorCtrl.custom['find'] = function(id, query, callback){
-  CollectorCtrl.find(id, query, function(err, collectors){
+  CollectorCtrl.find(id, query, function(err, result){
     if(err)
       return callback(err);
 
@@ -123,6 +123,7 @@ CollectorCtrl.custom['find'] = function(id, query, callback){
       });
     };
 
+    var collectors = result[0].rows || result;
     var response = {};
     if(Array.isArray(collectors)){
       response = [];
@@ -138,16 +139,20 @@ CollectorCtrl.custom['find'] = function(id, query, callback){
               c.records = records;
               response.push(c);
               collectorBack++;
-              if(collectorBack === collectors.length)
-                return callback(null, response);
+              if(collectorBack === collectors.length) {
+                result.rows = response;
+                return callback(null, result);
+              }
           });
         }else{
           response.push(c);
         }
       }, this);
 
-      if(!query || query.dashboard !== true)
-        return callback(null, response);
+      if(!query || query.dashboard !== true) {
+        result.rows = response;
+        return callback(null, result);
+      }
 
     }else{
       if(collectors){

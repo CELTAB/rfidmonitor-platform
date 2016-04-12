@@ -54,8 +54,7 @@ UserCtrl.custom['save'] = function(body, callback){
 };
 
 UserCtrl.login = function(candidateUser, callback){
-  var User = sequelize.model("User");
-  User.scope('loginScope').findOne({where: {username: candidateUser.username}})
+  UserModel.scope('loginScope').findOne({where: {username: candidateUser.username}})
   .then(function(user){
     if(!user || !user.isPasswordValid(candidateUser.password))
       return errorHandler('Invalid username or password', 400, callback);
