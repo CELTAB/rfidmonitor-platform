@@ -84,15 +84,17 @@ var getEntities = function(query, codesRelated){
     if(!entityQuery.where)
      entityQuery.where = {};
     entityQuery.where[entityField] = {$in: codesRelated};
+
     try{
       var model = sequelize.model(query.entity);
-      model.findAll(entityQuery)
+      model.findAndCountAll(entityQuery)
       .then(function(result){
         var responseObj = {};
-        result.forEach(function(element){
+        result.rows.forEach(function(element){
           responseObj[element[entityField]] = element;
         });
-        deferred.resolve(responseObj);
+        result.data = responseObj;
+        deferred.resolve(result);
       })
       .catch(function(e){
         var errMessage = {error: e.toString(), code: 500, message:"Error on find Entities"};
@@ -138,19 +140,31 @@ var embeddedRecords = function(query, callback){
           query.where.rfidCode = el[entityField];
 
           query.order = query.order || [['rfidReadDate', 'DESC']];
-
-          Rfid.find(null, query, function(err, records){
-            if(err)
-              return callback(err);
-
+          //TODO: This might result in a problem in the future.
+          RfidModel.findAndCountAll(query)
+          .then(function(records) {
             var res = el.get({plain: true});
             res.records = records;
             response.push(res);
-            // return callback(null, res);
             size++;
             if(size === ety.length)
               return callback(null, response);
+          })
+          .catch(function(err) {
+            return callback({error: err.toString(), code: 500, message:"Error on find RFIDDatas for Embedded Records"});
           });
+          // Rfid.find(null, query, function(err, records){
+          //   if(err)
+          //     return callback(err);
+          //
+          //   var res = el.get({plain: true});
+          //   res.records = records;
+          //   response.push(res);
+          //   // return callback(null, res);
+          //   size++;
+          //   if(size === ety.length)
+          //     return callback(null, response);
+          // });
        });
     })
     .catch(function(e){
@@ -159,136 +173,130 @@ var embeddedRecords = function(query, callback){
   });
 };
 
-var embeddedEntity = function(query, callback){
-  Rfid.find(null, query, function(err, records){
-    if(err)
-    return callback(err);
+var codesRelated = function(records) {
+  var tmpObj = {};
+  return records.filter(function(current){
+    if(tmpObj[current.rfidCode])
+      return false;
 
-    if(records.length > 0 && query && query.entity){
-      var tmpObj = {};
-      var codesRelated = records.filter(function(current){
-        if(tmpObj[current.rfidCode])
-          return false;
+    tmpObj[current.rfidCode] = current;
+    return true;
+  })
+  .map(function(current){return current.rfidCode});
+}
 
-        tmpObj[current.rfidCode] = current;
-        return true;
-      })
-      .map(function(current){return current.rfidCode});
-
-      getEntities(query, codesRelated)
-      .then(function(data){
-
-        var responseObj = [];
-        records.forEach(function(record){
-          var entity = data[record.rfidCode];
-          if(entity){
-            var tmp = record.get({plain:true});
-            tmp.entity = entity;
-            delete tmp.Package;
-            responseObj.push(tmp);
-          }
-        });
-        return callback(null, responseObj);
-      },
-      function(err){
-        return callback(err);
-      });
-
-    }else{
-      return callback(null, records);
+var attachEntity = function(records, data) {
+  var responseObj = [];
+  records.forEach(function(record){
+    var entity = data[record.rfidCode];
+    if(entity){
+      var tmp = record.get({plain:true});
+      tmp.entity = entity;
+      delete tmp.Package;
+      responseObj.push(tmp);
     }
   });
+  return responseObj;
+}
+
+var paginateRfid = function(query, callback) {
+  RfidModel.findAndCountAll(query)
+  .then(function(result) {
+    var records = result.rows;
+    if(records.length > 0 && (query && query.entity)){
+      getEntities(query, codesRelated(records))
+      .then(function(data){
+        var data = data.data;
+        result.rows = attachEntity(records, data);
+        return callback(null, [result]);
+      }, function(err) { //Node promise, not Sequelize catch function
+        return callback(err);
+      });
+    } else {
+      return callback(null, [result]);
+    }
+  })
+  .catch(function(err) {
+    return callback({error: err.toString(), code: 500, message:"Error on find RFIDDatas"});
+  });
+}
+
+var paginateEntity = function(query, callback) {
+  var limit = query.limit;
+  var offset = query.offset;
+  query.limit = undefined;
+  query.offset = undefined;
+
+  RfidModel.findAll(query)
+  .then(function(result) {
+    var records = result;
+    if(records.length > 0 && (query && query.entity)){
+      getEntities(query, codesRelated(records))
+      .then(function(data){
+        var data = data.data;
+        var responseObj = attachEntity(records, data);
+        var newResponse = {count: responseObj.length, rows:[]};
+        var start = offset || 0;
+        if (limit < responseObj.length)
+          newResponse.rows = responseObj.splice(start, limit);
+        else
+          newResponse.rows = responseObj;
+        return callback(null, [newResponse]);
+      }, function(err) { //Node promise, not Sequelize catch function
+        return callback(err);
+      });
+    } else {
+      return callback(null, [result]);
+    }
+  }, function(err) { //Node promise, not Sequelize catch function
+    return callback(err);
+  });
+}
+
+var embeddedEntity = function(query, callback) {
+  if(query.entityQuery) {
+    return paginateEntity(query, callback);
+  } else {
+    return paginateRfid(query, callback);
+  }
 };
+
+var LIMIT_MIN_RFIDDATA = 1;
+var LIMIT_MAX_RFIDDATA = 500;
 
 Rfid.custom['find'] = function(id, query, callback){
   // select * from tb_plat_rfiddata as rfid, tb_de_carro as carro where rfid."rfidCode" = carro.pit;
   // return Rfid.find(id, query, callback); //Just go ahead
   if(id){
     return Rfid.find(id, query, callback);
-  }else if(query && query.embeddedRecords === true){
-    if(query.entity)
-      return embeddedRecords(query, callback);
-    else
-      return callback({error: "To query with embeddedRecords been true, the 'entity' parameter is mandatory", code: 400, message: "Missing entity parameter"});
-  }else{
-    return embeddedEntity(query, callback);
+  }else if(query) {
+    // Valid query
+    if (query.limit && (query.limit < LIMIT_MIN_RFIDDATA || query.limit > LIMIT_MAX_RFIDDATA))
+      return callback({error: "The limit is less than minimum or greater than the maximum allowed value", code: 400, message: "Invalid limit value"});
+
+    if (query.offset && query.offset < 0)
+      return callback({error: "The offset must be greater than zero", code: 400, message: "Invalid offset value"});
+    query.limit = query.limit || LIMIT_MAX_RFIDDATA; //Default limit
+    query.offset = query.offset || null;
+
+    if(query.embeddedRecords === true) {
+      if(query.entity)
+        return embeddedRecords(query, callback);
+      else
+        return callback({error: "To query with embeddedRecords been true, the 'entity' parameter is mandatory", code: 400, message: "Missing entity parameter"});
+    } else {
+      return embeddedEntity(query, callback);
+    }
   }
 };
 
 var insertSummary = function(rfiddata, collector, callback){
-  if(rfiddata.data.length === 0){
-    logger.warn("Empty package received. send ACK-DATA");
-    return callback(null, rfiddata.md5diggest);
-  }
-
-  try{
-      var pack = {
-        packageHash: rfiddata.md5diggest,
-        packageSize: rfiddata.data.length
-      };
-      Package.create(pack)
-      .then(function(newPk){
-        var insert = function(rfid, callback){
-          var obj = {};
-
-          obj.rfidCode = rfid.identificationcode;
-          var tmpDate = new Date(rfid.datetime);
-          tmpDate.setHours(tmpDate.getHours() + (tmpDate.getTimezoneOffset() / 60));
-          obj.rfidReadDate = tmpDate;
-
-          obj.serverReceivedDate = new Date();
-          obj.collectorId = collector.id;
-          obj.packageId = newPk.id;
-
-          Rfid.defaultSave(obj, function(err, newRfid){
-            if(err)
-              return callback(err.error);
-
-            callback();
-          });
-        };
-        var datas = rfiddata.data;
-        var index = 0;
-
-        var next = function(err){
-          if(err)
-            return callback(err);
-
-          if(datas[index]){
-            var rfid = datas[index];
-            index++;
-            insert(rfid, next);
-          }else{
-            return callback(null, newPk.packageHash);
-          }
-        }
-        next();
-      })
-      .catch(function(e){
-        if(e.name === "SequelizeUniqueConstraintError" && e.fields['packageHash']){
-          logger.debug("Package already on database");
-          return callback(null, rfiddata.md5diggest);
-        }
-        logger.error('Error inserSummary package: ' + e.toString());
-        return callback(e);
-      });
-  }catch(e){
-    logger.error('Error inserSummary: ' + e.toString());
-    return callback(e);
-  }
-};
-
-var insertSummaryDescriptive = function(rfiddata, collector, callback){
 
   if(rfiddata.data.length === 0){
     logger.warn("Empty package received. send ACK-DATA");
     return callback(null, rfiddata.md5diggest);
   }
-// try{
-// }catch(e){
-//   logger.error('Error insertSummary: ' + e.toString());
-//   return callback(e);
-// }
+
   var pack = {
     packageHash: rfiddata.md5diggest,
     packageSize: rfiddata.data.length
@@ -354,104 +362,18 @@ var insertSummaryDescriptive = function(rfiddata, collector, callback){
     });
 
   }).catch(function(e){
-    logger.error("insertSummaryDescriptive transaction error " + e);
+    logger.error("insertSummary transaction error " + e);
     return callback(e);
   });
 
 };
 
-var insertSummaryDescriptiveB = function(rfiddata, collector, callback){
-
-  if(rfiddata.data.length === 0){
-    logger.warn("Empty package received. send ACK-DATA");
-    return callback(null, rfiddata.md5diggest);
-  }
-
-  try{
-      var pack = {
-        packageHash: rfiddata.md5diggest,
-        packageSize: rfiddata.data.length
-      };
-      sequelize.transaction().then(function(t){
-
-        return Package.create(pack, {transaction:t})
-        .then(function(newPk){
-
-          var insert = function(rfid, callback){
-
-            var obj = {};
-            obj.rfidCode = rfid.identificationcode;
-            obj.rfidReadDate = rfid.datetime;
-            obj.serverReceivedDate = new Date();
-            obj.collectorId = collector.id;
-            obj.packageId = newPk.id;
-
-            return RfidModel.create(obj, {transaction:t})
-  					.then(function(newDoc){
-              callback();
-  					})
-  					.catch(function(err){
-  						return callback(err);
-  					});
-          };
-
-          var datas = rfiddata.data;
-          var index = 0;
-
-          var next = function(err){
-            if(err){
-              t.rollback();
-              return callback(err, {hash: newPk.packageHash});
-            }
-
-            if(datas[index]){
-              var rfid = datas[index];
-              index++;
-              insert(rfid, next);
-            }else{
-              t.commit();
-              return callback(null, {hash: newPk.packageHash, size: pack.packageSize, new : true});
-            }
-          }
-
-          return next();
-        })
-        .catch(function(e){
-          if(e.name === "SequelizeUniqueConstraintError" && e.fields['packageHash']){
-            logger.debug("Package already on database");
-            return callback(null, {hash: rfiddata.md5diggest, size: pack.packageSize, repeated: true});
-          }
-          logger.error('Error inserSummary package: ' + e.toString());
-          return callback(e);
-        });
-
-      })
-      .catch(function(e){
-        logger.error("insertSummaryDescriptive transaction error " + e);
-        return callback(e);
-      }); //transaction
-
-  }catch(e){
-    logger.error('Error insertSummary: ' + e.toString());
-    return callback(e);
-  }
-};
-
 Rfid.save = function(rfiddata, callback){
-  var cb = callback;
-  callback = function(err, result){
-    if(err){
-      if(Rfid.custom.save)
-        return cb(err);
-      return cb({code: 500, error: err, message: 'RFIDDATA error'});
-    }
-    return cb(null, result);
-  }
-
   var cole = {
     macaddress: rfiddata.macaddress,
     name: rfiddata.name
   };
+
   CollectorCtrl.findOrCreate(cole, function(collector){
     if(collector.then){
       collector.then(function(c){
@@ -459,39 +381,14 @@ Rfid.save = function(rfiddata, callback){
       },
       function(e){
         logger.error('Error: ' + err);
-        return callback(err);
-      });
-    }else{
-      return insertSummary(rfiddata.datasummary, collector, callback);
-    }
-  });
-}
-
-Rfid.importSave = function(rfiddata, callback){
-  var cole = {
-    macaddress: rfiddata.macaddress,
-    name: rfiddata.name
-  };
-
-  CollectorCtrl.findOrCreate(cole, function(collector){
-    if(collector.then){
-      collector.then(function(c){
-        return insertSummaryDescriptive(rfiddata.datasummary, c, callback);
-      },
-      function(e){
-        logger.error('Error: ' + err);
         return callback(err, {hash : rfiddata.datasummary.md5diggest});
       });
     }else{
 
-      return insertSummaryDescriptive(rfiddata.datasummary, collector, callback);
+      return insertSummary(rfiddata.datasummary, collector, callback);
     }
   });
 }
-
-Rfid.bulkSave = function(packageArray, callback){
-  return errorHandler('NOT IMPLEMENTED YET', 500, callback);
-};
 
 Rfid.importBulkSave = function(packageArray, callback){
 
@@ -514,7 +411,7 @@ Rfid.importBulkSave = function(packageArray, callback){
   packageArray.forEach(function(pack) {
     rfidImport.receivedRfids += pack.datasummary.data.length;
 
-    Rfid.importSave(pack, function(err, result) {
+    Rfid.save(pack, function(err, result) {
       rfidImport.processedPackages++;
 
       if(err){
@@ -537,7 +434,7 @@ Rfid.importBulkSave = function(packageArray, callback){
 
           rfidImport.discardedByRepetitionPackagesList.push(result.hash);
         }else{
-          return errorHandler('importSave result object not correctly described.', 500, callback);
+          return errorHandler('save result object not correctly described.', 500, callback);
         }
       }
       if(rfidImport.processedPackages === rfidImport.receivedPackages){
