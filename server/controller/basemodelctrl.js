@@ -62,7 +62,6 @@ var BaseModelController = function(model, modelName){
 					_Model.findAndCountAll(query).then(function(docs){
 						return callback(null, docs);
 					}).catch(function(err){
-						logger.warn(err);
 						return _handleError(err, operation, callback);
 					});
 				}

@@ -67,12 +67,6 @@ CollectorCtrl.custom['find'] = function(id, query, callback){
           response.lastYear[key] = 0;
           start.setMonth(start.getMonth() + 1);
         }
-        //filtar por dia, semana, mes e ano.
-        // myDate.setDate(myDate.getDate() - 1); //dia
-        // myDate.setDate(myDate.getDate() - 7); //Semana
-        // myDate.setMonth(myDate.getMonth() - 1); //Mes. Em JS mes são representados por inteiros, de 0 a 11 e não de 1 a 12.
-        // myDate.setFullYear(myDate.getFullYear() - 1);
-
         var now = new Date();
         now.setFullYear(now.getFullYear() - 1);
         var year = records.filter(function(el){
@@ -215,25 +209,23 @@ CollectorCtrl.promiseSave = function(newCollector, callback){
 };
 
 CollectorCtrl.findOrCreate = function(collector, callback){
-  CollectorCtrl.find(null, {where: {mac:collector.macaddress, deletedAt: null}},
-    function(err, collectorResult){
-      if(err)
-        return callback(err);
-      collectorResult = collectorResult.rows || [];
-      if(Array.isArray(collectorResult) && !collectorResult.length === 0){
-        collector.name = (!!collector.name)? collector.name : 'Unknown';
-        collector.mac = collector.macaddress;
-        if(collector.id)
-          delete collector.id;
-        delete collector.macaddress;
-        return CollectorCtrl.promiseSave(collector, callback);
-      }else{
-        // return callback(null, {then: function(cb){
-        //   cb(collectorResult[0].get({plain: true}));
-        // }});
-        return callback(collectorResult[0].get({plain: true}));
-      }
-    });
+  // Using scope defined by the model
+  CollectorModel.scope({ method: ['byMac', collector.macaddress]}).find()
+  .then(function(collectorResult) {
+    if (collectorResult) {
+      return callback(collectorResult.get({plain: true}));
+    } else {
+      collector.name = (!!collector.name)? collector.name : 'Unknown';
+      collector.mac = collector.macaddress;
+      if(collector.id)
+        delete collector.id;
+      delete collector.macaddress;
+      return CollectorCtrl.promiseSave(collector, callback);
+    }
+  })
+  .catch(function(err) {
+    return callback({err: err.toString(), code: 500, message: 'Error on find Collector'});
+  });
 };
 
 module.exports = CollectorCtrl;
