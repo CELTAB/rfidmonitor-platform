@@ -178,13 +178,13 @@ CollectorCtrl.promiseSave = function(newCollector, callback){
     insertingMap[newCollector.mac] = deferred.promise;
     callback(deferred.promise);
     var afterSave = function(err, collector){
+      delete insertingMap[collector.mac];
       if(err){
         deferred.reject(err);
       }else{
         logger.debug("Collector inserted. new ID: " + collector.id);
         var c = collector.get({plain: true});
         collectorPool.push(c);
-        delete insertingMap[collector.mac];
         deferred.resolve(c);
       }
     }
