@@ -263,7 +263,7 @@ var embeddedEntity = function(query, callback) {
 
 var LIMIT_MIN_RFIDDATA = 1;
 var LIMIT_MAX_RFIDDATA = 500;
-var LIMIT_DEFAULT = 20;
+var LIMIT_DEFAULT = 100;
 
 Rfid.custom['find'] = function(id, query, callback){
   // select * from tb_plat_rfiddata as rfid, tb_de_carro as carro where rfid."rfidCode" = carro.pit;
@@ -380,12 +380,10 @@ Rfid.save = function(rfiddata, callback){
       collector.then(function(c){
         return insertSummary(rfiddata.datasummary, c, callback);
       },
-      function(e){
-        logger.error('Error: ' + err);
-        return callback(err, {hash : rfiddata.datasummary.md5diggest});
+      function(err){
+        return callback(err.error, {hash : rfiddata.datasummary.md5diggest});
       });
     }else{
-
       return insertSummary(rfiddata.datasummary, collector, callback);
     }
   });

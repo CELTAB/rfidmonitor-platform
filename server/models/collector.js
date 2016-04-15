@@ -54,6 +54,10 @@ var model = sequelize.define("Collector", {
 		type : SequelizeClass.STRING,
 		allowNull : true,
 		field : 'description'
+	},
+	deletedAt : {
+		type : SequelizeClass.DATE,
+		unique: 'uq_name_mac'
 	}
 },
 {

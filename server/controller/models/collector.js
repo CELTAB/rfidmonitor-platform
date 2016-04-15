@@ -117,7 +117,7 @@ CollectorCtrl.custom['find'] = function(id, query, callback){
       });
     };
 
-    var collectors = result.rows || result;
+    var collectors = (result && result.rows) || result;
     var response = {};
     if(Array.isArray(collectors)){
       response = [];
@@ -178,8 +178,8 @@ CollectorCtrl.promiseSave = function(newCollector, callback){
     insertingMap[newCollector.mac] = deferred.promise;
     callback(deferred.promise);
     var afterSave = function(err, collector){
+      delete insertingMap[collector.mac];
       if(err){
-        logger.error('Error aqui: ' + JSON.stringify(err));
         deferred.reject(err);
       }else{
         logger.debug("Collector inserted. new ID: " + collector.id);
