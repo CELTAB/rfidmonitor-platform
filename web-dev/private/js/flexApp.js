@@ -30,6 +30,17 @@ app.config(function($routeProvider, $locationProvider, RestangularProvider, apiI
 
 	RestangularProvider.setBaseUrl(apiInfo.baseUrl);
 
+	RestangularProvider.addResponseInterceptor(function(data, operation, what, url, response, deferred) {
+		var extractedData = {};
+		if (operation === "getList") {
+			extractedData = data.rows || data;
+			extractedData.count = data.count || data.length;
+		} else {
+			extractedData = data.rows || data;
+		}
+		return extractedData;
+	});
+
 	if(localStorage.getItem('flexUser')){
 		RestangularProvider.setDefaultHeaders({'Authorization' : 'Bearer '+angular.fromJson(localStorage.getItem('flexUser')).token });
 	}

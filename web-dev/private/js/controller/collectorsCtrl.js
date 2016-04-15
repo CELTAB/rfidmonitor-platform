@@ -6,10 +6,11 @@ app.controller('collectorsCtrl', function($scope, Restangular, singleFilter, map
 
 	var collectorsService = Restangular.service('collectors');
 	var groupsService = Restangular.service('groups');
-
-	groupsService.getList().then(function(response){
-		 $scope.groups = response;
-	});
+	$scope.loadding = false;
+	var paginationOptions = {
+		pageNumber: 1,
+		pageSize: 5,
+	};
 
 	$scope.collectorsScopeProvider = {
 		details: function(row){
@@ -18,8 +19,9 @@ app.controller('collectorsCtrl', function($scope, Restangular, singleFilter, map
 	};
 
 	$scope.collectorsGridOptions = {
-	    paginationPageSizes: [5, 10, 25, 50, 100],
+	    paginationPageSizes: [5, 10, 25],
     	paginationPageSize: 5,
+			useExternalPagination: true,
 	    multiSelect: false,
 	    enableRowSelection: true,
 	    enableSelectAll: false,
@@ -29,6 +31,11 @@ app.controller('collectorsCtrl', function($scope, Restangular, singleFilter, map
 	    onRegisterApi: function(gridApi){
 	      $scope.gridApi = gridApi;
 	      $scope.gridApi.grid.registerRowsProcessor( singleFilter.filter, 200 );
+				gridApi.pagination.on.paginationChanged($scope, function (newPage, pageSize) {
+					paginationOptions.pageNumber = newPage;
+					paginationOptions.pageSize = pageSize;
+					loadCollectors();
+				});
 	    },
 	    appScopeProvider: $scope.collectorsScopeProvider,
 	    rowTemplate: 'view/templates/template-dblclick.html'
@@ -45,11 +52,19 @@ app.controller('collectorsCtrl', function($scope, Restangular, singleFilter, map
 	];
 
 	var loadCollectors = function(){
-		collectorsService.getList({q: {"include":[{"all":true}]}}).then(function(response){
+		var query = {};
+		query.q = {};
+		query.q.include = [{"all":true}];
+		query.q.limit = paginationOptions.pageSize;
+		query.q.offset = (paginationOptions.pageNumber - 1) * paginationOptions.pageSize;
+
+		$scope.loadding = true;
+		collectorsService.getList(query).then(function(response){
+			$scope.loadding = false;
+			$scope.collectorsGridOptions.totalItems = response.count;
 			$scope.collectorsGridOptions.data = response;
 
-			$scope.markers = [];
-
+			var _markers = [];
 			angular.forEach(response, function(collector){
 				var _marker = {};
     		_marker.id = collector.id;
@@ -58,22 +73,30 @@ app.controller('collectorsCtrl', function($scope, Restangular, singleFilter, map
     		_marker.coords.longitude = collector.lng;
     		_marker.window = {};
     		_marker.window.title = collector.name;
-
-				$scope.markers.push( _marker );
+				_markers.push( _marker );
 			});
+
+			$scope.markers = _markers;
+		});
+	};
+
+	var loadGroups = function(){
+		groupsService.getList().then(function(response){
+			 $scope.groups = response.plain();
 		});
 	};
 
 	loadCollectors();
+	loadGroups();
 
 	$scope.newCollector = function(){
 		$scope.openModal('collector', 'view/modal/collectorModalForm.html', 'Novo Coletor', {}, $scope.groups, collectorsService, null, loadCollectors);
 	};
 
  	$scope.filter = function(){
-    	singleFilter.values($scope.filterValue, ['name', 'description', 'Group', 'status']);
-    	$scope.gridApi.grid.refresh();
-    };
+  	singleFilter.values($scope.filterValue, ['name', 'description', 'Group', 'status']);
+  	$scope.gridApi.grid.refresh();
+  };
 
 	$scope.map = {
 		center: { latitude: mapCenter.lat, longitude: mapCenter.lng },

@@ -38,6 +38,6 @@
 
 <div class="modal-footer">
 	<button type="button" class="btn btn-default pull-left" ng-click="close()">Fechar</button>
-	<button type="button" class="btn btn-warning" ng-click="editFromDetail(entity,'AppClients')">Editar</button>
-	<button type="button" class="btn btn-danger" ng-click="removeFromDetail(entity,'AppClients')">Excluir</button>
+	<button type="button" class="btn btn-warning" ng-if="checkRoles('edit-appclients')" ng-click="editFromDetail(entity,'AppClients')">Editar</button>
+	<button type="button" class="btn btn-danger" ng-if="checkRoles('remove-appclients')" ng-click="removeFromDetail(entity,'AppClients')">Excluir</button>
 </div>

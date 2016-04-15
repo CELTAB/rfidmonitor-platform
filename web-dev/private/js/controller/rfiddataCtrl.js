@@ -8,6 +8,11 @@ app.controller('rfiddataCtrl', function($rootScope, $scope, $q, Restangular){
 	var collectorService = Restangular.service('collectors');
 	var groupsService = Restangular.service('groups');
 
+	var paginationOptions = {
+		pageNumber: 1,
+		pageSize: 25
+	};
+
 	$scope.rfidEntities = [];
 
 	angular.forEach($rootScope.metaDynamics, function(value){
@@ -21,8 +26,9 @@ app.controller('rfiddataCtrl', function($rootScope, $scope, $q, Restangular){
 	});
 
 	$scope.rfiddataGridOptions = {
-			paginationPageSizes: [5, 10, 25, 50, 100],
+			paginationPageSizes: [25, 50, 100],
 			paginationPageSize: 25,
+			useExternalPagination: true,
 			minRowsToShow: 25,
 			enableGridMenu: true,
 			enableSelectAll: true,
@@ -45,6 +51,11 @@ app.controller('rfiddataCtrl', function($rootScope, $scope, $q, Restangular){
 			exporterCsvLinkElement: angular.element(document.querySelectorAll(".custom-csv-link-location")),
 			onRegisterApi: function(gridApi){
 				$scope.gridApi = gridApi;
+				gridApi.pagination.on.paginationChanged($scope, function (newPage, pageSize) {
+					paginationOptions.pageNumber = newPage;
+					paginationOptions.pageSize = pageSize;
+					$scope.searchRfid();
+				});
 			}
 		};
 
@@ -115,13 +126,14 @@ app.controller('rfiddataCtrl', function($rootScope, $scope, $q, Restangular){
 		return deferred.promise;
 	};
 
+	$scope.loadding = false;
 	$scope.search = {};
 	$scope.search.rfidCodes = [];
 	$scope.search.collectorId = "";
 	$scope.search.fromDate = "";
 	$scope.search.toDate = "";
 
-	$scope.buscar = function(){
+	$scope.searchRfid = function(){
 
 		var rfids = $scope.search.rfidCodes.map(function(code){
 			return code.text;
@@ -130,6 +142,8 @@ app.controller('rfiddataCtrl', function($rootScope, $scope, $q, Restangular){
 		var query = {};
 		query.q = {};
 		query.q.include = [{"all":true}];
+		query.q.limit = paginationOptions.pageSize;
+		query.q.offset = (paginationOptions.pageNumber - 1) * paginationOptions.pageSize;
 		query.q.where = {};
 
 		if($scope.search.collectorId !== ""){
@@ -184,7 +198,7 @@ app.controller('rfiddataCtrl', function($rootScope, $scope, $q, Restangular){
 		}else{
 			$scope.search.entityQuery = undefined;
 		}
-
+		$scope.loadding = true;
 		rfiddataService.getList(query).then(function(response){
 			$scope.rfiddataGridOptions.columnDefs = angular.copy(defaultRfidGrid);
 			if(angular.isDefined(query.q.entity)){
@@ -207,7 +221,9 @@ app.controller('rfiddataCtrl', function($rootScope, $scope, $q, Restangular){
 				});
 			}
 
-			// @TODO pagination for rfidCode
+			$scope.loadding = false;
+			$scope.rfiddataGridOptions.totalItems = response.count;
+
 			if($scope.hexa){
 				$scope.rfiddataGridOptions.columnDefs.push({ name: 'rfidCode_hexa', displayName: 'Código Hexa'});
 				$scope.rfiddataGridOptions.data = [];
@@ -218,14 +234,9 @@ app.controller('rfiddataCtrl', function($rootScope, $scope, $q, Restangular){
 			}else{
 				 $scope.rfiddataGridOptions.data = response.plain();
 			}
-
 		}, function(response){
 			$scope.errorMessage = response;
 		});
-
-	};
-
-	$scope.limpar = function(){
 
 	};
 

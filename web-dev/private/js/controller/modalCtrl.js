@@ -93,7 +93,6 @@ app.controller('modalCtrl', function($rootScope, $scope, $uibModalInstance, Rest
 
 
 	var _saveEntity = function(entity){
-
   	if ( _isUndefinedOrNull(entity.id) ){
 			service.post(entity).then(function(response){
 				$uibModalInstance.dismiss();

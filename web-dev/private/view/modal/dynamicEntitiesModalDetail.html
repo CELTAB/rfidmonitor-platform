@@ -40,6 +40,6 @@
 
 <div class="modal-footer">
 	<button type="button" class="btn btn-default pull-left" ng-click="close()">Fechar</button>
-	<button type="button" class="btn btn-success" ng-if="!entity.active" ng-click="active(entity.identifier)">Ativar</button>
-	<button type="button" class="btn btn-danger" ng-if="entity.active" ng-click="active(entity.identifier)">Desativar</button>
+	<button type="button" class="btn btn-success" ng-if="!entity.active && checkRoles('active-dynamicEntities')" ng-click="active(entity.identifier)">Ativar</button>
+	<button type="button" class="btn btn-danger" ng-if="entity.active && checkRoles('active-dynamicEntities')" ng-click="active(entity.identifier)">Desativar</button>
 </div>

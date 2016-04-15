@@ -6,20 +6,21 @@ app.controller('routeAccessCtrl', function($scope, $location, $timeout, Restangu
 
   var routesService = Restangular.service('routes');
   var usersService = Restangular.service('users');
-  var appClientsService = Restangular.service('appClients');
+  var appClientsService = Restangular.service('appclients');
   var routeAccessService = Restangular.service('routeaccess');
 
   $scope.mapRoutes = [];
+  $scope.loadding = false;
 
   var loadUsers = function(){
     usersService.getList().then(function(response){
-       $scope.users = response;
+       $scope.users = response.plain();
     });
   };
 
   var loadRoutes = function(routesChecked){
     routesService.getList().then(function(response){
-       $scope.routes = response;
+       $scope.routes = response.plain();
        var routesView = {};
 
        angular.forEach($scope.routes, function(route){
@@ -37,19 +38,35 @@ app.controller('routeAccessCtrl', function($scope, $location, $timeout, Restangu
   };
 
   $scope.getRoutes = function(appClientId){
-    routeAccessService.getList({q: {"include":{"all": true}, "where": {"appClient": appClientId}}}).then(function(response){
-      var checked = [];
-      angular.forEach(response, function(value){
-          checked.push(value.uriRoute);
-      });
-      loadRoutes(checked);
-    });
+    if(appClientId !== ""){
+      var query = {};
+      query.q = {};
+      query.q.include = [{"all": true}];
+      query.q.where = {};
+      query.q.where.appClient = appClientId;
+      $scope.loadding = true;
 
+      routeAccessService.getList(query).then(function(response){
+        $scope.loadding = false;
+        var checked = [];
+        angular.forEach(response, function(value){
+            checked.push(value.uriRoute);
+        });
+        loadRoutes(checked);
+      }, function(response){
+        $scope.loadding = false;
+      });
+    }
   };
 
   $scope.getAppClients = function(userId){
     if(userId !== ""){
-      appClientsService.getList({q: {"where":{"userId": userId}}}).then(function(response){
+      var query = {};
+      query.q = {};
+      query.q.where = {};
+      query.q.where.userId = userId;
+
+      appClientsService.getList(query).then(function(response){
          $scope.appClients = response;
       });
     }

@@ -9,7 +9,7 @@
       <div class="box">
         <div class="box-header">
           <h3 class="box-title">Lista de AppClients</h3>
-          <button class="btn btn-success pull-right" ng-click="newAppClients()"><i class="glyphicon glyphicon-plus"></i> Novo AppClients</button>
+          <button class="btn btn-success pull-right" ng-if="checkRoles('add-appclients')" ng-click="newAppClients()"><i class="glyphicon glyphicon-plus"></i> Novo AppClients</button>
           <div class="pull-right">
               &nbsp
               &nbsp
@@ -25,6 +25,9 @@
         </div>
         <div class="box-body">
           <div ui-grid="appClientsGridOptions" ui-grid-pagination ui-grid-resize-columns ui-grid-move-columns ui-grid-pinning ui-grid-selection ui-grid-exporter ui-grid-auto-resize class="grid"></div>
+        </div>
+        <div ng-if="loadding" class="overlay">
+          <i class="fa fa-refresh fa-spin"></i>
         </div>
       </div>
     </div>
