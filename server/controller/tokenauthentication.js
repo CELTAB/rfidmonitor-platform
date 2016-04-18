@@ -62,7 +62,12 @@ var getFinalRoute = function(req, res, next){
   }
 
   //Lets get the position 1 and 2 always.
-  var finalRoute = '/'+uriArray[1]+'/'+uriArray[2];
+  var finalRoute = null;
+  if (uriArray.length >= 4) {
+    finalRoute = '/' + uriArray[1] + '/' + uriArray[2] + '/' + uriArray[3];
+  } else {
+    finalRoute = '/' + uriArray[1] + '/' + uriArray[2];
+  }
   //Remove eventual queries
   finalRoute = finalRoute.split('?')[0];
   return next(finalRoute);
