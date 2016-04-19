@@ -38,10 +38,6 @@ var model = sequelize.define("UriRoute", {
 		allowNull : false,
 		unique : 'uq_uriroute_path_method',
 		field : 'method'
-	},
-	deletedAt : {
-		type : SequelizeClass.DATE,
-		unique : 'uq_uriroute_path_method'
 	}
 },
 {
