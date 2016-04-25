@@ -22,5 +22,5 @@ app.directive('rfidCode', function() {
         }
       });
     }
-  }
+  };
 });

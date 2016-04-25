@@ -5,7 +5,7 @@ var app = angular.module('flexApp');
 app.factory('checkRoles', function () {
   var userRoles = angular.fromJson(localStorage.getItem('flexUser')).routes;
 
-  // @TODO movie json to external file
+  // @TODO move json to external file
   var viewRoles = {
     "admin" : false,
     "menu-users" : {"permission": false, "depends": [
