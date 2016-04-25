@@ -24,9 +24,10 @@
 
 var logger = require('winston');
 var Sequelize = require('sequelize');
+var dbConfig = require(__base + 'config/db/postgres.json');
 
 var PlatformSequelize = function PlatformSequelize(){
-	var connectionString = 'postgres://rfidplatform:rfidplatform@localhost:5432/rfidplatform';
+	var connectionString = 'postgres://' + dbConfig.username + ':' + dbConfig.password + '@' + dbConfig.ipaddress + ':' + dbConfig.portnumber + '/' + dbConfig.dbname;
 	var sequelize = new Sequelize(connectionString, {logging : false});
 
 	this.getSequelize = function(){
