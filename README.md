@@ -23,7 +23,7 @@ This repository holds the RFIDMonitor Platform code. The system is responsible f
 ```sh
 $ git clone [git-repo-url] rfidmonitor-platform
 $ cd rfidmonitor-platform
-$ npm install
+$ npm run deploy
 $ node app.js
 ```
 
