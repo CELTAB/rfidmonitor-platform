@@ -8,7 +8,11 @@ app.controller('dynamicEntitiesCtrl', function($rootScope, $scope, Restangular, 
   var activateOne = Restangular.one('de/activate');
   var deactivateOne = Restangular.one('de/deactivate');
 
-  $scope.filterValue = "";
+  $scope.loadding = false;
+  var paginationOptions = {
+    pageNumber: 1,
+    pageSize: 20,
+  };
 
   $scope.dynamicEntitiesScopeProvider = {
     details: function(row){
@@ -20,6 +24,7 @@ app.controller('dynamicEntitiesCtrl', function($rootScope, $scope, Restangular, 
   $scope.dynamicEntitiesGridOptions = {
       paginationPageSizes: [20, 50, 100],
       paginationPageSize: 20,
+      useExternalPagination: true,
       minRowsToShow: 21,
       multiSelect: false,
       enableRowSelection: true,
@@ -29,6 +34,11 @@ app.controller('dynamicEntitiesCtrl', function($rootScope, $scope, Restangular, 
       onRegisterApi: function(gridApi){
         $scope.gridApi = gridApi;
         $scope.gridApi.grid.registerRowsProcessor( singleFilter.filter, 200 );
+        gridApi.pagination.on.paginationChanged($scope, function (newPage, pageSize) {
+					paginationOptions.pageNumber = newPage;
+					paginationOptions.pageSize = pageSize;
+					loadDynamicEntities();
+				});
       },
       appScopeProvider: $scope.dynamicEntitiesScopeProvider,
       rowTemplate: 'view/templates/template-dblclick.html'
@@ -42,7 +52,15 @@ app.controller('dynamicEntitiesCtrl', function($rootScope, $scope, Restangular, 
   ];
 
   var loadDynamicEntities = function(){
-    originalService.getList().then(function(response){
+    var query = {};
+    query.q = {};
+    query.q.limit = paginationOptions.pageSize;
+    query.q.offset = (paginationOptions.pageNumber - 1) * paginationOptions.pageSize;
+
+    $scope.loadding = true;
+    originalService.getList(query).then(function(response){
+       $scope.loadding = false;
+       $scope.dynamicEntitiesGridOptions.totalItems = response.count;
        $scope.dynamicEntitiesGridOptions.data = response;
     });
   };

@@ -2,9 +2,11 @@
 ** @author Mohamad Abu Ali <mohamad@abuali.com.br>
 */
 var app = angular.module('flexApp');
-app.controller('flexCtrl', function($rootScope, $scope, $http, $location, $uibModal, Restangular){
+app.controller('flexCtrl', function($rootScope, $scope, $http, $location, $uibModal, Restangular, checkRoles){
 
   $scope.user = angular.fromJson(localStorage.getItem('flexUser'));
+
+  $rootScope.checkRoles = checkRoles;
 
   $rootScope.isActive = function(viewLocation) {
     return viewLocation === $location.path();
@@ -27,18 +29,19 @@ app.controller('flexCtrl', function($rootScope, $scope, $http, $location, $uibMo
     $scope.logout();
   }
 
-	var metaService = Restangular.service('de/meta');
+  if($rootScope.checkRoles('menu-dynamic')){
+    var metaService = Restangular.service('de/meta');
 
-	$rootScope.loadMetaDynamics = function(){
-		metaService.getList().then(function(response){
-  		$rootScope.metaDynamics = {};
-  		angular.forEach(response, function(entity){
-  			$rootScope.metaDynamics[entity.identifier] = entity;
-  		});
-	  });
-	};
-
-	$rootScope.loadMetaDynamics();
+  	$rootScope.loadMetaDynamics = function(){
+  		metaService.getList().then(function(response){
+    		$rootScope.metaDynamics = {};
+    		angular.forEach(response, function(entity){
+    			$rootScope.metaDynamics[entity.identifier] = entity;
+    		});
+  	  });
+  	};
+  	$rootScope.loadMetaDynamics();
+  }
 
   $rootScope.openModal = function(type, template, title, entity, groups, service, structureList, loadDataTableGrid, dynamicEntities, users){
 		$uibModal.open({

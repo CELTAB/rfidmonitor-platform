@@ -2,7 +2,7 @@
 ** @author Mohamad Abu Ali <mohamad@abuali.com.br>
 */
 var app = angular.module('flexApp');
-app.directive('fileModel', ['$parse', function ($parse) {
+app.directive('fileModel', function ($parse) {
   return {
       restrict: 'A',
       link: function(scope, element, attrs) {
@@ -16,4 +16,4 @@ app.directive('fileModel', ['$parse', function ($parse) {
           });
       }
   };
-}]);
+});

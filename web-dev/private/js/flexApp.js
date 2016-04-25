@@ -10,8 +10,8 @@ var app = angular.module('flexApp',
 	'uiGmapgoogle-maps',
 	'toggle-switch',
 	'ngTagsInput',
-	'ui.utils.masks',
 	'ui.bootstrap',
+	'ui.bootstrap.datetimepicker',
 	'ui.grid',
 	'ui.grid.pagination',
 	'ui.grid.saveState',
@@ -29,6 +29,17 @@ app.constant('mapCenter', { lat: -25.428006, lng: -54.584640 });
 app.config(function($routeProvider, $locationProvider, RestangularProvider, apiInfo) {
 
 	RestangularProvider.setBaseUrl(apiInfo.baseUrl);
+
+	RestangularProvider.addResponseInterceptor(function(data, operation, what, url, response, deferred) {
+		var extractedData = {};
+		if (operation === "getList") {
+			extractedData = data.rows || data;
+			extractedData.count = data.count || data.length;
+		} else {
+			extractedData = data.rows || data;
+		}
+		return extractedData;
+	});
 
 	if(localStorage.getItem('flexUser')){
 		RestangularProvider.setDefaultHeaders({'Authorization' : 'Bearer '+angular.fromJson(localStorage.getItem('flexUser')).token });

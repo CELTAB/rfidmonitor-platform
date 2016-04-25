@@ -18,7 +18,7 @@ module.exports = function(grunt){
     },
     jshint: {
       dist: {
-        src: ['private/**/*.js']
+        src: ['private/**/*.js', '!private/bower_components/**/*.js']
       }
     },
     ngAnnotate: {
@@ -27,7 +27,7 @@ module.exports = function(grunt){
       },
       app: {
         files: [
-          {expand: true, src: ['private/**/*.js'], dest: 'dist/private/js-annotated/'}
+          {expand: true, src: ['private/**/*.js', '!private/bower_components/**/*.js'], dest: 'dist/private/js-annotated/'}
         ]
       }
     },

@@ -82,18 +82,18 @@
         <section class="sidebar">
           <ul class="sidebar-menu">
             <li class="header">Administrador</li>
-            <li ng-class="{ active: isActive('/users')}"><a href="#/users"><i class="fa fa-users"></i> <span>Usuários</span></a></li>
-            <li ng-class="{ active: isActive('/appClients')}"><a href="#/appClients"><i class="fa fa-barcode"></i> <span>Clientes da Aplicação</span></a></li>
-            <li ng-class="{ active: isActive('/routeAccess')}"><a href="#/routeAccess"><i class="fa fa-sitemap"></i> <span>Rotas de Acesso</span></a></li>
-            <li ng-class="{ active: isActive('/dynamicEntities')}"><a href="#/dynamicEntities"><i class="fa fa-recycle"></i> <span>Entidades Dinâmicas</span></a></li>
+            <li ng-if="checkRoles('menu-users')" ng-class="{ active: isActive('/users')}"><a href="#/users"><i class="fa fa-users"></i> <span>Usuários</span></a></li>
+            <li ng-if="checkRoles('menu-appclients')" ng-class="{ active: isActive('/appClients')}"><a href="#/appClients"><i class="fa fa-barcode"></i> <span>Clientes da Aplicação</span></a></li>
+            <li ng-if="checkRoles('menu-routeaccess')" ng-class="{ active: isActive('/routeAccess')}"><a href="#/routeAccess"><i class="fa fa-sitemap"></i> <span>Rotas de Acesso</span></a></li>
+            <li ng-if="checkRoles('menu-dynamicEntities')" ng-class="{ active: isActive('/dynamicEntities')}"><a href="#/dynamicEntities"><i class="fa fa-recycle"></i> <span>Entidades Dinâmicas</span></a></li>
             <li class="header">Usuário</li>
-            <li ng-class="{ active: isActive('/dashboard')}"><a href="#/"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a></li>
-            <li ng-class="{ active: isActive('/groups')}"><a href="#/groups"><i class="fa fa-cubes"></i> <span>Grupos</span></a></li>
-            <li ng-class="{ active: isActive('/collectors')}"><a href="#/collectors"><i class="fa fa-map-marker"></i> <span>Coletores</span></a></li>
-            <li ng-class="{ active: isActive('/rfiddata')}"><a href="#/rfiddata"><i class="fa fa-database"></i> <span>RfidData</span></a></li>
-            <li ng-class="{ active: isActive('/importfile')}"><a href="#/importfile"><i class="fa fa-upload"></i> <span>Importação Manual</span></a></li>
+            <li ng-if="checkRoles('menu-dashboard')" ng-class="{ active: isActive('/dashboard')}"><a href="#/"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a></li>
+            <li ng-if="checkRoles('menu-groups')" ng-class="{ active: isActive('/groups')}"><a href="#/groups"><i class="fa fa-cubes"></i> <span>Grupos</span></a></li>
+            <li ng-if="checkRoles('menu-collectors')" ng-class="{ active: isActive('/collectors')}"><a href="#/collectors"><i class="fa fa-map-marker"></i> <span>Coletores</span></a></li>
+            <li ng-if="checkRoles('menu-rfiddata')" ng-class="{ active: isActive('/rfiddata')}"><a href="#/rfiddata"><i class="fa fa-database"></i> <span>RfidData</span></a></li>
+            <li ng-if="checkRoles('menu-importfile')" ng-class="{ active: isActive('/importfile')}"><a href="#/importfile"><i class="fa fa-upload"></i> <span>Importação Manual</span></a></li>
             <li class="header">Registros Dinâmicos</li>
-            <li ng-class="{ active: isActive('/{{meta.identifier}}')}" ng-repeat="meta in metaDynamics">
+            <li ng-if="checkRoles('menu-dynamic')" ng-class="{ active: isActive('/{{meta.identifier}}')}" ng-repeat="meta in metaDynamics">
               <a ng-href="#/{{meta.identifier}}">
                 <i class="fa fa-circle-o"></i>
                 <span>{{meta.field}}</span>
@@ -128,10 +128,10 @@
     <script type="text/javascript" src="bower_components/pdfmake/build/pdfmake.min.js"></script>
     <script type="text/javascript" src="bower_components/pdfmake/build/vfs_fonts.js"></script>
     <script type="text/javascript" src="bower_components/angular-bootstrap-toggle-switch/angular-toggle-switch.min.js"></script>
-    <script type="text/javascript" src="bower_components/angular-input-masks/angular-input-masks-standalone.min.js"></script>
     <script type="text/javascript" src="bower_components/ng-tags-input/ng-tags-input.min.js"></script>
     <script type="text/javascript" src="bower_components/angular-google-maps/dist/angular-google-maps.min.js"></script>
     <script type="text/javascript" src="bower_components/angular-simple-logger/dist/angular-simple-logger.min.js"></script>
+    <script type="text/javascript" src="bower_components/bootstrap-ui-datetime-picker/dist/datetime-picker.min.js"></script>
 
     <!-- Google API Maps-->
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>
@@ -154,9 +154,11 @@
     <script type="text/javascript" src="js/services/singleFilter.js"></script>
     <script type="text/javascript" src="js/services/fileUpload.js"></script>
     <script type="text/javascript" src="js/services/fileImport.js"></script>
+    <script type="text/javascript" src="js/services/checkRoles.js"></script>
     <script type="text/javascript" src="js/directives/enter.js"></script>
     <script type="text/javascript" src="js/directives/imageSource.js"></script>
     <script type="text/javascript" src="js/directives/fileModel.js"></script>
+    <script type="text/javascript" src="js/directives/rfidCode.js"></script>
 
   </body>
 </html>

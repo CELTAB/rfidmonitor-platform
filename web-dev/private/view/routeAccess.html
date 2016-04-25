@@ -5,6 +5,9 @@
 
 <section class="content">
   <div class="box box-default">
+    <div ng-if="loadding" class="overlay">
+      <i class="fa fa-refresh fa-spin"></i>
+    </div>
     <div class="box-header with-border">
       <h3 class="box-title">Configurações de Rotas de Acesso</h3>
     </div>
@@ -14,36 +17,83 @@
 
         <div class="form-group">
           <div class="col-sm-6">
-            <label class="col-sm-4 control-label">App Client / Usuário:</label>
+            <label class="col-sm-4 control-label">Usuário:</label>
             <div class="col-sm-8">
-              <select class="form-control select2" ng-model="entity.appClient">
+              <select class="form-control select2" ng-model="userId" ng-change="getAppClients(userId)">
+                <option value="">Selecione um Usuário</option>
+                 <option ng-repeat="user in users"
+                          value="{{user.id}}">
+                    {{user.name}} - {{user.email}}
+                  </option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group" ng-show="userId">
+          <div class="col-sm-6">
+            <label class="col-sm-4 control-label">App Client:</label>
+            <div class="col-sm-8">
+              <select class="form-control select2" ng-model="appClientId" ng-change="getRoutes(appClientId)">
                 <option value="">Selecione um appClient</option>
                  <option ng-repeat="appClient in appClients"
                           value="{{appClient.id}}">
-                    {{appClient.User.name}} - {{appClient.description}}
+                    {{appClient.description}}
                   </option>
               </select>
             </div>
           </div>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" ng-show="appClientId">
           <div class="col-sm-6">
-            <label class="col-sm-4 control-label">Rotas:</label>
-            <div class="col-sm-8">
-              <select class="form-control select2" ng-model="entity.uriRoute">
-                <option value="">Selecione uma Rota</option>
-                 <option ng-repeat="route in routes"
-                          value="{{route.id}}">
-                    {{route.method}} -> {{route.path}}
-                  </option>
-              </select>
+            <div class="col-sm-offset-4 col-sm-8">
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" ng-checked="routesView.ANY.ANY.checked" ng-click="!routesView.ANY.ANY.checked" ng-model="routesView.ANY.ANY.checked"> Administrador (Permissões completas)
+                </label>
+              </div>
             </div>
           </div>
         </div>
 
+        <div class="box" ng-class="{'collapsed-box' : routesView.ANY.ANY.checked}" ng-show="appClientId">
+          <div class="box-header with-border">
+              <h3 class="box-title">Mapa de Rotas</h3>
+              <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                  <i ng-class="{'fa-plus' : routesView.ANY.ANY.checked, 'fa-minus': !routesView.ANY.ANY.checked}" class="fa"></i>
+                </button>
+              </div>
+            </div>
+            <div class="box-body">
+              <div class="table-responsive">
+                <table class="table no-margin">
+                  <thead>
+                  <tr>
+                    <th>Rota</th>
+                    <th>Listar</th>
+                    <th>Criar</th>
+                    <th>Alterar</th>
+                    <th>Remover</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                    <tr ng-repeat="(key, value) in routesView">
+                      <td ng-if="key !== 'ANY'"><span>{{::key}}</span></td>
+                      <td><input type="checkbox" ng-if="value.GET" ng-model="value.GET.checked" ng-checked="value.GET.checked"></td>
+                      <td><input type="checkbox" ng-if="value.POST" ng-model="value.POST.checked" ng-checked="value.POST.checked"></td>
+                      <td><input type="checkbox" ng-if="value.PUT" ng-model="value.PUT.checked" ng-checked="value.PUT.checked"></td>
+                      <td><input type="checkbox" ng-if="value.DELETE" ng-model="value.DELETE.checked" ng-checked="value.DELETE.checked"></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
         <div class="form-group">
-          <div class="col-sm-6">
+          <div class="col-sm-12">
             <div class="callout callout-success" ng-if="successMessage">
               {{successMessage}}
             </div>
@@ -55,12 +105,8 @@
         </div>
 
       <div class="box-footer">
-          <div class="col-sm-3">
-              <button type="button" ng-click="clear()" class="btn col-sm-3 btn-default">Limpar</button>
-          </div>
-          <div class="col-sm-3">
-              <button type="button" ng-click="save()" class="btn btn-success pull-right">Salvar</button>
-          </div>
+        <button type="button" ng-click="clear()" class="btn btn-default">Limpar</button>
+        <button type="button" ng-click="save(appClientId)" class="btn btn-success pull-right">Salvar</button>
       </div>
     </div>
   </div>
