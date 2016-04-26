@@ -143,9 +143,11 @@ CollectorCtrl.custom['find'] = function(id, query, callback){
         }
       }, this);
 
-      if(!query || query.dashboard !== true)
-        result.rows = response;
-      return callback(null, result);
+      if(collectorBack === collectors.length) {
+        if(!query || query.dashboard !== true)
+          result.rows = response;
+        return callback(null, result);
+      }
     }else{
       if(collectors){
         response = collectors.get({plain: true});
