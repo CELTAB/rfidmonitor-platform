@@ -59,9 +59,10 @@ var LoadLoginRoutes = function(baseUri){
   };
 
   var Route = require(__base + 'utils/customroute');
+  // The Anonymous attribute will get to the registerCustomRoute as a middler.
   var routes = [
-    new Route('post', '/login', loginHandler),
-    new Route('post', '/logout', logoutHandler)
+    new Route('post', '/login', loginHandler, {anonymous: true}),
+    new Route('post', '/logout', logoutHandler, {anonymous: true})
   ];
   routingCore.registerCustomRoute(routes);
 

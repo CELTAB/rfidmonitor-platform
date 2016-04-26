@@ -148,29 +148,48 @@ var RoutingCore = function(router, baseUri){
 					res.send(response);
 				});
 			}
-
-			if(!route.middler){
-				route.middler = function(req, res, next){
-					return next();
+			/*
+				If the middler arrives as an object it means that the route may be anonymous, and also have a Function middler, that's why the verifications is made.
+				Object example:
+				{
+					middler: function() { return next();},
+					anonymous: true
+				}
+				It also accept only the middler function or only the anonymous attribute, as: {anonymous: true}
+			*/
+			var anonymous = false;
+			var defaultMiddler = function(req, res, next){
+				return next();
+			}
+			if (!route.middler) {
+				route.middler = defaultMiddler;
+			} else {
+				if (typeof route.middler === 'object') {
+						anonymous = route.middler.anonymous ? route.middler.anonymous : anonymous;
+						route.middler = route.middler.middler || defaultMiddler;
 				}
 			}
 
 			var rt = route.route.split('/:');
 			switch(method){
 				case 'get':
-					routes.register(this.baseUri + rt[0], routes.getMethods().GET);
+					if (!anonymous)
+						routes.register(this.baseUri + rt[0], routes.getMethods().GET);
 					this.router.get(route.route, route.middler, defaultHandler);
 					break;
 				case 'post':
-					routes.register(this.baseUri + rt[0], routes.getMethods().POST);
+					if (!anonymous)
+						routes.register(this.baseUri + rt[0], routes.getMethods().POST);
 					this.router.post(route.route, route.middler, defaultHandler);
 					break;
 				case 'put':
-					routes.register(this.baseUri + rt[0], routes.getMethods().PUT);
+					if (!anonymous)
+						routes.register(this.baseUri + rt[0], routes.getMethods().PUT);
 					this.router.put(route.route, route.middler, defaultHandler);
 					break;
 				case 'delete':
-					routes.register(this.baseUri + rt[0], routes.getMethods().DELETE);
+					if (!anonymous)
+						routes.register(this.baseUri + rt[0], routes.getMethods().DELETE);
 					this.router.delete(route.route, route.middler, defaultHandler);
 					break;
 			}
