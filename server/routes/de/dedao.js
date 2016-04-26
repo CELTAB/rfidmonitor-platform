@@ -148,7 +148,7 @@ var deleteHandler = function(req, callback){
 }
 
 var Route = require(__base + 'utils/customroute');
-var routeStr = '/de/dao/:entity';
+var routeStr = '/dao/:entity';
 var routes = [
   new Route('get', routeStr, getHandler),
   new Route('get', routeStr + '/:id', getHandler),

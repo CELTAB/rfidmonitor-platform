@@ -44,22 +44,17 @@ var LoadRoutes = function(baseUri){
 
 	//Load Controller for dynamic entities
 	controllerPath = __base + 'controller/dynamic';
-	Controllers.register(require(controllerPath + '/register'));
 
 	var customRoutes = [];
 	var routeDePath = __base + 'routes/de';
-	var routeOriginal = require(routeDePath + '/original');
-	var routeMeta = require(routeDePath + '/meta');
-	var routeActive = require(routeDePath + '/active');
 	var routeDao = require(routeDePath + '/dedao');
 	var routeMedia = require(__base + 'routes/media');
+	var routeDynamic = require(routeDePath + '/dynamicroutes');
 
 	customRoutes = customRoutes
-		.concat(routeOriginal)
-		.concat(routeActive)
-		.concat(routeMeta)
 		.concat(routeMedia)
-		.concat(routeDao);
+		.concat(routeDao)
+		.concat(routeDynamic);
 	//Create controllers based on all Saquelize models
 	// Controllers.loadControllers();
 

@@ -21,40 +21,17 @@
 ** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **
 ****************************************************************************/
-
 'use strict';
-var logger = require('winston');
-var sequelize = require(__base + 'controller/database/platformsequelize');
-var DynamicEntity = sequelize.model('DynamicEntity');
-var deModelPool = require(__base + 'controller/dynamic/demodelpool');
-var errorHandler = require(__base + 'utils/errorhandler');
-
-var activeHandler = function(req, callback){
-  if(!deModelPool.getModel(req.params.entity))
-		return errorHandler('Invalid Entity.', 400, callback);
-
-  var value = req.path.indexOf('deactivate') !== -1 ? false : true;
-  DynamicEntity.findOne({
-		where: { identifier: req.params.entity}
-	})
-  .then(function(entity){
-    if(!entity)
-      return errorHandler('Invalid Entity.', 400, callback);
-
-    entity.active = value;
-    entity.save().then(function(ok){
-      return callback(null, 'OK');
-    });
-  })
-  .catch(function(e){
-    return errorHandler(500, e.toString(), callback);
-  });
-}
+var Handlers = require(__base + 'routes/de/derouteshandlers');
 
 var Route = require(__base + 'utils/customroute');
+var dynamic = '/dynamic';
 var routes = [
-  new Route('put', '/de/activate/:entity', activeHandler),
-  new Route('put', '/de/deactivate/:entity', activeHandler)
+  new Route('get', dynamic, Handlers.meta),
+  new Route('get', dynamic + '/:entity', Handlers.meta),
+  new Route('post', dynamic, Handlers.register),
+  new Route('put', dynamic + '/:entity', Handlers.activate),
+  new Route('delete', dynamic + '/:entity', Handlers.deactivate)
 ];
 
 module.exports = routes;
