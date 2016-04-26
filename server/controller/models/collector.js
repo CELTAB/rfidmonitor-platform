@@ -143,11 +143,9 @@ CollectorCtrl.custom['find'] = function(id, query, callback){
         }
       }, this);
 
-      if(!query || query.dashboard !== true) {
+      if(!query || query.dashboard !== true)
         result.rows = response;
-        return callback(null, result);
-      }
-
+      return callback(null, result);
     }else{
       if(collectors){
         response = collectors.get({plain: true});
@@ -227,5 +225,21 @@ CollectorCtrl.findOrCreate = function(collector, callback){
     return callback({err: err.toString(), code: 500, message: 'Error on find Collector'});
   });
 };
+
+var dashboardHandler = function(req, callback) {
+  var query = req.query.q || {};
+  query.dashboard = true;
+
+  CollectorCtrl.custom['find'](null, query, function(err, result) {
+    if (err) return callback(err);
+
+    return callback(null, result);
+  })
+};
+
+var Route = require(__base + 'utils/customroute');
+CollectorCtrl.customRoute = [
+  new Route('get', '/dashboard', dashboardHandler)
+];
 
 module.exports = CollectorCtrl;
