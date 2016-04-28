@@ -91,6 +91,11 @@ DynamicEntities.prototype.registerEntity = function(json, callback){
 				logger.error('errors ' + errors);
 				rollbackEntities(newEntities);
 			}
+			//Create a route for each new entity to allow DAO operations
+			var routes = require(__base + 'controller/database/routes');
+			newEntities.forEach(function(entity) {
+				routes.register('/api/dao/' + entity.identifier, {all: true});
+			});
 
 			callback(errors); //errors can be null or something.
 		});

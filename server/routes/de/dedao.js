@@ -150,11 +150,11 @@ var deleteHandler = function(req, callback){
 var Route = require(__base + 'utils/customroute');
 var routeStr = '/dao/:entity';
 var routes = [
-  new Route('get', routeStr, getHandler),
-  new Route('get', routeStr + '/:id', getHandler),
-  new Route('post', routeStr, postHandler),
-  new Route('put', routeStr + '/:id', putHandler),
-  new Route('delete', routeStr + '/:id', deleteHandler)
+  new Route('get', routeStr, getHandler, {anonymous: true}),
+  new Route('get', routeStr + '/:id', getHandler, {anonymous: true}),
+  new Route('post', routeStr, postHandler, {anonymous: true}),
+  new Route('put', routeStr + '/:id', putHandler, {anonymous: true}),
+  new Route('delete', routeStr + '/:id', deleteHandler, {anonymous: true})
 ];
 
 module.exports = routes;
