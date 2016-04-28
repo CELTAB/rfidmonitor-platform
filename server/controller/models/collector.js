@@ -139,6 +139,7 @@ CollectorCtrl.custom['find'] = function(id, query, callback){
               }
           });
         }else{
+          collectorBack = collectors.length;
           response.push(c);
         }
       }, this);

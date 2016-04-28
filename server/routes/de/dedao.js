@@ -40,7 +40,7 @@ var promisesHandler = function(callback){
   };
   return{
     success: function(result){
-      var records = result.rows || result;
+      var records = result && result.rows || result;
       if(Array.isArray(records)) {
         var response = [];
         records.forEach(function(el) {
