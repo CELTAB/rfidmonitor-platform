@@ -49,6 +49,19 @@ var Routes = function Routes(){
 	}
 
 	this.register = function(path, method){
+		/* This function is able to receive only the String method, like:
+				register('/any/path', methods.GET);
+			And is also able to receive and option object to register all methods for the givern path, like:
+				register('/any/path', {all: true});
+		*/
+		if (method && method.all === true) {
+			this.register(path, methods.GET);
+			this.register(path, methods.POST);
+			this.register(path, methods.PUT);
+			this.register(path, methods.DELETE);
+			return;
+		}
+
   	if(!this.isMethodValid(method))
   		return new PlatformError("Routes: Invalid method ["+method+"] to register on database.");
 

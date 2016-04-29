@@ -119,7 +119,7 @@ var validateAccess = function(req, res, next){
       if(access)
         return next(); //Access granted
       else
-        return res.response('Get out dog.', 403, 'Token not allowed for this opperation');
+        return res.response('Token not allowed for this opperation', 403, 'Missing permission to access ' + finalRoute + ' resource with ' + req.method + ' method');
     })
     .catch(function(e){
       return res.response(e, 500, 'INTERNAL ERROR: ' + e.toString());

@@ -165,7 +165,7 @@ var RoutingCore = function(router, baseUri){
 				route.middler = defaultMiddler;
 			} else {
 				if (typeof route.middler === 'object') {
-						anonymous = route.middler.anonymous ? route.middler.anonymous : anonymous;
+						anonymous = route.middler.anonymous || anonymous;
 						route.middler = route.middler.middler || defaultMiddler;
 				}
 			}
