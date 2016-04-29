@@ -13,16 +13,16 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>AppClients who have a token and can access resources.</p> ",
+    "description": "<p>AppClients who have a token and can access resources.</p>",
     "parameter": {
       "fields": {
         "Param": [
           {
             "group": "Param",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>ID of the AppClient.</p> "
+            "description": "<p>ID of the AppClient.</p>"
           }
         ]
       }
@@ -45,19 +45,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -94,7 +94,7 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>AppClients who have a token and can access resources.</p> ",
+    "description": "<p>AppClients who have a token and can access resources.</p>",
     "examples": [
       {
         "title": "Example usage:",
@@ -112,10 +112,10 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "<p>Object[]</p> ",
+            "type": "Object[]",
             "optional": false,
             "field": "appclients",
-            "description": "<p>List of AppClients.</p> "
+            "description": "<p>List of AppClients.</p>"
           }
         ]
       },
@@ -136,7 +136,7 @@ define({ "api": [
             "group": "Parameter",
             "optional": false,
             "field": "q",
-            "description": "<p>(Query) Received all parameter defined by Sequelize documentations. Available <a href=\"http://docs.sequelizejs.com/en/latest/docs/querying/\" target=\"_blank\"> here.</a></p> "
+            "description": "<p>(Query) Received all parameter defined by Sequelize documentations. Available <a href=\"http://docs.sequelizejs.com/en/latest/docs/querying/\" target=\"_blank\"> here.</a></p>"
           }
         ]
       }
@@ -148,19 +148,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -197,16 +197,16 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>AppClients who have a token and can access resources.</p> ",
+    "description": "<p>AppClients who have a token and can access resources.</p>",
     "parameter": {
       "fields": {
         "Param": [
           {
             "group": "Param",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>ID of the AppClient.</p> "
+            "description": "<p>ID of the AppClient.</p>"
           }
         ]
       }
@@ -216,52 +216,52 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "Id",
-            "description": "<p>AppClient ID on database.</p> "
+            "description": "<p>AppClient ID on database.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "token",
-            "description": "<p>Token that give access to resources.</p> "
+            "description": "<p>Token that give access to resources.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "description",
-            "description": "<p>Defines the AppClient.</p> "
+            "description": "<p>Defines the AppClient.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>Date</p> ",
+            "type": "Date",
             "optional": false,
             "field": "createdAt",
-            "description": "<p>Creation date generated by Sequelize.</p> "
+            "description": "<p>Creation date generated by Sequelize.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>Date</p> ",
+            "type": "Date",
             "optional": false,
             "field": "updatedAt",
-            "description": "<p>Last update of this AppClient.</p> "
+            "description": "<p>Last update of this AppClient.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>Date</p> ",
+            "type": "Date",
             "optional": false,
             "field": "deletedAt",
-            "description": "<p>Null if appClient is not deleted or removal date.</p> "
+            "description": "<p>Null if appClient is not deleted or removal date.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "userId",
-            "description": "<p>ID of User related to this AppClient.</p> "
+            "description": "<p>ID of User related to this AppClient.</p>"
           }
         ]
       },
@@ -282,19 +282,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -331,7 +331,7 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>AppClients who have a token and can access resources.</p> ",
+    "description": "<p>AppClients who have a token and can access resources.</p>",
     "examples": [
       {
         "title": "Object Example:",
@@ -344,17 +344,17 @@ define({ "api": [
         "Body": [
           {
             "group": "Body",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "description",
-            "description": "<p>Defines the AppClient, by a simple description {Required}.</p> "
+            "description": "<p>Defines the AppClient, by a simple description {Required}.</p>"
           },
           {
             "group": "Body",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "userId",
-            "description": "<p>ID of User related to this AppClient {Required}.</p> "
+            "description": "<p>ID of User related to this AppClient {Required}.</p>"
           }
         ]
       }
@@ -377,19 +377,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -426,39 +426,39 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>AppClients who have a token and can access resources.</p> ",
+    "description": "<p>AppClients who have a token and can access resources.</p>",
     "parameter": {
       "fields": {
         "Param": [
           {
             "group": "Param",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>ID of the AppClient.</p> "
+            "description": "<p>ID of the AppClient.</p>"
           }
         ],
         "Body": [
           {
             "group": "Body",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "ID",
-            "description": "<p>ID of the AppClient on database {Required}.</p> "
+            "description": "<p>ID of the AppClient on database {Required}.</p>"
           },
           {
             "group": "Body",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "description",
-            "description": "<p>Defines the AppClient, by a simple description {Required}.</p> "
+            "description": "<p>Defines the AppClient, by a simple description {Required}.</p>"
           },
           {
             "group": "Body",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "userId",
-            "description": "<p>ID of User related to this AppClient {Required}.</p> "
+            "description": "<p>ID of User related to this AppClient {Required}.</p>"
           }
         ]
       }
@@ -488,19 +488,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -537,16 +537,16 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>Collector are responsible for read RFID records from antennas and pass it to the server. Use this URI to remove a collector from database.</p> ",
+    "description": "<p>Collector are responsible for read RFID records from antennas and pass it to the server. Use this URI to remove a collector from database.</p>",
     "parameter": {
       "fields": {
         "Param": [
           {
             "group": "Param",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>ID of the collector.</p> "
+            "description": "<p>ID of the collector.</p>"
           }
         ]
       }
@@ -569,19 +569,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -618,7 +618,7 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>Collector are responsible for read RFID records from antennas and pass it to the server. Use this URI to search on platform for Collectors that match the given query or all the availables collectors.</p> ",
+    "description": "<p>Collector are responsible for read RFID records from antennas and pass it to the server. Use this URI to search on platform for Collectors that match the given query or all the availables collectors.</p>",
     "examples": [
       {
         "title": "Example usage:",
@@ -636,10 +636,10 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "<p>Object[]</p> ",
+            "type": "Object[]",
             "optional": false,
             "field": "collector",
-            "description": "<p>List of Collectors.</p> "
+            "description": "<p>List of Collectors.</p>"
           }
         ]
       },
@@ -658,13 +658,13 @@ define({ "api": [
             "group": "Parameter",
             "optional": false,
             "field": "dashboard",
-            "description": "<p>(Inside &quot;q&quot; object) Returns number of records readed from the past year until now.</p> "
+            "description": "<p>(Inside &quot;q&quot; object) Returns number of records readed from the past year until now.</p>"
           },
           {
             "group": "Parameter",
             "optional": false,
             "field": "q",
-            "description": "<p>(Query) Received all parameter defined by Sequelize documentations. Available <a href=\"http://docs.sequelizejs.com/en/latest/docs/querying/\" target=\"_blank\"> here.</a></p> "
+            "description": "<p>(Query) Received all parameter defined by Sequelize documentations. Available <a href=\"http://docs.sequelizejs.com/en/latest/docs/querying/\" target=\"_blank\"> here.</a></p>"
           }
         ]
       }
@@ -678,19 +678,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -727,16 +727,16 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>Collector are responsible for read RFID records from antennas and pass it to the server. Use this URI to search on platform for one Collector that match the given ID.</p> ",
+    "description": "<p>Collector are responsible for read RFID records from antennas and pass it to the server. Use this URI to search on platform for one Collector that match the given ID.</p>",
     "parameter": {
       "fields": {
         "Param": [
           {
             "group": "Param",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>ID of the collector.</p> "
+            "description": "<p>ID of the collector.</p>"
           }
         ]
       }
@@ -746,87 +746,87 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "Id",
-            "description": "<p>Collector ID on database.</p> "
+            "description": "<p>Collector ID on database.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>Name of the collector.</p> "
+            "description": "<p>Name of the collector.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "lat",
-            "description": "<p>Coordinate of the collector.</p> "
+            "description": "<p>Coordinate of the collector.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "lng",
-            "description": "<p>Coordinate of the collector.</p> "
+            "description": "<p>Coordinate of the collector.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "mac",
-            "description": "<p>Macaddrass from the collector's hardware.</p> "
+            "description": "<p>Macaddrass from the collector's hardware.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "description",
-            "description": "<p>Defines the collector.</p> "
+            "description": "<p>Defines the collector.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>Date</p> ",
+            "type": "Date",
             "optional": false,
             "field": "createdAt",
-            "description": "<p>Creation date generated by Sequelize.</p> "
+            "description": "<p>Creation date generated by Sequelize.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>Date</p> ",
+            "type": "Date",
             "optional": false,
             "field": "updatedAt",
-            "description": "<p>Last update of this collector.</p> "
+            "description": "<p>Last update of this collector.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>Date</p> ",
+            "type": "Date",
             "optional": false,
             "field": "deletedAt",
-            "description": "<p>Null if collector is not deleted or removal date.</p> "
+            "description": "<p>Null if collector is not deleted or removal date.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "groupId",
-            "description": "<p>ID of related group.</p> "
+            "description": "<p>ID of related group.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "status",
-            "description": "<p>Status ONLINE or OFFLINE.</p> "
+            "description": "<p>Status ONLINE or OFFLINE.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>Object</p> ",
+            "type": "Object",
             "optional": false,
             "field": "records",
-            "description": "<p>Information about records readed from the past year, until now</p> "
+            "description": "<p>Information about records readed from the past year, until now</p>"
           }
         ]
       },
@@ -847,19 +847,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -896,7 +896,7 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>Collector are responsible for read RFID records from antennas and pass it to the server. Use this URI to insert a new collector.</p> ",
+    "description": "<p>Collector are responsible for read RFID records from antennas and pass it to the server. Use this URI to insert a new collector.</p>",
     "examples": [
       {
         "title": "Object Example:",
@@ -909,45 +909,45 @@ define({ "api": [
         "Body": [
           {
             "group": "Body",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "groupId",
-            "description": "<p>Group ID the collector is related {Required}.</p> "
+            "description": "<p>Group ID the collector is related {Required}.</p>"
           },
           {
             "group": "Body",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>Name of the Collector {Required, Unique}.</p> "
+            "description": "<p>Name of the Collector {Required, Unique}.</p>"
           },
           {
             "group": "Body",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "lat",
-            "description": "<p>Geolocation of the Collector - Latitude.</p> "
+            "description": "<p>Geolocation of the Collector - Latitude.</p>"
           },
           {
             "group": "Body",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "lng",
-            "description": "<p>Geolocation of the Collector - Longitude.</p> "
+            "description": "<p>Geolocation of the Collector - Longitude.</p>"
           },
           {
             "group": "Body",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "mac",
-            "description": "<p>MAC address of the Collector {Required, Unique}.</p> "
+            "description": "<p>MAC address of the Collector {Required, Unique}.</p>"
           },
           {
             "group": "Body",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "description",
-            "description": "<p>Brief description to describe the Collector.</p> "
+            "description": "<p>Brief description to describe the Collector.</p>"
           }
         ]
       }
@@ -970,19 +970,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -1019,60 +1019,60 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>Collector are responsible for read RFID records from antennas and pass it to the server. Use this URI to update a collector from database.</p> ",
+    "description": "<p>Collector are responsible for read RFID records from antennas and pass it to the server. Use this URI to update a collector from database.</p>",
     "parameter": {
       "fields": {
         "Param": [
           {
             "group": "Param",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>ID of the collector.</p> "
+            "description": "<p>ID of the collector.</p>"
           }
         ],
         "Body": [
           {
             "group": "Body",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "groupId",
-            "description": "<p>Group ID the collector is related {Required}.</p> "
+            "description": "<p>Group ID the collector is related {Required}.</p>"
           },
           {
             "group": "Body",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>Name of the Collector {Required, Unique}.</p> "
+            "description": "<p>Name of the Collector {Required, Unique}.</p>"
           },
           {
             "group": "Body",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "lat",
-            "description": "<p>Geolocation of the Collector - Latitude.</p> "
+            "description": "<p>Geolocation of the Collector - Latitude.</p>"
           },
           {
             "group": "Body",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "lng",
-            "description": "<p>Geolocation of the Collector - Longitude.</p> "
+            "description": "<p>Geolocation of the Collector - Longitude.</p>"
           },
           {
             "group": "Body",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "mac",
-            "description": "<p>MAC address of the Collector {Required, Unique}.</p> "
+            "description": "<p>MAC address of the Collector {Required, Unique}.</p>"
           },
           {
             "group": "Body",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "description",
-            "description": "<p>Brief description to describe the Collector.</p> "
+            "description": "<p>Brief description to describe the Collector.</p>"
           }
         ]
       }
@@ -1102,19 +1102,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -1151,7 +1151,7 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>Activates an inactive entity. Is allowed use only activated entities.</p> ",
+    "description": "<p>Activates an inactive entity. Is allowed use only activated entities.</p>",
     "examples": [
       {
         "title": "Example usage:",
@@ -1164,10 +1164,10 @@ define({ "api": [
         "Param": [
           {
             "group": "Param",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "entity",
-            "description": "<p>Name (identifier) of the Dynami Entity.</p> "
+            "description": "<p>Name (identifier) of the Dynami Entity.</p>"
           }
         ]
       }
@@ -1198,7 +1198,7 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>Deactivates an active entity. Is allowed use only activated entities.</p> ",
+    "description": "<p>Deactivates an active entity. Is allowed use only activated entities.</p>",
     "examples": [
       {
         "title": "Example usage:",
@@ -1211,10 +1211,10 @@ define({ "api": [
         "Param": [
           {
             "group": "Param",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "entity",
-            "description": "<p>Name (identifier) of the Dynami Entity.</p> "
+            "description": "<p>Name (identifier) of the Dynami Entity.</p>"
           }
         ]
       }
@@ -1245,7 +1245,7 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>Group of meta informations used to define each dynamic entity.</p> ",
+    "description": "<p>Group of meta informations used to define each dynamic entity.</p>",
     "examples": [
       {
         "title": "Example usage:",
@@ -1258,10 +1258,10 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "<p>Object[]</p> ",
+            "type": "Object[]",
             "optional": false,
             "field": "meta",
-            "description": "<p>Meta Informations.</p> "
+            "description": "<p>Meta Informations.</p>"
           }
         ]
       },
@@ -1282,19 +1282,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -1331,16 +1331,16 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>Given an entity name, return the meta informatation used to define this dynamic entity.</p> ",
+    "description": "<p>Given an entity name, return the meta informatation used to define this dynamic entity.</p>",
     "parameter": {
       "fields": {
         "Param": [
           {
             "group": "Param",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "entity",
-            "description": "<p>Name (identifier) of the Dynami Entity.</p> "
+            "description": "<p>Name (identifier) of the Dynami Entity.</p>"
           }
         ]
       }
@@ -1363,19 +1363,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -1412,16 +1412,16 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>Given an entity name, return the original definitions used to create this dynamic entity.</p> ",
+    "description": "<p>Given an entity name, return the original definitions used to create this dynamic entity.</p>",
     "parameter": {
       "fields": {
         "Param": [
           {
             "group": "Param",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "entity",
-            "description": "<p>Name (identifier) of the Dynami Entity.</p> "
+            "description": "<p>Name (identifier) of the Dynami Entity.</p>"
           }
         ]
       }
@@ -1444,19 +1444,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -1493,7 +1493,7 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>Group of original definitions used to create each dynamic entity.</p> ",
+    "description": "<p>Group of original definitions used to create each dynamic entity.</p>",
     "examples": [
       {
         "title": "Example usage:",
@@ -1506,10 +1506,10 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "<p>Object[]</p> ",
+            "type": "Object[]",
             "optional": false,
             "field": "original",
-            "description": "<p>Original definitions.</p> "
+            "description": "<p>Original definitions.</p>"
           }
         ]
       },
@@ -1530,19 +1530,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -1579,7 +1579,7 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>Dynamic Entities to related object with monitored RFID.</p> ",
+    "description": "<p>Dynamic Entities to related object with monitored RFID.</p>",
     "examples": [
       {
         "title": "Object Example:",
@@ -1592,52 +1592,52 @@ define({ "api": [
         "Body": [
           {
             "group": "Body",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "field",
-            "description": "<p>Defines the name for the Dynamic Entity, must be an unique name {Required, Unique}.</p> "
+            "description": "<p>Defines the name for the Dynamic Entity, must be an unique name {Required, Unique}.</p>"
           },
           {
             "group": "Body",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "type",
-            "description": "<p>Defines the type of the data field. Follows pre-defined types {Required}.</p> "
+            "description": "<p>Defines the type of the data field. Follows pre-defined types {Required}.</p>"
           },
           {
             "group": "Body",
-            "type": "<p>Array</p> ",
+            "type": "Array",
             "optional": false,
             "field": "unique",
-            "description": "<p>Describe the field(s) that must have unique values {Required}.</p> "
+            "description": "<p>Describe the field(s) that must have unique values {Required}.</p>"
           },
           {
             "group": "Body",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "defaultReference",
-            "description": "<p>Same name of the field used to reference this entity. Only alllowed for fields with type ENTITY {Required}.</p> "
+            "description": "<p>Same name of the field used to reference this entity. Only alllowed for fields with type ENTITY {Required}.</p>"
           },
           {
             "group": "Body",
-            "type": "<p>Array</p> ",
+            "type": "Array",
             "optional": false,
             "field": "structureList",
-            "description": "<p>Defines a sub-entity with the same fields described here. Only alllowed for fields with type ENTITY {Required}.</p> "
+            "description": "<p>Defines a sub-entity with the same fields described here. Only alllowed for fields with type ENTITY {Required}.</p>"
           },
           {
             "group": "Body",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "description",
-            "description": "<p>A short description for the given field. Used only for field with type different of ENTITY.</p> "
+            "description": "<p>A short description for the given field. Used only for field with type different of ENTITY.</p>"
           },
           {
             "group": "Body",
-            "type": "<p>Boolean</p> ",
+            "type": "Boolean",
             "optional": false,
             "field": "allowNull",
-            "description": "<p>Defines if wheather the field accepts null values. Used only for field with type different of ENTITY {Required}.</p> "
+            "description": "<p>Defines if wheather the field accepts null values. Used only for field with type different of ENTITY {Required}.</p>"
           }
         ]
       }
@@ -1665,19 +1665,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -1714,23 +1714,23 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>Delete an existing record from a dynamic entity table, given its ID.</p> ",
+    "description": "<p>Delete an existing record from a dynamic entity table, given its ID.</p>",
     "parameter": {
       "fields": {
         "Param": [
           {
             "group": "Param",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "entity",
-            "description": "<p>Dynamic entity name.</p> "
+            "description": "<p>Dynamic entity name.</p>"
           },
           {
             "group": "Param",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>ID of the user.</p> "
+            "description": "<p>ID of the user.</p>"
           }
         ]
       }
@@ -1753,19 +1753,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -1802,7 +1802,7 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>Get only one record from a dynamic entity table.</p> ",
+    "description": "<p>Get only one record from a dynamic entity table.</p>",
     "examples": [
       {
         "title": "Example usage:",
@@ -1820,17 +1820,17 @@ define({ "api": [
         "Param": [
           {
             "group": "Param",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "entity",
-            "description": "<p>Dynamic entity name.</p> "
+            "description": "<p>Dynamic entity name.</p>"
           },
           {
             "group": "Param",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>ID of the user.</p> "
+            "description": "<p>ID of the user.</p>"
           }
         ],
         "Parameter": [
@@ -1838,7 +1838,7 @@ define({ "api": [
             "group": "Parameter",
             "optional": false,
             "field": "q",
-            "description": "<p>(Query) Received all parameter defined by Sequelize documentations. Available <a href=\"http://docs.sequelizejs.com/en/latest/docs/querying/\" target=\"_blank\"> here.</a></p> "
+            "description": "<p>(Query) Received all parameter defined by Sequelize documentations. Available <a href=\"http://docs.sequelizejs.com/en/latest/docs/querying/\" target=\"_blank\"> here.</a></p>"
           }
         ]
       }
@@ -1848,10 +1848,10 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "<p>Object[]</p> ",
+            "type": "Object[]",
             "optional": false,
             "field": "record",
-            "description": "<p>One record from the dynamic entity table, based on ID end/or query.</p> "
+            "description": "<p>One record from the dynamic entity table, based on ID end/or query.</p>"
           }
         ]
       },
@@ -1872,19 +1872,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -1921,7 +1921,7 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>Get all records from a dynamic entity table.</p> ",
+    "description": "<p>Get all records from a dynamic entity table.</p>",
     "examples": [
       {
         "title": "Example usage:",
@@ -1939,10 +1939,10 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "<p>Object[]</p> ",
+            "type": "Object[]",
             "optional": false,
             "field": "records",
-            "description": "<p>List of records from the dynamic entity table.</p> "
+            "description": "<p>List of records from the dynamic entity table.</p>"
           }
         ]
       },
@@ -1963,7 +1963,7 @@ define({ "api": [
             "group": "Parameter",
             "optional": false,
             "field": "q",
-            "description": "<p>(Query) Received all parameter defined by Sequelize documentations. Available <a href=\"http://docs.sequelizejs.com/en/latest/docs/querying/\" target=\"_blank\"> here.</a></p> "
+            "description": "<p>(Query) Received all parameter defined by Sequelize documentations. Available <a href=\"http://docs.sequelizejs.com/en/latest/docs/querying/\" target=\"_blank\"> here.</a></p>"
           }
         ]
       }
@@ -1975,19 +1975,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -2024,7 +2024,7 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>Insert a new record on the given dynamic entity table.</p> ",
+    "description": "<p>Insert a new record on the given dynamic entity table.</p>",
     "examples": [
       {
         "title": "Example usage:",
@@ -2042,17 +2042,17 @@ define({ "api": [
         "Body": [
           {
             "group": "Body",
-            "type": "<p>Fields</p> ",
+            "type": "Fields",
             "optional": false,
             "field": "field",
-            "description": "<p>Field defined on dynamic entity creation {May be required and unique}.</p> "
+            "description": "<p>Field defined on dynamic entity creation {May be required and unique}.</p>"
           },
           {
             "group": "Body",
-            "type": "<p>Values</p> ",
+            "type": "Values",
             "optional": false,
             "field": "value",
-            "description": "<p>Value fot the given field.</p> "
+            "description": "<p>Value fot the given field.</p>"
           }
         ]
       }
@@ -2075,19 +2075,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -2124,46 +2124,46 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>Update a record from a dinamic entity table.</p> ",
+    "description": "<p>Update a record from a dinamic entity table.</p>",
     "parameter": {
       "fields": {
         "Param": [
           {
             "group": "Param",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "entity",
-            "description": "<p>Dynamic entity name.</p> "
+            "description": "<p>Dynamic entity name.</p>"
           },
           {
             "group": "Param",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>ID of the user.</p> "
+            "description": "<p>ID of the user.</p>"
           }
         ],
         "Body": [
           {
             "group": "Body",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "ID",
-            "description": "<p>ID of the record on dynamic table;</p> "
+            "description": "<p>ID of the record on dynamic table;</p>"
           },
           {
             "group": "Body",
-            "type": "<p>Fields</p> ",
+            "type": "Fields",
             "optional": false,
             "field": "field",
-            "description": "<p>Field defined on dynamic entity creation {May be required and unique}.</p> "
+            "description": "<p>Field defined on dynamic entity creation {May be required and unique}.</p>"
           },
           {
             "group": "Body",
-            "type": "<p>Values</p> ",
+            "type": "Values",
             "optional": false,
             "field": "value",
-            "description": "<p>Value fot the given field.</p> "
+            "description": "<p>Value fot the given field.</p>"
           }
         ]
       }
@@ -2193,19 +2193,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -2242,16 +2242,16 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>Group of collectors. May be grouped by institutions, places, types of collectors, etc. Remove a groups from database.</p> ",
+    "description": "<p>Group of collectors. May be grouped by institutions, places, types of collectors, etc. Remove a groups from database.</p>",
     "parameter": {
       "fields": {
         "Param": [
           {
             "group": "Param",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>ID of the group.</p> "
+            "description": "<p>ID of the group.</p>"
           }
         ]
       }
@@ -2274,19 +2274,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -2323,7 +2323,7 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>Group of collectors. May be grouped by institutions, places, types of collectors, etc. To get all groups or groups based on query, use this route.</p> ",
+    "description": "<p>Group of collectors. May be grouped by institutions, places, types of collectors, etc. To get all groups or groups based on query, use this route.</p>",
     "examples": [
       {
         "title": "Example usage:",
@@ -2341,10 +2341,10 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "<p>Object[]</p> ",
+            "type": "Object[]",
             "optional": false,
             "field": "groups",
-            "description": "<p>List of Groups.</p> "
+            "description": "<p>List of Groups.</p>"
           }
         ]
       },
@@ -2365,7 +2365,7 @@ define({ "api": [
             "group": "Parameter",
             "optional": false,
             "field": "q",
-            "description": "<p>(Query) Received all parameter defined by Sequelize documentations. Available <a href=\"http://docs.sequelizejs.com/en/latest/docs/querying/\" target=\"_blank\"> here.</a></p> "
+            "description": "<p>(Query) Received all parameter defined by Sequelize documentations. Available <a href=\"http://docs.sequelizejs.com/en/latest/docs/querying/\" target=\"_blank\"> here.</a></p>"
           }
         ]
       }
@@ -2377,19 +2377,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -2426,16 +2426,16 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>Group of collectors. May be grouped by institutions, places, types of collectors, etc. To get one group using its ID, use this route.</p> ",
+    "description": "<p>Group of collectors. May be grouped by institutions, places, types of collectors, etc. To get one group using its ID, use this route.</p>",
     "parameter": {
       "fields": {
         "Param": [
           {
             "group": "Param",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>ID of the group.</p> "
+            "description": "<p>ID of the group.</p>"
           }
         ]
       }
@@ -2445,52 +2445,52 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "Id",
-            "description": "<p>Group ID on database.</p> "
+            "description": "<p>Group ID on database.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>Name of the group.</p> "
+            "description": "<p>Name of the group.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "description",
-            "description": "<p>Defines the group.</p> "
+            "description": "<p>Defines the group.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>Date</p> ",
+            "type": "Date",
             "optional": false,
             "field": "createdAt",
-            "description": "<p>Creation date generated by Sequelize.</p> "
+            "description": "<p>Creation date generated by Sequelize.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>Date</p> ",
+            "type": "Date",
             "optional": false,
             "field": "updatedAt",
-            "description": "<p>Last update of this group.</p> "
+            "description": "<p>Last update of this group.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>Date</p> ",
+            "type": "Date",
             "optional": false,
             "field": "deletedAt",
-            "description": "<p>Null if group is not deleted or removal date.</p> "
+            "description": "<p>Null if group is not deleted or removal date.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>Boolean</p> ",
+            "type": "Boolean",
             "optional": false,
             "field": "isDefault",
-            "description": "<p>True for Group default or Null.</p> "
+            "description": "<p>True for Group default or Null.</p>"
           }
         ]
       },
@@ -2511,19 +2511,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -2560,7 +2560,7 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>Group of collectors. May be grouped by institutions, places, types of collectors, etc. Insert a new groups into database.</p> ",
+    "description": "<p>Group of collectors. May be grouped by institutions, places, types of collectors, etc. Insert a new groups into database.</p>",
     "examples": [
       {
         "title": "Object Example:",
@@ -2573,24 +2573,24 @@ define({ "api": [
         "Body": [
           {
             "group": "Body",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>Name of the Group {Required, Unique}.</p> "
+            "description": "<p>Name of the Group {Required, Unique}.</p>"
           },
           {
             "group": "Body",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "description",
-            "description": "<p>Defines the Group, by a simple description.</p> "
+            "description": "<p>Defines the Group, by a simple description.</p>"
           },
           {
             "group": "Body",
-            "type": "<p>Boolean</p> ",
+            "type": "Boolean",
             "optional": false,
             "field": "isDefault",
-            "description": "<p>True for default group, null otherwise {Unique}.</p> "
+            "description": "<p>True for default group, null otherwise {Unique}.</p>"
           }
         ]
       }
@@ -2613,19 +2613,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -2662,39 +2662,39 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>Group of collectors. May be grouped by institutions, places, types of collectors, etc. Use this URI to update a group from database.</p> ",
+    "description": "<p>Group of collectors. May be grouped by institutions, places, types of collectors, etc. Use this URI to update a group from database.</p>",
     "parameter": {
       "fields": {
         "Param": [
           {
             "group": "Param",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>ID of the group.</p> "
+            "description": "<p>ID of the group.</p>"
           }
         ],
         "Body": [
           {
             "group": "Body",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>Name of the Group {Required, Unique}.</p> "
+            "description": "<p>Name of the Group {Required, Unique}.</p>"
           },
           {
             "group": "Body",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "description",
-            "description": "<p>Defines the Group, by a simple description.</p> "
+            "description": "<p>Defines the Group, by a simple description.</p>"
           },
           {
             "group": "Body",
-            "type": "<p>Boolean</p> ",
+            "type": "Boolean",
             "optional": false,
             "field": "isDefault",
-            "description": "<p>True for default group, null otherwise {Unique}.</p> "
+            "description": "<p>True for default group, null otherwise {Unique}.</p>"
           }
         ]
       }
@@ -2724,19 +2724,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -2773,7 +2773,7 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>Get a Media/Image from database.</p> ",
+    "description": "<p>Get a Media/Image from database.</p>",
     "examples": [
       {
         "title": "Example usage:",
@@ -2786,10 +2786,10 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "<p>Image</p> ",
+            "type": "Image",
             "optional": false,
             "field": "image",
-            "description": "<p>Image format.</p> "
+            "description": "<p>Image format.</p>"
           }
         ]
       }
@@ -2803,19 +2803,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -2852,16 +2852,16 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>Insert a new Media and create a uuid to identify it.</p> ",
+    "description": "<p>Insert a new Media and create a uuid to identify it.</p>",
     "parameter": {
       "fields": {
         "Body": [
           {
             "group": "Body",
-            "type": "<p>File</p> ",
+            "type": "File",
             "optional": false,
             "field": "image",
-            "description": "<p>The Media/Image to be persist {Required}.</p> "
+            "description": "<p>The Media/Image to be persist {Required}.</p>"
           }
         ]
       }
@@ -2884,19 +2884,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -2933,7 +2933,7 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>You are not allowed to make any change on rfidDatas.</p> ",
+    "description": "<p>You are not allowed to make any change on rfidDatas.</p>",
     "error": {
       "examples": [
         {
@@ -2960,7 +2960,7 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>Get only the total of RFIDData records by the given query</p> ",
+    "description": "<p>Get only the total of RFIDData records by the given query</p>",
     "examples": [
       {
         "title": "Example usage:",
@@ -2978,10 +2978,10 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "<p>Object</p> ",
+            "type": "Object",
             "optional": false,
             "field": "total",
-            "description": "<p>Total count of RFIDData records.</p> "
+            "description": "<p>Total count of RFIDData records.</p>"
           }
         ]
       },
@@ -3002,7 +3002,7 @@ define({ "api": [
             "group": "Parameter",
             "optional": false,
             "field": "q",
-            "description": "<p>(Query) Received all parameter defined by Sequelize documentations. Available <a href=\"http://docs.sequelizejs.com/en/latest/docs/querying/\" target=\"_blank\"> here.</a></p> "
+            "description": "<p>(Query) Received all parameter defined by Sequelize documentations. Available <a href=\"http://docs.sequelizejs.com/en/latest/docs/querying/\" target=\"_blank\"> here.</a></p>"
           }
         ]
       }
@@ -3014,19 +3014,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -3063,16 +3063,16 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>RFIDData records from collecting point, defined by collectors.</p> ",
+    "description": "<p>RFIDData records from collecting point, defined by collectors.</p>",
     "parameter": {
       "fields": {
         "Param": [
           {
             "group": "Param",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>ID of the RFIDData record.</p> "
+            "description": "<p>ID of the RFIDData record.</p>"
           }
         ]
       }
@@ -3082,73 +3082,73 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "Id",
-            "description": "<p>RFIDData ID on database.</p> "
+            "description": "<p>RFIDData ID on database.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "rfidCode",
-            "description": "<p>RFID code.</p> "
+            "description": "<p>RFID code.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>Date</p> ",
+            "type": "Date",
             "optional": false,
             "field": "rfidReadDate",
-            "description": "<p>Read date and time from collector.</p> "
+            "description": "<p>Read date and time from collector.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>Date</p> ",
+            "type": "Date",
             "optional": false,
             "field": "serverReceivedDate",
-            "description": "<p>Server recived Date and time.</p> "
+            "description": "<p>Server recived Date and time.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>Date</p> ",
+            "type": "Date",
             "optional": false,
             "field": "createdAt",
-            "description": "<p>Date time of creation record on database, defined by sequelize.</p> "
+            "description": "<p>Date time of creation record on database, defined by sequelize.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>Date</p> ",
+            "type": "Date",
             "optional": false,
             "field": "updatedAt",
-            "description": "<p>Last update of this RFIDData (same as createdAt, because it will never change).</p> "
+            "description": "<p>Last update of this RFIDData (same as createdAt, because it will never change).</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>Date</p> ",
+            "type": "Date",
             "optional": false,
             "field": "deletedAt",
-            "description": "<p>Null if RFIDData is not deleted or removal date.</p> "
+            "description": "<p>Null if RFIDData is not deleted or removal date.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "collectorId",
-            "description": "<p>ID of the collector.</p> "
+            "description": "<p>ID of the collector.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "packageId",
-            "description": "<p>ID of the package, used only by back-end.</p> "
+            "description": "<p>ID of the package, used only by back-end.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "extraData",
-            "description": "<p>Any other information (Dynamic purpouses).</p> "
+            "description": "<p>Any other information (Dynamic purpouses).</p>"
           }
         ]
       },
@@ -3169,19 +3169,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -3218,7 +3218,7 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>RFIDData records from collecting point, defined by collectors.</p> ",
+    "description": "<p>RFIDData records from collecting point, defined by collectors.</p>",
     "examples": [
       {
         "title": "Example usage:",
@@ -3241,10 +3241,10 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "<p>Object[]</p> ",
+            "type": "Object[]",
             "optional": false,
             "field": "groups",
-            "description": "<p>List of RFIDData records.</p> "
+            "description": "<p>List of RFIDData records.</p>"
           }
         ]
       },
@@ -3273,25 +3273,25 @@ define({ "api": [
             "group": "Parameter",
             "optional": false,
             "field": "entity",
-            "description": "<p>(Inside &quot;q&quot; object) Search RFIDData linkin with this Dinamic entity. Mandatory if embeddedRecords is true.</p> "
+            "description": "<p>(Inside &quot;q&quot; object) Search RFIDData linkin with this Dinamic entity. Mandatory if embeddedRecords is true.</p>"
           },
           {
             "group": "Parameter",
             "optional": false,
             "field": "entityQuery",
-            "description": "<p>(Inside &quot;q&quot; object) Search for all entities that match query defined by entityQuery parameter. Also receives sequelize queries (See <a href=\"http://docs.sequelizejs.com/en/latest/docs/querying/\" target=\"_blank\"> here</a>).</p> "
+            "description": "<p>(Inside &quot;q&quot; object) Search for all entities that match query defined by entityQuery parameter. Also receives sequelize queries (See <a href=\"http://docs.sequelizejs.com/en/latest/docs/querying/\" target=\"_blank\"> here</a>).</p>"
           },
           {
             "group": "Parameter",
             "optional": false,
             "field": "embeddedRecords",
-            "description": "<p>(Inside &quot;q&quot; object) For each found entity, based on entityQuery, it searcs the related rfid records to embed as an array.</p> "
+            "description": "<p>(Inside &quot;q&quot; object) For each found entity, based on entityQuery, it searcs the related rfid records to embed as an array.</p>"
           },
           {
             "group": "Parameter",
             "optional": false,
             "field": "q",
-            "description": "<p>(Query) Received all parameter defined by Sequelize documentations. Available <a href=\"http://docs.sequelizejs.com/en/latest/docs/querying/\" target=\"_blank\"> here.</a></p> "
+            "description": "<p>(Query) Received all parameter defined by Sequelize documentations. Available <a href=\"http://docs.sequelizejs.com/en/latest/docs/querying/\" target=\"_blank\"> here.</a></p>"
           }
         ]
       }
@@ -3305,19 +3305,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -3354,7 +3354,7 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>You are not allowed to make any change on rfidDatas.</p> ",
+    "description": "<p>You are not allowed to make any change on rfidDatas.</p>",
     "error": {
       "examples": [
         {
@@ -3381,7 +3381,7 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>You are not allowed to make any change on rfidDatas.</p> ",
+    "description": "<p>You are not allowed to make any change on rfidDatas.</p>",
     "error": {
       "examples": [
         {
@@ -3408,16 +3408,16 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>Remove an existing RouteAccess from database.</p> ",
+    "description": "<p>Remove an existing RouteAccess from database.</p>",
     "parameter": {
       "fields": {
         "Param": [
           {
             "group": "Param",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>ID of the RouteAccess.</p> "
+            "description": "<p>ID of the RouteAccess.</p>"
           }
         ]
       }
@@ -3440,19 +3440,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -3489,16 +3489,16 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>Get one especific relation between a appClient and a route with a especific access method, that gives access to this route for the appClient.</p> ",
+    "description": "<p>Get one especific relation between a appClient and a route with a especific access method, that gives access to this route for the appClient.</p>",
     "parameter": {
       "fields": {
         "Param": [
           {
             "group": "Param",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>ID of the routeaccess.</p> "
+            "description": "<p>ID of the routeaccess.</p>"
           }
         ]
       }
@@ -3508,45 +3508,45 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "Id",
-            "description": "<p>RouteAccess ID on database.</p> "
+            "description": "<p>RouteAccess ID on database.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "appClient",
-            "description": "<p>ID of the appClient that has this permission.</p> "
+            "description": "<p>ID of the appClient that has this permission.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "uriRoute",
-            "description": "<p>ID of the route that this appClient is allowed to Access.</p> "
+            "description": "<p>ID of the route that this appClient is allowed to Access.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "deletedAt",
-            "description": "<p>Deletion datetime or null.</p> "
+            "description": "<p>Deletion datetime or null.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "createdAt",
-            "description": "<p>Creation datetime.</p> "
+            "description": "<p>Creation datetime.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "updatedAt",
-            "description": "<p>Last update datetime, or creation datetime.</p> "
+            "description": "<p>Last update datetime, or creation datetime.</p>"
           }
         ]
       },
@@ -3567,19 +3567,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -3616,7 +3616,7 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>Get all relations between a appClient and a route with a especific access method, that gives access to this route for the appClient.</p> ",
+    "description": "<p>Get all relations between a appClient and a route with a especific access method, that gives access to this route for the appClient.</p>",
     "examples": [
       {
         "title": "Example usage:",
@@ -3634,10 +3634,10 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "<p>Object[]</p> ",
+            "type": "Object[]",
             "optional": false,
             "field": "routeaccess",
-            "description": "<p>List of relations between user and route.</p> "
+            "description": "<p>List of relations between user and route.</p>"
           }
         ]
       },
@@ -3658,7 +3658,7 @@ define({ "api": [
             "group": "Parameter",
             "optional": false,
             "field": "q",
-            "description": "<p>(Query) Received all parameter defined by Sequelize documentations. Available <a href=\"http://docs.sequelizejs.com/en/latest/docs/querying/\" target=\"_blank\"> here.</a></p> "
+            "description": "<p>(Query) Received all parameter defined by Sequelize documentations. Available <a href=\"http://docs.sequelizejs.com/en/latest/docs/querying/\" target=\"_blank\"> here.</a></p>"
           }
         ]
       }
@@ -3670,19 +3670,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -3719,7 +3719,7 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>Create a new relation between a URI Route and an appClient that gives acces to this resource for the appClient.</p> ",
+    "description": "<p>Create a new relation between a URI Route and an appClient that gives acces to this resource for the appClient.</p>",
     "examples": [
       {
         "title": "Object Example:",
@@ -3732,24 +3732,24 @@ define({ "api": [
         "Body": [
           {
             "group": "Body",
-            "type": "<p>Array</p> ",
+            "type": "Array",
             "optional": false,
             "field": "All",
-            "description": "<p>relation between appClient and uriRoute to be persisted {Required}.</p> "
+            "description": "<p>relation between appClient and uriRoute to be persisted {Required}.</p>"
           },
           {
             "group": "Body",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "appClient",
-            "description": "<p>ID of the related appClient {Required}.</p> "
+            "description": "<p>ID of the related appClient {Required}.</p>"
           },
           {
             "group": "Body",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "uriRoute",
-            "description": "<p>ID of the URI Route to give access for {Required}.</p> "
+            "description": "<p>ID of the URI Route to give access for {Required}.</p>"
           }
         ]
       }
@@ -3772,19 +3772,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -3821,39 +3821,39 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>Update a RouteAccess from database.</p> ",
+    "description": "<p>Update a RouteAccess from database.</p>",
     "parameter": {
       "fields": {
         "Param": [
           {
             "group": "Param",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>ID of the existing RouteAccess.</p> "
+            "description": "<p>ID of the existing RouteAccess.</p>"
           }
         ],
         "Body": [
           {
             "group": "Body",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>ID of the existing RouteAccess {Required}.</p> "
+            "description": "<p>ID of the existing RouteAccess {Required}.</p>"
           },
           {
             "group": "Body",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "appClient",
-            "description": "<p>ID of the new related appClient {Required}.</p> "
+            "description": "<p>ID of the new related appClient {Required}.</p>"
           },
           {
             "group": "Body",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "uriRoute",
-            "description": "<p>ID of the new URI Route to give access for {Required}.</p> "
+            "description": "<p>ID of the new URI Route to give access for {Required}.</p>"
           }
         ]
       }
@@ -3883,19 +3883,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -3932,16 +3932,16 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>Get one Route available to consume and its respective access method.</p> ",
+    "description": "<p>Get one Route available to consume and its respective access method.</p>",
     "parameter": {
       "fields": {
         "Param": [
           {
             "group": "Param",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>ID of the route.</p> "
+            "description": "<p>ID of the route.</p>"
           }
         ]
       }
@@ -3951,45 +3951,45 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "Id",
-            "description": "<p>Route ID on database.</p> "
+            "description": "<p>Route ID on database.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "path",
-            "description": "<p>URI of the Route.</p> "
+            "description": "<p>URI of the Route.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "method",
-            "description": "<p>Access method for this URI.</p> "
+            "description": "<p>Access method for this URI.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "deletedAt",
-            "description": "<p>Deletion datetime or null.</p> "
+            "description": "<p>Deletion datetime or null.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "createdAt",
-            "description": "<p>Creation datetime.</p> "
+            "description": "<p>Creation datetime.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "updatedAt",
-            "description": "<p>Last update datetime, or creation datetime.</p> "
+            "description": "<p>Last update datetime, or creation datetime.</p>"
           }
         ]
       },
@@ -4010,19 +4010,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -4059,7 +4059,7 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>Get all routes available to consume from server and its respective access Methods.</p> ",
+    "description": "<p>Get all routes available to consume from server and its respective access Methods.</p>",
     "examples": [
       {
         "title": "Example usage:",
@@ -4077,10 +4077,10 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "<p>Object[]</p> ",
+            "type": "Object[]",
             "optional": false,
             "field": "routes",
-            "description": "<p>List of available routes and respective access Methods.</p> "
+            "description": "<p>List of available routes and respective access Methods.</p>"
           }
         ]
       },
@@ -4101,7 +4101,7 @@ define({ "api": [
             "group": "Parameter",
             "optional": false,
             "field": "q",
-            "description": "<p>(Query) Received all parameter defined by Sequelize documentations. Available <a href=\"http://docs.sequelizejs.com/en/latest/docs/querying/\" target=\"_blank\"> here.</a></p> "
+            "description": "<p>(Query) Received all parameter defined by Sequelize documentations. Available <a href=\"http://docs.sequelizejs.com/en/latest/docs/querying/\" target=\"_blank\"> here.</a></p>"
           }
         ]
       }
@@ -4113,19 +4113,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -4162,16 +4162,16 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>Remove a User from database.</p> ",
+    "description": "<p>Remove a User from database.</p>",
     "parameter": {
       "fields": {
         "Param": [
           {
             "group": "Param",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>ID of the user.</p> "
+            "description": "<p>ID of the user.</p>"
           }
         ]
       }
@@ -4194,19 +4194,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -4243,16 +4243,16 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>Get one user from database by its ID.</p> ",
+    "description": "<p>Get one user from database by its ID.</p>",
     "parameter": {
       "fields": {
         "Param": [
           {
             "group": "Param",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>ID of the user.</p> "
+            "description": "<p>ID of the user.</p>"
           }
         ]
       }
@@ -4262,38 +4262,38 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "Id",
-            "description": "<p>User ID on database.</p> "
+            "description": "<p>User ID on database.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>Name of the User.</p> "
+            "description": "<p>Name of the User.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "email",
-            "description": "<p>E-mail to get in touch with the user.</p> "
+            "description": "<p>E-mail to get in touch with the user.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "username",
-            "description": "<p>Username to log in the system.</p> "
+            "description": "<p>Username to log in the system.</p>"
           },
           {
             "group": "Success 200",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "password",
-            "description": "<p>Password to log in the system.</p> "
+            "description": "<p>Password to log in the system.</p>"
           }
         ]
       },
@@ -4314,19 +4314,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -4363,7 +4363,7 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>Get all users from database or a groups of users based on a query.</p> ",
+    "description": "<p>Get all users from database or a groups of users based on a query.</p>",
     "examples": [
       {
         "title": "Example usage:",
@@ -4381,10 +4381,10 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "<p>Object[]</p> ",
+            "type": "Object[]",
             "optional": false,
             "field": "user",
-            "description": "<p>List of Users.</p> "
+            "description": "<p>List of Users.</p>"
           }
         ]
       },
@@ -4405,7 +4405,7 @@ define({ "api": [
             "group": "Parameter",
             "optional": false,
             "field": "q",
-            "description": "<p>(Query) Received all parameter defined by Sequelize documentations. Available <a href=\"http://docs.sequelizejs.com/en/latest/docs/querying/\" target=\"_blank\"> here.</a></p> "
+            "description": "<p>(Query) Received all parameter defined by Sequelize documentations. Available <a href=\"http://docs.sequelizejs.com/en/latest/docs/querying/\" target=\"_blank\"> here.</a></p>"
           }
         ]
       }
@@ -4417,19 +4417,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -4466,7 +4466,7 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>Insert a new User on database.</p> ",
+    "description": "<p>Insert a new User on database.</p>",
     "examples": [
       {
         "title": "Object Example:",
@@ -4479,31 +4479,31 @@ define({ "api": [
         "Body": [
           {
             "group": "Body",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>Name of the User {Required, Unique}.</p> "
+            "description": "<p>Name of the User {Required, Unique}.</p>"
           },
           {
             "group": "Body",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "email",
-            "description": "<p>Email to get in touch with the user {Required}.</p> "
+            "description": "<p>Email to get in touch with the user {Required}.</p>"
           },
           {
             "group": "Body",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "username",
-            "description": "<p>Username to log in the system {Required, Unique}.</p> "
+            "description": "<p>Username to log in the system {Required, Unique}.</p>"
           },
           {
             "group": "Body",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "password",
-            "description": "<p>Password to log in the system {Required}.</p> "
+            "description": "<p>Password to log in the system {Required}.</p>"
           }
         ]
       }
@@ -4526,19 +4526,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },
@@ -4575,46 +4575,46 @@ define({ "api": [
         "description": ""
       }
     ],
-    "description": "<p>Update a User from database.</p> ",
+    "description": "<p>Update a User from database.</p>",
     "parameter": {
       "fields": {
         "Param": [
           {
             "group": "Param",
-            "type": "<p>Number</p> ",
+            "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>ID of the user.</p> "
+            "description": "<p>ID of the user.</p>"
           }
         ],
         "Body": [
           {
             "group": "Body",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "name",
-            "description": "<p>Name of the User {Required, Unique}.</p> "
+            "description": "<p>Name of the User {Required, Unique}.</p>"
           },
           {
             "group": "Body",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "email",
-            "description": "<p>Email to get in touch with the user {Required}.</p> "
+            "description": "<p>Email to get in touch with the user {Required}.</p>"
           },
           {
             "group": "Body",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "username",
-            "description": "<p>Username to log in the system {Required, Unique}.</p> "
+            "description": "<p>Username to log in the system {Required, Unique}.</p>"
           },
           {
             "group": "Body",
-            "type": "<p>String</p> ",
+            "type": "String",
             "optional": false,
             "field": "password",
-            "description": "<p>Password to log in the system {Required}.</p> "
+            "description": "<p>Password to log in the system {Required}.</p>"
           }
         ]
       }
@@ -4644,19 +4644,19 @@ define({ "api": [
             "group": "Error 4xx",
             "optional": false,
             "field": "Unauthorized",
-            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p> "
+            "description": "<p>Missing Authorization headers or the given token do not exist. The client is Unauthorized and can't use the API.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "Forbidden",
-            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p> "
+            "description": "<p>The client is authenticated but has not authorization on the requested resource.</p>"
           },
           {
             "group": "Error 4xx",
             "optional": false,
             "field": "NotFound",
-            "description": "<p>The required resource does not exist.</p> "
+            "description": "<p>The required resource does not exist.</p>"
           }
         ]
       },

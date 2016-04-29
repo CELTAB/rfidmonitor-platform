@@ -63,7 +63,7 @@ var getFinalRoute = function(req, res, next){
 
   //Lets get the position 1 and 2 always.
   var finalRoute = null;
-  if (uriArray.length >= 4) {
+  if (uriArray.length > 3 && uriArray[2] !== 'media') {
     finalRoute = '/' + uriArray[1] + '/' + uriArray[2] + '/' + uriArray[3];
   } else {
     finalRoute = '/' + uriArray[1] + '/' + uriArray[2];
