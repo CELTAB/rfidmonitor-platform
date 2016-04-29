@@ -7,7 +7,7 @@ app.controller('dynamicCtrl', function($rootScope, $scope, $routeParams, Restang
 	$scope.dynamicEntity = $rootScope.metaDynamics[$routeParams.dynamicUrl];
 	$scope.dynamicEntities = {};
 
-	var dynamicService = Restangular.service('de/dao/'+$scope.dynamicEntity.identifier);
+	var dynamicService = Restangular.service('dao/'+$scope.dynamicEntity.identifier);
 	var groupsService = Restangular.service('groups');
 
 	$scope.loadding = false;
@@ -147,7 +147,7 @@ app.controller('dynamicCtrl', function($rootScope, $scope, $routeParams, Restang
 		if(Object.keys($scope.dynamicEntities).length === 0){
 			angular.forEach($scope.dynamicEntity.structureList, function(value){
 				if(value.type == 'ENTITY'){
-					Restangular.all('de/dao/'+value.name).getList().then(function(response) {
+					Restangular.all('dao/'+value.name).getList().then(function(response) {
 					  	$scope.dynamicEntities[value.name] = response;
 					});
 				}

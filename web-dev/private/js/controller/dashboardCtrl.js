@@ -4,7 +4,7 @@
 var app = angular.module('flexApp');
 app.controller('dashboardCtrl', function($rootScope, $scope, Restangular){
 
-	var collectorsService = Restangular.service('collectors');
+	var dashboardService = Restangular.service('dashboard');
 
 	$scope.labelsChartCollector = [];
 	$scope.dataChartCollector = [];
@@ -14,9 +14,9 @@ app.controller('dashboardCtrl', function($rootScope, $scope, Restangular){
 	$scope.loadding = false;
 
 	if($rootScope.checkRoles('menu-dashboard')){
-		var getCollectors = function(){
+		var getDashboard = function(){
 			$scope.loadding = true;
-			collectorsService.getList({q: {"dashboard": true}}).then(function(response){
+			dashboardService.getList().then(function(response){
 				response.sort(function sortById(a,b){ return a.id - b.id; });
 
 				if(response.length){
@@ -40,7 +40,7 @@ app.controller('dashboardCtrl', function($rootScope, $scope, Restangular){
 			});
 		};
 
-		getCollectors();
+		getDashboard();
 	}
 
 });

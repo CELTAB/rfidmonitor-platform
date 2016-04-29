@@ -4,9 +4,7 @@
 var app = angular.module('flexApp');
 app.controller('dynamicEntitiesCtrl', function($rootScope, $scope, Restangular, singleFilter){
 
-  var originalService = Restangular.service('de/original');
-  var activateOne = Restangular.one('de/activate');
-  var deactivateOne = Restangular.one('de/deactivate');
+  var dynamicService = Restangular.all('dynamic');
 
   $scope.loadding = false;
   var paginationOptions = {
@@ -16,8 +14,7 @@ app.controller('dynamicEntitiesCtrl', function($rootScope, $scope, Restangular, 
 
   $scope.dynamicEntitiesScopeProvider = {
     details: function(row){
-      var service = row.entity.active ? deactivateOne : activateOne;
-      $rootScope.openModal('dynamicEntities', 'view/modal/dynamicEntitiesModalDetail.html', 'Detalhes Entidade Dinamica', Restangular.copy(row.entity), null, service, null, loadDynamicEntities, null);
+      $rootScope.openModal('dynamicEntities', 'view/modal/dynamicEntitiesModalDetail.html', 'Detalhes Entidade Dinamica', Restangular.copy(row.entity), null, dynamicService, null, loadDynamicEntities, null);
     }
   };
 
@@ -56,9 +53,10 @@ app.controller('dynamicEntitiesCtrl', function($rootScope, $scope, Restangular, 
     query.q = {};
     query.q.limit = paginationOptions.pageSize;
     query.q.offset = (paginationOptions.pageNumber - 1) * paginationOptions.pageSize;
+    query.q.original = true;
 
     $scope.loadding = true;
-    originalService.getList(query).then(function(response){
+    dynamicService.getList(query).then(function(response){
        $scope.loadding = false;
        $scope.dynamicEntitiesGridOptions.totalItems = response.count;
        $scope.dynamicEntitiesGridOptions.data = response;

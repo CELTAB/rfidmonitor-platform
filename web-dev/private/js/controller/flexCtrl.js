@@ -30,10 +30,10 @@ app.controller('flexCtrl', function($rootScope, $scope, $http, $location, $uibMo
   }
 
   if($rootScope.checkRoles('menu-dynamic')){
-    var metaService = Restangular.service('de/meta');
+    var dynamicService = Restangular.service('dynamic');
 
   	$rootScope.loadMetaDynamics = function(){
-  		metaService.getList().then(function(response){
+  		dynamicService.getList().then(function(response){
     		$rootScope.metaDynamics = {};
     		angular.forEach(response, function(entity){
     			$rootScope.metaDynamics[entity.identifier] = entity;

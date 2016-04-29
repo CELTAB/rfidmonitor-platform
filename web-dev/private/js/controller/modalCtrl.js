@@ -40,8 +40,16 @@ app.controller('modalCtrl', function($rootScope, $scope, $uibModalInstance, Rest
   	$rootScope.openModal(type, 'view/modal/'+type+'ModalForm.html', 'Editar '+title, Restangular.copy(entity), $scope.groups, service, structureList, loadDataTableGrid, dynamicEntities, users);
   };
 
-  $scope.active = function(identifier){
+	$scope.active = function(identifier){
     service.customPUT({}, identifier).then(function() {
+    	$uibModalInstance.dismiss();
+		  loadDataTableGrid();
+		  $rootScope.loadMetaDynamics();
+		});
+	};
+
+	$scope.deactivate = function(identifier){
+    service.customDELETE(identifier).then(function() {
     	$uibModalInstance.dismiss();
 		  loadDataTableGrid();
 		  $rootScope.loadMetaDynamics();

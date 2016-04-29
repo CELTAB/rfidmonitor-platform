@@ -4,7 +4,7 @@
 var app = angular.module('flexApp');
 app.controller('dynamicEntityAddCtrl', function($rootScope, $scope, Restangular){
 
-    var registerService = Restangular.service('de/register');
+    var dynamicService = Restangular.service('dynamic');
 
   	$scope.entity = {};
     $scope.lastId = 0;
@@ -46,7 +46,7 @@ app.controller('dynamicEntityAddCtrl', function($rootScope, $scope, Restangular)
     $scope.saveFields = function(){
       _checkUnique($scope.formsFields, null);
 
-      registerService.post($scope.formsFields).then(function(response){
+      dynamicService.post($scope.formsFields).then(function(response){
         $rootScope.loadMetaDynamics();
         $rootScope.go('/dynamicEntities');
         $scope.formsFields = [];
