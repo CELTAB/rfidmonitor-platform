@@ -22,8 +22,9 @@
     "url": "https://github.com/CELTAB/rfidmonitor-platform"
   },
   "scripts": {
-    "deploy":"npm install; grunt",
-    "pull":"git pull origin master; npm run deploy; pm2 restart rfidplatform"
+    "apidoc": "apidoc -i apidoc_source/ -o apidoc;",
+    "deploy": "npm install; grunt; npm run apidoc;",
+    "pull": "git pull origin master; npm run deploy; pm2 restart rfidplatform"
   },
   "engines": {
     "node": "0.12.2"
@@ -48,15 +49,16 @@
     "q": "~1.4.1"
   },
   "devDependencies": {
+    "apidoc": "0.16.1",
     "grunt": "0.4.5",
+    "grunt-bower-task": "0.4.0",
     "grunt-cli": "0.1.13",
-    "grunt-contrib-jshint": "1.0.0",
-    "grunt-contrib-uglify": "1.0.0",
-    "grunt-contrib-cssmin": "1.0.0",
-    "grunt-contrib-htmlmin": "1.0.0",
     "grunt-contrib-clean": "1.0.0",
     "grunt-contrib-copy": "1.0.0",
-    "grunt-bower-task": "0.4.0",
+    "grunt-contrib-cssmin": "1.0.0",
+    "grunt-contrib-htmlmin": "1.0.0",
+    "grunt-contrib-jshint": "1.0.0",
+    "grunt-contrib-uglify": "1.0.0",
     "grunt-ng-annotate": "2.0.1"
   },
   "apidoc": {
