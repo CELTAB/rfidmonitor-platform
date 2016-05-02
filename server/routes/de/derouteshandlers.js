@@ -51,7 +51,7 @@ var handlers = function() {
   };
 
   var getAllEntities = function(query, callback) {
-    DynamicEntity.findAll(query)
+    DynamicEntity.findAndCountAll(query)
     .then(function(entities){
       return callback(null, entities);
     })
@@ -100,9 +100,10 @@ var handlers = function() {
           {attributes : ['original', 'active']} :
           {attributes : ['meta'], where: {active: true}};
 
-      getAllEntities(qr, function(err, entities) {
+      getAllEntities(qr, function(err, result) {
         if (err) return callback(err);
 
+        var entities = result.rows;
         var response = [];
         if (getOriginal) {
           for(var i in entities){
@@ -116,7 +117,8 @@ var handlers = function() {
             response.push(JSON.parse(entities[i].meta));
           }
         }
-        return callback(null, response);
+        result.rows = response;
+        return callback(null, result);
       });
     }
   };
