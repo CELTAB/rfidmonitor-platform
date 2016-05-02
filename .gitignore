@@ -5,3 +5,4 @@ server/logs/*
 server/restricted_media/*
 bower_components/*
 web/
+apidoc/*
