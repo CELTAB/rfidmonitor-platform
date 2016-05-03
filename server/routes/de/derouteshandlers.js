@@ -50,12 +50,64 @@ var handlers = function() {
     });
   };
 
-  var getAllEntities = function(query, callback) {
-    DynamicEntity.findAndCountAll(query)
-    .then(function(entities){
-      return callback(null, entities);
+  var getAllEntities = function(req, callback) {
+    //Verifies access level to only return the entity that the user is allowed to.
+    var query = req.query;
+    var UriRoute = sequelize.model('UriRoute');
+    /* Steps:
+      - + Search routes that represents dynamics entities
+      - + Search on route access table for whitch of those routes are allowed for the given token
+      - + Search for dynamic antities that has relation with the allowed routes found
+      - + Algorithm successfuly accomplished
+    */
+    UriRoute.findAll({attributes:["path"], where:{path:{$like: "/api/dao/%"}}, group: 'path'})
+    .then(function(routes) {
+      if (!routes.length)
+        return callback(null, {count: 0, rows: routes});
+
+      var routes = routes.map(function(route) { return route.path; });
+      routes.push("ANY"); //Add the ANY access level
+      var RouteAccess = sequelize.model('RouteAccess');
+      RouteAccess.findAll(
+        {
+          where : { appClient: req.user.clientId},
+          include: [
+            {
+              model: UriRoute,
+              where: {
+                path: {$in: routes},
+                method : { $or : ['ANY', 'GET']}
+              }
+            }
+          ]
+        }
+      )
+      .then(function(entities){
+        if (!entities.length)
+          return callback(null, {count: 0, rows: entities});
+
+        // if(entities.some(ent => ent.UriRoute.path === 'ANY')) { //ECMAScript 6
+        if(!entities.some(function(ent){return ent.UriRoute.path === 'ANY';})) {
+          var identifiers = entities.map(function(ent) {
+            if (ent.UriRoute.path !== 'ANY')
+              return ent.UriRoute.path.split('/')[3];
+          });
+          query.where = query.where || {};
+          query.where.identifier = {$in: identifiers};
+        }
+        DynamicEntity.findAndCountAll(query)
+        .then(function(entities){
+          return callback(null, entities);
+        })
+        .catch(function(e){
+          return errorHandler(e.toString(), 500, callback);
+        });
+      })
+      .catch(function(e){
+        return errorHandler(e.toString(), 500, callback);
+      });
     })
-    .catch(function(e){
+    .catch(function(e) {
       return errorHandler(e.toString(), 500, callback);
     });
   };
@@ -100,7 +152,8 @@ var handlers = function() {
           {attributes : ['original', 'active']} :
           {attributes : ['meta'], where: {active: true}};
 
-      getAllEntities(qr, function(err, result) {
+      req.query = qr;
+      getAllEntities(req, function(err, result) {
         if (err) return callback(err);
 
         var entities = result.rows;
