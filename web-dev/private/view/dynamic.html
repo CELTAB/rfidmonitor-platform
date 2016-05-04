@@ -9,7 +9,7 @@
       <div class="box">
         <div class="box-header">
           <h3 class="box-title">Lista de {{dynamicEntity.field}}</h3>
-          <button class="btn btn-success pull-right" ng-click="newDynamic()"><i class="glyphicon glyphicon-plus"></i> {{dynamicEntity.field}}</button>
+          <button class="btn btn-success pull-right" ng-if="checkRoles('add', '/'+dynamicEntity.identifier)" ng-click="newDynamic()"><i class="glyphicon glyphicon-plus"></i> {{dynamicEntity.field}}</button>
           <div class="pull-right">
               &nbsp
               &nbsp

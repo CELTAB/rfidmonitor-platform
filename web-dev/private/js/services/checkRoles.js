@@ -2,7 +2,7 @@
 ** @author Mohamad Abu Ali <mohamad@abuali.com.br>
 */
 var app = angular.module('flexApp');
-app.factory('checkRoles', function () {
+app.factory('checkRoles', function (Restangular) {
   var userRoles = angular.fromJson(localStorage.getItem('flexUser')).routes;
 
   // @TODO move json to external file
@@ -69,36 +69,29 @@ app.factory('checkRoles', function () {
       {"path":"/api/rfiddatas", "method": "GET"},
       {"path":"/api/collectors", "method": "GET"},
       {"path":"/api/groups", "method": "GET"},
-      {"path":"/api/dynamic", "method": "GET"},
-      {"path":"/api/dao", "method": "GET"}]},
+      {"path":"/api/dynamic", "method": "GET"}]},
   "menu-importfile" : {"permission": false, "depends": [
       {"path":"/api/import", "method": "POST"}]},
   "menu-dynamic" : {"permission": false, "depends": [
-      {"path":"/api/dynamic", "method": "GET"},
-      {"path":"/api/dao", "method": "GET"},
-      {"path":"/api/media", "method": "GET"}]},
-  "add-dynamic" : {"permission": false, "depends": [
-      {"path":"/api/dynamic", "method": "GET"},
-      {"path":"/api/dao", "method": "GET"},
-      {"path":"/api/dao", "method": "POST"},
-      {"path":"/api/media", "method": "GET"},
-      {"path":"/api/media", "method": "POST"}]},
-  "edit-dynamic" : {"permission": false, "depends": [
-      {"path":"/api/dynamic", "method": "GET"},
-      {"path":"/api/dao", "method": "GET"},
-      {"path":"/api/dao", "method": "PUT"},
-      {"path":"/api/media", "method": "GET"},
-      {"path":"/api/media", "method": "POST"}]},
-  "remove-dynamic" : {"permission": false, "depends": [
-      {"path":"/api/dynamic", "method": "GET"},
-      {"path":"/api/dao", "method": "GET"},
-      {"path":"/api/dao", "method": "DELETE"}]}
+      {"path":"/api/dynamic", "method": "GET"}]},
 };
 
   angular.forEach(userRoles, function(userRole){
     if(viewRoles.admin) return;
     if(userRole.path === 'ANY' && userRole.method === 'ANY'){
       viewRoles.admin = true;
+    }
+    if (userRole.path.indexOf('/api/dao/') !== -1) {
+      var identifier = userRole.path.split('/')[3];
+
+      viewRoles["menu-"+identifier] = {"permission": false, "depends": [
+             {"path":"/api/dao/"+identifier, "method": "GET"}]};
+      viewRoles["add-"+identifier] = {"permission": false, "depends": [
+             {"path":"/api/dao/"+identifier, "method": "POST"}]};
+      viewRoles["edit-"+identifier] = {"permission": false, "depends": [
+           {"path":"/api/dao/"+identifier, "method": "PUT"}]};
+      viewRoles["remove-"+identifier] = {"permission": false, "depends": [
+            {"path":"/api/dao/"+identifier, "method": "DELETE"}]};
     }
   });
 
@@ -120,11 +113,15 @@ app.factory('checkRoles', function () {
     });
   }
 
-  return function(role) {
-
-    if(viewRoles.admin){
+  return function(role, dynamic) {
+    if(viewRoles.admin)
       return true;
+
+    if (dynamic) {
+      var key = role + '-' + dynamic.split('/')[1];
+      return viewRoles[key].permission;
+    } else {
+      return viewRoles[role].permission;
     }
-    return viewRoles[role].permission;
   };
 });
