@@ -85,13 +85,13 @@ app.factory('checkRoles', function (Restangular) {
       var identifier = userRole.path.split('/')[3];
 
       viewRoles["menu-"+identifier] = {"permission": false, "depends": [
-             {"path":"/api/dao/"+identifier, "method": "GET"}]};
+             {"path": userRole.path, "method": "GET"}]};
       viewRoles["add-"+identifier] = {"permission": false, "depends": [
-             {"path":"/api/dao/"+identifier, "method": "POST"}]};
+             {"path": userRole.path, "method": "POST"}]};
       viewRoles["edit-"+identifier] = {"permission": false, "depends": [
-           {"path":"/api/dao/"+identifier, "method": "PUT"}]};
+           {"path": userRole.path, "method": "PUT"}]};
       viewRoles["remove-"+identifier] = {"permission": false, "depends": [
-            {"path":"/api/dao/"+identifier, "method": "DELETE"}]};
+            {"path": userRole.path, "method": "DELETE"}]};
     }
   });
 
