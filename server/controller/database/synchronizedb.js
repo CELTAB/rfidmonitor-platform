@@ -55,6 +55,20 @@ var SynchronizeDb = function() {
 			});
 		})
 		.catch(function(error){
+
+			/* TASK #2043
+				The db user has readonly permissions, so the Sequelize will never succed on syncing.
+				In this case, the database must have been manually imported from a dump.
+				By that it is assumed the database structure is ready, and the permission error can be ignored.
+				The error occurs because the Sequelize wants to "CREATE TABLE IF NOT EXISTS" to guarantee the table exists while syncing. As the role has no permissions
+				for this kind of command, the db return the error code 42501.
+			*/
+			if(error.parent.code === "42501"){
+				logger.warn("Controlled error happening: Permission denied for current schema. POSTGRES code 42501. This must only happen in case of db user being readonly and the db had manually imported. The app is continuing.");
+				logger.debug("Controlled error happening: " + JSON.stringify(error));
+				return done();
+			}	
+
 			logger.error("Error to synchronize sequelize models: " + error);
 			done(error);
 		});
