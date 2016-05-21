@@ -32,6 +32,21 @@ var UserModel = sequelize.model('User');
 var UserCtrl = new Controller(UserModel, 'users');
 var RouteAccess = sequelize.model('RouteAccess');
 var UriRoute = sequelize.model('UriRoute');
+var AppClient = sequelize.model('AppClient');
+
+UserCtrl.custom['remove'] = function(id, callback) {
+  AppClient.count({where: {userId: id}})
+  .then(function(total){
+    if(!total) {
+      return UserCtrl.remove(id, callback);
+    } else {
+      return errorHandler("There are AppClients related to this User", 400, callback);
+    }
+  })
+  .catch(function(e){
+    return errorHandler("Error on find AppClient related", 404, callback);
+  });
+};
 
 UserCtrl.custom['save'] = function(body, callback){
   if(body.id || body._id)

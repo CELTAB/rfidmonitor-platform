@@ -24,6 +24,8 @@
   "scripts": {
     "apidoc": "apidoc -i apidoc_source/ -o apidoc;",
     "deploy": "npm install; grunt; npm run apidoc;",
+    "local": "nodemon app.js --debugConsole",
+    "server": "pm2 start rfidplatform",
     "pull": "git pull origin master; npm run deploy; pm2 restart rfidplatform"
   },
   "engines": {

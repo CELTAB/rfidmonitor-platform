@@ -27,7 +27,7 @@ var logger = require('winston');
 var sequelize = require(__base + 'controller/database/platformsequelize');
 var Controller = require(__base + 'controller/basemodelctrl');
 var errorHandler = require(__base + 'utils/errorhandler');
-
+var Collector = sequelize.model('Collector');
 var GroupModel = sequelize.model('Group');
 var Group = new Controller(GroupModel, 'groups');
 
@@ -61,6 +61,7 @@ Group.custom['save'] = function(body, callback){
 };
 
 Group.custom['remove'] = function(id, callback){
+
   Group.find(id, null, function(err, group){
     if(err)
       return callback(err);
@@ -68,7 +69,18 @@ Group.custom['remove'] = function(id, callback){
       return errorHandler('Group not found', 400, callback);
     if(group.isDefault)
       return errorHandler('Not allowed to delete default group', 400, callback);
-    Group.remove(id, callback);
+
+    Collector.count({where: {groupId: id}})
+    .then(function(total){
+      if(!total) {
+        return Group.remove(id, callback);
+      } else {
+        return callback({error: "There are Collectors related to this Group", message: "Not possible to remove this Group", code:400});
+      }
+    })
+    .catch(function(e){
+      return errorHandler("Error on find Collectors related:" + e.toString(), 404, callback);
+    });
   });
 };
 

@@ -103,7 +103,6 @@ var RoutingCore = function(router, baseUri){
 		this.router.delete(_routeId, function(req, res){
 			functions.remove(req.params.id, function(err, result){
 				if(err) return res.response(err.error, err.code, err.message);
-
 				res.send(result);
 			});
 		});

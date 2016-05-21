@@ -35,6 +35,20 @@ var CollectorCtrl = new Controller(CollectorModel, 'collectors');
 var Group = sequelize.model('Group');
 var RFIDData = sequelize.model('Rfiddata');
 
+CollectorCtrl.custom['remove'] = function(id, callback) {
+  RFIDData.count({where: {collectorId: id}})
+  .then(function(total){
+    if(!total) {
+      return CollectorCtrl.remove(id, callback);
+    } else {
+      return errorHandler("There are records related to this collector", 400, callback);
+    }
+  })
+  .catch(function(e){
+    return errorHandler("Error on find RFIDData related", 404, callback);
+  });
+};
+
 var insertingMap = {};
 CollectorCtrl.oldSave = CollectorCtrl.save;
 CollectorCtrl.custom['find'] = function(id, query, callback){
