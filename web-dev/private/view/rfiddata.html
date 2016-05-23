@@ -13,7 +13,7 @@
       <div class="box-body">
 
         <div class="form-group">
-          <label class="col-sm-2 control-label">Código:</label>
+          <label class="col-sm-offset-1 col-sm-2 control-label">Código:</label>
           <div class="col-sm-6">
             <tags-input ng-model="search.rfidCodes"
               add-on-paste="true"
@@ -24,7 +24,7 @@
         </div>
 
         <div class="form-group">
-          <div class="col-sm-offset-2 col-sm-6 checkbox" >
+          <div class="col-sm-offset-3 col-sm-6 checkbox" >
             <div class="checkbox">
               <label>
                 <input type="checkbox" ng-model="hexa"> Mostrar Código em HEXA
@@ -34,7 +34,7 @@
         </div>
 
         <div class="form-group">
-          <label class="col-sm-2 control-label">Coletor:</label>
+          <label class="col-sm-offset-1 col-sm-2 control-label">Coletor:</label>
           <div class="col-sm-6">
             <select class="form-control select2" ng-model="search.collectorId">
               <option value="">Todos os Coletores</option>
@@ -47,7 +47,7 @@
         </div>
 
         <div class="form-group">
-          <label class="col-sm-2 control-label">Intervalo de Leitura:</label>
+          <label class="col-sm-offset-1 col-sm-2 control-label">Intervalo de Leitura:</label>
           <label class="col-sm-1 control-label">De:</label>
           <div class="col-sm-2">
             <p class="input-group">
@@ -69,7 +69,7 @@
         </div>
 
         <div class="form-group">
-          <label class="col-sm-2 control-label">Entidade:</label>
+          <label class="col-sm-offset-1 col-sm-2 control-label">Entidade:</label>
           <div class="col-sm-6">
             <select class="form-control select2" ng-model="search.entity" ng-change="getEntityStructure()" >
               <option value=""></option>
@@ -82,7 +82,7 @@
         </div>
 
         <div class="form-group" ng-repeat="structure in entityStructure.structureList" ng-if="structure.type !== 'RFIDCODE'">
-            <label class="col-sm-2 control-label" >{{structure.field}}:</label>
+            <label class="col-sm-offset-1 col-sm-2 control-label" >{{structure.field}}:</label>
             <div class="col-sm-6">
 
               <input type="text" class="form-control"
@@ -147,8 +147,9 @@
       </div>
 
       <div class="box-footer">
-        <button type="button" ng-click="clear()" class="btn btn-default">Limpar</button>
-        <button type="button" ng-click="searchRfid()" class="btn btn-success pull-right">Buscar</button>
+        <div class="col-sm-offset-1 col-sm-8">
+          <button type="button" ng-click="searchRfid()" class="btn btn-success pull-right">Buscar</button>
+        </div>
       </div>
     </div>
   </div>
