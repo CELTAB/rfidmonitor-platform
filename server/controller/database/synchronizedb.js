@@ -66,11 +66,16 @@ var SynchronizeDb = function() {
 			if(error.parent.code === "42501"){
 				logger.warn("Controlled error happening: Permission denied for current schema. POSTGRES code 42501. This must only happen in case of db user being readonly and the db had manually imported. The app is continuing.");
 				logger.debug("Controlled error happening: " + JSON.stringify(error));
-				return done();
-			}	
+				//Models synchronized. Call done with no errors (null).
+				DEModelPool.loadDynamicEntities(function(error){
+					if(error) return done(error);
 
-			logger.error("Error to synchronize sequelize models: " + error);
-			done(error);
+					return done();
+				});
+			}else {
+				logger.error("Error to synchronize sequelize models: " + error);
+				done(error);
+			}
 		});
 	}
 	return{
