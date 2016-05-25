@@ -44,28 +44,6 @@ app.controller('routeAccessCtrl', function($scope, $location, $timeout, Restangu
          });
        });
 
-      //  angular.forEach(viewRoles, function(role){
-      //    var permission = true;
-      //    angular.forEach(role.depends, function(depend){
-      //      if(!permission) return;
-      //      var userPermission = false;
-      //      angular.forEach(routesChecked, function(userRole){
-      //        if(userPermission) return;
-      //        if(depend.path === userRole.path && depend.method === userRole.method){
-      //          userPermission = true;
-      //        }
-      //      });
-      //      permission = userPermission;
-      //    });
-      //    role.permission = permission;
-      //  });
-       //
-      //  angular.forEach(routesView, function(routeView){
-      //    angular.forEach(routeView, function(type){
-      //      type.checked = viewRoles[type.key].permission;
-      //    });
-      //  });
-
       processPermissions(routesChecked);
       $scope.routesView = routesView;
 
@@ -183,28 +161,6 @@ app.controller('routeAccessCtrl', function($scope, $location, $timeout, Restangu
         }
       });
     });
-
-    // angular.forEach(viewRoles, function(role){
-    //   var permission = true;
-    //   angular.forEach(role.depends, function(depend){
-    //     if(!permission) return;
-    //     var userPermission = false;
-    //     angular.forEach(checked, function(userRole){
-    //       if(userPermission) return;
-    //       if(depend.path === userRole.path && depend.method === userRole.method){
-    //         userPermission = true;
-    //       }
-    //     });
-    //     permission = userPermission;
-    //   });
-    //   role.permission = permission;
-    // });
-    //
-    // angular.forEach(routesView, function(routeView){
-    //   angular.forEach(routeView, function(type){
-    //     type.checked = viewRoles[type.key].permission;
-    //   });
-    // });
 
     processPermissions(checked);
   };
