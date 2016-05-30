@@ -488,12 +488,19 @@ var isObjectEmpty = function(a){
            return diacriticsMap[a] || a;
         });
     }
+		var whitelist = function(str){
+			var wlist = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_";
+			var regex = new RegExp('[^' + wlist + ']', 'g');
+			return str.replace(regex, '');
+		}
 
     var normalizeString = function(str){
     	str = validator.trim(str);
     	str = removeDiacritics(str);
     	str = str.toLowerCase();
     	str = str.replace(/\s/g, '_'); // remove whitespaces.
+			str = whitelist(str); //task #2231
+
     	return str;
     }
 
