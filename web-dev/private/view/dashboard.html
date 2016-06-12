@@ -1,6 +1,9 @@
 <!--  @author Mohamad Abu Ali <mohamad@abuali.com.br> -->
 <section class="content-header">
   <h1>Dashboard</h1>
+    <ol class="breadcrumb">
+      <li>Atualização Automática <toggle-switch ng-model="dashboardRealTime" class="switch-small" on-change="checkDashboard()" on-label="Sim" off-label="Não"></toggle-switch></li>
+    </ol>
 </section>
 
 <section class="content">
@@ -12,8 +15,8 @@
           <i class="fa fa-refresh fa-spin"></i>
         </div>
         <div class="widget-user-header">
-          <h3 class="widget-user-username">{{::collector.name}}</h3>
-          <h5 class="widget-user-desc">{{::collector.description}}</h5>
+          <h3 class="widget-user-username">{{::collector.name | limitTo : 30}}</h3>
+          <h5 class="widget-user-desc">{{::collector.description | limitTo : 100 }}</h5>
           <span class="label" ng-class="{'label-success': collector.status == 'ONLINE', 'label-danger': collector.status == 'OFFLINE', 'label-warning': collector.status == 'UNKNOWN'}">{{::collector.status}}</span>
         </div>
 
@@ -65,7 +68,7 @@
         </div>
         <div class="box-body">
           <canvas class="chart chart-doughnut" chart-data="dataChartCollector"
-            chart-labels="seriesRfid" chart-legend="true" style="height:300px"></canvas>
+            chart-labels="seriesRfid" chart-legend="true" chart-options="optionsRfid" style="height:300px"></canvas>
         </div>
       </div>
     </div>
@@ -79,7 +82,7 @@
         </div>
         <div class="box-body">
           <canvas class="chart chart-line" chart-data="dataRfid" chart-labels="labelsRfid"
-            chart-series="seriesRfid" chart-legend="true" style="height:325px"></canvas>
+            chart-series="seriesRfid" chart-legend="true" chart-options="optionsRfid" style="height:325px"></canvas>
         </div>
       </div>
     </div>

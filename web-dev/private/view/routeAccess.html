@@ -50,47 +50,12 @@
             <div class="col-sm-offset-4 col-sm-8">
               <div class="checkbox">
                 <label>
-                  <input type="checkbox" ng-checked="routesView.ANY.ANY.checked" ng-click="!routesView.ANY.ANY.checked" ng-model="routesView.ANY.ANY.checked"> Administrador (Permissões completas)
+                  <input type="checkbox" ng-checked="routesView.Admin.ANY.checked" ng-click="!routesView.Admin.ANY.checked" ng-model="routesView.Admin.ANY.checked"> Administrador (Permissões completas)
                 </label>
               </div>
             </div>
           </div>
         </div>
-
-        <div class="box" ng-class="{'collapsed-box' : routesView.ANY.ANY.checked}" ng-show="appClientId">
-          <div class="box-header with-border">
-              <h3 class="box-title">Mapa de Rotas</h3>
-              <div class="box-tools pull-right">
-                <button type="button" class="btn btn-box-tool" data-widget="collapse">
-                  <i ng-class="{'fa-plus' : routesView.ANY.ANY.checked, 'fa-minus': !routesView.ANY.ANY.checked}" class="fa"></i>
-                </button>
-              </div>
-            </div>
-            <div class="box-body">
-              <div class="table-responsive">
-                <table class="table no-margin">
-                  <thead>
-                  <tr>
-                    <th>Rota</th>
-                    <th>Listar</th>
-                    <th>Criar</th>
-                    <th>Alterar</th>
-                    <th>Remover</th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                    <tr ng-repeat="(key, value) in routesView">
-                      <td ng-if="key !== 'ANY'"><span>{{::key}}</span></td>
-                      <td><input type="checkbox" ng-if="value.GET" ng-model="value.GET.checked" ng-checked="value.GET.checked"></td>
-                      <td><input type="checkbox" ng-if="value.POST" ng-model="value.POST.checked" ng-checked="value.POST.checked"></td>
-                      <td><input type="checkbox" ng-if="value.PUT" ng-model="value.PUT.checked" ng-checked="value.PUT.checked"></td>
-                      <td><input type="checkbox" ng-if="value.DELETE" ng-model="value.DELETE.checked" ng-checked="value.DELETE.checked"></td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
 
         <div class="form-group">
           <div class="col-sm-12">
@@ -104,8 +69,42 @@
           </div>
         </div>
 
+        <div class="box" ng-class="{'collapsed-box' : routesView.Admin.ANY.checked}" ng-show="appClientId">
+          <div class="box-header with-border">
+              <h3 class="box-title">Permissões</h3>
+              <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                  <i ng-class="{'fa-plus' : routesView.Admin.ANY.checked, 'fa-minus': !routesView.Admin.ANY.checked}" class="fa"></i>
+                </button>
+              </div>
+            </div>
+            <div class="box-body">
+              <div class="table-responsive">
+                <table class="table no-margin">
+                  <thead>
+                  <tr>
+                    <th>Permissão</th>
+                    <th>Visualizar</th>
+                    <th>Adicionar</th>
+                    <th>Editar</th>
+                    <th>Remover</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                    <tr ng-repeat="(key, value) in routesView">
+                      <td ng-if="key !== 'Admin'"><span>{{::key}}</span></td>
+                      <td><input type="checkbox" ng-if="value.list" ng-click="check(value.list.key, value.list.checked)" ng-model="value.list.checked" ng-checked="value.list.checked"></td>
+                      <td><input type="checkbox" ng-if="value.add" ng-click="check(value.add.key, value.add.checked)" ng-model="value.add.checked" ng-checked="value.add.checked"></td>
+                      <td><input type="checkbox" ng-if="value.edit" ng-click="check(value.edit.key, value.edit.checked)" ng-model="value.edit.checked" ng-checked="value.edit.checked"></td>
+                      <td><input type="checkbox" ng-if="value.remove" ng-click="check(value.remove.key, value.remove.checked)" ng-model="value.remove.checked" ng-checked="value.remove.checked"></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
       <div class="box-footer">
-        <button type="button" ng-click="clear()" class="btn btn-default">Limpar</button>
         <button type="button" ng-click="save(appClientId)" class="btn btn-success pull-right">Salvar</button>
       </div>
     </div>

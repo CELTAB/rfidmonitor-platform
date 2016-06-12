@@ -92,7 +92,7 @@
             <li ng-if="checkRoles('menu-collectors')" ng-class="{ active: isActive('/collectors')}"><a href="#/collectors"><i class="fa fa-map-marker"></i> <span>Coletores</span></a></li>
             <li ng-if="checkRoles('menu-rfiddata')" ng-class="{ active: isActive('/rfiddata')}"><a href="#/rfiddata"><i class="fa fa-database"></i> <span>RfidData</span></a></li>
             <li ng-if="checkRoles('menu-importfile')" ng-class="{ active: isActive('/importfile')}"><a href="#/importfile"><i class="fa fa-upload"></i> <span>Importação Manual</span></a></li>
-            <li ng-if="checkRoles('menu-dynamic')" class="header">Registros Dinâmicos</li>
+            <li ng-if="checkRoles('menu-dynamicEntities')" class="header">Registros Dinâmicos</li>
             <li ng-class="{ active: isActive('/{{meta.identifier}}')}" ng-repeat="meta in metaDynamics">
               <a ng-href="#/{{meta.identifier}}">
                 <i class="fa fa-circle-o"></i>
