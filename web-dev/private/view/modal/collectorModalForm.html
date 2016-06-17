@@ -23,14 +23,10 @@
  	<div class="form-group">
 		<label class="col-sm-3 control-label">Group: (*)</label>
 		<div class="col-sm-9">
-			<select class="form-control select2" ng-model="entity.groupId" style="width: 100%;">
-				 <option ng-selected="{{group.id === entity.Group.id}}"
-			            ng-repeat="group in groups"
-			            value="{{group.id}}">
-			      {{group.name}}
-			    </option>
-			</select>
-
+      <select class="form-control select2"
+              ng-model="entity.groupId"
+              ng-options="group.id as group.name for group in groups">
+      </select>
 		</div>
  	</div>
 

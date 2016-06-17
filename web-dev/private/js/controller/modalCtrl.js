@@ -32,12 +32,12 @@ app.controller('modalCtrl', function($rootScope, $scope, $uibModalInstance, Rest
 
 	$scope.removeFromDetail = function(entity){
 		$uibModalInstance.dismiss();
-		$rootScope.openModal(type, 'view/modal/modalDelete.html', 'Excluir '+title, Restangular.copy(entity), $scope.groups, service, structureList, loadDataTableGrid, dynamicEntities, users);
+		$rootScope.openModal(type, 'view/modal/modalDelete.html', 'Excluir '+title.split(" ")[1], Restangular.copy(entity), $scope.groups, service, structureList, loadDataTableGrid, dynamicEntities, users);
 	};
 
 	$scope.editFromDetail = function(entity){
 		$uibModalInstance.dismiss();
-  	$rootScope.openModal(type, 'view/modal/'+type+'ModalForm.html', 'Editar '+title, Restangular.copy(entity), $scope.groups, service, structureList, loadDataTableGrid, dynamicEntities, users);
+  	$rootScope.openModal(type, 'view/modal/'+type+'ModalForm.html', 'Editar '+title.split(" ")[1], Restangular.copy(entity), $scope.groups, service, structureList, loadDataTableGrid, dynamicEntities, users);
   };
 
 	$scope.active = function(identifier){

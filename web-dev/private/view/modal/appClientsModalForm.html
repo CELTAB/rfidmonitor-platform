@@ -9,12 +9,10 @@
   <div class="form-group">
     <label class="col-sm-3 control-label">Usuário: (*)</label>
     <div class="col-sm-9">
-      <select class="form-control select2" ng-model="entity.userId" style="width: 100%;">
-         <option ng-selected="{{user.id === entity.User.id}}"
-                  ng-repeat="user in users"
-                  value="{{user.id}}">
-            {{user.name}}
-          </option>
+      <p ng-if="entity.userId" class="form-control-static">{{entity.User.name}}</p>
+      <select ng-if="!entity.userId" class="form-control select2"
+              ng-model="entity.userId"
+              ng-options="user.id as user.name for user in users">
       </select>
     </div>
   </div>
