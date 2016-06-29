@@ -29,7 +29,7 @@ app.controller('flexCtrl', function($rootScope, $scope, $http, $location, $uibMo
     $scope.logout();
   }
 
-  if($rootScope.checkRoles('menu-dynamicEntities')){
+  if($rootScope.checkRoles('list-dynamicEntities')){
     var dynamicService = Restangular.service('dynamic');
 
   	$rootScope.loadMetaDynamics = function(){

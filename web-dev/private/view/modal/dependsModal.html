@@ -1,0 +1,27 @@
+<!--  @author Mohamad Abu Ali <mohamad@abuali.com.br> -->
+<div class="modal-header">
+    <button type="button" class="close" aria-label="Close" ng-click="close()"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title"><span class="glyphicon glyphicon-info-sign"></span> Dependências de {{modalTitle}}</h4>
+</div>
+
+<div class="modal-body form-horizontal">
+  <h3>Depende de:</h3>
+  <ul>
+    <li ng-repeat="depend in depends">
+      {{depend}}
+    </li>
+    <li ng-hide="depends.length">
+      Nenhuma
+    </li>
+  </ul>
+
+  <h3>Permissões que dependem desta Permissão:</h3>
+  <ul>
+    <li ng-repeat="dependMe in dependsMe">
+      {{dependMe}}
+    </li>
+    <li ng-hide="dependsMe.length">
+      Nenhuma
+    </li>
+  </ul>
+</div>

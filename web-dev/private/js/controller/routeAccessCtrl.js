@@ -2,7 +2,7 @@
 ** @author Mohamad Abu Ali <mohamad@abuali.com.br>
 */
 var app = angular.module('flexApp');
-app.controller('routeAccessCtrl', function($scope, $location, $timeout, Restangular, roles){
+app.controller('routeAccessCtrl', function($scope, $location, $timeout, $uibModal, Restangular, roles){
 
   var routesService = Restangular.service('routes');
   var usersService = Restangular.service('users');
@@ -187,6 +187,37 @@ app.controller('routeAccessCtrl', function($scope, $location, $timeout, Restangu
     });
 
     processPermissions(checked);
+  };
+
+  $scope.openDepends = function (titleKey, dependsKeys, dependsMeKeys) {
+
+    var dependsValues = [];
+    var dependsMeValues = [];
+    var titleValue = viewRoles[titleKey].description;
+
+    angular.forEach(dependsKeys, function(depend){
+      dependsValues.push(viewRoles[depend].description);
+    });
+
+    angular.forEach(dependsMeKeys, function(depend){
+      dependsMeValues.push(viewRoles[depend].description);
+    });
+
+    $uibModal.open({
+      templateUrl: 'view/modal/dependsModal.html',
+      controller: 'dependsCtrl',
+      resolve: {
+        title: function () {
+          return titleValue;
+        },
+        depends: function () {
+          return dependsValues;
+        },
+        dependsMe: function () {
+          return dependsMeValues;
+        }
+      }
+     });
   };
 
   loadUsers();
