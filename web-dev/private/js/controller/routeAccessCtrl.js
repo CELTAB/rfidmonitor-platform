@@ -38,16 +38,40 @@ app.controller('routeAccessCtrl', function($scope, $location, $timeout, Restangu
          if(!routesView[role.group]){
            routesView[role.group] = {};
          }
-         routesView[role.group][role.type] = {"key": $index, "checked": false, "description": role.description, "ids": []};
+         routesView[role.group][role.type] = {"key": $index, "checked": false, "description": role.description, "ids": [], "dependsKeys": [], "dependsMeKeys": []};
          angular.forEach(role.depends, function(depend){
            routesView[role.group][role.type].ids.push(routesMap[depend.path][depend.method]);
          });
        });
 
       processPermissions(routesChecked);
+
+      angular.forEach(routesView, function(route){
+        angular.forEach(route, function(type){
+            angular.forEach(routesView, function(route2){
+              angular.forEach(route2, function(type2){
+                if(type.ids !== type2.ids){
+                  if(checkContains(type.ids, type2.ids)){
+                    type.dependsMeKeys.push(type2.key);
+                    type2.dependsKeys.push(type.key);
+                  }
+                }
+              });
+            });
+        });
+      });
+
       $scope.routesView = routesView;
 
     });
+  };
+
+  var checkContains = function(arrayA, arrayB){
+    for (var i = 0; i < arrayA.length; i++) {
+      var result = arrayB.indexOf(arrayA[i]);
+      if(result === -1) return false;
+    }
+    return true;
   };
 
   var processPermissions = function(routesChecked){

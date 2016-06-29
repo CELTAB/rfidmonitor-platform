@@ -2,7 +2,7 @@
 ** @author Mohamad Abu Ali <mohamad@abuali.com.br>
 */
 var app = angular.module('flexApp');
-app.factory('roles', function ($q, Restangular) {
+app.factory('roles', function (Restangular) {
 
   var roles = {
     "admin" : {"description": "Adminstrador", "group": "Admin", "type": "ANY", "permission": false,
