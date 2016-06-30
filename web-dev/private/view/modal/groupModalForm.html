@@ -9,14 +9,14 @@
   <div class="form-group">
 		<label class="col-sm-3 control-label">Nome: (*)</label>
 		<div class="col-sm-9">
-		  <input type="text" id="name" class="form-control" ng-model="entity.name">
+		  <input type="text" id="name" class="form-control" ng-model="entity.name" ng-enter="save(entity)">
 		</div>
  	</div>
 
  	<div class="form-group">
 		<label class="col-sm-3 control-label">Descrição:</label>
 		<div class="col-sm-9">
-		  <textarea class="form-control" rows="3" ng-model="entity.description"></textarea>
+		  <textarea class="form-control" rows="3" ng-model="entity.description" ng-enter="save(entity)"></textarea>
 		</div>
  	</div>
 

@@ -11,27 +11,27 @@
 		<div class="col-sm-9">
 			<input type="text" class="form-control"
 				ng-model="entity[structure.identifier]"
-				ng-if="structure.type === 'TEXT'">
+				ng-if="structure.type === 'TEXT'" ng-enter="save(entity)">
 
 			<input type="number" class="form-control"
 				ng-model="entity[structure.identifier]"
-				ng-if="structure.type === 'DOUBLE'">
+				ng-if="structure.type === 'DOUBLE'" ng-enter="save(entity)">
 
 			<input type="number" class="form-control"
 				ng-model="entity[structure.identifier]"
-				ng-if="structure.type === 'INTEGER'">
+				ng-if="structure.type === 'INTEGER'" ng-enter="save(entity)">
 
       <div ng-if="structure.type === 'RFIDCODE'">
         <label class="col-sm-2 control-label">Decimal:</label>
         <div class="col-sm-4">
           <p class="input-group">
-            <input type="text" class="form-control" name="decimal" ng-model="entity[structure.identifier]" rfid-code="entity[structure.identifier+'_hexa']">
+            <input type="text" class="form-control" name="decimal" ng-model="entity[structure.identifier]" rfid-code="entity[structure.identifier+'_hexa']" ng-enter="save(entity)">
           </p>
         </div>
         <label class="col-sm-2 control-label">Hexa:</label>
         <div class="col-sm-4">
           <p class="input-group">
-            <input type="text" class="form-control" name="hexa" ng-model="entity[structure.identifier+'_hexa']" rfid-code="entity[structure.identifier]">
+            <input type="text" class="form-control" name="hexa" ng-model="entity[structure.identifier+'_hexa']" rfid-code="entity[structure.identifier]" ng-enter="save(entity)">
           </p>
         </div>
       </div>
