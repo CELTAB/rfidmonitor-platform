@@ -24,7 +24,7 @@ app.factory('checkRoles', function (roles) {
   if(!viewRoles.admin.permission){
     angular.forEach(entitiesName, function(entity){
       var entityUpper = entity.charAt(0).toUpperCase() + entity.slice(1);
-      viewRoles["menu-"+entity] = {"description": "Menu de "+entityUpper, "group": entityUpper, "type": "list", "permission": false, "depends": [
+      viewRoles["list-"+entity] = {"description": "Menu de "+entityUpper, "group": entityUpper, "type": "list", "permission": false, "depends": [
              {"path": "/api/dao/"+entity, "method": "GET"},{"path":"/api/dynamic", "method": "GET"}]};
       viewRoles["add-"+entity] = {"description": "Adicionar "+entityUpper, "group": entityUpper, "type": "add", "permission": false, "depends": [
              {"path": "/api/dao/"+entity, "method": "POST"},{"path": "/api/dao/"+entity, "method": "GET"},{"path":"/api/dynamic", "method": "GET"}]};

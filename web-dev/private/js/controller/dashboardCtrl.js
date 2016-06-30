@@ -30,7 +30,7 @@ app.controller('dashboardCtrl', function($rootScope, $scope, $interval, $filter,
 		}
 	};
 
-	if($rootScope.checkRoles('menu-dashboard')){
+	if($rootScope.checkRoles('list-dashboard')){
 		var getDashboard = function(){
 			$scope.labelsRfid = [];
 

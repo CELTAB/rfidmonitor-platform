@@ -9,8 +9,8 @@
   <div class="form-group">
     <label class="col-sm-3 control-label">Usuário: (*)</label>
     <div class="col-sm-9">
-      <p ng-if="entity.userId" class="form-control-static">{{entity.User.name}}</p>
-      <select ng-if="!entity.userId" class="form-control select2"
+      <p ng-if="entity.id" class="form-control-static">{{entity.User.name}}</p>
+      <select ng-if="!entity.id" class="form-control select2"
               ng-model="entity.userId"
               ng-options="user.id as user.name for user in users">
       </select>
@@ -20,7 +20,7 @@
  	<div class="form-group">
 		<label class="col-sm-3 control-label">Descrição: (*)</label>
 		<div class="col-sm-9">
-		  <textarea class="form-control" rows="3" ng-model="entity.description"></textarea>
+		  <textarea class="form-control" rows="3" ng-model="entity.description" ng-enter="save(entity)"></textarea>
 		</div>
  	</div>
 

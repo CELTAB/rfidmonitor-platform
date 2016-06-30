@@ -2,7 +2,7 @@
 ** @author Mohamad Abu Ali <mohamad@abuali.com.br>
 */
 var app = angular.module('flexApp');
-app.controller('rfiddataCtrl', function($rootScope, $scope, $q, Restangular){
+app.controller('rfiddataCtrl', function($rootScope, $scope, $filter, $q, Restangular){
 
 	var rfiddataService = Restangular.service('rfiddatas');
 	var collectorService = Restangular.service('collectors');
@@ -36,12 +36,12 @@ app.controller('rfiddataCtrl', function($rootScope, $scope, $q, Restangular){
 			exporterPdfDefaultStyle: {fontSize: 9},
 			exporterPdfTableStyle: {margin: [20, 20, 20, 20]},
 			exporterPdfTableHeaderStyle: {fontSize: 10, bold: true, italics: true, color: 'red'},
-			exporterPdfHeader: { text: "Relatório", style: 'headerStyle' },
+			exporterPdfHeader: { text: "Exportação Rfid em "+$filter('date')(new Date(), 'dd/MM/yyyy - HH:mm:ss'), style: 'headerStyle' },
 			exporterPdfFooter: function ( currentPage, pageCount ) {
 				return { text: currentPage.toString() + ' of ' + pageCount.toString(), style: 'footerStyle' };
 			},
 			exporterPdfCustomFormatter: function ( docDefinition ) {
-				docDefinition.styles.headerStyle = { fontSize: 22, bold: true };
+				docDefinition.styles.headerStyle = { fontSize: 18, bold: true };
 				docDefinition.styles.footerStyle = { fontSize: 10, bold: true };
 				return docDefinition;
 			},

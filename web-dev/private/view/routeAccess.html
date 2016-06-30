@@ -93,10 +93,22 @@
                   <tbody>
                     <tr ng-repeat="(key, value) in routesView">
                       <td ng-if="key !== 'Admin'"><span>{{::key}}</span></td>
-                      <td><input type="checkbox" ng-if="value.list" ng-click="check(value.list.key, value.list.checked)" ng-model="value.list.checked" ng-checked="value.list.checked"></td>
-                      <td><input type="checkbox" ng-if="value.add" ng-click="check(value.add.key, value.add.checked)" ng-model="value.add.checked" ng-checked="value.add.checked"></td>
-                      <td><input type="checkbox" ng-if="value.edit" ng-click="check(value.edit.key, value.edit.checked)" ng-model="value.edit.checked" ng-checked="value.edit.checked"></td>
-                      <td><input type="checkbox" ng-if="value.remove" ng-click="check(value.remove.key, value.remove.checked)" ng-model="value.remove.checked" ng-checked="value.remove.checked"></td>
+                      <td>
+                        <input type="checkbox" ng-if="value.list" ng-click="check(value.list.key, value.list.checked)" ng-model="value.list.checked" ng-checked="value.list.checked">
+                        <a ng-if="value.list" ng-click="openDepends(value.list.key, value.list.dependsKeys, value.list.dependsMeKeys)"><i class="glyphicon glyphicon-info-sign"></i></a>
+                      </td>
+                      <td>
+                        <input type="checkbox" ng-if="value.add" ng-click="check(value.add.key, value.add.checked)" ng-model="value.add.checked" ng-checked="value.add.checked">
+                        <a ng-if="value.add" ng-click="openDepends(value.add.key, value.add.dependsKeys, value.add.dependsMeKeys)"><i class="glyphicon glyphicon-info-sign"></i></a>
+                      </td>
+                      <td>
+                        <input type="checkbox" ng-if="value.edit" ng-click="check(value.edit.key, value.edit.checked)" ng-model="value.edit.checked" ng-checked="value.edit.checked">
+                        <a ng-if="value.edit" ng-click="openDepends(value.edit.key, value.edit.dependsKeys, value.edit.dependsMeKeys)"><i class="glyphicon glyphicon-info-sign"></i></a>
+                      </td>
+                      <td>
+                        <input type="checkbox" ng-if="value.remove" ng-click="check(value.remove.key, value.remove.checked)" ng-model="value.remove.checked" ng-checked="value.remove.checked">
+                        <a ng-if="value.remove" ng-click="openDepends(value.remove.key, value.remove.dependsKeys, value.remove.dependsMeKeys)"><i class="glyphicon glyphicon-info-sign"></i></a>
+                      </td>
                     </tr>
                   </tbody>
                 </table>
