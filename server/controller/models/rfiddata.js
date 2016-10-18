@@ -329,16 +329,82 @@ var insertSummary = function(rfiddata, collector, callback){
 
       }
 
+      //Without timezone
+      //2015-08-18T18:08:40
+      var datePatternA = /\d{4}-?\d{2}-?\d{2}T\d{2}:\d{2}:\d{2}/ ;
+      //With timezone
+      //2015-08-18T18:08:40-0300
+      var datePatternB = /\d{4}-?\d{2}-?\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{4}/ ;
+
       var rfidDataListCounter = 0;
       rfidDataList.forEach(function(rfid){
 
         var obj = {};
         obj.rfidCode = rfid.identificationcode;
-        obj.rfidReadDate = rfid.datetime;
+
+        if(rfid.datetime){
+          if(rfid.datetime.length === 19){
+            // Should be like '2015-08-18T18:08:40'
+            // Will be assumed to be the same time of the server.
+
+            if(!datePatternA.test(rfid.datetime) || isNaN(new Date(rfid.datetime))){
+              //Does not match '2015-08-18T18:08:40-0300' requirements.
+              //cannot build a date object from the validated string.
+              var dateError = {
+                originalDateString: rfid.datetime,
+                parsedDateString: tmpDateString,
+                message: 'Can not build a Date object from the given date string: INVALID DATE.'
+              }
+              logger.warn(dateError);
+              return loopDone(dateError);
+            }
+            // FIXING THE TIMEZONE
+            // If the 'rfid.datetime' is like '2015-08-22T18:08:40' the object will look like this after the fix: Sat Aug 22 2015 18:08:40 GMT-0300 (BRT)
+            var dateFix = new Date(rfid.datetime);
+            dateFix.setTime(dateFix.getTime() + (dateFix.getTimezoneOffset() * 60 * 1000 ) );
+
+            // DATE OK
+            obj.rfidReadDate = dateFix;
+
+          }else if(rfid.datetime.length === 24){
+            // Should be like '2015-08-18T18:08:40-0300'
+            if(!datePatternB.test(rfid.datetime) || isNaN(new Date(rfid.datetime))){
+              //Does not match '2015-08-18T18:08:40-0300' requirements.
+              //cannot build a date object from the validated string.
+              var dateError = {
+                originalDateString: rfid.datetime,
+                message: 'Can not build a Date object from the given date string: INVALID DATE.'
+              }
+              logger.warn(dateError);
+              return loopDone(dateError);
+            }
+            // DATE OK
+            obj.rfidReadDate = rfid.datetime;
+
+          }else {
+            //invalid date string
+
+            var dateError = {
+              originalDateString: rfid.datetime,
+              message: 'Can not build a Date object from the given date string: TOO LONG OR TOO SHORT STRING.'
+            }
+            logger.warn(dateError);
+            return loopDone(dateError);
+          }
+        }else{
+          //invalid date object
+
+          var dateError = {
+            message: 'Can not build a Date object from the given date string: EMPTY/UNDEFINED STRING'
+          }
+          logger.warn(dateError);
+          return loopDone(dateError);
+        }
+
+
         obj.serverReceivedDate = new Date();
         obj.collectorId = collector.id;
         obj.packageId = newPk.id;
-
         return RfidModel.create(obj, {transaction:t})
         .then(function(newDoc){
           return loopDone();
