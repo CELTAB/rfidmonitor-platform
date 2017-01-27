@@ -41,8 +41,6 @@ function transfer(origMac, destMac){
 		sequelize.query(`select count(*) from tb_plat_rfiddata where \"collectorId\" = \'${origColId}\';`).spread(function(results, metadata) {
 			var count = results[0].count;
 
-			console.log(results[0]);
-
 			if(count === '0'){
 				console.log("No registers found for Origin Collector. Are you sure the required collectors are really those you have informed? Aborting.")
 				rl.close();
