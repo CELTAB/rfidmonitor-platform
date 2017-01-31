@@ -39,36 +39,41 @@ q={
 * @apiUse defaultQuery
 * @apiParam entity (Inside "q" object) Search RFIDData linkin with this Dinamic entity. Mandatory if embeddedRecords is true.
 * @apiParam entityQuery (Inside "q" object) Search for all entities that match query defined by entityQuery parameter. Also receives sequelize queries (See <a href="http://docs.sequelizejs.com/en/latest/docs/querying/" target="_blank"> here</a>).
-* @apiParam embeddedRecords (Inside "q" object) For each found entity, based on entityQuery, it searcs the related rfid records to embed as an array.
+* @apiParam embeddedRecords (Inside "q" object) For each found entity, based on entityQuery, it searches the related rfid records to embed as an array.
 *
 * @apiSuccessExample Success-Response:
 *HTTP/1.1 200 OK
-[
-  {
-    "id": 1,
-    "rfidCode": "5555526",
-    "extraData": null,
-    "rfidReadDate": "2015-11-23T16:50:22.819Z",
-    "serverReceivedDate": "2015-11-23T16:50:26.850Z",
-    "createdAt": "2015-11-23T16:50:26.853Z",
-    "updatedAt": "2015-11-23T16:50:26.853Z",
-    "deletedAt": null,
-    "collectorId": 3,
-    "packageId": 2
-  },
-  {
-    "id": 2,
-    "rfidCode": "5555522",
-    "extraData": null,
-    "rfidReadDate": "2015-11-23T16:50:22.821Z",
-    "serverReceivedDate": "2015-11-23T16:50:26.852Z",
-    "createdAt": "2015-11-23T16:50:26.854Z",
-    "updatedAt": "2015-11-23T16:50:26.854Z",
-    "deletedAt": null,
-    "collectorId": 3,
-    "packageId": 1
-  }
-]
+
+{
+    "count": 2,
+    "rows": [
+      {
+        "id": 1,
+        "rfidCode": "5555526",
+        "extraData": null,
+        "rfidReadDate": "2015-11-23T16:50:22.819Z",
+        "serverReceivedDate": "2015-11-23T16:50:26.850Z",
+        "createdAt": "2015-11-23T16:50:26.853Z",
+        "updatedAt": "2015-11-23T16:50:26.853Z",
+        "deletedAt": null,
+        "collectorId": 3,
+        "packageId": 2
+      },
+      {
+        "id": 2,
+        "rfidCode": "5555522",
+        "extraData": null,
+        "rfidReadDate": "2015-11-23T16:50:22.821Z",
+        "serverReceivedDate": "2015-11-23T16:50:26.852Z",
+        "createdAt": "2015-11-23T16:50:26.854Z",
+        "updatedAt": "2015-11-23T16:50:26.854Z",
+        "deletedAt": null,
+        "collectorId": 3,
+        "packageId": 1
+      }
+    ]
+}
+
 *
 @apiSuccessExample Response with Entity:
 HTTP/1.1 200 OK
@@ -155,7 +160,7 @@ q={
 }
 Accept all parameters defined by sequelize, and inside "entityQuery" it also receives sequelize queries.
 Seach-flow:
-  - when embeddedRecords is true: Search for all entities that match query defined by entityQuery parameter. And then for each found entity it searcs the related rfid records.
+  - when embeddedRecords is true: Search for all entities that match query defined by entityQuery parameter. And then for each found entity it searches the related rfid records.
   - When embeddedRecords is false or null/undefined (not informed): Search for all RFIDDatas based on the query and then link with the given dinamic antity, filtering based on the query defined by entityQuery parameter.
 */
 

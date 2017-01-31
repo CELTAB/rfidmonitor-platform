@@ -1,5 +1,5 @@
 /**
-* @api {get} /api/de/original/:entity 5. Get one Meta information
+* @api {get} /api/dynamic/:entity 5. Get one Meta information
 * @apiVersion 1.0.0
 * @apiName GetOneMeta
 * @apiGroup DynamicEntity
@@ -7,10 +7,11 @@
 *
 * @apiDescription Given an entity name, return the meta informatation used to define this dynamic entity.
 *
-* @apiParam (Param) {String} entity Name (identifier) of the Dynami Entity.
+* @apiParam (Param) {String} entity Name (identifier) of the Dynamic Entity.
 *
 * @apiSuccessExample Success-Response:
 *HTTP/1.1 200 OK
+*
 {
   "field": "Driver",
   "type": "ENTITY",

@@ -1,5 +1,5 @@
 /**
- @api {post} /api/de/register 1. Create a new Dynamic Entity
+ @api {post} /api/dynamic 1. Create a new Dynamic Entity
  @apiVersion 1.0.0
  @apiName PostDynamicEntity
  @apiGroup DynamicEntity
@@ -36,7 +36,7 @@
             {
                 "field" : "Driver",
                 "type" : "ENTITY",
-                "unique" : [],
+                "unique" : [ ["Full Name","Age"] ],
                 "defaultReference":"Full Name",
                 "structureList" : [
                     {
@@ -59,7 +59,7 @@
 
 @apiParam (Body) {String} field   Defines the name for the Dynamic Entity, must be an unique name {Required, Unique}.
 @apiParam (Body) {String} type   Defines the type of the data field. Follows pre-defined types {Required}.
-@apiParam (Body) {Array} unique Describe the field(s) that must have unique values {Required}.
+@apiParam (Body) {Array} unique Describe the field(s) that must have unique values. It is an array of arrays of uniques. {Required}.
 @apiParam (Body) {String} defaultReference Same name of the field used to reference this entity. Only alllowed for fields with type ENTITY {Required}.
 @apiParam (Body) {Array} structureList Defines a sub-entity with the same fields described here. Only alllowed for fields with type ENTITY {Required}.
 @apiParam (Body) {String} description A short description for the given field. Used only for field with type different of ENTITY.
@@ -67,12 +67,14 @@
 
 
 @apiSuccessExample Types Example
-ENTITY: "Used to create a new data type"
-RFIDCODE: "Relate the field with the RDIDData entity"
-TEXT: "Create a fiel that accept only text values (strings)"
-DATETIME: "Field to store a timestamp"
-INTEGER: "Field to store an integer value"
-GROUP: "Relate the field with the Group entity"
+ENTITY: "Used to define the object as an entity. Is able to contain fields and other entities."
+RFIDCODE: "A field that relates a string code to a Rfiddada code. This field enables matching an dynamic entity to a rfiddata code."
+TEXT: "A field for text values (strings)"
+DATETIME: "A field to store a timestamp"
+INTEGER: "A field to store an integer value"
+DOUBLE: "A field to store an floating point value"
+GROUP: "A field that relates the entity to the system's group entity."
+IMAGE: "A field that enables image upload, and holds the uploaded image to the registry."
 
 
 @apiSuccessExample Success-Response:

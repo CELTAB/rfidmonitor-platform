@@ -22,7 +22,7 @@
 * {
 *   "message": "Token not allowed for this opperation",
 *   "status": 403,
-*   "error": "Get out dog."
+*   "error": "Missing permission to access x resource with x method."
 * }
 *
 * @apiErrorExample ResponseError:

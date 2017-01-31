@@ -19,16 +19,20 @@
 *
 * @apiSuccessExample Success-Response:
 *HTTP/1.1 200 OK
-  [
-    {
-      "id": 1,
-      "appClient": 1,
-      "uriRoute": 2,
-      "createdAt": "2016-02-11T12:42:54.875Z",
-      "updatedAt": "2016-02-11T12:42:54.875Z",
-      "deletedAt": null
-    }
-  ]
+{
+    count: 1,
+    rows: [
+      {
+        "id": 1,
+        "appClient": 1,
+        "uriRoute": 2,
+        "createdAt": "2016-02-11T12:42:54.875Z",
+        "updatedAt": "2016-02-11T12:42:54.875Z",
+        "deletedAt": null
+      }
+    ]
+}
+
 *
 * @apiUse defaultResponses
 */

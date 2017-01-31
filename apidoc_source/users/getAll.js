@@ -19,7 +19,9 @@
 *
 * @apiSuccessExample Success-Response:
 *HTTP/1.1 200 OK
-*[
+*{
+*   count: 2,
+*   rows: [
 * {
 *   "id": 1,
 *   "name":"Jaime",
@@ -33,6 +35,8 @@
 *   "username":"admin"
 * }
 *]
+*}
+*
 *
 * @apiUse defaultResponses
 */

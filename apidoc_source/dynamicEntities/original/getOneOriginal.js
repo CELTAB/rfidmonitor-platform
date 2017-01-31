@@ -1,5 +1,5 @@
 /**
-* @api {get} /api/de/original/:entity 3. Get one Original definition
+* @api {get} /api/dynamic/:entity?q={"original":true} 3. Get one Original definition
 * @apiVersion 1.0.0
 * @apiName GetOneOriginal
 * @apiGroup DynamicEntity
