@@ -26,6 +26,16 @@
 var SequelizeClass = require('sequelize');
 var sequelize = require(__base + 'controller/database/platformsequelize');
 
+/**
+* Definitions for the Sequelize Entity definitions.
+* @namespace SequelizeModels
+*/
+
+/**
+ * Entity definition for DynamicEntity
+ * @alias DynamicEntity
+ * @memberof SequelizeModels
+ */
 var model = sequelize.define("DynamicEntity", {
 	identifier : {
 		type : SequelizeClass.STRING,

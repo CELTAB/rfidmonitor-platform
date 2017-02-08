@@ -32,11 +32,16 @@ var PlatformError = require(__base + 'utils/platformerror');
 
 var Collector = sequelize.model('Collector');
 
+/**
+ * Class responsible to serve the collector's communication channel, by listening to TCP connections.
+ * Controls every event (new connections, errors, incomming data, etc) within the sockets.
+ * @class
+ */
 var Server = function(){
 	var server = net.createServer();
 	server.on('connection', function(socket) {
 		//base info about the collector
-    var collector = {};
+		var collector = {};
 		socket.isConnected = true;
 		var protocol = new ProtocolConnectionController(socket, function(collectorInfo){
 			//Set local variables to use as logger info when the connections is closed.
@@ -46,14 +51,14 @@ var Server = function(){
 		var address = {};
 		address.address = socket.remoteAddress;
 		address.port = socket.remotePort;
-  	logger.debug("New connection from " + address.address);
+		logger.debug("New connection from " + address.address);
 
-  	var lostCollector = function(){
+		var lostCollector = function(){
 			logger.info('Client with MAC ' + collector.mac + ' and ID ' + collector.id + ' Disconnected');
 			socket.isConnected = false;
 			protocol = null;
 			collectorPool.updateStatusByMac(collector, Collector.statusEnum.OFFLINE);
-  	}
+		}
 
 		socket.on('end', lostCollector);
 		socket.on('close', lostCollector);
@@ -64,9 +69,9 @@ var Server = function(){
 		});
 
 		socket.on("error", function(err) {
-		 	socket.destroy();
-    	logger.error(err.stack);
-  	});
+			socket.destroy();
+			logger.error(err.stack);
+		});
 
 		socket.setTimeout(13000, function(){
 			logger.warn("Socket Timeout");
@@ -75,9 +80,13 @@ var Server = function(){
 		});
 	});
 
+	/**
+	 * Starts the TCP listening.
+	 * @return {void}
+	 */
 	this.startServer = function(){
 		server.listen(8124, function() {
-		  logger.info('RT Server bound on port 8124');
+			logger.info('RT Server bound on port 8124');
 		});
 	}
 }

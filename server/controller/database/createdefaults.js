@@ -22,97 +22,146 @@
 **
 ****************************************************************************/
 
+/**
+ * @module CreateDefaults
+ */
+
 'use strict';
 var logger = require('winston');
 var sequelize = require(__base + 'controller/database/platformsequelize');
 
 var User = sequelize.model('User');
 var Group = sequelize.model('Group');
+
+/**
+ * Create a default group, admin user and a token with access to ANY route with ANY method, full access.
+ * @param {Function} done callback for when done.
+ */
 var CreateDefaults = function(done){
-  /*
+    /*
     If no active user is found it means that there's no way to access the system.
-    So need to create a default User with Admin privileges.
+    So, it is needed to create a default User with Admin privileges.
     Create and admin user and a token with access to ANY route with ANY method, full access.
-  */
-  User.findAll({where:{deletedAt:null}}).then(function(result){
-    if(result.length > 0){
-      return createDefaultGroup(done);
-    };
+    */
+    User.findAll({where:{deletedAt:null}}).then(function(result){
+        if(result.length > 0){
+            return createDefaultGroup(done);
+        };
 
-    createDefaultGroup(function(err){
-      if(err) return done(err);
+        createDefaultGroup(function(err){
+            if(err) return done(err);
 
-      return createDefaults(done);
+            return createDefaults(done);
+        });
     });
-  });
 };
 
+/**
+ * Finds for the default group, if not present, creates it.
+ * @param  {Function} done callback for when done.
+ * @return {callback_output}        returns the callback output.
+ */
 var createDefaultGroup = function(done){
-  Group.findOne({where: {isDefault: true, deletedAt: null}})
-  .then(function(group){
-    if(!group){
-      return defaultGroup(done);
-    }
+    Group.findOne({where: {isDefault: true, deletedAt: null}})
+    .then(function(group){
+        if(!group){
+            return defaultGroup(done);
+        }
 
-    return done();
-  })
-  .catch(function(e){
-    logger.error('Error on find default Group: ' + e);
-    return done(e);
-  });
+        return done();
+    })
+    .catch(function(e){
+        logger.error('Error on find default Group: ' + e);
+        return done(e);
+    });
 }
 
+/**
+ * [createDefaults description]
+ * @param  {Function} done [description]
+ * @return {void}
+ */
 var createDefaults = function(done){
-  //Create default credentials for one can user the system as admin, at the first interaction
-	defaultUser(function(err, user){
-    if(err) return done(err);
-		defaultAppClient(user, function(err, appClient){
-      if(err) return done(err);
-			return grantAccessAny(appClient, done);
-		});
-	});
+    //Create default credentials for one can user the system as admin, at the first interaction
+    defaultUser(function(err, user){
+        if(err) return done(err);
+        defaultAppClient(user, function(err, appClient){
+            if(err) return done(err);
+            return grantAccessAny(appClient, done);
+        });
+    });
 };
-//Default handler for error and succes on create default.
+
+/**
+ * Generic callback handler.
+ * @param  {String}   when     action being handled.
+ * @param  {Function} callback callback to be executed on success or error.
+ * @return {callback_output}            returns the output from the callback.
+ */
 var handlers = function(when, callback){
-	return {
-		success: function(result){
-			return callback(null, result);
-		},
-		error: function(err){
-			logger.error('Error on Create default ' + when + ': ' + err);
-			return callback(err);
-		}
-	}
+    return {
+        success: function(result){
+            return callback(null, result);
+        },
+        error: function(err){
+            logger.error('Error on Create default ' + when + ': ' + err);
+            return callback(err);
+        }
+    }
 };
-//Create the default Admin User and password
+
+/**
+ * Creates the default Admin User and password
+ * @param  {Function} done callback for when done.
+ * @return {void}
+ */
 var defaultUser = function(done){
-	var handler = handlers('User', done);
-	var defaultUser = {name: 'Default Administrator', username: 'admin', password: 'admin', email:'invalid@email.com'};
-	User.create(defaultUser).then(handler.success).catch(handler.error);
+    var handler = handlers('User', done);
+    var defaultUser = {name: 'Default Administrator', username: 'admin', password: 'admin', email:'invalid@email.com'};
+    User.create(defaultUser).then(handler.success).catch(handler.error);
 };
-//Create the default app client with token to the default admin user
+
+/**
+ * Create the default app client with token to the default admin user
+ * @param  {Object}   user reference user which the app client will be created.
+ * @param  {Function} done callback for when done.
+ * @return {void}
+ */
 var defaultAppClient = function(user, done){
-	var AppClient = sequelize.model('AppClient');
-	var handler = handlers('AppClient', done);
-	var app = {description: 'Default appClient for ' + user.username, userId: user.id, def: true};
-	AppClient.create(app).then(handler.success).catch(handler.error);
+    var AppClient = sequelize.model('AppClient');
+    var handler = handlers('AppClient', done);
+    var app = {description: 'Default appClient for ' + user.username, userId: user.id, def: true};
+    AppClient.create(app).then(handler.success).catch(handler.error);
 };
-//Create permission allow admin user access ANY route with ANY method
+
+/**
+ * Creates the permission that allow the given app client to access ANY route with ANY method
+ * @param  {Object}   appClient the target app client
+ * @param  {Function} done      callback for when done.
+ * @return {void}
+ */
 var grantAccessAny = function(appClient, done){
-	var Routes = sequelize.model('UriRoute');
-  var Access = sequelize.model('RouteAccess');
-	var handler = handlers('Access Grant', done);
-	Routes.findOne({where: {path: 'ANY'}, method: 'ANY'})
-	.then(function(route){
-    //Create access to ANY route with ANY method
-    var grantAccess = {appClient: appClient.id, uriRoute: route.id};
-    Access.create(grantAccess).then(handler.success).catch(handler.error);
-	})
-	.catch(handler.error);
+    var Routes = sequelize.model('UriRoute');
+    var Access = sequelize.model('RouteAccess');
+    var handler = handlers('Access Grant', done);
+    Routes.findOne({where: {path: 'ANY'}, method: 'ANY'})
+    .then(function(route){
+        //Create access to ANY route with ANY method
+        var grantAccess = {appClient: appClient.id, uriRoute: route.id};
+        Access.create(grantAccess).then(handler.success).catch(handler.error);
+    })
+    .catch(handler.error);
 };
+
+/**
+ * Creates the default group
+ * @param  {Function} done callback for when done
+ * @return {void}
+ */
 var defaultGroup = function(done){
-  var handler = handlers('Group', done);
-  var defaultGroup = {name: 'Default Group', isDefault: true, description: 'Auto-generated Default Group'};
-  Group.create(defaultGroup).then(handler.success).catch(handler.error);
+    var handler = handlers('Group', done);
+    var defaultGroup = {name: 'Default Group', isDefault: true, description: 'Auto-generated Default Group'};
+    Group.create(defaultGroup).then(handler.success).catch(handler.error);
 };
+
 module.exports = CreateDefaults;

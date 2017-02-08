@@ -28,6 +28,11 @@ var Collector = require(__base + 'models/collector');
 // var db = require('../utils/database');
 // var CollectorDao = require('../dao/collectordao');
 
+/**
+* Class that holds a pool of collectors present in the system.
+* The collector's status can be get and set, and is kept in memory.
+* @class
+*/
 var CollectorPool = function CollectorPool(){
 	var pool = {};
 	Collector.findAll().then(function(collectors){
@@ -43,22 +48,42 @@ var CollectorPool = function CollectorPool(){
 		return new PlatformError("CollectorPool : Cannot get all collectors from database. Error: " + e);
 	});
 
+	/**
+	* Get every collector present in the pool;
+	* @return {Object} Is a object map, where the key is the collector's mac.
+	*/
 	this.getAll = function(){
 		return pool;
 	}
 
+	/**
+	* Get a collector from the pool, by its mac.
+	* @param  {String} mac is the collector's mac address.
+	* @return {Object}     is the collector from the pool.
+	*/
 	this.getCollectorByMac = function(mac){
 		return pool[mac];
 	}
 
+	/**
+	* Get the collector's status from the pool.
+	* @param  {String} mac is the collector's mac address.
+	* @return {Collector.statusEnum}     Collector.statusEnum.OFFLINE or Collector.statusEnum.ONLINE
+	*/
 	this.getStatusByMac = function(mac){
-    if(pool[mac]){
-      return pool[mac].status || Collector.statusEnum.OFFLINE;
-    }
-    logger.debug("Collector pool getStatusByMac" + mac + " not found.");
+		if(pool[mac]){
+			return pool[mac].status || Collector.statusEnum.OFFLINE;
+		}
+		logger.debug("Collector pool getStatusByMac" + mac + " not found.");
 		return Collector.statusEnum.OFFLINE;
-  }
+	}
 
+	/**
+	* Update a collector in the pool, by the given mac reference and status wanted.
+	* @param  {Object} collector is the collector.
+	* @param  {Collector.statusEnum} status    is the new status: Collector.statusEnum.OFFLINE or Collector.statusEnum.ONLINE
+	* @return {boolean}           True for a successful update, or false otherwise.
+	*/
 	this.updateStatusByMac = function(collector, status){
 		if(this.isCollectorValid(collector)){
 			logger.debug("Setting status of " + collector.name + " to: " + status);
@@ -74,8 +99,13 @@ var CollectorPool = function CollectorPool(){
 		}
 	}
 
-  this.push = function(collector){
-  	if(this.isCollectorValid(collector)){
+	/**
+	* Insert a new collector into the pool. Uses its mac as key reference. This does not remove from database, only from the memory.
+	* @param  {Object} collector is the collector.
+	* @return {boolean}           True for a successful insert, or false otherwise.
+	*/
+	this.push = function(collector){
+		if(this.isCollectorValid(collector)){
 			pool[collector.mac] = collector;
 			logger.debug("CollectorPool : pushed");
 			return true;
@@ -84,6 +114,11 @@ var CollectorPool = function CollectorPool(){
 		return false;
 	}
 
+	/**
+	* Remove a collector from the pool, by its mac. This does not remove from database, only from the memory.
+	* @param  {String} mac is the collector's mac.
+	* @return {boolean}           True for a successful remove, or false otherwise.
+	*/
 	this.removeByMac = function(mac){
 		if(pool[mac]){
 			delete pool[mac];
@@ -94,6 +129,11 @@ var CollectorPool = function CollectorPool(){
 		return false;
 	}
 
+	/**
+	* Validates the collector's mac string.
+	* @param  {Object}  collector the collector.
+	* @return {boolean}           True for a valid mac, or false otherwise.
+	*/
 	this.isCollectorValid = function(collector){
 		var regex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/;
 		if(collector.mac && regex.test(collector.mac)){
@@ -102,17 +142,26 @@ var CollectorPool = function CollectorPool(){
 		return false;
 	}
 
-  if(CollectorPool.caller != CollectorPool.getInstance){
-      throw new PlatformError("This object cannot be instanciated");
-  }
+	if(CollectorPool.caller != CollectorPool.getInstance){
+		throw new PlatformError("This object cannot be instanciated");
+	}
 }
 
+/**
+* Holds the only instance for the CollectorPool class. Singleton implementation.
+* @type {Object}
+*/
 CollectorPool.instance = null;
+
+/**
+* Gets the only instance for the CollectorPool class.
+* @return {Object} is the CollectorPool
+*/
 CollectorPool.getInstance = function(){
-  if(this.instance === null){
-      this.instance = new CollectorPool();
-  }
-  return this.instance;
+	if(this.instance === null){
+		this.instance = new CollectorPool();
+	}
+	return this.instance;
 }
 
 module.exports = CollectorPool.getInstance();

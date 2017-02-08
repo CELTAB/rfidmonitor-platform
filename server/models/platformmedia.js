@@ -27,6 +27,11 @@ var SequelizeClass = require('sequelize');
 var sequelize = require(__base + 'controller/database/platformsequelize');
 var randomChars = require(__base + 'utils/randomchars');
 
+/**
+ * Entity definition for PlatformMedia
+ * @alias PlatformMedia
+ * @memberof SequelizeModels
+ */
 var model = sequelize.define("PlatformMedia", {
 	url : {
 		type : SequelizeClass.STRING,

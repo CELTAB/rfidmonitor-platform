@@ -28,23 +28,50 @@ var Sequelize = require('sequelize');
 var PlatformError = require(__base + 'utils/platformerror');
 var DynamicEntity = require(__base + 'models/dynamicentity');
 
+/**
+ * Validates the definition of a new dynamic entity
+ * @class DEValidator
+ */
 var DEValidator = function (){
+
 }
 
+/**
+ * Is the enum that holds every possible element type for a dynamic entity composition.
+ * @type {ENUM}
+ * @readonly
+ * @enum {String}
+ */
 DEValidator.prototype.typesEnum = {
+	/** Field that relates the entity by a string code to the rfiddata */
 	RFIDCODE : "RFIDCODE",
+	/** Defines the element as an entity */
 	ENTITY : "ENTITY",
+	/** Field for text input. */
 	TEXT : "TEXT",
+	/** Field that relates the entity to a group from the system */
 	GROUP : "GROUP",
+	/** Field for number input. */
 	INTEGER : "INTEGER",
+	/** Field for floating point number  */
 	DOUBLE : "DOUBLE",
+	/** Field that enables an upload and attachment for the entity */
 	IMAGE : "IMAGE",
+	/** Field for datetime input */
 	DATETIME : "DATETIME",
+	/** deprecated */
 	STATUS : "STATUS",
+	/** deprecated */
 	ID : "ID",
+	/** A fallback type. */
 	UNKNOWN : null
 }
 
+/**
+ * Parse a typesEnum by string to a Sequelize database type.
+ * @param  {typesEnum} type from DEValidator.prototype.typesEnum
+ * @return {String}      The Sequelize type.
+ */
 DEValidator.prototype.typesEnumToSequelize = function(type){
 	switch(type){
 		case DEValidator.prototype.typesEnum.RFIDCODE :
@@ -69,7 +96,11 @@ DEValidator.prototype.typesEnumToSequelize = function(type){
 			throw new PlatformError("UNKNOWN DEValidator type to SEQUELIZE convertion ["+type+"]");
 	}
 }
-
+/**
+ * Parse a Sequelize Type by string format to an Sequelize object type.
+ * @param  {typesEnum} type from DEValidator.prototype.typesEnum
+ * @return {Object}      The Sequelize type object .
+ */
 DEValidator.prototype.typesStrToRealTypes = function(type){
 	switch(type){
 		case 'Sequelize.STRING' :
@@ -92,36 +123,56 @@ DEValidator.prototype.typesStrToRealTypes = function(type){
 	}
 }
 
+/**
+ * Gets the typesEnum from the enum object, or return undefined if not found.
+ * @param  {typesEnum} type from DEValidator.prototype.typesEnum
+ * @return {String}      The Sequelize type in string format or undefined if not found.
+ */
 DEValidator.prototype.validateTypesEnum = function(type){
 	return DEValidator.prototype.typesEnum[type];
 }
 
+/**
+ * Analyses the given entity field, and every attribute that should be present.
+ * @memberof DEValidator
+ * @param  {Object}  field  Field object.
+ * @param  {Boolean} isRoot Defines if the current field is in the root level of the definition.
+ * @return {Array}         Array of errors, or false if no errors found.
+ */
 var validateEntityField = function(field, isRoot){
 
 	var errors = [];
 
+	//Check: field present and its length
 	if(!field["field"]){
 		errors.push({field : "field", error : "field not found"});
 	}else if(!validator.isLength(field["field"], 3)){
 		errors.push({obj : field.field, error : "field shorter than 3 characters"});
 	}
 
+	//Check: description present and its length
 	if(field["description"] && !validator.isLength(field["description"], 3)){
 		errors.push({obj : field.field, error : "description shorter than 3 characters"});
 	}
 
+	//Check: type present and if it is a valid type
 	if(!field["type"] ){
 		errors.push({field : field.field, error : "type not found"});
 	}else if (!DEValidator.prototype.validateTypesEnum(field["type"])){
 		errors.push({field : field.field, error : "type invalid"});
 	}
 
+	//Check: if root, should be an entity field.
 	if(isRoot && field["type"] != DEValidator.prototype.typesEnum.ENTITY){
 		errors.push({obj : field.field, error : "root object is not an ENTITY"});
 	}
 
+	//For now on, the first level of the structure should be ok.
+
+	//Specific validations for a field of type: entity
 	if(field["type"] == DEValidator.prototype.typesEnum.ENTITY){
 
+		//Need a structureList attribute, being an not empty array.
 		if(!field["structureList"]){
 			errors.push({obj : field.field, error : "structureList not found"});
 		} else if(!isArray(field["structureList"])){
@@ -133,6 +184,7 @@ var validateEntityField = function(field, isRoot){
 			var defaultReference = null;
 			var defaultRefOk = false;
 
+			//Every entity need a field reference.
 			if(!field["defaultReference"]){
 				errors.push({field : "defaultReference", error : "defaultReference not found"});
 				field["defaultReference"]
@@ -140,8 +192,11 @@ var validateEntityField = function(field, isRoot){
 				defaultReference = field["defaultReference"];
 			}
 
+			//Navigate in the structureList attribute. This should contain a list of other fields. This is heading for a recursion.
 			for(var ie in field["structureList"]){
 				var entityField = field["structureList"][ie];
+
+				//If the current field is the one marked as default reference, It is mandatory for it being not null.
 				if(defaultReference && defaultReference == entityField.field){
 					if(entityField["allowNull"] === true) {
 						errors.push({field : "defaultReference", error : "defaultReference field cannot allow null"});
@@ -149,25 +204,37 @@ var validateEntityField = function(field, isRoot){
 							defaultRefOk = true;
 					}
 				}
-
+				// Now, re-do this entire process for the current field. The second parameter is false because this is not root anymore.
 				var e = validateEntityField(entityField, false);
+				//In case of errors: concat it with the others possible errors found in the recursion.
 				if(e)
 					errors.push(e);
 			}
 
+			//If the default reference was not found in the structureList array, something is going wrong. It should be found.
 			if(defaultReference && !defaultRefOk)
 				errors.push({field : "defaultReference", error : "defaultReference not match to any field in the structureList"});
 
 		}
 	}else{
+		// This field is not of entity type, so it is mandatory to have the allowNull attribute.
 		if(!validator.isBoolean(field["allowNull"])){
 			errors.push({field : field.field, error : "allowNull not found or invalid"});
 		}
 	}
 
+	// If there are errors found in the recursion, the errors array has something and should be returned. Otherwise, the array is empty
+	// and we can return false to symbolize that there is not errors.
 	return errors.length > 0 ? errors : false;
 }
 
+/**
+ * Check if the entity name given is a valid name, being unique in the system.
+ * It looks among the other valid entities already present in the database.
+ * @memberof DEValidator
+ * @param  {Array} pool Contains an array of entities that are already valid and present in the system, and also the new one that are being validated, in a single array.
+ * @return {Object}      Error message if there is a name conflict or null if everything ok.
+ */
 var searchForRepeatedIdentifiers = function(pool){
 	var controller = {};
 	for (var i in pool){
@@ -181,8 +248,14 @@ var searchForRepeatedIdentifiers = function(pool){
 	return null;
 }
 
+/**
+ * Modifies the original object of entities definition, to build different independent objects for each entity in the structure.
+ * Every child entity is removed from its parent, an in place its identifier and type is kept.
+ * @memberof DEValidator
+ * @param  {Object} json is the entire definition object, containing every entity in a single structure
+ * @return {Array}      an array of independent entities.
+ */
 var splitAndUpdateRootObj = function(json){
-	//... Sub entidades sao recortadas da entidades pai, e no lugar fica o nome e o tipo apenas.
 	var newEntitiesSplit = [];
 
 	for (var i in json ){
@@ -200,7 +273,7 @@ var splitAndUpdateRootObj = function(json){
 				//Normalize the defaultReference field
 				rootObj.structureList[is].defaultReference = normalizeString(rootObj.structureList[is].defaultReference);
 
-				//remove useless for a field, but keep on the copy that will  be the entity itself.
+				//remove what is useless for the updated field, but keep on the copy that will  be the entity itself.
 				delete rootObj.structureList[is].unique;
 				delete rootObj.structureList[is].structureList;
 
@@ -215,7 +288,7 @@ var splitAndUpdateRootObj = function(json){
 		for(var iun in rootObj.unique ){
 			for (var iunn in rootObj.unique[iun]){
 				rootObj.unique[iun][iunn] = normalizeString(rootObj.unique[iun][iunn]);
-				logger.warn("devalidator : splitAndUpdateRootObj : if this is not string could generate problems");
+				logger.warn("devalidator : splitAndUpdateRootObj : if this is not string could generate problems"); //TODO improve
 			}
 		}
 		//Normalize the defaultReference field
@@ -226,12 +299,16 @@ var splitAndUpdateRootObj = function(json){
 	return newEntitiesSplit;
 }
 
+/**
+ * Analyses, validate and reprepare a entity root object.
+ * Goes through validateEntityField, splitAndUpdateRootObj, searchForRepeatedIdentifiers and finally persists the entities.
+ * @param  {json}   json     The root entity object.
+ * @param  {Function} callback Function called to return errors or the validated entities.
+ * @return {callback_output}            Executes the callback when returning.
+ */
 DEValidator.prototype.validateClientRootArray = function(json, callback){
-	/*
-	Verifica integridade do obj:
-	... Verifica campos minimos.
-	... Valida tipos.
-	*/
+
+	//Check the object integrity: mandatory fields and types
 	if(!json)
 		return callback({"message" : "Null object"}, null);
 
@@ -241,6 +318,7 @@ DEValidator.prototype.validateClientRootArray = function(json, callback){
 	if (json.length == 0)
 		return callback({"message" : "Empty Array"}, null);
 
+	//Call the recursive validation function for the object fields.
 	for (var i in json){
 		var rootObj = json[i];
 		var errors = validateEntityField(rootObj, true);
@@ -249,13 +327,9 @@ DEValidator.prototype.validateClientRootArray = function(json, callback){
 	}
 
 	/*
-	Encontra e separa as entidades.
-	... Sub entidades sao recortadas da entidades pai, e no lugar fica o nome e o tipo apenas.
-	... Carrega do banco todas as entidades.
-	... Compara os nomes de todas as entidades em busca de nomes repetidos.
-	... Guarda no banco cada entidade nova em tuplas.
+	Find and replace entities by a processed version.
+	Child entities are removed from the parent entity, keeping in place its reference only.
 	*/
-
 	var newEntities = splitAndUpdateRootObj(json);
 	// logger.debug("##" +JSON.stringify(newEntities, null , '\t'));
 	if(newEntities.length == 0){
@@ -263,15 +337,19 @@ DEValidator.prototype.validateClientRootArray = function(json, callback){
 		return callback({ "message" : "Unexpected behavior: newEntities list is empty after splitAndUpdateRootObj"}, null);
 	}
 
+	//Temporary entities pool. Used for unique identifier validation.
 	var entitiesPool = [];
+
+	//Add the new entities the client is trying to create.
 	entitiesPool = entitiesPool.concat(newEntities);
 
+	//Add the current entities already present in the system.
 	DynamicEntity.findAll({attributes : ['original']}).then(function(entities){
 		// The entities from database are raw strings. The must be parsed.
 		for(var icer in entities){
 			entitiesPool.push(JSON.parse(entities[icer].original));
 		}
-		// logger.debug("##" +JSON.stringify(entitiesPool, null , '\t'));
+
 		//Find repeated names. Return errors if so.
 		var error = searchForRepeatedIdentifiers(entitiesPool);
 		if(error){
@@ -358,14 +436,32 @@ var createFieldMeta = function(field){
 	return field;
 }
 
+/**
+ * Check if the given variable is an object.
+ * @memberof DEValidator
+ * @param  {Object}  a The given variable for checking.
+ * @return {Boolean}   If it is object or not.
+ */
 var isObject = function(a) {
     return (!!a) && (a.constructor === Object);
 };
 
+/**
+ * Check if the given variable is an array.
+ * @memberof DEValidator
+ * @param  {Array}  a The given variable for checking.
+ * @return {Boolean}   If it is array or not.
+ */
 var isArray = function(a) {
     return (!!a) && (a.constructor === Array);
 };
 
+/**
+ * Check if the given object has not attributes.
+ * @memberof DEValidator
+ * @param  {Object}  a The given variable for checking.
+ * @return {Boolean}   If it has zero attributes or not.
+ */
 var isObjectEmpty = function(a){
 	return Object.keys(a).length == 0;
 }
@@ -383,7 +479,7 @@ var isObjectEmpty = function(a){
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-//TODO: This is aolson into utils. Test with Gustavo's Help
+//TODO: This is also into utils. Test with Gustavo's Help
 //var defaultDiacriticsRemovalap = require(__base + 'utils/diacritics');
     var defaultDiacriticsRemovalap = [
         {'base':'A', 'letters':'\u0041\u24B6\uFF21\u00C0\u00C1\u00C2\u1EA6\u1EA4\u1EAA\u1EA8\u00C3\u0100\u0102\u1EB0\u1EAE\u1EB4\u1EB2\u0226\u01E0\u00C4\u01DE\u1EA2\u00C5\u01FA\u01CD\u0200\u0202\u1EA0\u1EAC\u1EB6\u1E00\u0104\u023A\u2C6F'},
@@ -494,6 +590,13 @@ var isObjectEmpty = function(a){
 			return str.replace(regex, '');
 		}
 
+/**
+ * A function to normalize a given string.
+ * Applies trim, normalize special chars, apply a whitelist of allowed chars in the string.
+ * @memberof DEValidator
+ * @param  {String} str Original string not normalized.
+ * @return {String}     The normalized string.
+ */
     var normalizeString = function(str){
     	str = validator.trim(str);
     	str = removeDiacritics(str);

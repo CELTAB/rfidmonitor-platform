@@ -28,6 +28,11 @@ var sequelize = require(__base + 'controller/database/platformsequelize');
 var User = require(__base + 'models/user');
 var Tokenizer = require(__base + 'utils/randomchars');
 
+/**
+ * Entity definition for AppClient
+ * @alias AppClient
+ * @memberof SequelizeModels
+ */
 var model = sequelize.define("AppClient", {
 	token: {
 		type : SequelizeClass.STRING,

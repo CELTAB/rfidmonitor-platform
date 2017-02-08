@@ -27,6 +27,11 @@ var SequelizeClass = require('sequelize');
 var sequelize = require(__base + 'controller/database/platformsequelize');
 var Hash = require(__base + 'utils/hashing');
 
+/**
+ * Entity definition for User
+ * @alias User
+ * @memberof SequelizeModels
+ */
 var model = sequelize.define("User", {
 	name:{
 		type: SequelizeClass.STRING,

@@ -27,6 +27,11 @@ var SequelizeClass = require('sequelize');
 var sequelize = require(__base + 'controller/database/platformsequelize');
 var Group = require(__base + 'models/group');
 
+/**
+ * Entity definition for Collector
+ * @alias Collector
+ * @memberof SequelizeModels
+ */
 var model = sequelize.define("Collector", {
 	name: {
 		type : SequelizeClass.STRING,

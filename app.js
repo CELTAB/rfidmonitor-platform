@@ -22,12 +22,43 @@
 **
 ****************************************************************************/
 
+/**
+* Main app module [ app.js ]
+* @module main
+*/
+
+/**
+* Main app namespace [ app.js ]
+* @namespace app
+*/
+
+/**
+* Holds the backend base code path
+* @memberof app
+* @type string
+*/
 global.__base = __dirname + '/server/';
+
+/**
+* Holds the app execution type between development and production.
+* @memberof app
+* @type boolean
+*/
 global.__DevEnv = false;
-// Keep as firsts requires >>>
+
+/////////////////////////////////
+// Keep as firsts requires >>> //
+/////////////////////////////////
+
 var Logs = require(__base + 'utils/logs');
+
 var logger = require('winston');
-// <<< end of 'keep as first requires'
+
+/////////////////////////////////////////
+// <<< end of 'keep as first requires' //
+/////////////////////////////////////////
+
+//Requirements
 var express = require('express');
 var bodyParser = require('body-parser');
 var http = require('http');
@@ -38,10 +69,13 @@ var session = require('client-sessions');
 var passport = require('passport');
 
 var args = process.argv;
+
+//Default logging options.
 var debugConsole = false,
 debugFile = false,
 sillyConsole = false,
 sillyFile = false;
+
 // Verify parameters for logs configuration
 if(args.indexOf('--debugAll') > -1){
 	debugConsole = true;
@@ -59,6 +93,7 @@ if(args.indexOf('--debugAll') > -1){
 		sillyFile = true;
 	}
 }
+//Initialize the Logging module.
 new Logs(debugConsole, debugFile, sillyConsole, sillyFile);
 
 if(args.indexOf('--dev') > -1){

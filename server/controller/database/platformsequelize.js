@@ -22,10 +22,16 @@
 **
 ****************************************************************************/
 
+
+
 var logger = require('winston');
 var Sequelize = require('sequelize');
 var dbConfig = require(__base + 'config/db/postgres.json');
 
+/**
+* Uses the database credentials from config/db/postgres.json, to create a new database connection.
+* @class
+*/
 var PlatformSequelize = function PlatformSequelize(){
 	var connectionString = 'postgres://' + dbConfig.username + ':' + dbConfig.password + '@' + dbConfig.ipaddress + ':' + dbConfig.portnumber + '/' + dbConfig.dbname;
 	var sequelize = new Sequelize(connectionString, {logging : false});
@@ -33,18 +39,27 @@ var PlatformSequelize = function PlatformSequelize(){
 	this.getSequelize = function(){
 		return sequelize;
 	}
-  if(PlatformSequelize.caller != PlatformSequelize.getInstance){
-      throw new PlatformError("This object cannot be instanciated");
-  }
+	if(PlatformSequelize.caller != PlatformSequelize.getInstance){
+		throw new PlatformError("This object cannot be instanciated");
+	}
 }
 
+/**
+* Holds the Sequelize connection instance.
+* @type {Sequelize}
+*/
 PlatformSequelize.instance = null;
+
+/**
+* Singleton implemenation for the Sequelize database connection.
+* @return {Sequelize} the only instance for the database connection.
+*/
 PlatformSequelize.getInstance = function(){
-  if(this.instance === null){
+	if(this.instance === null){
 		logger.silly('Initializing Platform Sequelize');
-    this.instance = new PlatformSequelize();
-  }
-  return this.instance;
+		this.instance = new PlatformSequelize();
+	}
+	return this.instance;
 }
 
 module.exports = PlatformSequelize.getInstance().getSequelize();

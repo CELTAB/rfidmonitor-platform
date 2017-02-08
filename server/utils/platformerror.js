@@ -26,7 +26,14 @@
 var logger = require('winston');
 var util = require('util');
 
-//Reference: http://snak.tumblr.com/post/26546869908/creating-your-own-error-class-with-util-inherits
+//
+/**
+ * A local application error class, tha inherits from Error.
+ * Logs the error thrown and call the super fucntion.
+ * Refence: <http://snak.tumblr.com/post/26546869908/creating-your-own-error-class-with-util-inherits>
+ * @param {String} errorMessage Is the error message.
+ * @class
+ */
 var PlatformError  = function(errorMessage){
 	logger.error("Throwing error: " + errorMessage);
 	return PlatformError.super_.call(this, errorMessage);

@@ -22,10 +22,30 @@
 **
 ****************************************************************************/
 
+/**
+ * Configure and mantain the logging functionality.
+ * @module Logs
+ */
+
 'use strict';
+
 var fs = require('fs');
 var winston = require('winston');
+
+/**
+ * Holds the logging output path.
+ * @type {string}
+ */
 var logsDir = __base + 'logs/';
+
+/**
+ * This module is able to log
+ * @constructor
+ * @param {boolean} debugConsole sends the logging output, for the debug type, to the console only.
+ * @param {boolean} debugFile    sends the logging output, for the debug type, to the file only.
+ * @param {boolean} sillyConsole sends the logging output, for the silly type, to the console only.
+ * @param {boolean} sillyFile    sends the logging output, for the silly type, to the file only.
+ */
 var Logs = function(debugConsole, debugFile, sillyConsole, sillyFile){
 	/*
 	silly: 0, -> print all above
@@ -129,6 +149,10 @@ var Logs = function(debugConsole, debugFile, sillyConsole, sillyFile){
 	winston.info("Logger started.");
 }
 
+/**
+ * Check if the logging dir exists and is writeable. If there is a problem, throws an exception.
+ * @return {void}
+ */
 Logs.prototype.checkLogsDir = function(){
 	try{
 		fs.mkdirSync(logsDir);
@@ -150,6 +174,10 @@ Logs.prototype.checkLogsDir = function(){
 	}
 }
 
+/**
+ * Find and remove old log files.
+ * @deprecated
+ */
 Logs.prototype.removeOldLogs = function(path, daysKeep, callback){
 	fs.readdir(path, function(err, files) {
 		if (err) return callback(err,null);

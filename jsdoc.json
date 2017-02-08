@@ -1,0 +1,23 @@
+{
+    "tags": {
+        "allowUnknownTags": true,
+        "dictionaries": ["jsdoc","closure"]
+    },
+    "source": {
+        "exclude": ["./git", "./apidoc", "./apidoc_source", "./node_modules",
+            "./old_tests", "./out", "./web_dev", "./web", "./test", "./server/restricted_media",
+             "./server/scripts",  "./server/config"
+        ],
+        "includePattern": ".+\\.js$"
+    },
+    "plugins": [],
+    "templates": {
+        "cleverLinks": false,
+        "monospaceLinks": false
+    },
+    "opts" : {
+        "recurse" : true,
+        "encoding": "utf8",
+        "destination": "./jsdoc/"
+    }
+}

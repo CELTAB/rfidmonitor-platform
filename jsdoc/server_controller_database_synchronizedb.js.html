@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: server/controller/database/synchronizedb.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: server/controller/database/synchronizedb.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/****************************************************************************
+**
+** Copyright (C) 2015
+**                     Gustavo Valiati &lt;gustavovaliati@gmail.com>
+**                     Thiago R. M. Bitencourt &lt;thiago.mbitencourt@gmail.com>
+**
+** This file is part of the FishMonitoring project
+**
+** This program is free software; you can redistribute it and/or
+** modify it under the terms of the GNU General Public License
+** as published by the Free Software Foundation; version 2
+** of the License.
+**
+** This program is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+** GNU General Public License for more details.
+**
+** You should have received a copy of the GNU General Public License
+** along with this program; if not, write to the Free Software
+** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+**
+****************************************************************************/
+
+'use strict';
+var logger = require('winston');
+var DEModelPool = require(__base + 'controller/dynamic/demodelpool');
+var sequelize = require(__base + 'controller/database/platformsequelize');
+//bug
+var pg = require('pg');
+delete pg.native; //end - bug
+
+/**
+ * Functionality that loads from database every Sequelize model referent to Dynamic Entities.
+ * This should happen very early on app startup, in order to have every model ready
+ * for api requests.
+ * @see DEModelPool
+ * @class
+ */
+var SynchronizeDb = function() {
+	/**
+	 * Starts the database models synchronization.
+	 * @alias start
+	 * @param  {Function} done callback for when done.
+	 * @return {void}        [description]
+	 * @memberof SynchronizeDb
+	 */
+	var _start = function(done){
+		var model = __base + 'models';
+		// Load models definition to sequelize known then, and then synchronie
+		require(model + '/group');
+		require(model + '/collector');
+		require(model + '/user');
+		require(model + '/package');
+		require(model + '/rfiddata');
+		require(model + '/appclient');
+		require(model + '/uriroute');
+		require(model + '/routeaccess');
+		require(model + '/dynamicentity');
+		require(model + '/platformmedia');
+		require(model + '/rfidimport');
+		// sequelize.sync({force: true}).then(function(){
+		sequelize.sync().then(function(){
+			//Models synchronized. Call done with no errors (null).
+			DEModelPool.loadDynamicEntities(function(error){
+				if(error) return done(error);
+
+				return done();
+			});
+		})
+		.catch(function(error){
+
+			/* TASK #2043
+				The db user has readonly permissions, so the Sequelize will never succed on syncing.
+				In this case, the database must have been manually imported from a dump.
+				By that it is assumed the database structure is ready, and the permission error can be ignored.
+				The error occurs because the Sequelize wants to "CREATE TABLE IF NOT EXISTS" to guarantee the table exists while syncing. As the role has no permissions
+				for this kind of command, the db return the error code 42501.
+			*/
+			if(error.parent.code === "42501"){
+				logger.warn("Controlled error happening: Permission denied for current schema. POSTGRES code 42501. This must only happen in case of db user being readonly and the db had manually imported. The app is continuing.");
+				logger.debug("Controlled error happening: " + JSON.stringify(error));
+				//Models synchronized. Call done with no errors (null).
+				DEModelPool.loadDynamicEntities(function(error){
+					if(error) return done(error);
+
+					return done();
+				});
+			}else {
+				logger.error("Error to synchronize sequelize models: " + error);
+				done(error);
+			}
+		});
+	}
+	return{
+		start: _start
+	}
+}();
+
+module.exports = SynchronizeDb;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-CreateDefaults.html">CreateDefaults</a></li><li><a href="module-Logs.html">Logs</a></li><li><a href="module-main.html">main</a></li></ul><h3>Classes</h3><ul><li><a href="CollectorMonitor.html">CollectorMonitor</a></li><li><a href="CollectorPool.html">CollectorPool</a></li><li><a href="DEModelPool.html">DEModelPool</a></li><li><a href="DEValidator.html">DEValidator</a></li><li><a href="module-Logs-Logs.html">Logs</a></li><li><a href="PlatformError.html">PlatformError</a></li><li><a href="PlatformSequelize.html">PlatformSequelize</a></li><li><a href="ProtocolConnectionController.html">ProtocolConnectionController</a></li><li><a href="ProtocolMessagesController.html">ProtocolMessagesController</a></li><li><a href="Routes.html">Routes</a></li><li><a href="Server.html">Server</a></li><li><a href="SynchronizeDb.html">SynchronizeDb</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-main-app.html">app</a></li><li><a href="SequelizeModels.html">SequelizeModels</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Wed Feb 08 2017 18:02:05 GMT-0200 (BRST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

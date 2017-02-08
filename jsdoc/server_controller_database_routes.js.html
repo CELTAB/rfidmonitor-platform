@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: server/controller/database/routes.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: server/controller/database/routes.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/****************************************************************************
+**
+** Copyright (C) 2015
+**                     Gustavo Valiati &lt;gustavovaliati@gmail.com>
+**                     Thiago R. M. Bitencourt &lt;thiago.mbitencourt@gmail.com>
+**
+** This file is part of the FishMonitoring project
+**
+** This program is free software; you can redistribute it and/or
+** modify it under the terms of the GNU General Public License
+** as published by the Free Software Foundation; version 2
+** of the License.
+**
+** This program is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+** GNU General Public License for more details.
+**
+** You should have received a copy of the GNU General Public License
+** along with this program; if not, write to the Free Software
+** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+**
+****************************************************************************/
+
+var logger = require('winston');
+var PlatformError = require(__base + 'utils/platformerror');
+var SeqUriRoute = require(__base + 'models/uriroute');
+
+/**
+* Class that handles the API routes.
+* @class
+*/
+var Routes = function Routes(){
+	/**
+	* Holds the list of routes.
+	* @type {Array}
+	*/
+	var routesList = [];
+
+	/**
+	* Enum for the HTTP methods.
+	* @enum {String}
+	*/
+	var methods = {
+		/** HTTP GET */
+		GET: "GET",
+		/** HTTP POST */
+		POST: "POST",
+		/** HTTP PUT */
+		PUT: "PUT",
+		/** HTTP DELETE */
+		DELETE: "DELETE",
+		/** Represents any of the other methods.*/
+		ANY : "ANY"
+	};
+
+	/**
+	* Gets the methods object.
+	* @return {Object} is the methods object
+	*/
+	this.getMethods = function(){
+		return methods;
+	}
+
+
+	this.getRoutesList = function(){ //TODO functionality duplicated with this.getRoutes function.
+		return routesList;
+	}
+
+	/**
+	 * Check if the given method is present in the method catalog.
+	 * @param  {String}  method requested method for checking.
+	 * @return {Boolean}        True if valid, False otherwise.
+	 */
+	this.isMethodValid = function(method){
+		return methods[method] ? true : false;
+	}
+
+	/**
+	 * Register a route to the system by an uri path and http method. If the route is already present in the database, the registering is skipped.
+	 * @param  {String} path   the api path, like '/car'
+	 * @param  {StringOrObject} method the path method, like 'methods.GET'. Can also receive {all: true} to represent every method.
+	 * @return {void}
+	 */
+	this.register = function(path, method){
+		/* This function is able to receive only the String method, like:
+		register('/any/path', methods.GET);
+		And is also able to receive and option object to register all methods for the givern path, like:
+		register('/any/path', {all: true});
+		*/
+		if (method &amp;&amp; method.all === true) {
+			this.register(path, methods.GET);
+			this.register(path, methods.POST);
+			this.register(path, methods.PUT);
+			this.register(path, methods.DELETE);
+			return;
+		}
+
+		if(!this.isMethodValid(method))
+		return new PlatformError("Routes: Invalid method ["+method+"] to register on database.");
+
+		logger.debug("Registering route: [" + path + "] - [" + method + "]");
+
+		SeqUriRoute
+		.findOrCreate({where: {path: path, method: method}, defaults: {path: path, method: method}})
+		.spread(function(route, created) {
+			if(created){
+				logger.debug("Route inserted on database: [" + path + "] - [" + method + "]");
+			}else{
+				logger.debug("Route already on database: [" + path + "] - [" + method + "]");
+			}
+
+			routesList.push({"id" : route.id, "path" : route.path , "method" : route.method });
+		})
+	}
+
+	/**
+	* Gets the route list
+	* @return {Array} is the routes list
+	*/
+	this.getRoutes = function(){ //TODO functionality duplicated with this.getRoutesList function.
+		return routesList;
+	}
+
+	logger.warn("Registering route path [ANY] method [ANY]");
+	this.register('ANY','ANY');
+
+	if(Routes.caller != Routes.getInstance){
+		throw new PlatformError("This object cannot be instanciated");
+	}
+}
+
+/**
+ * Holds the only instance of Routes class. Singleton.
+ * @type {Routes}
+ */
+Routes.instance = null;
+
+/**
+ * Gets the only instance of Route class.
+ * @return {Routes} the only instance of Route class.
+ */
+Routes.getInstance = function(){
+	if(this.instance === null){
+		this.instance = new Routes();
+	}
+	return this.instance;
+}
+
+module.exports = Routes.getInstance();
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-CreateDefaults.html">CreateDefaults</a></li><li><a href="module-Logs.html">Logs</a></li><li><a href="module-main.html">main</a></li></ul><h3>Classes</h3><ul><li><a href="CollectorMonitor.html">CollectorMonitor</a></li><li><a href="CollectorPool.html">CollectorPool</a></li><li><a href="DEModelPool.html">DEModelPool</a></li><li><a href="DEValidator.html">DEValidator</a></li><li><a href="module-Logs-Logs.html">Logs</a></li><li><a href="PlatformError.html">PlatformError</a></li><li><a href="PlatformSequelize.html">PlatformSequelize</a></li><li><a href="ProtocolConnectionController.html">ProtocolConnectionController</a></li><li><a href="ProtocolMessagesController.html">ProtocolMessagesController</a></li><li><a href="Routes.html">Routes</a></li><li><a href="Server.html">Server</a></li><li><a href="SynchronizeDb.html">SynchronizeDb</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-main-app.html">app</a></li><li><a href="SequelizeModels.html">SequelizeModels</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Wed Feb 08 2017 18:02:05 GMT-0200 (BRST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

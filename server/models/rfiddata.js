@@ -28,6 +28,11 @@ var sequelize = require(__base + 'controller/database/platformsequelize');
 var Collector = require(__base + 'models/collector');
 var Package = require(__base + 'models/package');
 
+/**
+ * Entity definition for Rfiddata
+ * @alias Rfiddata
+ * @memberof SequelizeModels
+ */
 var model = sequelize.define("Rfiddata", {
   rfidCode:{
     type : SequelizeClass.STRING,

@@ -35,30 +35,48 @@ var Group =  require(__base + 'models/group');
 var RfidCtrl = require(__base + 'controller/models/rfiddata');
 var CollectorCtrl =  require(__base + 'controller/models/collector');
 
+/**
+* Class that handles an message acquired by the protocol in the socket connection with the collector.
+* @param {Object} socket             is the tcp socket communication with the collector.
+* @param {function} setOnlineCollector Function that should be called when the collector completes
+* @class
+*/
 var ProtocolMessagesController = function(socket, setOnlineCollector){
 	var packCounter = 0;
 	var responses = 0;
 
 	var collectormonitor = new CollectorMonitor();
+
+	/**
+	* Handles a given message by its type.
+	* The messages are defined in the protocol. Check the project's wiki for the protocol details.
+	* @param  {Object} message is the message object.
+	* @return {void}
+	*/
 	this.processMessage = function(message){
 		switch(message.type){
 			case "SYN":
-				handle_SYN(message);
-				break;
+			handle_SYN(message);
+			break;
 			case "ACK":
-				handle_ACK(message);
-				break;
+			handle_ACK(message);
+			break;
 			case "ACK-ALIVE":
-				handle_ACKALIVE(message);
-				break;
+			handle_ACKALIVE(message);
+			break;
 			case "DATA":
-				handle_DATA(message);
-				break;
+			handle_DATA(message);
+			break;
 			default:
-				logger.warn("Unknown message type ["+message.type+"]. Ignoring entire message.");
+			logger.warn("Unknown message type ["+message.type+"]. Ignoring entire message.");
 		}
 	}
 
+	/**
+	* Handles a SYN protocol defined message.
+	* @param  {Object} message is the message object.
+	* @return {void}
+	*/
 	var handle_SYN = function(message){
 		var data = message.data;
 		logger.silly("handle_SYN\n Message: " + JSON.stringify(message));
@@ -83,18 +101,24 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 				}
 			});
 		}catch(e){
-		  logger.error("Error: " + e);
+			logger.error("Error: " + e);
 		}
 	};
 
-	// Complete handshake, update the collector status to Online
+	/**
+	* Handles a ACK protocol defined message.	 *
+	* Completes the handshake and update the collector status to Online
+	*
+	* @param  {Object} message is the message object.
+	* @return {void}
+	*/
 	var handle_ACK = function(message){
 		var data = message.data;
 		var collector = {
-  		id: data.id,
-  		mac: data.macaddress,
-  		name: data.name
-    };
+			id: data.id,
+			mac: data.macaddress,
+			name: data.name
+		};
 
 		if (collector.mac) {
 			logger.info("Update collector datetime: " + data.success);
@@ -103,9 +127,9 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 				//return the mac address for the Server class.
 				var collectorInfo = {id: data.id, mac: data.macaddress, name: data.name};
 				/*Start the function that will monitoring the status of the collector.
-	  			@Param1: Informations about the collector, as id and macAddress
-	  			@Param2: A function to send the SYN-ALIVE message to this collector
-	  			@Param3: A function to close the connection with this socket if is not responding.
+				@Param1: Informations about the collector, as id and macAddress
+				@Param2: A function to send the SYN-ALIVE message to this collector
+				@Param3: A function to close the connection with this socket if is not responding.
 				*/
 				collectormonitor.startMonitor(collectorInfo, sendSynAliveMessage, socketInactive);
 			}else{
@@ -114,6 +138,12 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 		}
 	}
 
+	/**
+	* Handles a ACK-ALIVE protocol defined message.
+	*
+	* @param  {Object} message is the message object.
+	* @return {void}
+	*/
 	var handle_ACKALIVE = function(message){
 		logger.silly("handle_ACKALIVE");
 		//Update the collector monitor to status alive.
@@ -124,37 +154,47 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 		collectorDate.setHours(collectorDate.getHours() + (collectorDate.getTimezoneOffset() / 60));
 		/* Update collector time if different from the server */
 		if ((dateNow.getFullYear() !== collectorDate.getFullYear())
-				|| (dateNow.getMonth() !== collectorDate.getMonth())
-				|| (dateNow.getDay() !== collectorDate.getDay())
-				|| (dateNow.getHours() !== collectorDate.getHours())
-				|| (dateNow.getMinutes() !== collectorDate.getMinutes())
-			) {
-				logger.warn("Sending DATETIME message");
-				sendObject(buildMessageObject("DATETIME", {}));
+		|| (dateNow.getMonth() !== collectorDate.getMonth())
+		|| (dateNow.getDay() !== collectorDate.getDay())
+		|| (dateNow.getHours() !== collectorDate.getHours())
+		|| (dateNow.getMinutes() !== collectorDate.getMinutes())) {
+			logger.warn("Sending DATETIME message");
+			sendObject(buildMessageObject("DATETIME", {}));
 		}
 	}
 
+	/**
+	* Handles a DATA protocol defined message. Here occurs the rfiddata insertion.
+	*
+	* @param  {Object} message is the message object.
+	* @return {void}
+	*/
 	var handle_DATA = function(message){
 		logger.silly("handle_DATA raw message: " + JSON.stringify(message,null,"\t"));
 		packCounter++;
 		logger.debug("Packages Received: " + packCounter);
 
-    RfidCtrl.save(message.data, function(err, result){
+		RfidCtrl.save(message.data, function(err, result){
 
 			logger.warn("===============================");
 			logger.warn(result);
 
-      if(err){
-        logger.error("PROTOCOL MESSAGES err : " + err);
+			if(err){
+				logger.error("PROTOCOL MESSAGES err : " + err);
 				return;
 			}
 
-      responses++;
-  		sendObject(buildMessageObject("ACK-DATA", {md5diggest: [result.hash]}));
-  		logger.silly("Sent " + responses + " RESPONSES. FOR: " + message.data.macaddress);
-    });
+			responses++;
+			sendObject(buildMessageObject("ACK-DATA", {md5diggest: [result.hash]}));
+			logger.silly("Sent " + responses + " RESPONSES. FOR: " + message.data.macaddress);
+		});
 	}
 
+	/**
+	* Prepares the message header to be sent. Concats the message size in front of the message.
+	* @param  {String} message Is the message object converted to string.
+	* @return {String}         Is the new message, containing the header.
+	*/
 	var buildMessage = function(message){
 		var size = message.length;
 		var newMessage = String('00000000' + size).slice(size.toString().length);
@@ -162,6 +202,10 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 		return newMessage;
 	}
 
+	/**
+	* Gets the local datetime by the local timezone.
+	* @return {String} Date in string format.
+	*/
 	var getTimezonedISODateString = function(){
 		var date = new Date();
 		//Subtracts the timezone hours to local time.
@@ -169,10 +213,20 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 		return date.toISOString();
 	}
 
+	/**
+	* Build the message object structure before serialization
+	* @param  {String} m_type is the message type.
+	* @param  {Object} m_data is the message data object.
+	* @return {Object}        The structured message object.
+	*/
 	var buildMessageObject = function(m_type, m_data){
 		return {type: m_type, data: m_data, datetime: getTimezonedISODateString()};
 	}
-
+	/**
+	* Sends a given object to the collector. Uses the socket present in the class.
+	* @param  {Object} object is the final structured object.
+	* @return {void}
+	*/
 	var sendObject = function(object){
 		if(!socket){
 			logger.error("sendMessage without socket.")
@@ -184,21 +238,30 @@ var ProtocolMessagesController = function(socket, setOnlineCollector){
 			logger.silly("sendMessage : " + message);
 
 			if(socket.isConnected)
-				socket.write(buildMessage(message));
+			socket.write(buildMessage(message));
 			else
-				logger.debug("Socket is already closed");
+			logger.debug("Socket is already closed");
 		}catch(e){
 			logger.error("sendObject error: " + e);
 		}
 	}
 
-	//Function passed to collector monitor
+	/**
+	* This function is passed to the collector monitor, to give him the ability to respond to keep alive messages.
+	* @see CollectorMonitor#startMonitor
+	* @return {void}
+	*/
 	var sendSynAliveMessage = function(){
 		var syn_alive = { type:"SYN-ALIVE", data: {}, datetime: getTimezonedISODateString() };
 		sendObject(syn_alive);
 	}
 
-	//Function passed to collector monito. Used to close a connection when the collector don't listen to the SYN-ALIVE message
+	/**
+	* This function is passed to the collector monitor,
+	* to close a connection when the collector does not receive a SYN-ALIVE message
+	* @see CollectorMonitor#startMonitor
+	* @return {void}
+	*/
 	var socketInactive = function(){
 		logger.debug("Socket inactive. Closing Connection");
 		if(socket.isConnected){
@@ -214,50 +277,50 @@ module.exports = ProtocolMessagesController;
 
 OLD FORMAT
 handle_DATA raw message: {
-	"data": {
-		"datasummary": {
-			"data": [
-				{
-					"applicationcode": 0,
-					"datetime": "2014-10-15T15:58:33",
-					"id": 1282,
-					"idantena": 1,
-					"idcollectorpoint": 100,
-					"identificationcode": 44332211
-				}
-			],
-			"idbegin": -1273252204,
-			"idend": -1273254596,
-			"md5diggest": "f9b0941547b464689121e9e80266fde2"
-		},
-		"id": 100,
-		"macaddress": "B8:27:EB:BB:0C:70",
-		"name": "Celtab-Serial"
-	},
-	"datetime": "2015-06-17T14:49:17",
-	"type": "DATA"
+    "data": {
+        "datasummary": {
+            "data": [
+                {
+                    "applicationcode": 0,
+                    "datetime": "2014-10-15T15:58:33",
+                    "id": 1282,
+                    "idantena": 1,
+                    "idcollectorpoint": 100,
+                    "identificationcode": 44332211
+                }
+            ],
+            "idbegin": -1273252204,
+            "idend": -1273254596,
+            "md5diggest": "f9b0941547b464689121e9e80266fde2"
+        },
+        "id": 100,
+        "macaddress": "B8:27:EB:BB:0C:70",
+        "name": "Celtab-Serial"
+    },
+    "datetime": "2015-06-17T14:49:17",
+    "type": "DATA"
 }
 
 NEW FORMAT:
 
 handle_DATA raw message: {
-	"data": {
-		"datasummary": {
-			"data": [
-				{
-					"datetime": "2014-10-15T15:58:33",
-					"rfidcode": 44332211,
-					"extra_data":{
-									"idantena": 1
-								}
-				}
-			],
-			"md5diggest": "f9b0941547b464689121e9e80266fde2"
-		},
-		"macaddress": "B8:27:EB:BB:0C:70",
-		"name": "Celtab-Serial"
-	},
-	"datetime": "2015-06-17T14:49:17",
-	"type": "DATA"
+    "data": {
+        "datasummary": {
+            "data": [
+                {
+                    "datetime": "2014-10-15T15:58:33",
+                    "rfidcode": 44332211,
+                    "extra_data":{
+                        "idantena": 1
+                    }
+                }
+            ],
+            "md5diggest": "f9b0941547b464689121e9e80266fde2"
+        },
+        "macaddress": "B8:27:EB:BB:0C:70",
+        "name": "Celtab-Serial"
+    },
+    "datetime": "2015-06-17T14:49:17",
+    "type": "DATA"
 }
 */

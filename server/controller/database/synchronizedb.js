@@ -30,7 +30,21 @@ var sequelize = require(__base + 'controller/database/platformsequelize');
 var pg = require('pg');
 delete pg.native; //end - bug
 
+/**
+ * Functionality that loads from database every Sequelize model referent to Dynamic Entities.
+ * This should happen very early on app startup, in order to have every model ready
+ * for api requests.
+ * @see DEModelPool
+ * @class
+ */
 var SynchronizeDb = function() {
+	/**
+	 * Starts the database models synchronization.
+	 * @alias start
+	 * @param  {Function} done callback for when done.
+	 * @return {void}        [description]
+	 * @memberof SynchronizeDb
+	 */
 	var _start = function(done){
 		var model = __base + 'models';
 		// Load models definition to sequelize known then, and then synchronie

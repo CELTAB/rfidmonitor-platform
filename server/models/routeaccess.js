@@ -28,6 +28,11 @@ var sequelize = require(__base + 'controller/database/platformsequelize');
 var UriRoute = require(__base + 'models/uriroute');
 var AppClient = require(__base + 'models/appclient');
 
+/**
+ * Entity definition for RouteAccess
+ * @alias RouteAccess
+ * @memberof SequelizeModels
+ */
 var model = sequelize.define("RouteAccess", {
 	appClient: {
 		type : SequelizeClass.INTEGER,

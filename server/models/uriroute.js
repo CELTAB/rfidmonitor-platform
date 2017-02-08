@@ -26,6 +26,11 @@
 var SequelizeClass = require('sequelize');
 var sequelize = require(__base + 'controller/database/platformsequelize');
 
+/**
+ * Entity definition for UriRoute
+ * @alias UriRoute
+ * @memberof SequelizeModels
+ */
 var model = sequelize.define("UriRoute", {
 	path : {
 		type : SequelizeClass.STRING,

@@ -27,6 +27,11 @@ var SequelizeClass = require('sequelize');
 var sequelize = require(__base + 'controller/database/platformsequelize');
 var PlatformMedia = require(__base + 'models/platformmedia');
 
+/**
+ * Entity definition for RfidImport
+ * @alias RfidImport
+ * @memberof SequelizeModels
+ */
 var model = sequelize.define("RfidImport", {
   receivedPackages : {
     type : SequelizeClass.INTEGER,
