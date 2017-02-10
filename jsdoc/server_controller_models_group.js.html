@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: server/controller/models/group.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: server/controller/models/group.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/****************************************************************************
+**
+** Copyright (C) 2015
+**                     Gustavo Valiati &lt;gustavovaliati@gmail.com>
+**                     Thiago R. M. Bitencourt &lt;thiago.mbitencourt@gmail.com>
+**
+** This file is part of the FishMonitoring project
+**
+** This program is free software; you can redistribute it and/or
+** modify it under the terms of the GNU General Public License
+** as published by the Free Software Foundation; version 2
+** of the License.
+**
+** This program is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+** GNU General Public License for more details.
+**
+** You should have received a copy of the GNU General Public License
+** along with this program; if not, write to the Free Software
+** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+**
+****************************************************************************/
+
+'use strict';
+var logger = require('winston');
+var sequelize = require(__base + 'controller/database/platformsequelize');
+var Controller = require(__base + 'controller/basemodelctrl');
+var errorHandler = require(__base + 'utils/errorhandler');
+var Collector = sequelize.model('Collector');
+var GroupModel = sequelize.model('Group');
+var Group = new Controller(GroupModel, 'groups');
+
+/**
+* Custom function. Before saving the group, if this Group is set to be the new Default Group,
+* then checks who is the current default, and set its the 'isDefault' as false for that
+* other one, while setting 'isDefault' as true for the current Group being updated/inserted.
+*
+* @memberof ModelControllers.Group
+*/
+
+Group.custom['save'] = function(body, callback){
+  var save = function(){
+    return Group.save(body, callback);
+  }
+  try{
+    GroupModel.findOne({where: {isDefault: true}})
+    .then(function(group){
+      if(!group){
+        body.isDefault = true;
+        return save();
+      }
+      if(body.id === group.id){
+        body.isDefault = true;
+        return save();
+      }else{
+        if(body.isDefault !== true)
+          return save();
+        group.isDefault = null;
+        group.save().then(save);
+      }
+    })
+    .catch(function(e){
+      return errorHandler(e.toString(), 500, callback);
+    });
+  }catch(e){
+    return errorHandler(e.toString(), 500, callback);
+  }
+};
+
+/**
+* Custom function. Check if the group is default, and prevent removal. Also
+* Check if there are collectors in the current group, if so prevent removal.
+*
+* @memberof ModelControllers.Group
+*/
+Group.custom['remove'] = function(id, callback){
+
+  Group.find(id, null, function(err, group){
+    if(err)
+      return callback(err);
+    if(!group)
+      return errorHandler('Group not found', 400, callback);
+    if(group.isDefault)
+      return errorHandler('Not allowed to delete default group', 400, callback);
+
+    Collector.count({where: {groupId: id}})
+    .then(function(total){
+      if(!total) {
+        return Group.remove(id, callback);
+      } else {
+        return callback({error: "There are Collectors related to this Group", message: "Not possible to remove this Group", code:400});
+      }
+    })
+    .catch(function(e){
+      return errorHandler("Error on find Collectors related:" + e.toString(), 404, callback);
+    });
+  });
+};
+
+module.exports = Group;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-CreateDefaults.html">CreateDefaults</a></li><li><a href="module-Logs.html">Logs</a></li><li><a href="module-main.html">main</a></li></ul><h3>Classes</h3><ul><li><a href="BaseModelController.html">BaseModelController</a></li><li><a href="CollectorMonitor.html">CollectorMonitor</a></li><li><a href="CollectorPool.html">CollectorPool</a></li><li><a href="Controllers.html">Controllers</a></li><li><a href="DEModelPool.html">DEModelPool</a></li><li><a href="DEValidator.html">DEValidator</a></li><li><a href="DynamicEntities.html">DynamicEntities</a></li><li><a href="module-Logs-Logs.html">Logs</a></li><li><a href="PlatformError.html">PlatformError</a></li><li><a href="PlatformSequelize.html">PlatformSequelize</a></li><li><a href="ProtocolConnectionController.html">ProtocolConnectionController</a></li><li><a href="ProtocolMessagesController.html">ProtocolMessagesController</a></li><li><a href="Routes.html">Routes</a></li><li><a href="Server.html">Server</a></li><li><a href="SynchronizeDb.html">SynchronizeDb</a></li><li><a href="TokenAuthentication.html">TokenAuthentication</a></li></ul><h3>Namespaces</h3><ul><li><a href="ModelControllers.html">ModelControllers</a></li><li><a href="ModelControllers.AppClient.html">AppClient</a></li><li><a href="ModelControllers.Collector.html">Collector</a></li><li><a href="ModelControllers.Group.html">Group</a></li><li><a href="ModelControllers.RFIDData.html">RFIDData</a></li><li><a href="ModelControllers.RouteAccess.html">RouteAccess</a></li><li><a href="ModelControllers.UriRoute.html">UriRoute</a></li><li><a href="ModelControllers.User.html">User</a></li><li><a href="module-main-app.html">app</a></li><li><a href="SequelizeModels.html">SequelizeModels</a></li></ul><h3>Global</h3><ul><li><a href="global.html#buildSequelizeModels">buildSequelizeModels</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Fri Feb 10 2017 14:02:32 GMT-0200 (BRST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

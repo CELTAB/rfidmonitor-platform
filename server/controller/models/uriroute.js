@@ -29,11 +29,27 @@ var Controller = require(__base + 'controller/basemodelctrl');
 var RoutesModel = sequelize.model('UriRoute');
 var RoutesCtrl = new Controller(RoutesModel, 'routes');
 
+/**
+ * Not allowed operation response.
+ * @param  {Function} callback callback for when done, passing the error as parameter.
+ * @return {void}
+ * @memberof ModelControllers.UriRoute
+ */
 var changeFunc = function(body, callback){
   var errMessage = {error: "Not Allowed", code: 403, message: "You are not allowed to make any change on UriRoutes"};
 	callback(errMessage);
 };
 
+/**
+ *  Custom function. Implements the not allowed operation response.
+ * @memberof ModelControllers.UriRoute
+ */
 RoutesCtrl.custom['remove'] = changeFunc;
+
+/**
+ *  Custom function. Implements the not allowed operation response.
+ * @memberof ModelControllers.UriRoute
+ */
 RoutesCtrl.custom['save'] = changeFunc;
+
 module.exports = RoutesCtrl;

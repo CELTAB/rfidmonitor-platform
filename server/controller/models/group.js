@@ -31,6 +31,14 @@ var Collector = sequelize.model('Collector');
 var GroupModel = sequelize.model('Group');
 var Group = new Controller(GroupModel, 'groups');
 
+/**
+* Custom function. Before saving the group, if this Group is set to be the new Default Group,
+* then checks who is the current default, and set its the 'isDefault' as false for that
+* other one, while setting 'isDefault' as true for the current Group being updated/inserted.
+*
+* @memberof ModelControllers.Group
+*/
+
 Group.custom['save'] = function(body, callback){
   var save = function(){
     return Group.save(body, callback);
@@ -60,6 +68,12 @@ Group.custom['save'] = function(body, callback){
   }
 };
 
+/**
+* Custom function. Check if the group is default, and prevent removal. Also
+* Check if there are collectors in the current group, if so prevent removal.
+*
+* @memberof ModelControllers.Group
+*/
 Group.custom['remove'] = function(id, callback){
 
   Group.find(id, null, function(err, group){

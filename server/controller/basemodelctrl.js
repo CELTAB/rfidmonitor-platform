@@ -25,6 +25,46 @@
 'use strict';
 var logger = require('winston');
 
+/**
+* Instances of the BaseModelController
+* @namespace ModelControllers
+*/
+
+/**
+* Instances of the BaseModelController
+* @namespace ModelControllers.AppClient
+*/
+/**
+* Instances of the BaseModelController
+* @namespace ModelControllers.Collector
+*/
+/**
+* Instances of the BaseModelController
+* @namespace ModelControllers.Group
+*/
+/**
+* Instances of the BaseModelController
+* @namespace ModelControllers.RFIDData
+*/
+/**
+* Instances of the BaseModelController
+* @namespace ModelControllers.RouteAccess
+*/
+/**
+* Instances of the BaseModelController
+* @namespace ModelControllers.UriRoute
+*/
+/**
+* Instances of the BaseModelController
+* @namespace ModelControllers.User
+*/
+
+/**
+ * Class that provides a default implementation of CRUD functions, for an given Sequelize model.
+ * @param {Object} model     is the Sequelize Model.
+ * @param {String} modelName the model name.
+ * @class
+ */
 var BaseModelController = function(model, modelName){
 
 	var _constructRegister = function(model, modelName){
@@ -40,6 +80,16 @@ var BaseModelController = function(model, modelName){
 			return callback(errObj);
 		}
 
+		/**
+		 * Implements: find by id and find all registers of the given model.
+		 * @alias find
+		 * @param  {Number}   id       is the register id. If null, the find all will be used.
+		 * @param  {Object}   query    is a Sequelize query from the native API.
+		 * @param  {Function} callback callback for when done, that receives 2 parameters:
+		 * first error and the second is the objects found.
+		 * @return {void}
+		 * @memberof BaseModelController
+		 */
 		var _find = function(id, query, callback){
 			var operation = 'find'; //Use for log purspouse. See _handleError function
 			try{
@@ -70,6 +120,15 @@ var BaseModelController = function(model, modelName){
 			}
 		};
 
+		/**
+		 * Implements: save and update a register of the given model.
+		 * @alias save
+		 * @param  {Object}   body     contains the entity attributes within the values.
+		 * @param  {Function} callback callback for when done, that receives 2 parameters:
+		 * first error and the second is the object inserted or updated.
+		 * @return {void}
+		 * @memberof BaseModelController
+		 */
 		var _save = function(body, callback){
 			var operation = 'save'; //Use for log purspouse. See _handleError function
 			try{
@@ -111,6 +170,16 @@ var BaseModelController = function(model, modelName){
 
 		};
 
+
+		/**
+		 * Implements: find by id or find all register of the given model.
+		 * @alias remove
+		 * @param  {Number}   id       the id of the register that will be removed.
+		 * @param  {Function} callback callback callback for when done, that receives 2 parameters:
+		 * first error and the second is the objects found.
+		 * @return {void}
+		 * @memberof BaseModelController
+		 */
 		var _remove = function(id, callback){
 			var operation = 'remove'; //Use for log purspouse. See _handleError function
 			try{
@@ -139,8 +208,25 @@ var BaseModelController = function(model, modelName){
 			save: _save,
 			remove: _remove,
 			name: _modelName,
+			/**
+			 * Holds a map of custom methods for current model.
+			 * @type {Object}
+			 * @memberof BaseModelController
+			 */
 			custom: {},
+			/**
+			 * Holds an array of custom routes wanted for the current model.
+			 * @type {Array}
+			 * @see Routes
+			 * @memberof BaseModelController
+			 */
 			customRoute: [],
+			/**
+			 * Unspecified function.
+			 * @return {Boolean} valid or not.
+			 * @deprecated
+			 * @memberof BaseModelController
+			 */
 			isValid: function(){
 				return true;
 			}

@@ -27,35 +27,59 @@ var logger = require('winston');
 var sequelize = require(__base + 'controller/database/platformsequelize');
 var Controller = require(__base + 'controller/basemodelctrl');
 
-/*
-Class that is responsible for manage a pool of controllers for all models.
-Is possible to register each controller individualy for any models,
-or create default controllers for all modules defined in sequelize.
-*/
-
-//Poll of controllers
+/**
+ * Holds the poll of controllers
+ * @type {Array}
+ * @memberof Controllers
+ */
 var controllers = [];
+
+/**
+ * Class that is responsible for managing a pool of controllers for every model.
+ * Is possible to register each controller individualy for any model,
+ * or create default controllers for all modules defined in sequelize.
+ * @class
+ */
 var Controllers = function(){
-  //Create default controller based on baseModelCtrl class
+  /**
+   * Create a default controller based on BaseModelController class
+   * @param  {String} modelName the model's name registered on Sequelize.
+   * @return {BaseModelController}           a default controller for the given model.
+   */
   var createController = function(modelName){
     return new Controller(sequelize.model(modelName), modelName.toLowerCase() + 's');
   };
 
-  //Return a controller by its name
+  /**
+   * Returns a controller by its name
+   * @param  {String} modelName the model's name registered on Sequelize.
+   * @return {BaseModelController}           the controller present in the pool.
+   */
   this.get = function(modelName){
     return controllers[modelName];
   };
 
-  //Return all controllers created
+  /**
+   * Return all controllers created present in the pool
+   * @return {Array} the list of controllers.
+   */
   this.getAll = function(){
     return controllers;
   };
 
   /*
-  Receives a controller to atach in the pool. Need to bo instance of baseModelCtrl.
-  Possible to use {force: true} parameter to avoid the needed of bean a baseModelCtrl instance,
-  but in this case the controller needs to have a name property and the methos properties (find, save, remove).
-  Or the customs methods (custom['find'], custom['save'], custom['remove'])
+
+  */
+
+ /**
+  * Receives a controller to insert in the pool. Need to be an instance of BaseModelController.
+  * It is possible to use the option {force: true} as parameter, to avoid the need of being a BaseModelController instance,
+  * but in this case the controller needs to have a name property and the methods properties (find, save, remove).
+  * Or the customs methods (custom['find'], custom['save'], custom['remove'])
+  * @param  {Object} controller a BaseModelController instance, or a object that implement its functions.
+  * @param  {Object} force      option object: {force: true}
+  * @return {void}
+  * @see BaseModelController
   */
   this.register = function(controller, force){
     if((force && force.force === true) || (controller.isValid && controller.isValid() === true)){
@@ -65,7 +89,10 @@ var Controllers = function(){
     }
   };
 
-  //Create and load controllers for all models in sequelize
+  /**
+   * Create and load controllers for every model in sequelize
+   * @return {void}
+   */
   this.loadControllers = function(){
     var models = sequelize.models;
     for(var key in models){

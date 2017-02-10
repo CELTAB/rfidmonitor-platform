@@ -30,6 +30,12 @@ var sequelize = require(__base + 'controller/database/platformsequelize');
 
 var DEVELOPMENT = __DevEnv;
 var imageToken = 'onlyImageToken';
+
+/**
+ * Handles the token authentication in the API requests using the Bearer method.
+ * @param {Object} app the Express instance
+ * @class
+ */
 var TokenAuthentication = function(app){
   this.app = app;
   passport.use('api-bearer', new BearerStrategy({}, validateToken));
@@ -40,6 +46,14 @@ var TokenAuthentication = function(app){
   };
 };
 
+/**
+ * Validates the token for the media route.
+ * @param  {Object}   req  Express request object.
+ * @param  {Object}   res  Express response object.
+ * @param  {Function} next callback function that trigger the next middleware.
+ * @return {void}
+ * @memberof TokenAuthentication
+ */
 var verifyImage = function(req, res, next){
   getFinalRoute(req, res, function(finalRoute){
     if(finalRoute === '/api/media'){
@@ -49,6 +63,14 @@ var verifyImage = function(req, res, next){
   });
 };
 
+/**
+ * Process the request to extract the route
+ * @param  {Object}   req  Express request object.
+ * @param  {Object}   res  Express response object.
+ * @param  {Function} next callback function that trigger the next middleware.
+ * @return {void}
+ * @memberof TokenAuthentication
+ */
 var getFinalRoute = function(req, res, next){
   if(!req.originalUrl){
     var errMessage = 'originalUrl missing';
@@ -73,8 +95,15 @@ var getFinalRoute = function(req, res, next){
   return next(finalRoute);
 };
 
+/**
+ * Verifies whether the given token is valid, and returns the client id.
+ * @param  {String}   token the client token present in the resquest.
+ * @param  {Function} done  callback for when done.
+ * @return {void}
+ * @memberof TokenAuthentication
+ */
 var validateToken = function(token, done){
-  //If development mode is active, just go ahead without validate token
+  //If development mode is active, just go ahead without validating the token
   if(DEVELOPMENT || token === imageToken){
     return done(null, {clientId: token});
   }
@@ -91,6 +120,14 @@ var validateToken = function(token, done){
   });
 };
 
+/**
+ * Verifies whether the client has permission to access the requested route
+ * @param  {Object}   req  Express request object.
+ * @param  {Object}   res  Express response object.
+ * @param  {Function} next callback function that trigger the next middleware.
+ * @return {void}
+ * @memberof TokenAuthentication
+ */
 var validateAccess = function(req, res, next){
   getFinalRoute(req, res, function(finalRoute){
     logger.debug('Searching on authorization table for this uri: ' + finalRoute);

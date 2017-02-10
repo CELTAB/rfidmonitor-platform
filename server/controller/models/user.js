@@ -34,6 +34,10 @@ var RouteAccess = sequelize.model('RouteAccess');
 var UriRoute = sequelize.model('UriRoute');
 var AppClient = sequelize.model('AppClient');
 
+/**
+ * Custom function. Before removing checks if there are AppClients related.
+ * @memberof ModelControllers.User
+ */
 UserCtrl.custom['remove'] = function(id, callback) {
   AppClient.count({where: {userId: id}})
   .then(function(total){
@@ -48,6 +52,11 @@ UserCtrl.custom['remove'] = function(id, callback) {
   });
 };
 
+/**
+ * Custom function. Changes behavior between inserting or updating a register. Also, creates a
+ * default AppClient for the user.
+ * @memberof ModelControllers.User
+ */
 UserCtrl.custom['save'] = function(body, callback){
   if(body.id || body._id)
     return UserCtrl.save(body, callback);
@@ -68,6 +77,15 @@ UserCtrl.custom['save'] = function(body, callback){
   });
 };
 
+/**
+ * New function. Implements the login by username and password. Gives back to the
+ * client his token and authorized routes.
+ * @param  {Object}   candidateUser contains the user's credentials
+ * @param  {Function} callback      callback for when done. Receives the first argument
+ * for errors, and the second is the user object if the credentials are valid.
+ * @return {void}
+ * @memberof ModelControllers.User
+ */
 UserCtrl.login = function(candidateUser, callback){
   UserModel.scope('loginScope').findOne({where: {username: candidateUser.username}})
   .then(function(user){

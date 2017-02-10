@@ -30,6 +30,11 @@ var errorHandler = require(__base + 'utils/errorhandler');
 var AccessModel = sequelize.model('RouteAccess');
 var AccessCtrl = new Controller(AccessModel, 'routeaccess');
 
+/**
+ * Custom function. Validates the body. Remove every access rules for the given appclient, and recreate
+ * the rules using the new definition from the body.
+ * @memberof ModelControllers.RouteAccess
+ */
 AccessCtrl.custom['save'] = function(body, callback){
   if (Array.isArray(body) && body.length > 0) {
 

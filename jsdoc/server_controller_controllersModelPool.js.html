@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: server/controller/controllersModelPool.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: server/controller/controllersModelPool.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/****************************************************************************
+**
+** Copyright (C) 2015
+**                     Gustavo Valiati &lt;gustavovaliati@gmail.com>
+**                     Thiago R. M. Bitencourt &lt;thiago.mbitencourt@gmail.com>
+**
+** This file is part of the FishMonitoring project
+**
+** This program is free software; you can redistribute it and/or
+** modify it under the terms of the GNU General Public License
+** as published by the Free Software Foundation; version 2
+** of the License.
+**
+** This program is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+** GNU General Public License for more details.
+**
+** You should have received a copy of the GNU General Public License
+** along with this program; if not, write to the Free Software
+** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+**
+****************************************************************************/
+
+'use strict';
+var logger = require('winston');
+var sequelize = require(__base + 'controller/database/platformsequelize');
+var Controller = require(__base + 'controller/basemodelctrl');
+
+/**
+ * Holds the poll of controllers
+ * @type {Array}
+ * @memberof Controllers
+ */
+var controllers = [];
+
+/**
+ * Class that is responsible for managing a pool of controllers for every model.
+ * Is possible to register each controller individualy for any model,
+ * or create default controllers for all modules defined in sequelize.
+ * @class
+ */
+var Controllers = function(){
+  /**
+   * Create a default controller based on BaseModelController class
+   * @param  {String} modelName the model's name registered on Sequelize.
+   * @return {BaseModelController}           a default controller for the given model.
+   */
+  var createController = function(modelName){
+    return new Controller(sequelize.model(modelName), modelName.toLowerCase() + 's');
+  };
+
+  /**
+   * Returns a controller by its name
+   * @param  {String} modelName the model's name registered on Sequelize.
+   * @return {BaseModelController}           the controller present in the pool.
+   */
+  this.get = function(modelName){
+    return controllers[modelName];
+  };
+
+  /**
+   * Return all controllers created present in the pool
+   * @return {Array} the list of controllers.
+   */
+  this.getAll = function(){
+    return controllers;
+  };
+
+  /*
+
+  */
+
+ /**
+  * Receives a controller to insert in the pool. Need to be an instance of BaseModelController.
+  * It is possible to use the option {force: true} as parameter, to avoid the need of being a BaseModelController instance,
+  * but in this case the controller needs to have a name property and the methods properties (find, save, remove).
+  * Or the customs methods (custom['find'], custom['save'], custom['remove'])
+  * @param  {Object} controller a BaseModelController instance, or a object that implement its functions.
+  * @param  {Object} force      option object: {force: true}
+  * @return {void}
+  * @see BaseModelController
+  */
+  this.register = function(controller, force){
+    if((force &amp;&amp; force.force === true) || (controller.isValid &amp;&amp; controller.isValid() === true)){
+      controllers[controller.name] = controller;
+    }else {
+      throw new Error("Controller needs to be an instance of basemodelctrl");
+    }
+  };
+
+  /**
+   * Create and load controllers for every model in sequelize
+   * @return {void}
+   */
+  this.loadControllers = function(){
+    var models = sequelize.models;
+    for(var key in models){
+      if(!controllers[key])
+        controllers[key] = createController(key);
+    }
+  };
+}
+
+module.exports = Controllers;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-CreateDefaults.html">CreateDefaults</a></li><li><a href="module-Logs.html">Logs</a></li><li><a href="module-main.html">main</a></li></ul><h3>Classes</h3><ul><li><a href="BaseModelController.html">BaseModelController</a></li><li><a href="CollectorMonitor.html">CollectorMonitor</a></li><li><a href="CollectorPool.html">CollectorPool</a></li><li><a href="Controllers.html">Controllers</a></li><li><a href="DEModelPool.html">DEModelPool</a></li><li><a href="DEValidator.html">DEValidator</a></li><li><a href="DynamicEntities.html">DynamicEntities</a></li><li><a href="module-Logs-Logs.html">Logs</a></li><li><a href="PlatformError.html">PlatformError</a></li><li><a href="PlatformSequelize.html">PlatformSequelize</a></li><li><a href="ProtocolConnectionController.html">ProtocolConnectionController</a></li><li><a href="ProtocolMessagesController.html">ProtocolMessagesController</a></li><li><a href="Routes.html">Routes</a></li><li><a href="Server.html">Server</a></li><li><a href="SynchronizeDb.html">SynchronizeDb</a></li><li><a href="TokenAuthentication.html">TokenAuthentication</a></li></ul><h3>Namespaces</h3><ul><li><a href="ModelControllers.html">ModelControllers</a></li><li><a href="ModelControllers.AppClient.html">AppClient</a></li><li><a href="ModelControllers.Collector.html">Collector</a></li><li><a href="ModelControllers.Group.html">Group</a></li><li><a href="ModelControllers.RFIDData.html">RFIDData</a></li><li><a href="ModelControllers.RouteAccess.html">RouteAccess</a></li><li><a href="ModelControllers.UriRoute.html">UriRoute</a></li><li><a href="ModelControllers.User.html">User</a></li><li><a href="module-main-app.html">app</a></li><li><a href="SequelizeModels.html">SequelizeModels</a></li></ul><h3>Global</h3><ul><li><a href="global.html#buildSequelizeModels">buildSequelizeModels</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Fri Feb 10 2017 14:02:32 GMT-0200 (BRST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

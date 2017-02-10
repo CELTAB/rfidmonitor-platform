@@ -36,29 +36,28 @@ var deModelPool = require(__base + 'controller/dynamic/demodelpool');
 var DynamicEntity = require(__base + 'models/dynamicentity');
 
 // var DynamicEntity = sequelize.model('DynamicEntity');
-/*
-	- check warns on the code to fix.
-	- find for todo to fix.
 
-	List :
-	 - after persisting some definition on table, if anything fails after that and couldt complet
-	 the task, the definition already persist is not being deleted.
-	 - tables are created faster than other, and when they are associated, sometimes will break the
-	 creation, because a table need another that is not created yet, will will be very soon. It is needed to
-	 order the table creation and make it sincronous.
-
+/**
+* Manages Dynamic Entities
+* @class
 */
-
-
 var DynamicEntities = function (){
 	deValidator = new DEValidator(sequelize);
 }
 
+/**
+* Removes the database information about an Dynamic Entity persisted, but
+* that is related to some failure in the process, as an dependend entity failing
+* when registering.
+* @param  {Object} entities Entities array to be removed.
+* @return {void}
+* @memberof DynamicEntities
+*/
 var rollbackEntities = function(entities){
 	if(entities)
-		logger.debug('rollBackEntities on :' + entities);
+	logger.debug('rollBackEntities on :' + entities);
 	else
-		logger.debug('rollbackEntities triggered but not necessary. Not a problem.')
+	logger.debug('rollbackEntities triggered but not necessary. Not a problem.')
 
 	for (var i in entities){
 		var entity = entities[i];
@@ -78,6 +77,13 @@ var rollbackEntities = function(entities){
 	}
 }
 
+/**
+* Receives an entity definition object from client, in a raw state.
+* It is going to be processed, structured and persisted in the database.
+* @param  {JSON}   json     Is the raw JSON that contains the entities definitons.
+* @param  {Function} callback callback for when done, that received an error as parameter.
+* @return {void}
+*/
 DynamicEntities.prototype.registerEntity = function(json, callback){
 	//Checks each object integrity
 	var errors = deValidator.validateClientRootArray(json, function(errors, newEntities){
@@ -102,6 +108,13 @@ DynamicEntities.prototype.registerEntity = function(json, callback){
 	});
 }
 
+/**
+* Received an validated and structured entity specification, and build a Sequelize definiton for it.
+* @param  {Object}   entity   the entity definition, sent from the client, structured and validated.
+* @param  {Function} callback callback for when done, that receives the resulting entity as parameter. A null object in the parameter means error.
+* @return {void}
+* @memberof DynamicEntities
+*/
 var buildDefinition = function(entity, callback){
 	var definition = {};
 	definition.identifier = entity.identifier;
@@ -109,19 +122,19 @@ var buildDefinition = function(entity, callback){
 	definition.sequelizeOptions = {
 		paranoid : true,
 		freezeTableName: true,
-  		tableName: 'tb_de_' + entity.identifier,
-  		classMethods: {
-  			associate: []
-  		}
+		tableName: 'tb_de_' + entity.identifier,
+		classMethods: {
+			associate: []
+		}
 	}
 
 	/*
-	 // Creating two objects with the same value will throw an error. The unique property can be either a
-	 // boolean, or a string. If you provide the same string for multiple columns, they will form a
-	 // composite unique key.
-	 someUnique: {type: Sequelize.STRING, unique: true},
-	 uniqueOne: { type: Sequelize.STRING,  unique: 'compositeIndex'},
-	 uniqueTwo: { type: Sequelize.INTEGER, unique: 'compositeIndex'}
+	// Creating two objects with the same value will throw an error. The unique property can be either a
+	// boolean, or a string. If you provide the same string for multiple columns, they will form a
+	// composite unique key.
+	someUnique: {type: Sequelize.STRING, unique: true},
+	uniqueOne: { type: Sequelize.STRING,  unique: 'compositeIndex'},
+	uniqueTwo: { type: Sequelize.INTEGER, unique: 'compositeIndex'}
 	*/
 
 	var uniqueMap = {};
@@ -134,10 +147,10 @@ var buildDefinition = function(entity, callback){
 			// unique : ['def']   > single field unique
 			uniqueMap[uqConstraint[0]] = true;
 			/*
-				uniqueMap : {
-					def : true
-				}
-			*/
+			uniqueMap : {
+			def : true
+		}
+		*/
 		}else{
 			var constraintName = 'uq_'+definition.sequelizeOptions.tableName;
 			for (var iun in uqConstraint){
@@ -240,41 +253,48 @@ var buildDefinition = function(entity, callback){
 	}
 
 	DynamicEntity.findOne({where : { identifier : entity.identifier}})
-		.then(function(rec){
+	.then(function(rec){
 
-			if(!rec){
-				var error = 'DynamicEntity not found when should be.';
-				logger.error(error);
-				if(!loopError){
-					loopError = true;
-					return callback(null);
-				}
-			}
-
-			rec.meta = JSON.stringify(entity, null, null);
-			rec.save().then(function(){
-				return callback(definition);
-			})
-			.catch(function(e){
-				var error = 'save error on DynamicEntities when saving meta: ' + e;
-				logger.error(error);
-				if(!loopError){
-					loopError = true;
-					return callback(null);
-				}
-			});
-
-		}).catch(function(e){
-			var error = 'findOne error on DynamicEntities: ' + e;
+		if(!rec){
+			var error = 'DynamicEntity not found when should be.';
 			logger.error(error);
 			if(!loopError){
 				loopError = true;
 				return callback(null);
 			}
-			//else the callback was already called and a rollback will occur.
+		}
+
+		rec.meta = JSON.stringify(entity, null, null);
+		rec.save().then(function(){
+			return callback(definition);
+		})
+		.catch(function(e){
+			var error = 'save error on DynamicEntities when saving meta: ' + e;
+			logger.error(error);
+			if(!loopError){
+				loopError = true;
+				return callback(null);
+			}
 		});
+
+	}).catch(function(e){
+		var error = 'findOne error on DynamicEntities: ' + e;
+		logger.error(error);
+		if(!loopError){
+			loopError = true;
+			return callback(null);
+		}
+		//else the callback was already called and a rollback will occur.
+	});
 }
 
+/**
+ * Function called to load in the system/sequelize the ready entities
+ * @param  {Object}   definitions The new validated,structured and well defined entities to load in the sequelize.
+ * @param  {Function} callback    callback for when is done, receiving as parameter an error.
+ * @return {void}
+ * @memberof DynamicEntities
+ */
 var registerModelsWhenReady = function(definitions, callback){
 	deModelPool.registerModel(definitions, function(err){
 		if(err){
@@ -287,10 +307,17 @@ var registerModelsWhenReady = function(definitions, callback){
 	});
 }
 
+/**
+ * Receives an array of entities, and request the Sequelize definition build. After the build, this function
+ * saves on database the new information generated for the given entities.
+ * @param  {Array}   entities Requested entities specifications
+ * @param  {Function} callback callback for when done. Receive error as parameter.
+ * @return {void}
+ */
 var buildSequelizeModels = function(entities, callback){
 
 	if(entities.length == 0)
-		return callback({"message" : "Error : buildSequelizeModels : empty entities array"});
+	return callback({"message" : "Error : buildSequelizeModels : empty entities array"});
 
 	var definitions = [];
 	var loopError = null;
@@ -304,7 +331,7 @@ var buildSequelizeModels = function(entities, callback){
 
 		buildDefinition(entity, function(definition){
 			if(!definition)
-				return callback({"message" : "Error : cannot build definitions"});
+			return callback({"message" : "Error : cannot build definitions"});
 
 			definitions.push(definition);
 			definitionsMapperTmp[definition.identifier] = definition;
@@ -313,17 +340,16 @@ var buildSequelizeModels = function(entities, callback){
 
 			DynamicEntity.findOne({where : { identifier : definition.identifier}})
 			.then(function(rec){
-				/*	we are inside a anonimous function that uses global variables as definition of the mother function
-					this function will get the state of the global variables at the while it is changing because of a external loop.
-					That means, the function was declared and a global variable state as 1, for example.
-					but when the this function execute, that global variable cound have a different state, as 5 for example.
-					we cannot trust that this anonimous function will have the state of the external global variable at the time
-					it was declared. it depends on the time when it executes.
-					i got errors here, because 'definition' was looping 5 times. I was expecting that this anonimous function
-					would have each of the 5 states. But instead, when all the 5 anonimous functions were running, all of them
-					had the same state.
+				/*	We are inside an anonymous function that uses global variables as definition comming from the perent function.
+				This function will get the state of the global variables while it is changing, because of a external loop.
+				That means, the function was declared as in a global state as 1, for example.
+				But when this function executes, that global variable cound have a different state, as 5 for example.
+				We cannot trust that this anonymous function will have the state of the external global variable at the time
+				it was declared. It depends on the execution time. I have got errors here, because the 'definition'
+				was looping 5 times. I was expecting that this anonymous function would have each of the 5 states. But instead,
+				when all the 5 anonymous functions were running, all of them had the same state.
 
-					Problem solved using a object mapper 'definitionsMapperTmp', getting the info nededed by a key 'rec.identifier'.
+				Problem solved using a object mapper 'definitionsMapperTmp', getting the info nededed by a key 'rec.identifier'.
 				*/
 
 				if(!rec){
@@ -343,7 +369,7 @@ var buildSequelizeModels = function(entities, callback){
 					//we need to check if this is the final assync function of success, and only then callback success.
 					loopCount++;
 					if(loopCount == loopTotal)
-						registerModelsWhenReady(definitions, callback);
+					registerModelsWhenReady(definitions, callback);
 
 				})
 				.catch(function(e){
@@ -368,14 +394,32 @@ var buildSequelizeModels = function(entities, callback){
 	}
 }
 
+/**
+* Check if the given variable is an object.
+* @memberof DynamicEntities
+* @param  {Object}  a The given variable for checking.
+* @return {Boolean}   If it is object or not.
+*/
 var isObject = function(a) {
-    return (!!a) && (a.constructor === Object);
+	return (!!a) && (a.constructor === Object);
 };
 
+/**
+* Check if the given variable is an array.
+* @memberof DynamicEntities
+* @param  {Array}  a The given variable for checking.
+* @return {Boolean}   If it is array or not.
+*/
 var isArray = function(a) {
-    return (!!a) && (a.constructor === Array);
+	return (!!a) && (a.constructor === Array);
 };
 
+/**
+* Check if the given object has not attributes.
+* @memberof DynamicEntities
+* @param  {Object}  a The given variable for checking.
+* @return {Boolean}   If it has zero attributes or not.
+*/
 var isObjectEmpty = function(a){
 	return Object.keys(a).length == 0;
 }

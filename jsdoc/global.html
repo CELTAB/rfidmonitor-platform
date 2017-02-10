@@ -101,14 +101,15 @@
 
     
 
-    <h4 class="name" id="parseModelToReal"><span class="type-signature"></span>parseModelToReal<span class="signature">(model)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    <h4 class="name" id="buildSequelizeModels"><span class="type-signature"></span>buildSequelizeModels<span class="signature">(entities, callback)</span><span class="type-signature"> &rarr; {void}</span></h4>
 
     
 
 
 
 <div class="description">
-    Converts string references of sequelize types to complex Sequelize type objects
+    Receives an array of entities, and request the Sequelize definition build. After the build, this function
+saves on database the new information generated for the given entities.
 </div>
 
 
@@ -144,13 +145,13 @@
 
         <tr>
             
-                <td class="name"><code>model</code></td>
+                <td class="name"><code>entities</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Object</span>
+<span class="param-type">Array</span>
 
 
             
@@ -160,7 +161,30 @@
 
             
 
-            <td class="description last">is the model to be parsed</td>
+            <td class="description last">Requested entities specifications</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">callback for when done. Receive error as parameter.</td>
         </tr>
 
     
@@ -201,7 +225,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="server_controller_dynamic_demodelpool.js.html">server/controller/dynamic/demodelpool.js</a>, <a href="server_controller_dynamic_demodelpool.js.html#line224">line 224</a>
+        <a href="server_controller_dynamic_dynamicentities.js.html">server/controller/dynamic/dynamicentities.js</a>, <a href="server_controller_dynamic_dynamicentities.js.html#line317">line 317</a>
     </li></ul></dd>
     
 
@@ -227,10 +251,6 @@
 <h5>Returns:</h5>
 
         
-<div class="param-desc">
-    is the new model with complex Sequelize Objects.
-</div>
-
 
 
 <dl>
@@ -239,7 +259,7 @@
     </dt>
     <dd>
         
-<span class="param-type">Object</span>
+<span class="param-type">void</span>
 
 
     </dd>
@@ -265,13 +285,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-CreateDefaults.html">CreateDefaults</a></li><li><a href="module-Logs.html">Logs</a></li><li><a href="module-main.html">main</a></li></ul><h3>Classes</h3><ul><li><a href="CollectorMonitor.html">CollectorMonitor</a></li><li><a href="CollectorPool.html">CollectorPool</a></li><li><a href="DEModelPool.html">DEModelPool</a></li><li><a href="DEValidator.html">DEValidator</a></li><li><a href="module-Logs-Logs.html">Logs</a></li><li><a href="PlatformError.html">PlatformError</a></li><li><a href="PlatformSequelize.html">PlatformSequelize</a></li><li><a href="ProtocolConnectionController.html">ProtocolConnectionController</a></li><li><a href="ProtocolMessagesController.html">ProtocolMessagesController</a></li><li><a href="Routes.html">Routes</a></li><li><a href="Server.html">Server</a></li><li><a href="SynchronizeDb.html">SynchronizeDb</a></li></ul><h3>Namespaces</h3><ul><li><a href="module-main-app.html">app</a></li><li><a href="SequelizeModels.html">SequelizeModels</a></li></ul><h3>Global</h3><ul><li><a href="global.html#parseModelToReal">parseModelToReal</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-CreateDefaults.html">CreateDefaults</a></li><li><a href="module-Logs.html">Logs</a></li><li><a href="module-main.html">main</a></li></ul><h3>Classes</h3><ul><li><a href="BaseModelController.html">BaseModelController</a></li><li><a href="CollectorMonitor.html">CollectorMonitor</a></li><li><a href="CollectorPool.html">CollectorPool</a></li><li><a href="Controllers.html">Controllers</a></li><li><a href="DEModelPool.html">DEModelPool</a></li><li><a href="DEValidator.html">DEValidator</a></li><li><a href="DynamicEntities.html">DynamicEntities</a></li><li><a href="module-Logs-Logs.html">Logs</a></li><li><a href="PlatformError.html">PlatformError</a></li><li><a href="PlatformSequelize.html">PlatformSequelize</a></li><li><a href="ProtocolConnectionController.html">ProtocolConnectionController</a></li><li><a href="ProtocolMessagesController.html">ProtocolMessagesController</a></li><li><a href="Routes.html">Routes</a></li><li><a href="Server.html">Server</a></li><li><a href="SynchronizeDb.html">SynchronizeDb</a></li><li><a href="TokenAuthentication.html">TokenAuthentication</a></li></ul><h3>Namespaces</h3><ul><li><a href="ModelControllers.html">ModelControllers</a></li><li><a href="ModelControllers.AppClient.html">AppClient</a></li><li><a href="ModelControllers.Collector.html">Collector</a></li><li><a href="ModelControllers.Group.html">Group</a></li><li><a href="ModelControllers.RFIDData.html">RFIDData</a></li><li><a href="ModelControllers.RouteAccess.html">RouteAccess</a></li><li><a href="ModelControllers.UriRoute.html">UriRoute</a></li><li><a href="ModelControllers.User.html">User</a></li><li><a href="module-main-app.html">app</a></li><li><a href="SequelizeModels.html">SequelizeModels</a></li></ul><h3>Global</h3><ul><li><a href="global.html#buildSequelizeModels">buildSequelizeModels</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Wed Feb 08 2017 17:58:10 GMT-0200 (BRST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Fri Feb 10 2017 14:02:32 GMT-0200 (BRST)
 </footer>
 
 <script> prettyPrint(); </script>
