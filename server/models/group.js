@@ -28,8 +28,13 @@ var sequelize = require(__base + 'controller/database/platformsequelize');
 
 /**
  * Entity definition for Group
- * @alias Group
+ * @name Group
+ * @class
  * @memberof SequelizeModels
+ * @property {String} name Entity's unique identifier
+ * @property {Boolean} isDefault defines if the entity is active
+ * @property {String} description Entity's Sequelize model definition
+ * @property {Date} deletedAt holds the deletion date, and by consequence defines if the register is soft-deleted.
  */
 var model = sequelize.define("Group", {
 	name: {

@@ -313,6 +313,7 @@ var registerModelsWhenReady = function(definitions, callback){
  * @param  {Array}   entities Requested entities specifications
  * @param  {Function} callback callback for when done. Receive error as parameter.
  * @return {void}
+ * @memberof DynamicEntities
  */
 var buildSequelizeModels = function(entities, callback){
 

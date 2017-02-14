@@ -30,8 +30,15 @@ var Package = require(__base + 'models/package');
 
 /**
  * Entity definition for Rfiddata
- * @alias Rfiddata
+ * @name Rfiddata
+ * @class
  * @memberof SequelizeModels
+ * @property {String} rfidCode holds the rfid identification. It is normally a code in decimal format.
+ * @property {String} extraData holds JSON object with a variable structure. It is persisted as string.
+ * @property {Date} rfidReadDate holds the date the rfid has been read in the collecting point.
+ * @property {Date} serverReceivedDate holds the date the server have received the rfiddata.
+ * @property {Number} collectorId holds the reference for the related Collector.
+ * @property {Number} packageId holds the reference for the related Package.
  */
 var model = sequelize.define("Rfiddata", {
   rfidCode:{

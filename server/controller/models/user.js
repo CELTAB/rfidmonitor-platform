@@ -36,7 +36,7 @@ var AppClient = sequelize.model('AppClient');
 
 /**
  * Custom function. Before removing checks if there are AppClients related.
- * @memberof ModelControllers.User
+ * @memberof ModelControllers
  */
 UserCtrl.custom['remove'] = function(id, callback) {
   AppClient.count({where: {userId: id}})
@@ -55,7 +55,7 @@ UserCtrl.custom['remove'] = function(id, callback) {
 /**
  * Custom function. Changes behavior between inserting or updating a register. Also, creates a
  * default AppClient for the user.
- * @memberof ModelControllers.User
+ * @memberof ModelControllers
  */
 UserCtrl.custom['save'] = function(body, callback){
   if(body.id || body._id)
@@ -84,7 +84,7 @@ UserCtrl.custom['save'] = function(body, callback){
  * @param  {Function} callback      callback for when done. Receives the first argument
  * for errors, and the second is the user object if the credentials are valid.
  * @return {void}
- * @memberof ModelControllers.User
+ * @memberof ModelControllers
  */
 UserCtrl.login = function(candidateUser, callback){
   UserModel.scope('loginScope').findOne({where: {username: candidateUser.username}})

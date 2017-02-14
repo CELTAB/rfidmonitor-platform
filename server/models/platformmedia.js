@@ -29,8 +29,15 @@ var randomChars = require(__base + 'utils/randomchars');
 
 /**
  * Entity definition for PlatformMedia
- * @alias PlatformMedia
+ * @name PlatformMedia
+ * @class
  * @memberof SequelizeModels
+ * @property {String} url holds the route to acesses the resource
+ * @property {String} path is the file system path
+ * @property {String} description description of the file
+ * @property {String} mimetype file's mime type
+ * @property {String} type file's application type. Must be one of: IMAGE, FILE, RFID_IMPORT .
+ * @property {String} uuid is an unique key to identify the resource
  */
 var model = sequelize.define("PlatformMedia", {
 	url : {

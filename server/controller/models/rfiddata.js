@@ -46,7 +46,7 @@ var changeFunc = function(body, callback){
 /**
 * Custom function. Implements the not allowed operation response.
 *
-* @memberof ModelControllers.RFIDData
+* @memberof ModelControllers
 * @function
 */
 Rfid.custom['remove'] = changeFunc;
@@ -54,7 +54,7 @@ Rfid.custom['remove'] = changeFunc;
 /**
 * Custom function. Implements the not allowed operation response.
 *
-* @memberof ModelControllers.RFIDData
+* @memberof ModelControllers
 * @function
 */
 Rfid.custom['save'] = changeFunc;
@@ -62,7 +62,7 @@ Rfid.custom['save'] = changeFunc;
 /**
 * New function. This is a copy of the default function.
 *
-* @memberof ModelControllers.RFIDData
+* @memberof ModelControllers
 * @function
 */
 Rfid.defaultSave = Rfid.save;
@@ -72,7 +72,7 @@ Rfid.defaultSave = Rfid.save;
 * @param  {String}   identifier  the entity identifier
 * @param  {Function} callback  callback for when done, receives an error as first parameter and the returned field as second parameter.
 * @return {void}
-* @memberof ModelControllers.RFIDData
+* @memberof ModelControllers
 */
 var getDynamicEntity = function(identifier, callback){
     var dynamic = sequelize.model('DynamicEntity');
@@ -103,7 +103,7 @@ var getDynamicEntity = function(identifier, callback){
 * @param  {Object} query        the sequelize query
 * @param  {Array} codesRelated array of RFID codes that should match to the register.
 * @return {void}
-* @memberof ModelControllers.RFIDData
+* @memberof ModelControllers
 */
 var getEntities = function(query, codesRelated){
     var deferred = q.defer();
@@ -147,7 +147,7 @@ var getEntities = function(query, codesRelated){
 * @param  {Object}   query    Contains the sequelize query, and wanted entity to relate to.
 * @param  {Function} callback callback for when done, receives an error as first parameter and the returned field as second parameter.
 * @return {void}
-* @memberof ModelControllers.RFIDData
+* @memberof ModelControllers
 */
 var embeddedRecords = function(query, callback){
     getDynamicEntity(query.entity, function(err, entityField){
@@ -219,7 +219,7 @@ var embeddedRecords = function(query, callback){
  * Returns a list of unique rfidcodes from the given records.
  * @param  {Object} records are the rfiddata registers
  * @return {Array}         a list of non-repeated rfid codes
- * @memberof ModelControllers.RFIDData
+ * @memberof ModelControllers
  */
 var codesRelated = function(records) {
     var tmpObj = {};
@@ -238,7 +238,7 @@ var codesRelated = function(records) {
  * @param  {Array} records the rfiddata list
  * @param  {Object} data    the dynamic entity registers map.
  * @return {Array}         the rfiddata list. Every register contains a dynamic entity related to.
- * @memberof ModelControllers.RFIDData
+ * @memberof ModelControllers
  */
 var attachEntity = function(records, data) {
     var responseObj = [];
@@ -260,7 +260,7 @@ var attachEntity = function(records, data) {
  * @param  {Function} callback callback for when done, passing the first parameter
  * as error and the second as the query result.
  * @return {void}
- * @memberof ModelControllers.RFIDData
+ * @memberof ModelControllers
  */
 var paginateRfid = function(query, callback) {
     RfidModel.findAndCountAll(query)
@@ -290,7 +290,7 @@ var paginateRfid = function(query, callback) {
  * @param  {Function} callback callback for when done, passing the first parameter
  * as error and the second as the query result.
  * @return {void}
- * @memberof ModelControllers.RFIDData
+ * @memberof ModelControllers
  */
 var paginateEntity = function(query, callback) {
     var limit = query.limit;
@@ -330,7 +330,7 @@ var paginateEntity = function(query, callback) {
  * @param  {Function} callback callback for when done, passing the first parameter
  * as error and the second as the query result.
  * @return {void}
- * @memberof ModelControllers.RFIDData
+ * @memberof ModelControllers
  */
 var embeddedEntity = function(query, callback) {
     if(query.entityQuery) {
@@ -343,27 +343,27 @@ var embeddedEntity = function(query, callback) {
 /**
  * Defines the minimum number of registers that can be specified for a limit specification
  * @type {Number}
- * @memberof ModelControllers.RFIDData
+ * @memberof ModelControllers
  */
 var LIMIT_MIN_RFIDDATA = 1;
 
 /**
  * Defines the maximum number of registers that can be specified for a limit specification
  * @type {Number}
- * @memberof ModelControllers.RFIDData
+ * @memberof ModelControllers
  */
 var LIMIT_MAX_RFIDDATA = 500;
 /**
  * The default value for the query.
  * @type {Number}
- * @memberof ModelControllers.RFIDData
+ * @memberof ModelControllers
  */
 var LIMIT_DEFAULT = 100;
 
 /**
  * Custom function. If the id is present, executes a findById returning a single register.
  * Otherwise, queries looking for limits definitions and dyanamic entities.
- * @memberof ModelControllers.RFIDData
+ * @memberof ModelControllers
  */
 Rfid.custom['find'] = function(id, query, callback){
     // select * from tb_plat_rfiddata as rfid, tb_de_carro as carro where rfid."rfidCode" = carro.pit;
@@ -399,7 +399,7 @@ Rfid.custom['find'] = function(id, query, callback){
  * @param  {Function} callback  callback for when done, passing the first parameter
  * as error and the second a object containing the packet hash, its size and if it is new or a duplicated.
  * @return {void}
- * @memberof ModelControllers.RFIDData
+ * @memberof ModelControllers
  */
 var insertSummary = function(rfiddata, collector, callback){
 
@@ -552,7 +552,7 @@ var insertSummary = function(rfiddata, collector, callback){
  * @param  {Function} callback  callback for when done, passing the first parameter
  * as error and the second a object containing the packet hash, its size and if it is new or a duplicated.
  * @return {void}
- * @memberof ModelControllers.RFIDData
+ * @memberof ModelControllers
  */
 
 Rfid.save = function(rfiddata, callback){
@@ -580,7 +580,7 @@ Rfid.save = function(rfiddata, callback){
  * @param  {Array}   packageArray Is the array of packets
  * @param  {Function} callback     callback for when done.
  * @return {void}
- * @memberof ModelControllers.RFIDData
+ * @memberof ModelControllers
  */
 Rfid.importBulkSave = function(packageArray, callback){
 
@@ -645,7 +645,7 @@ Rfid.importBulkSave = function(packageArray, callback){
  * @param  {String}   platformMediaId the system's reference for the uploaded file.
  * @param  {Function} callback        callback for when done.
  * @return {void}
- * @memberof ModelControllers.RFIDData
+ * @memberof ModelControllers
  */
 Rfid.manualImport = function(packageArray, platformMediaId, callback){
 

@@ -30,8 +30,18 @@ var Tokenizer = require(__base + 'utils/randomchars');
 
 /**
  * Entity definition for AppClient
- * @alias AppClient
+ * @namespace SequelizeModels
+ */
+
+/**
+ * Entity definition for AppClient
+ * @name AppClient
+ * @class
  * @memberof SequelizeModels
+ * @property {String} token authentication token
+ * @property {String} description explains the appclient need.
+ * @property {Boolean} def defines if the current appclient is the default for the user.
+ * @property {Number} userId holds the reference for the related user.
  */
 var model = sequelize.define("AppClient", {
 	token: {

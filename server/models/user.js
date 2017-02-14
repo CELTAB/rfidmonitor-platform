@@ -29,8 +29,13 @@ var Hash = require(__base + 'utils/hashing');
 
 /**
  * Entity definition for User
- * @alias User
+ * @name User
+ * @class
  * @memberof SequelizeModels
+ * @property {STRING} name the user's name.
+ * @property {STRING} email the user's email.
+ * @property {STRING} username the user's system name.
+ * @property {STRING} password the user's password.
  */
 var model = sequelize.define("User", {
 	name:{

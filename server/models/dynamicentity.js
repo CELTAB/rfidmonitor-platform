@@ -27,14 +27,17 @@ var SequelizeClass = require('sequelize');
 var sequelize = require(__base + 'controller/database/platformsequelize');
 
 /**
-* Definitions for the Sequelize Entity definitions.
-* @namespace SequelizeModels
-*/
-
-/**
  * Entity definition for DynamicEntity
- * @alias DynamicEntity
+ * @name DynamicEntity
+ * @class
  * @memberof SequelizeModels
+ * @property {String} identifier Entity's unique identifier
+ * @property {Text} sequelizeModel Entity's Sequelize model definition
+ * @property {Text} sequelizeOptions Entity's Sequelize model options definition
+ * @property {Text} original Original entity definition sent by the client
+ * @property {Text} meta is the processed original definition.
+ * @property {Boolean} active defines if the entity is active
+ * @property {Date} deletedAt holds the deletion date, and by consequence defines if the register is soft-deleted.
  */
 var model = sequelize.define("DynamicEntity", {
 	identifier : {

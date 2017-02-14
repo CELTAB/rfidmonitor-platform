@@ -36,7 +36,7 @@ var Group = new Controller(GroupModel, 'groups');
 * then checks who is the current default, and set its the 'isDefault' as false for that
 * other one, while setting 'isDefault' as true for the current Group being updated/inserted.
 *
-* @memberof ModelControllers.Group
+* @memberof ModelControllers
 */
 
 Group.custom['save'] = function(body, callback){
@@ -72,7 +72,7 @@ Group.custom['save'] = function(body, callback){
 * Custom function. Check if the group is default, and prevent removal. Also
 * Check if there are collectors in the current group, if so prevent removal.
 *
-* @memberof ModelControllers.Group
+* @memberof ModelControllers
 */
 Group.custom['remove'] = function(id, callback){
 

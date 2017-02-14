@@ -39,7 +39,7 @@ var RFIDData = sequelize.model('Rfiddata');
 * Custom function. Check if there are RFIDData to the current collector before removing.
 * If there are not, then calls the default function.
 *
-* @memberof ModelControllers.Collector
+* @memberof ModelControllers
 */
 CollectorCtrl.custom['remove'] = function(id, callback) {
     RFIDData.count({where: {collectorId: id}})
@@ -61,7 +61,7 @@ CollectorCtrl.oldSave = CollectorCtrl.save;
 /**
 * Custom function. After calling the default function, a dashboard report is prepared.
 *
-* @memberof ModelControllers.Collector
+* @memberof ModelControllers
 */
 CollectorCtrl.custom['find'] = function(id, query, callback){
     CollectorCtrl.find(id, query, function(err, result){
@@ -198,7 +198,7 @@ CollectorCtrl.custom['find'] = function(id, query, callback){
 /**
  * New function. Save objects using a promise map for individual control..
  *
- * @memberof ModelControllers.Collector
+ * @memberof ModelControllers
  */
 CollectorCtrl.promiseSave = function(newCollector, callback){
     var promise = insertingMap[newCollector.mac];
@@ -243,7 +243,7 @@ CollectorCtrl.promiseSave = function(newCollector, callback){
 /**
  * New function. Try to find a object, and if not present creates it.
  *
- * @memberof ModelControllers.Collector
+ * @memberof ModelControllers
  */
 CollectorCtrl.findOrCreate = function(collector, callback){
     // Using scope defined by the model
@@ -267,7 +267,7 @@ CollectorCtrl.findOrCreate = function(collector, callback){
 
 /**
  * Responde for a dashboard api request.
- * @memberof ModelControllers.Collector
+ * @memberof ModelControllers
  * @deprecated
  */
 var dashboardHandler = function(req, callback) {

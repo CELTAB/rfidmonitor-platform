@@ -28,8 +28,11 @@ var sequelize = require(__base + 'controller/database/platformsequelize');
 
 /**
  * Entity definition for Package
- * @alias Package
+ * @name Package
+ * @class
  * @memberof SequelizeModels
+ * @property {String} packageHash an unique identifier for the packet
+ * @property {Number} packageSize is the number of rfiddata in the packet
  */
 var model = sequelize.define("Package", {
   packageHash:{

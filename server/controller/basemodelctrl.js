@@ -30,40 +30,13 @@ var logger = require('winston');
 * @namespace ModelControllers
 */
 
-/**
-* Instances of the BaseModelController
-* @namespace ModelControllers.AppClient
-*/
-/**
-* Instances of the BaseModelController
-* @namespace ModelControllers.Collector
-*/
-/**
-* Instances of the BaseModelController
-* @namespace ModelControllers.Group
-*/
-/**
-* Instances of the BaseModelController
-* @namespace ModelControllers.RFIDData
-*/
-/**
-* Instances of the BaseModelController
-* @namespace ModelControllers.RouteAccess
-*/
-/**
-* Instances of the BaseModelController
-* @namespace ModelControllers.UriRoute
-*/
-/**
-* Instances of the BaseModelController
-* @namespace ModelControllers.User
-*/
 
 /**
  * Class that provides a default implementation of CRUD functions, for an given Sequelize model.
  * @param {Object} model     is the Sequelize Model.
  * @param {String} modelName the model name.
  * @class
+ * @memberof ModelControllers
  */
 var BaseModelController = function(model, modelName){
 

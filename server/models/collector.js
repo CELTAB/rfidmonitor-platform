@@ -29,8 +29,16 @@ var Group = require(__base + 'models/group');
 
 /**
  * Entity definition for Collector
- * @alias Collector
+ * @name Collector
+ * @class
  * @memberof SequelizeModels
+ * @property {String} name Collector's name
+ * @property {String} lat Collector's latitude
+ * @property {String} lng Collector's longitude
+ * @property {String} mac Collector's mac
+ * @property {String} description Collector's description.
+ * @property {Date} deletedAt holds the deletion date, and by consequence defines if the register is soft-deleted.
+ * @property {Number} groupId holds the reference for the related group.
  */
 var model = sequelize.define("Collector", {
 	name: {

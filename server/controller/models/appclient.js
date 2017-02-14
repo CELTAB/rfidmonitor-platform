@@ -31,12 +31,10 @@ var AppClientModel = sequelize.model('AppClient');
 var AppClientCtrl = new Controller(AppClientModel, 'appclients');
 //Any custom functions goes here
 
-
 /**
- * Custom function. Validates body.def field, then calls the default save function.
- *
- * @memberof ModelControllers.AppClient
- */
+* Instances of the BaseModelController
+* @memberof ModelControllers
+*/
 AppClientCtrl.custom['save'] = function(body, callback){
     body.def = body.def ? body.def : null;
     return AppClientCtrl.save(body, callback);

@@ -30,8 +30,12 @@ var AppClient = require(__base + 'models/appclient');
 
 /**
  * Entity definition for RouteAccess
- * @alias RouteAccess
+ * @name RouteAccess
+ * @class
  * @memberof SequelizeModels
+ * @property {Number} appClient holds the reference for the related app client.
+ * @property {Number} uriRoute holds the reference for the related route.
+ * @property {Date} deletedAt holds the deletion date, and by consequence defines if the register is soft-deleted.
  */
 var model = sequelize.define("RouteAccess", {
 	appClient: {
@@ -65,8 +69,8 @@ var model = sequelize.define("RouteAccess", {
 	tableName: 'tb_plat_route_access'
 });
 
-model.belongsTo(AppClient, {foreignKey : {name: 'appClient', allowNull: false}});
-model.belongsTo(UriRoute, {foreignKey : {name: 'uriRoute', allowNull: false}});
+model.belongsTo(AppClient, {foreignKey : {name: 'appClient', allowNull: false}}); //overwrite the allowNull
+model.belongsTo(UriRoute, {foreignKey : {name: 'uriRoute', allowNull: false}}); //overwrite the allowNull
 module.exports = model;
 
 //OBJECT EXAMPLE

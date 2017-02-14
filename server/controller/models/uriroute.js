@@ -33,7 +33,7 @@ var RoutesCtrl = new Controller(RoutesModel, 'routes');
  * Not allowed operation response.
  * @param  {Function} callback callback for when done, passing the error as parameter.
  * @return {void}
- * @memberof ModelControllers.UriRoute
+ * @memberof ModelControllers
  */
 var changeFunc = function(body, callback){
   var errMessage = {error: "Not Allowed", code: 403, message: "You are not allowed to make any change on UriRoutes"};
@@ -42,13 +42,13 @@ var changeFunc = function(body, callback){
 
 /**
  *  Custom function. Implements the not allowed operation response.
- * @memberof ModelControllers.UriRoute
+ * @memberof ModelControllers
  */
 RoutesCtrl.custom['remove'] = changeFunc;
 
 /**
  *  Custom function. Implements the not allowed operation response.
- * @memberof ModelControllers.UriRoute
+ * @memberof ModelControllers
  */
 RoutesCtrl.custom['save'] = changeFunc;
 

@@ -29,8 +29,19 @@ var PlatformMedia = require(__base + 'models/platformmedia');
 
 /**
  * Entity definition for RfidImport
- * @alias RfidImport
+ * @name RfidImport
+ * @class
  * @memberof SequelizeModels
+ * @property {Number} receivedPackages number of packets read from file.
+ * @property {Number} receivedRfids number of rfiddatas read from file.
+ * @property {Number} insertedPackages number of successfuly persisted packets.
+ * @property {Number} insertedRfids number of successfuly persisted rfiddatas.
+ * @property {Number} discardedByRepetitionPackagesNumber number of discarded packets due being already persisted.
+ * @property {String} discardedByRepetitionPackagesList hash list of discarded packets that were discarded due being already persisted.
+ * @property {Number} discardedByErrorPackagesNumber number of discarded packets due occuring an error while persisting.
+ * @property {String} discardedByErrorPackagesList hash list of discarded packets that were discarded due occuring an error while persisting.
+ * @property {Date} serverReceivedDate date and time of processing the file.
+ * @property {Number} fileId is the reference to the uploaded file.
  */
 var model = sequelize.define("RfidImport", {
   receivedPackages : {

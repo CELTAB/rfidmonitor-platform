@@ -28,8 +28,11 @@ var sequelize = require(__base + 'controller/database/platformsequelize');
 
 /**
  * Entity definition for UriRoute
- * @alias UriRoute
+ * @name UriRoute
+ * @class
  * @memberof SequelizeModels
+ * @property {STRING} path the route for an specific resource.
+ * @property {ENUM} method the http method for given path. Can be one of 'ANY', 'GET', 'POST', 'PUT', 'DELETE'.
  */
 var model = sequelize.define("UriRoute", {
 	path : {

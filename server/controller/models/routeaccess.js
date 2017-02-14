@@ -33,7 +33,7 @@ var AccessCtrl = new Controller(AccessModel, 'routeaccess');
 /**
  * Custom function. Validates the body. Remove every access rules for the given appclient, and recreate
  * the rules using the new definition from the body.
- * @memberof ModelControllers.RouteAccess
+ * @memberof ModelControllers
  */
 AccessCtrl.custom['save'] = function(body, callback){
   if (Array.isArray(body) && body.length > 0) {
