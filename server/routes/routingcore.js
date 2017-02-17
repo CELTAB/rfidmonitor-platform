@@ -25,22 +25,48 @@
 var logger = require('winston');
 var routes = require(__base + 'controller/database/routes');
 
+/**
+* Offers the functionalities to register normal and custom routes.
+* @param {Object} router  Express router object
+* @param {String} baseUri Preceding path.
+* @class
+*/
 var RoutingCore = function(router, baseUri){
+
+	/**
+	* Is the Express router object.
+	* @type {Object}
+	*/
 	this.router = router;
+
+	/**
+	* Defines the route path preceding the endpoints. Can be an empty string to represent no preceding path.
+	* @type {String}
+	*/
 	this.baseUri = baseUri || '';
 
+	/**
+	* Register in the Express and Database the given route name for the 5 operations: GET ALL, GET BY ID, POST, PUT, DELETE.
+	* Also, register the custom routes if present.
+	* @param  {String} routeName Is the route name, used to build the path.
+	* @param  {Object} functions Is the object containing a default list of functions that are going to be attached for each http operation.
+	* @return {void}
+	*/
 	this.registerRoute = function(routeName, functions){
-		/* functions:
-			{
-				getOne: "controllerFunctionName",
-				getAll: "controllerFunctionName",
-				save: "controllerFunctionName",
-				update: "controllerFunctionName",
-				remove: "controllerFunctionName",
-				routeName: 'routeName',
-				customRoute: [{'route', 'functionHandler', 'midler'}]
-			}
+
+		/** 'functions' object example:
+		* {
+		*  getOne: "controllerFunctionName",
+		*  getAll: "controllerFunctionName",
+		*  save: "controllerFunctionName",
+		*  update: "controllerFunctionName",
+		*  remove: "controllerFunctionName",
+		*  routeName: 'routeName',
+		*  customRoute: [{'route', 'functionHandler', 'midler'}]
+		* }
 		*/
+
+
 		var _route = "/" + routeName;
 		var _routeId = _route + "/:id";
 		var dbRoute = this.baseUri + _route;
@@ -56,7 +82,7 @@ var RoutingCore = function(router, baseUri){
 				}
 			}
 			if(!query)
-				query = {};
+			query = {};
 
 			functions.getAll(null, query, function(err, result){
 				if(err) return res.response(err.error, err.code, err.message);
@@ -70,7 +96,7 @@ var RoutingCore = function(router, baseUri){
 				if(err) return res.response(err.error, err.code, err.message);
 
 				if(!result)
-					return res.response('Error on ' + routeName, 404, 'ID not found');
+				return res.response('Error on ' + routeName, 404, 'ID not found');
 				res.send(result);
 			});
 		});
@@ -78,7 +104,7 @@ var RoutingCore = function(router, baseUri){
 		routes.register(dbRoute, routes.getMethods().POST);
 		this.router.post(_route, function(req, res){
 			if(req.body._id || req.body.id)
-				return res.response(null, 400, "Anti-pattern POST: body contains _id");
+			return res.response(null, 400, "Anti-pattern POST: body contains _id");
 
 			functions.save(req.body, function(err, result){
 				if(err) return res.response(err.error, err.code, err.message);
@@ -90,7 +116,7 @@ var RoutingCore = function(router, baseUri){
 		routes.register(dbRoute, routes.getMethods().PUT);
 		this.router.put(_routeId, function(req, res){
 			if(req.params.id != req.body._id && req.params.id != req.body.id)
-				return res.response(null, 400, "Anti-pattern PUT: params id is different of body id.");
+			return res.response(null, 400, "Anti-pattern PUT: params id is different of body id.");
 
 			functions.update(req.body, function(err, result){
 				if(err) return res.response(err.error, err.code, err.message);
@@ -113,25 +139,28 @@ var RoutingCore = function(router, baseUri){
 		}
 	}
 
-	/*
-	Create custom routes, receives an objetc with the methos, route and handler for this custom route
+	/**
+	* Register custom routes, receiving an object with the methods, routes and handlers for each custom route
+	* @param  {Array} customRoutesArray Is the list of custom Routes.
+	* @return {void}
+	* @see Route
 	*/
 	this.registerCustomRoute = function(customRoutesArray){
-		//object:
-		/*
-		{
-			getOne: ...
-			...
-			name: ...
-			customRoute: [
-				{
-					method: 'post',
-					route: 'rota/comlexa',
-					handler: [Function] //function(req, callback){return callback(errObj, responseObj)};
-					middler: [Function] // function(req, res, next) {return next();};
-				}
-			]
-		}
+
+		/** 'customRoutesArray' object example:
+		* {
+		*  getOne: ...
+		*  ...
+		*  name: ...
+		*  customRoute: [
+		*     {
+		*       method: 'post',
+		*       route: 'rota/comlexa',
+		*       handler: [Function] //function(req, callback){return callback(errObj, responseObj)};
+		*       middler: [Function] // function(req, res, next) {return next();};
+		*     }
+		*  ]
+		*  }
 		*/
 
 		customRoutesArray.forEach(function(route){
@@ -142,20 +171,22 @@ var RoutingCore = function(router, baseUri){
 						return res.status(err.code).send(err);
 					}
 					if(attr)
-						return res[attr](response);
+					return res[attr](response);
 
 					res.send(response);
 				});
 			}
-			/*
-				If the middler arrives as an object it means that the route may be anonymous, and also have a Function middler, that's why the verifications is made.
-				Object example:
-				{
-					middler: function() { return next();},
-					anonymous: true
-				}
-				It also accept only the middler function or only the anonymous attribute, as: {anonymous: true}
+
+			/**
+			* If themiddler arrives as an object it means that the route may be anonymous, and also have a Function middler, that's why the verifications is made.
+			* Object example:
+			* {
+			*   middler: function() { return next();},
+			*   anonymous: true
+			* }
+			* It also accept only the middler function or only the anonymous attribute, as: {anonymous: true}
 			*/
+
 			var anonymous = false;
 			var defaultMiddler = function(req, res, next){
 				return next();
@@ -164,33 +195,33 @@ var RoutingCore = function(router, baseUri){
 				route.middler = defaultMiddler;
 			} else {
 				if (typeof route.middler === 'object') {
-						anonymous = route.middler.anonymous || anonymous;
-						route.middler = route.middler.middler || defaultMiddler;
+					anonymous = route.middler.anonymous || anonymous;
+					route.middler = route.middler.middler || defaultMiddler;
 				}
 			}
 
 			var rt = route.route.split('/:');
 			switch(method){
 				case 'get':
-					if (!anonymous)
-						routes.register(this.baseUri + rt[0], routes.getMethods().GET);
-					this.router.get(route.route, route.middler, defaultHandler);
-					break;
+				if (!anonymous)
+				routes.register(this.baseUri + rt[0], routes.getMethods().GET);
+				this.router.get(route.route, route.middler, defaultHandler);
+				break;
 				case 'post':
-					if (!anonymous)
-						routes.register(this.baseUri + rt[0], routes.getMethods().POST);
-					this.router.post(route.route, route.middler, defaultHandler);
-					break;
+				if (!anonymous)
+				routes.register(this.baseUri + rt[0], routes.getMethods().POST);
+				this.router.post(route.route, route.middler, defaultHandler);
+				break;
 				case 'put':
-					if (!anonymous)
-						routes.register(this.baseUri + rt[0], routes.getMethods().PUT);
-					this.router.put(route.route, route.middler, defaultHandler);
-					break;
+				if (!anonymous)
+				routes.register(this.baseUri + rt[0], routes.getMethods().PUT);
+				this.router.put(route.route, route.middler, defaultHandler);
+				break;
 				case 'delete':
-					if (!anonymous)
-						routes.register(this.baseUri + rt[0], routes.getMethods().DELETE);
-					this.router.delete(route.route, route.middler, defaultHandler);
-					break;
+				if (!anonymous)
+				routes.register(this.baseUri + rt[0], routes.getMethods().DELETE);
+				this.router.delete(route.route, route.middler, defaultHandler);
+				break;
 			}
 		}, this);
 	}

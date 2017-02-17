@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: server/routes/loadloginroute.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: server/routes/loadloginroute.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/****************************************************************************
+**
+** Copyright (C) 2015
+**                     Gustavo Valiati &lt;gustavovaliati@gmail.com>
+**                     Thiago R. M. Bitencourt &lt;thiago.mbitencourt@gmail.com>
+**
+** This file is part of the FishMonitoring project
+**
+** This program is free software; you can redistribute it and/or
+** modify it under the terms of the GNU General Public License
+** as published by the Free Software Foundation; version 2
+** of the License.
+**
+** This program is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+** GNU General Public License for more details.
+**
+** You should have received a copy of the GNU General Public License
+** along with this program; if not, write to the Free Software
+** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+**
+****************************************************************************/
+
+'use strict';
+var logger = require('winston');
+var express = require('express');
+var RoutingCore = require(__base + 'routes/routingcore');
+var errorHandler = require(__base + 'utils/errorhandler');
+var sequelize = require(__base + 'controller/database/platformsequelize');
+
+/**
+* Prepares the login and logout routes for the front-end user. Updates the Express router adding the new endpoints.
+* @param {String} baseUri if informed, sets the route path preceding the /login and /logout endpoints
+* @class
+*/
+var LoadLoginRoutes = function(baseUri){
+    var router = express.Router();
+
+    var routingCore = new RoutingCore(router, baseUri || '');
+
+    //Handles the user login.
+    var loginHandler = function(req, callback){
+        if(!req.body.username || !req.body.password)
+        return errorHandler('Missing username ou password', 400, callback);
+
+        var UserCtrl = require(__base + 'controller/models/user'); //Needs to be here.
+        UserCtrl.login(req.body, function(err, user){
+            if(err){
+                logger.error(err);
+                return callback(err);
+            }
+
+            req.appSession.user = user;
+            return callback(null, user);
+        });
+    };
+
+    //Destroys the user's session, and request a redirect to the login page.
+    var logoutHandler = function(req, callback){
+        delete req.appSession.user;
+        return callback(null, '/login', 'redirect');
+    };
+
+    /**
+    * Returns whether there is an user's session.
+    * @param  {Object}  req Express request object
+    * @return {Boolean}     True if the user has a valid session. False otherwise.
+    * @alias hasSession
+    * @memberof LoadLoginRoutes
+    */
+    var _hasSession = function(req){
+        // return true; //Uncomment to use on test enviroment
+        return (req.appSession &amp;&amp; req.appSession.user) ? true : false;
+    };
+
+    var Route = require(__base + 'utils/customroute');
+
+    // The Anonymous attribute will get to the registerCustomRoute as a middler.
+    var routes = [
+        new Route('post', '/login', loginHandler, {anonymous: true}),
+        new Route('post', '/logout', logoutHandler, {anonymous: true})
+    ];
+
+    routingCore.registerCustomRoute(routes);
+
+    return {
+        /**
+        * Is the updated Express router object.
+        * @type {Object}
+        * @memberof LoadLoginRoutes
+        */
+        routes: router,
+        hasSession: _hasSession
+    };
+};
+
+module.exports = LoadLoginRoutes;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-CreateDefaults.html">CreateDefaults</a></li><li><a href="module-Logs.html">Logs</a></li><li><a href="module-main.html">main</a></li></ul><h3>Classes</h3><ul><li><a href="CollectorMonitor.html">CollectorMonitor</a></li><li><a href="CollectorPool.html">CollectorPool</a></li><li><a href="Controllers.html">Controllers</a></li><li><a href="DEModelPool.html">DEModelPool</a></li><li><a href="DERoutesHandler.html">DERoutesHandler</a></li><li><a href="DEValidator.html">DEValidator</a></li><li><a href="DynamicEntities.html">DynamicEntities</a></li><li><a href="LoadLoginRoutes.html">LoadLoginRoutes</a></li><li><a href="LoadRoutes.html">LoadRoutes</a></li><li><a href="ModelControllers.BaseModelController.html">BaseModelController</a></li><li><a href="module-Logs-Logs.html">Logs</a></li><li><a href="PlatformError.html">PlatformError</a></li><li><a href="PlatformSequelize.html">PlatformSequelize</a></li><li><a href="ProtocolConnectionController.html">ProtocolConnectionController</a></li><li><a href="ProtocolMessagesController.html">ProtocolMessagesController</a></li><li><a href="Routes.html">Routes</a></li><li><a href="RoutingCore.html">RoutingCore</a></li><li><a href="SequelizeModels.AppClient.html">AppClient</a></li><li><a href="SequelizeModels.Collector.html">Collector</a></li><li><a href="SequelizeModels.DynamicEntity.html">DynamicEntity</a></li><li><a href="SequelizeModels.Group.html">Group</a></li><li><a href="SequelizeModels.Package.html">Package</a></li><li><a href="SequelizeModels.PlatformMedia.html">PlatformMedia</a></li><li><a href="SequelizeModels.Rfiddata.html">Rfiddata</a></li><li><a href="SequelizeModels.RfidImport.html">RfidImport</a></li><li><a href="SequelizeModels.RouteAccess.html">RouteAccess</a></li><li><a href="SequelizeModels.UriRoute.html">UriRoute</a></li><li><a href="SequelizeModels.User.html">User</a></li><li><a href="Server.html">Server</a></li><li><a href="SynchronizeDb.html">SynchronizeDb</a></li><li><a href="TokenAuthentication.html">TokenAuthentication</a></li></ul><h3>Namespaces</h3><ul><li><a href="DeDAO.html">DeDAO</a></li><li><a href="DynamicRoutes.html">DynamicRoutes</a></li><li><a href="Media.html">Media</a></li><li><a href="ModelControllers.html">ModelControllers</a></li><li><a href="module-main-app.html">app</a></li><li><a href="SequelizeModels.html">SequelizeModels</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Fri Feb 17 2017 16:50:53 GMT-0200 (BRST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

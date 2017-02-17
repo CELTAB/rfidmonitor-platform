@@ -21,17 +21,28 @@
 ** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **
 ****************************************************************************/
+
+/**
+* @namespace DynamicRoutes
+*/
+
 'use strict';
 var Handlers = require(__base + 'routes/de/derouteshandlers');
 
 var Route = require(__base + 'utils/customroute');
 var dynamic = '/dynamic';
+
+/**
+* Contains the 5 operations for the Dynamic Entities management. Gets the metadata of one or every entity. Register a new entity. Activate or Deactivate an entity.
+* @type {Array}
+* @memberof DynamicRoutes
+*/
 var routes = [
-  new Route('get', dynamic, Handlers.meta),
-  new Route('get', dynamic + '/:entity', Handlers.meta),
-  new Route('post', dynamic, Handlers.register),
-  new Route('put', dynamic + '/:entity', Handlers.activate),
-  new Route('delete', dynamic + '/:entity', Handlers.deactivate)
+    new Route('get', dynamic, Handlers.meta),
+    new Route('get', dynamic + '/:entity', Handlers.meta),
+    new Route('post', dynamic, Handlers.register),
+    new Route('put', dynamic + '/:entity', Handlers.activate),
+    new Route('delete', dynamic + '/:entity', Handlers.deactivate)
 ];
 
 module.exports = routes;

@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Class: LoadRoutes</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Class: LoadRoutes</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>LoadRoutes</h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+
+    <h4 class="name" id="LoadRoutes"><span class="type-signature"></span>new LoadRoutes<span class="signature">(baseUri)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    Load the static and dynamic controllers, look up for default and custom routes, and register all of them.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>baseUri</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">If informed, sets the route path preceding the endpoints.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="server_routes_loadroutes.js.html">server/routes/loadroutes.js</a>, <a href="server_routes_loadroutes.js.html#line35">line 35</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id="~_passFunctions"><span class="type-signature">(inner) </span>_passFunctions<span class="signature">(controller)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+
+    
+
+
+
+<div class="description">
+    This function is responsible for getting the controller methods and applying then to one of
+the structured operations.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>controller</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">is the given container to build up the routing.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="server_routes_loadroutes.js.html">server/routes/loadroutes.js</a>, <a href="server_routes_loadroutes.js.html#line74">line 74</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    Functions: getOne, getAll, save, update, remove, name, customRoute. The methods are
+attached firstly looking for custom definitions, and after that by the default ones.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-CreateDefaults.html">CreateDefaults</a></li><li><a href="module-Logs.html">Logs</a></li><li><a href="module-main.html">main</a></li></ul><h3>Classes</h3><ul><li><a href="CollectorMonitor.html">CollectorMonitor</a></li><li><a href="CollectorPool.html">CollectorPool</a></li><li><a href="Controllers.html">Controllers</a></li><li><a href="DEModelPool.html">DEModelPool</a></li><li><a href="DERoutesHandler.html">DERoutesHandler</a></li><li><a href="DEValidator.html">DEValidator</a></li><li><a href="DynamicEntities.html">DynamicEntities</a></li><li><a href="LoadLoginRoutes.html">LoadLoginRoutes</a></li><li><a href="LoadRoutes.html">LoadRoutes</a></li><li><a href="ModelControllers.BaseModelController.html">BaseModelController</a></li><li><a href="module-Logs-Logs.html">Logs</a></li><li><a href="PlatformError.html">PlatformError</a></li><li><a href="PlatformSequelize.html">PlatformSequelize</a></li><li><a href="ProtocolConnectionController.html">ProtocolConnectionController</a></li><li><a href="ProtocolMessagesController.html">ProtocolMessagesController</a></li><li><a href="Routes.html">Routes</a></li><li><a href="RoutingCore.html">RoutingCore</a></li><li><a href="SequelizeModels.AppClient.html">AppClient</a></li><li><a href="SequelizeModels.Collector.html">Collector</a></li><li><a href="SequelizeModels.DynamicEntity.html">DynamicEntity</a></li><li><a href="SequelizeModels.Group.html">Group</a></li><li><a href="SequelizeModels.Package.html">Package</a></li><li><a href="SequelizeModels.PlatformMedia.html">PlatformMedia</a></li><li><a href="SequelizeModels.Rfiddata.html">Rfiddata</a></li><li><a href="SequelizeModels.RfidImport.html">RfidImport</a></li><li><a href="SequelizeModels.RouteAccess.html">RouteAccess</a></li><li><a href="SequelizeModels.UriRoute.html">UriRoute</a></li><li><a href="SequelizeModels.User.html">User</a></li><li><a href="Server.html">Server</a></li><li><a href="SynchronizeDb.html">SynchronizeDb</a></li><li><a href="TokenAuthentication.html">TokenAuthentication</a></li></ul><h3>Namespaces</h3><ul><li><a href="DeDAO.html">DeDAO</a></li><li><a href="DynamicRoutes.html">DynamicRoutes</a></li><li><a href="Media.html">Media</a></li><li><a href="ModelControllers.html">ModelControllers</a></li><li><a href="module-main-app.html">app</a></li><li><a href="SequelizeModels.html">SequelizeModels</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Fri Feb 17 2017 16:50:53 GMT-0200 (BRST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

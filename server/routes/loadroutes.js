@@ -27,6 +27,11 @@ var logger = require('winston');
 var express = require('express');
 var RoutingCore = require(__base + 'routes/routingcore');
 
+/**
+ * Load the static and dynamic controllers, look up for default and custom routes, and register all of them.
+ * @param {String} baseUri If informed, sets the route path preceding the endpoints.
+ * @class
+ */
 var LoadRoutes = function(baseUri){
 	var router = express.Router();
 	var ControllersPool = require(__base + 'controller/controllersModelPool');
@@ -52,12 +57,20 @@ var LoadRoutes = function(baseUri){
 	var routeDynamic = require(routeDePath + '/dynamicroutes');
 
 	customRoutes = customRoutes
-		.concat(routeMedia)
-		.concat(routeDao)
-		.concat(routeDynamic);
+	.concat(routeMedia)
+	.concat(routeDao)
+	.concat(routeDynamic);
+
 	//Create controllers based on all Saquelize models
 	// Controllers.loadControllers();
 
+	/**
+	 * This function is responsible for getting the controller methods and applying then to one of
+	 * the structured operations.
+	 * @param  {Object} controller is the given container to build up the routing.
+	 * @return {Object}            Functions: getOne, getAll, save, update, remove, name, customRoute. The methods are
+	 * attached firstly looking for custom definitions, and after that by the default ones.
+	 */
 	var _passFunctions = function(controller){
 		var custom = controller.custom;
 		return{
@@ -73,12 +86,15 @@ var LoadRoutes = function(baseUri){
 
 	var routingCore = new RoutingCore(router, baseUri || '');
 	var controllersPool = Controllers.getAll();
+
 	for(var key in controllersPool){
 		logger.debug('Registering route for ' + key);
 		var controller = controllersPool[key];
 		routingCore.registerRoute(controller.name, _passFunctions(controller));
 	}
+
 	routingCore.registerCustomRoute(customRoutes);
+
 	return router;
 }
 

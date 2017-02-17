@@ -29,47 +29,70 @@ var RoutingCore = require(__base + 'routes/routingcore');
 var errorHandler = require(__base + 'utils/errorhandler');
 var sequelize = require(__base + 'controller/database/platformsequelize');
 
+/**
+* Prepares the login and logout routes for the front-end user. Updates the Express router adding the new endpoints.
+* @param {String} baseUri if informed, sets the route path preceding the /login and /logout endpoints
+* @class
+*/
 var LoadLoginRoutes = function(baseUri){
-  var router = express.Router();
-  var routingCore = new RoutingCore(router, baseUri || '');
-  var loginHandler = function(req, callback){
-		if(!req.body.username || !req.body.password)
-      return errorHandler('Missing username ou password', 400, callback);
+    var router = express.Router();
 
-    var UserCtrl = require(__base + 'controller/models/user'); //Needs to be here.
-    UserCtrl.login(req.body, function(err, user){
-      if(err){
-        logger.error(err);
-        return callback(err);
-      }
+    var routingCore = new RoutingCore(router, baseUri || '');
 
-      req.appSession.user = user;
-      return callback(null, user);
-    });
-  };
+    //Handles the user login.
+    var loginHandler = function(req, callback){
+        if(!req.body.username || !req.body.password)
+        return errorHandler('Missing username ou password', 400, callback);
 
-  var logoutHandler = function(req, callback){
-    delete req.appSession.user;
-    return callback(null, '/login', 'redirect');
-  };
+        var UserCtrl = require(__base + 'controller/models/user'); //Needs to be here.
+        UserCtrl.login(req.body, function(err, user){
+            if(err){
+                logger.error(err);
+                return callback(err);
+            }
 
-  var _hasSession = function(req){
-    // return true; //Uncomment to use on test enviroment
-    return (req.appSession && req.appSession.user)? true: false;
-  };
+            req.appSession.user = user;
+            return callback(null, user);
+        });
+    };
 
-  var Route = require(__base + 'utils/customroute');
-  // The Anonymous attribute will get to the registerCustomRoute as a middler.
-  var routes = [
-    new Route('post', '/login', loginHandler, {anonymous: true}),
-    new Route('post', '/logout', logoutHandler, {anonymous: true})
-  ];
-  routingCore.registerCustomRoute(routes);
+    //Destroys the user's session, and request a redirect to the login page.
+    var logoutHandler = function(req, callback){
+        delete req.appSession.user;
+        return callback(null, '/login', 'redirect');
+    };
 
-  return {
-    routes: router,
-    hasSession: _hasSession
-  };
+    /**
+    * Returns whether there is an user's session.
+    * @param  {Object}  req Express request object
+    * @return {Boolean}     True if the user has a valid session. False otherwise.
+    * @alias hasSession
+    * @memberof LoadLoginRoutes
+    */
+    var _hasSession = function(req){
+        // return true; //Uncomment to use on test enviroment
+        return (req.appSession && req.appSession.user) ? true : false;
+    };
+
+    var Route = require(__base + 'utils/customroute');
+
+    // The Anonymous attribute will get to the registerCustomRoute as a middler.
+    var routes = [
+        new Route('post', '/login', loginHandler, {anonymous: true}),
+        new Route('post', '/logout', logoutHandler, {anonymous: true})
+    ];
+
+    routingCore.registerCustomRoute(routes);
+
+    return {
+        /**
+        * Is the updated Express router object.
+        * @type {Object}
+        * @memberof LoadLoginRoutes
+        */
+        routes: router,
+        hasSession: _hasSession
+    };
 };
 
 module.exports = LoadLoginRoutes;
