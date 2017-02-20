@@ -24,6 +24,14 @@
 
 var logger = require('winston');
 
+/**
+ * Build a structured error object, log it and trigger the callback.
+ * @param  {Object}   err      Error object
+ * @param  {Number}   code     Application defined error code. This is going to represent the HTTP response code.
+ * @param  {Function} callback callback to continue the processing of the structured error.
+ * @return {void}
+ * @memberof Utils.
+ */
 var errorHandler = function(err, code, callback){
   var errMessage = {code: code, error: err, message: err};
   if(code === 500)

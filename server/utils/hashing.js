@@ -23,37 +23,72 @@
 ****************************************************************************/
 
 'use strict';
+
+/**
+* Auxiliary class to handle hashes.
+* @class
+*/
 var Hash = function() {
 
 	var crypto = require('crypto');
 	var SaltLength = 9;
 
+
+	/**
+	 * Genarates a complete hash: salt + md5
+	 * @alias createHash
+	 * @param  {String} password is the string to be hashed
+	 * @return {String}          is the string's hash
+	 * @memberof Hash
+	 */
 	var _createHash = function(password) {
-	  var salt = _generateSalt(SaltLength);
-	  var hash = _md5(password + salt);
-	  return salt + hash;
+		var salt = _generateSalt(SaltLength);
+		var hash = _md5(password + salt);
+		return salt + hash;
 	}
 
+	/**
+	 * Checks if the given hash matches the given password string
+	 * @alias validateHash
+	 * @param  {String} hash     Hash for comparison.
+	 * @param  {String} password Given string for comparison
+	 * @return {Boolean}          True if matches or False otherwise.
+	 * @memberof Hash
+	 */
 	var _validateHash = function(hash, password) {
-	  var salt = hash.substr(0, SaltLength);
-	  var validHash = salt + _md5(password + salt);
-	  return hash === validHash;
+		var salt = hash.substr(0, SaltLength);
+		var validHash = salt + _md5(password + salt);
+		return hash === validHash;
 	}
 
+	/**
+	 * Generates a salt to concatenate with the hash.
+	 * @alias generateSalt
+	 * @param  {Number} len is the salt's string length
+	 * @return {String}     is the salt.
+	 * @memberof Hash
+	 */
 	var _generateSalt = function(len) {
-	  var set = '0123456789abcdefghijklmnopqurstuvwxyzABCDEFGHIJKLMNOPQURSTUVWXYZ',
-	      setLen = set.length,
-	      salt = '';
-	  for (var i = 0; i < len; i++) {
-	    var p = Math.floor(Math.random() * setLen);
-	    salt += set[p];
-	  }
-	  // return salt;
-	  return 'Z]s4NpW*';
+		var set = '0123456789abcdefghijklmnopqurstuvwxyzABCDEFGHIJKLMNOPQURSTUVWXYZ',
+		setLen = set.length,
+		salt = '';
+		for (var i = 0; i < len; i++) {
+			var p = Math.floor(Math.random() * setLen);
+			salt += set[p];
+		}
+		// return salt;
+		return 'Z]s4NpW*'; //TODO remove static salt
 	}
 
+	/**
+	* Generates a md5 hash from the given string.
+	* @alias md5
+	* @param  {String} string is the string to be hashed
+	* @return {String}        is the md5 hash for the given string.
+	* @memberof Hash
+	*/
 	var _md5 = function(string) {
-	  return crypto.createHash('md5').update(string).digest('hex');
+		return crypto.createHash('md5').update(string).digest('hex');
 	}
 
 	return {

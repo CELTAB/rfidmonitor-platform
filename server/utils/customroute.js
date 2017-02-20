@@ -23,6 +23,17 @@
 ****************************************************************************/
 
 'use strict';
+
+/**
+ * Holds information of a customized route
+ * @param  {String} method  Is the HTTP method.
+ * @param  {String} route   Is the route name, that defines its resource path.
+ * @param  {funtion} handler Function called to handle a request to the route.
+ * @param  {function} middler Middleware function.
+ * @return {void}
+ * @alias CustomRoute
+ * @class
+ */
 var customRoute = function(method, route, handler, middler){
   this.route = route;
   this.method = method;

@@ -22,11 +22,26 @@
 **
 ****************************************************************************/
 
+/**
+ * Auxiliary class to create random character and number combinations.
+ * @class
+ */
 var RandomChars = function() {
+	/**
+	 * Create a random integer number.
+	 * @param  {Number} min is the minimum integer value
+	 * @param  {Number} max is the maximum integer value
+	 * @return {Number}     is the generated number.
+	 */
 	this.randomInt = function(min, max) {
 		return Math.floor(Math.random() * (max - min + 1)) + min;
 	}
 
+	/**
+	 * Create a random string to represent an uuid
+	 * @param  {Number} len is the uuid (string) length
+	 * @return {String}     is the generated uuid
+	 */
 	this.uid = function(len) {
 		var buf = []
     	, chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'

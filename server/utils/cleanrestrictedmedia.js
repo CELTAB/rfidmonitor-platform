@@ -27,6 +27,16 @@ var logger = require('winston');
 var fs = require('fs');
 var path = require('path');
 var appDir = path.dirname(require.main.filename);
+
+/**
+ * @namespace Utils
+ */
+
+/**
+ * Clean up the restricted_media temporary folder.
+ * @return {Error} Return null if no problem, and an error object if there is a problem.
+ * @memberof Utils
+ */
 var cleanRestrictedMediaTmpSync = function(){
 	var dir = appDir + '/restricted_media/tmp/';
 

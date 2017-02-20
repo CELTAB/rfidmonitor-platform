@@ -40,7 +40,7 @@ var logsDir = __base + 'logs/';
 
 /**
  * This module is able to log
- * @constructor
+ * @class
  * @param {boolean} debugConsole sends the logging output, for the debug type, to the console only.
  * @param {boolean} debugFile    sends the logging output, for the debug type, to the file only.
  * @param {boolean} sillyConsole sends the logging output, for the silly type, to the console only.
