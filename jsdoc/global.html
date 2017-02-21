@@ -101,14 +101,14 @@
 
     
 
-    <h4 class="name" id="createHash"><span class="type-signature"></span>createHash<span class="signature">(password)</span><span class="type-signature"> &rarr; {String}</span></h4>
+    <h4 class="name" id="defaultGroup"><span class="type-signature"></span>defaultGroup<span class="signature">(done)</span><span class="type-signature"> &rarr; {void}</span></h4>
 
     
 
 
 
 <div class="description">
-    Genarates a complete hash: salt + md5
+    Creates the default group
 </div>
 
 
@@ -144,13 +144,13 @@
 
         <tr>
             
-                <td class="name"><code>password</code></td>
+                <td class="name"><code>done</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">String</span>
+<span class="param-type">function</span>
 
 
             
@@ -160,7 +160,7 @@
 
             
 
-            <td class="description last">is the string to be hashed</td>
+            <td class="description last">callback for when done</td>
         </tr>
 
     
@@ -201,7 +201,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="server_utils_hashing.js.html">server/utils/hashing.js</a>, <a href="server_utils_hashing.js.html#line43">line 43</a>
+        <a href="server_controller_database_createdefaults.js.html">server/controller/database/createdefaults.js</a>, <a href="server_controller_database_createdefaults.js.html#line164">line 164</a>
     </li></ul></dd>
     
 
@@ -227,10 +227,6 @@
 <h5>Returns:</h5>
 
         
-<div class="param-desc">
-    is the string's hash
-</div>
-
 
 
 <dl>
@@ -239,7 +235,7 @@
     </dt>
     <dd>
         
-<span class="param-type">String</span>
+<span class="param-type">void</span>
 
 
     </dd>
@@ -265,13 +261,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-CreateDefaults.html">CreateDefaults</a></li><li><a href="module-Logs.html">Logs</a></li><li><a href="module-main.html">main</a></li></ul><h3>Classes</h3><ul><li><a href="CollectorMonitor.html">CollectorMonitor</a></li><li><a href="CollectorPool.html">CollectorPool</a></li><li><a href="Controllers.html">Controllers</a></li><li><a href="CustomRoute.html">CustomRoute</a></li><li><a href="DEModelPool.html">DEModelPool</a></li><li><a href="DERoutesHandler.html">DERoutesHandler</a></li><li><a href="DEValidator.html">DEValidator</a></li><li><a href="DynamicEntities.html">DynamicEntities</a></li><li><a href="Hash.html">Hash</a></li><li><a href="LoadLoginRoutes.html">LoadLoginRoutes</a></li><li><a href="LoadRoutes.html">LoadRoutes</a></li><li><a href="ModelControllers.BaseModelController.html">BaseModelController</a></li><li><a href="module-Logs-Logs.html">Logs</a></li><li><a href="PlatformError.html">PlatformError</a></li><li><a href="PlatformSequelize.html">PlatformSequelize</a></li><li><a href="ProtocolConnectionController.html">ProtocolConnectionController</a></li><li><a href="ProtocolMessagesController.html">ProtocolMessagesController</a></li><li><a href="Routes.html">Routes</a></li><li><a href="RoutingCore.html">RoutingCore</a></li><li><a href="SequelizeModels.AppClient.html">AppClient</a></li><li><a href="SequelizeModels.Collector.html">Collector</a></li><li><a href="SequelizeModels.DynamicEntity.html">DynamicEntity</a></li><li><a href="SequelizeModels.Group.html">Group</a></li><li><a href="SequelizeModels.Package.html">Package</a></li><li><a href="SequelizeModels.PlatformMedia.html">PlatformMedia</a></li><li><a href="SequelizeModels.Rfiddata.html">Rfiddata</a></li><li><a href="SequelizeModels.RfidImport.html">RfidImport</a></li><li><a href="SequelizeModels.RouteAccess.html">RouteAccess</a></li><li><a href="SequelizeModels.UriRoute.html">UriRoute</a></li><li><a href="SequelizeModels.User.html">User</a></li><li><a href="Server.html">Server</a></li><li><a href="SynchronizeDb.html">SynchronizeDb</a></li><li><a href="TokenAuthentication.html">TokenAuthentication</a></li></ul><h3>Namespaces</h3><ul><li><a href="DeDAO.html">DeDAO</a></li><li><a href="DynamicRoutes.html">DynamicRoutes</a></li><li><a href="Media.html">Media</a></li><li><a href="ModelControllers.html">ModelControllers</a></li><li><a href="module-main-app.html">app</a></li><li><a href="SequelizeModels.html">SequelizeModels</a></li><li><a href="Utils.html">Utils</a></li></ul><h3>Global</h3><ul><li><a href="global.html#createHash">createHash</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-main.html">main</a></li></ul><h3>Classes</h3><ul><li><a href="CollectorMonitor.html">CollectorMonitor</a></li><li><a href="CollectorPool.html">CollectorPool</a></li><li><a href="Controllers.html">Controllers</a></li><li><a href="CreateDefaults.html">CreateDefaults</a></li><li><a href="CustomRoute.html">CustomRoute</a></li><li><a href="DEModelPool.html">DEModelPool</a></li><li><a href="DERoutesHandler.html">DERoutesHandler</a></li><li><a href="DEValidator.html">DEValidator</a></li><li><a href="DynamicEntities.html">DynamicEntities</a></li><li><a href="Hash.html">Hash</a></li><li><a href="LoadLoginRoutes.html">LoadLoginRoutes</a></li><li><a href="LoadRoutes.html">LoadRoutes</a></li><li><a href="Logs.html">Logs</a></li><li><a href="ModelControllers.BaseModelController.html">BaseModelController</a></li><li><a href="PlatformError.html">PlatformError</a></li><li><a href="PlatformSequelize.html">PlatformSequelize</a></li><li><a href="ProtocolConnectionController.html">ProtocolConnectionController</a></li><li><a href="ProtocolMessagesController.html">ProtocolMessagesController</a></li><li><a href="RandomChars.html">RandomChars</a></li><li><a href="Routes.html">Routes</a></li><li><a href="RoutingCore.html">RoutingCore</a></li><li><a href="SequelizeModels.AppClient.html">AppClient</a></li><li><a href="SequelizeModels.Collector.html">Collector</a></li><li><a href="SequelizeModels.DynamicEntity.html">DynamicEntity</a></li><li><a href="SequelizeModels.Group.html">Group</a></li><li><a href="SequelizeModels.Package.html">Package</a></li><li><a href="SequelizeModels.PlatformMedia.html">PlatformMedia</a></li><li><a href="SequelizeModels.Rfiddata.html">Rfiddata</a></li><li><a href="SequelizeModels.RfidImport.html">RfidImport</a></li><li><a href="SequelizeModels.RouteAccess.html">RouteAccess</a></li><li><a href="SequelizeModels.UriRoute.html">UriRoute</a></li><li><a href="SequelizeModels.User.html">User</a></li><li><a href="Server.html">Server</a></li><li><a href="SynchronizeDb.html">SynchronizeDb</a></li><li><a href="TokenAuthentication.html">TokenAuthentication</a></li></ul><h3>Namespaces</h3><ul><li><a href="DeDAO.html">DeDAO</a></li><li><a href="DynamicRoutes.html">DynamicRoutes</a></li><li><a href="Media.html">Media</a></li><li><a href="ModelControllers.html">ModelControllers</a></li><li><a href="module-main-app.html">app</a></li><li><a href="SequelizeModels.html">SequelizeModels</a></li><li><a href="Utils.html">Utils</a></li></ul><h3>Global</h3><ul><li><a href="global.html#defaultGroup">defaultGroup</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Feb 20 2017 14:46:51 GMT-0300 (BRT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Feb 20 2017 15:29:05 GMT-0300 (BRT)
 </footer>
 
 <script> prettyPrint(); </script>

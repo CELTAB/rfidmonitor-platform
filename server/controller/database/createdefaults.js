@@ -22,10 +22,6 @@
 **
 ****************************************************************************/
 
-/**
- * @module CreateDefaults
- */
-
 'use strict';
 var logger = require('winston');
 var sequelize = require(__base + 'controller/database/platformsequelize');
@@ -36,6 +32,7 @@ var Group = sequelize.model('Group');
 /**
  * Create a default group, admin user and a token with access to ANY route with ANY method, full access.
  * @param {Function} done callback for when done.
+ * @class
  */
 var CreateDefaults = function(done){
     /*
@@ -60,6 +57,7 @@ var CreateDefaults = function(done){
  * Finds for the default group, if not present, creates it.
  * @param  {Function} done callback for when done.
  * @return {callback_output}        returns the callback output.
+ * @memberof CreateDefaults
  */
 var createDefaultGroup = function(done){
     Group.findOne({where: {isDefault: true, deletedAt: null}})
@@ -77,12 +75,13 @@ var createDefaultGroup = function(done){
 }
 
 /**
- * [createDefaults description]
- * @param  {Function} done [description]
+ * Create default credentials for one can use the system as admin, at the first interaction
+ * @param  {Function} done callback for when done.
  * @return {void}
+ * @memberof CreateDefaults
  */
 var createDefaults = function(done){
-    //Create default credentials for one can user the system as admin, at the first interaction
+    //
     defaultUser(function(err, user){
         if(err) return done(err);
         defaultAppClient(user, function(err, appClient){
@@ -97,6 +96,7 @@ var createDefaults = function(done){
  * @param  {String}   when     action being handled.
  * @param  {Function} callback callback to be executed on success or error.
  * @return {callback_output}            returns the output from the callback.
+ * @memberof CreateDefaults
  */
 var handlers = function(when, callback){
     return {
@@ -114,6 +114,7 @@ var handlers = function(when, callback){
  * Creates the default Admin User and password
  * @param  {Function} done callback for when done.
  * @return {void}
+ * @memberof CreateDefaults
  */
 var defaultUser = function(done){
     var handler = handlers('User', done);
@@ -126,6 +127,7 @@ var defaultUser = function(done){
  * @param  {Object}   user reference user which the app client will be created.
  * @param  {Function} done callback for when done.
  * @return {void}
+ * @memberof CreateDefaults
  */
 var defaultAppClient = function(user, done){
     var AppClient = sequelize.model('AppClient');
@@ -139,6 +141,7 @@ var defaultAppClient = function(user, done){
  * @param  {Object}   appClient the target app client
  * @param  {Function} done      callback for when done.
  * @return {void}
+ * @memberof CreateDefaults
  */
 var grantAccessAny = function(appClient, done){
     var Routes = sequelize.model('UriRoute');
@@ -157,6 +160,7 @@ var grantAccessAny = function(appClient, done){
  * Creates the default group
  * @param  {Function} done callback for when done
  * @return {void}
+ * @memberof CreateDefaults
  */
 var defaultGroup = function(done){
     var handler = handlers('Group', done);

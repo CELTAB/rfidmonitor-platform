@@ -1,17 +1,14 @@
 # RFIDMonitor Platform
-This project aims to provide a full solution for RFID monitoring. The project is divided in two fundamental parts:
-* Collecting Point (Embedded)
-  * [RFIDMonitor] [RFIDMonitor]
-  * [RFIDMonitorDaemon] [RFIDMonitor]
-* Desktop
-    * [DeskApp] [RFIDMonitor]
-* Server
-    * RFIDMonitor Platform
 
-This repository holds the RFIDMonitor Platform code. The system is responsible for communicates with the Collecting Point to exchange information and to save all the collected data into the database. Also offers an RestFul API to consume those data and a web-based user interface for administration.
+The RFIDMonitor Platform is part of the RFIDMonitor project, and provides a prototype application for the server side of the RFID monitoring environment.
+
+The RFIDMonitor project is divided in three main applications:
+* RFIDMonitor: an app that runs over Raspberry Pi on collecting points.
+* RFIDMonitor DeskApp: an app that runs over Desktops, and is prepared to configure the collecting point.
+* RFIDMonitor Platform: [current repository] an app that runs on server side and connects with every collecting point, synchronize the monitoring data, holds the data in a database, provides a Restful API for manageble clients, and serves a web application for the platform administration and data visualization.
 
 ### Version
-1.0.0
+1.0.0 alpha
 
 ### Requirements
 - PostgreSQL >= v9.3.6
@@ -26,5 +23,3 @@ $ cd rfidmonitor-platform
 $ npm run deploy
 $ node app.js
 ```
-
-[RFIDMonitor]: <https://github.com/CELTAB/rfidmonitor>

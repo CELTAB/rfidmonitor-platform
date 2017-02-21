@@ -1,3 +1,5 @@
+//TODO remove. Not used.
+
 global.__base = __dirname + './../server/';
 var sequelize = require(__base + 'controller/database/platformsequelize');
 

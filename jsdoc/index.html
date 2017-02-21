@@ -42,6 +42,26 @@
 
 
 
+    <section>
+        <article><h1>RFIDMonitor Platform</h1><p>The RFIDMonitor Platform is part of the RFIDMonitor project, and provides a prototype application for the server side of the RFID monitoring environment.</p>
+<p>The RFIDMonitor project is divided in three main applications:</p>
+<ul>
+<li>RFIDMonitor: an app that runs over Raspberry Pi on collecting points.</li>
+<li>RFIDMonitor DeskApp: an app that runs over Desktops, and is prepared to configure the collecting point.</li>
+<li>RFIDMonitor Platform: [current repository] an app that runs on server side and connects with every collecting point, synchronize the monitoring data, holds the data in a database, provides a Restful API for manageble clients, and serves a web application for the platform administration and data visualization.</li>
+</ul>
+<h3>Version</h3><p>1.0.0 alpha</p>
+<h3>Requirements</h3><ul>
+<li>PostgreSQL &gt;= v9.3.6</li>
+<li>NodeJS &gt;= v4.2.2</li>
+<li>Npm &gt;= v2.14.7</li>
+</ul>
+<h3>Installation</h3><pre class="prettyprint source lang-sh"><code>$ git clone [git-repo-url] rfidmonitor-platform
+$ cd rfidmonitor-platform
+$ npm run deploy
+$ node app.js</code></pre></article>
+    </section>
+
 
 
 
@@ -50,13 +70,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-CreateDefaults.html">CreateDefaults</a></li><li><a href="module-Logs.html">Logs</a></li><li><a href="module-main.html">main</a></li></ul><h3>Classes</h3><ul><li><a href="CollectorMonitor.html">CollectorMonitor</a></li><li><a href="CollectorPool.html">CollectorPool</a></li><li><a href="Controllers.html">Controllers</a></li><li><a href="CustomRoute.html">CustomRoute</a></li><li><a href="DEModelPool.html">DEModelPool</a></li><li><a href="DERoutesHandler.html">DERoutesHandler</a></li><li><a href="DEValidator.html">DEValidator</a></li><li><a href="DynamicEntities.html">DynamicEntities</a></li><li><a href="Hash.html">Hash</a></li><li><a href="LoadLoginRoutes.html">LoadLoginRoutes</a></li><li><a href="LoadRoutes.html">LoadRoutes</a></li><li><a href="ModelControllers.BaseModelController.html">BaseModelController</a></li><li><a href="module-Logs-Logs.html">Logs</a></li><li><a href="PlatformError.html">PlatformError</a></li><li><a href="PlatformSequelize.html">PlatformSequelize</a></li><li><a href="ProtocolConnectionController.html">ProtocolConnectionController</a></li><li><a href="ProtocolMessagesController.html">ProtocolMessagesController</a></li><li><a href="RandomChars.html">RandomChars</a></li><li><a href="Routes.html">Routes</a></li><li><a href="RoutingCore.html">RoutingCore</a></li><li><a href="SequelizeModels.AppClient.html">AppClient</a></li><li><a href="SequelizeModels.Collector.html">Collector</a></li><li><a href="SequelizeModels.DynamicEntity.html">DynamicEntity</a></li><li><a href="SequelizeModels.Group.html">Group</a></li><li><a href="SequelizeModels.Package.html">Package</a></li><li><a href="SequelizeModels.PlatformMedia.html">PlatformMedia</a></li><li><a href="SequelizeModels.Rfiddata.html">Rfiddata</a></li><li><a href="SequelizeModels.RfidImport.html">RfidImport</a></li><li><a href="SequelizeModels.RouteAccess.html">RouteAccess</a></li><li><a href="SequelizeModels.UriRoute.html">UriRoute</a></li><li><a href="SequelizeModels.User.html">User</a></li><li><a href="Server.html">Server</a></li><li><a href="SynchronizeDb.html">SynchronizeDb</a></li><li><a href="TokenAuthentication.html">TokenAuthentication</a></li></ul><h3>Namespaces</h3><ul><li><a href="DeDAO.html">DeDAO</a></li><li><a href="DynamicRoutes.html">DynamicRoutes</a></li><li><a href="Media.html">Media</a></li><li><a href="ModelControllers.html">ModelControllers</a></li><li><a href="module-main-app.html">app</a></li><li><a href="SequelizeModels.html">SequelizeModels</a></li><li><a href="Utils.html">Utils</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="CollectorMonitor.html">CollectorMonitor</a></li><li><a href="CollectorPool.html">CollectorPool</a></li><li><a href="Controllers.html">Controllers</a></li><li><a href="CreateDefaults.html">CreateDefaults</a></li><li><a href="CustomRoute.html">CustomRoute</a></li><li><a href="DEModelPool.html">DEModelPool</a></li><li><a href="DERoutesHandler.html">DERoutesHandler</a></li><li><a href="DEValidator.html">DEValidator</a></li><li><a href="DynamicEntities.html">DynamicEntities</a></li><li><a href="Hash.html">Hash</a></li><li><a href="LoadLoginRoutes.html">LoadLoginRoutes</a></li><li><a href="LoadRoutes.html">LoadRoutes</a></li><li><a href="Logs.html">Logs</a></li><li><a href="ModelControllers.BaseModelController.html">BaseModelController</a></li><li><a href="PlatformError.html">PlatformError</a></li><li><a href="PlatformSequelize.html">PlatformSequelize</a></li><li><a href="ProtocolConnectionController.html">ProtocolConnectionController</a></li><li><a href="ProtocolMessagesController.html">ProtocolMessagesController</a></li><li><a href="RandomChars.html">RandomChars</a></li><li><a href="Routes.html">Routes</a></li><li><a href="RoutingCore.html">RoutingCore</a></li><li><a href="SequelizeModels.AppClient.html">AppClient</a></li><li><a href="SequelizeModels.Collector.html">Collector</a></li><li><a href="SequelizeModels.DynamicEntity.html">DynamicEntity</a></li><li><a href="SequelizeModels.Group.html">Group</a></li><li><a href="SequelizeModels.Package.html">Package</a></li><li><a href="SequelizeModels.PlatformMedia.html">PlatformMedia</a></li><li><a href="SequelizeModels.Rfiddata.html">Rfiddata</a></li><li><a href="SequelizeModels.RfidImport.html">RfidImport</a></li><li><a href="SequelizeModels.RouteAccess.html">RouteAccess</a></li><li><a href="SequelizeModels.UriRoute.html">UriRoute</a></li><li><a href="SequelizeModels.User.html">User</a></li><li><a href="Server.html">Server</a></li><li><a href="SynchronizeDb.html">SynchronizeDb</a></li><li><a href="TokenAuthentication.html">TokenAuthentication</a></li></ul><h3>Namespaces</h3><ul><li><a href="DeDAO.html">DeDAO</a></li><li><a href="DynamicRoutes.html">DynamicRoutes</a></li><li><a href="Main.html">Main</a></li><li><a href="Media.html">Media</a></li><li><a href="ModelControllers.html">ModelControllers</a></li><li><a href="SequelizeModels.html">SequelizeModels</a></li><li><a href="Utils.html">Utils</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Feb 20 2017 15:14:43 GMT-0300 (BRT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Feb 21 2017 08:54:57 GMT-0300 (BRT)
 </footer>
 
 <script> prettyPrint(); </script>

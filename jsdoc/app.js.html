@@ -52,39 +52,34 @@
 
 /**
 * Main app module [ app.js ]
-* @module main
-*/
-
-/**
-* Main app namespace [ app.js ]
-* @namespace app
+* @namespace Main
 */
 
 /**
 * Holds the backend base code path
-* @memberof app
+* @memberof Main
 * @type string
 */
 global.__base = __dirname + '/server/';
 
 /**
 * Holds the app execution type between development and production.
-* @memberof app
+* @memberof Main
 * @type boolean
 */
 global.__DevEnv = false;
 
-/////////////////////////////////
-// Keep as firsts requires >>> //
-/////////////////////////////////
+////////////////////////////////////
+// Keep as first requirements >>> //
+////////////////////////////////////
 
 var Logs = require(__base + 'utils/logs');
 
 var logger = require('winston');
 
-/////////////////////////////////////////
-// &lt;&lt;&lt; end of 'keep as first requires' //
-/////////////////////////////////////////
+/////////////////////////////////////////////
+// &lt;&lt;&lt; end of 'Keep as first requirements' //
+/////////////////////////////////////////////
 
 //Requirements
 var express = require('express');
@@ -129,8 +124,11 @@ if(args.indexOf('--dev') > -1){
 	logger.warn('Starting on development mode');
 }
 
+//Synchronize the Sequelize Models (static and dynamic) to the database
 var SynchronizeDb = require(__base + 'controller/database/synchronizedb');
 SynchronizeDb.start(function(err){
+	//When the synchronization is finished, this current callback is triggered.
+
 	if(err){
 		logger.error("Erro to initialize Database: " + err);
 		return 1;
@@ -141,10 +139,11 @@ SynchronizeDb.start(function(err){
 	var LoadLoginRouter = require(__base + 'routes/loadloginroute');
 	var tokenAuthentication = require(__base + 'controller/tokenauthentication');
 	var createDefaults = require(__base + 'controller/database/createdefaults');
+
 	//Create default credentials if no user is found
 	createDefaults(function(err){
 		if(err)
-			throw new Error('Error on create default credentials: ' + err);
+		throw new Error('Error on create default credentials: ' + err);
 	});
 
 	//Clean restricted_media directory
@@ -154,18 +153,27 @@ SynchronizeDb.start(function(err){
 		return 1;
 	}
 
-	/*
-	How to generate ssl files. On terminal type:
-		openssl genrsa -out platform-key.pem 1024
-		openssl req -new -key platform-key.pem -out platform-cert-req.csr
-		openssl x509 -req -in platform-cert-req.csr -signkey platform-key.pem -out platform-cert.pem
+	/**
+	* To generate cert files, type on terminal:
+	* openssl genrsa -out platform-key.pem 4096
+	* openssl req -new -key platform-key.pem -out platform-cert-req.csr
+	* openssl x509 -req -in platform-cert-req.csr -signkey platform-key.pem -out platform-cert.pem
 	*/
+
 	var options = {
 		key: fs.readFileSync(__base + 'config/ssl/platform-key.pem'),
 		cert: fs.readFileSync(__base + 'config/ssl/platform-cert.pem')
 	};
 
+	//Create and configure the express server.
+
+	/**
+	 * Holds the Express Server
+	 * @type {Object}
+	 * @memberof Main
+	 */
 	var app = express();
+
 	app.use(Cors());
 	app.use(bodyParser.json({type: 'application/json'}));
 	app.use(bodyParser.urlencoded({limit: '5mb', extended: true}));
@@ -178,7 +186,7 @@ SynchronizeDb.start(function(err){
 		secure: true
 	}));
 
-	//Necessary headers to clients access.
+	//Needed headers for clients access.
 	app.all('*', function(req, res, next) {
 		res.header('Access-Control-Allow-Origin', '*');
 		res.header('Access-Control-Allow-Credentials', 'true');
@@ -187,12 +195,13 @@ SynchronizeDb.start(function(err){
 		next();
 	});
 
+	//Log every request
 	app.all('*', function(req, res, next){
 		logger.debug("Method " + req.method + " for URL " + req.url);
 		next();
 	});
 
-	//Definir se será usado
+	//Add to every request a new function called 'response'. This function handles a structed response.
 	app.all('*', function(req, res, next){
 		res.response = function(error, responseStatus, message){
 			var sendMessage = {message: message, status: responseStatus};
@@ -204,22 +213,51 @@ SynchronizeDb.start(function(err){
 		next();
 	});
 
+	/**
+	 * This functions gets some erros like 'bodyParser errors'.
+	 * To check if it is bodyparser error, remove the response below and just call next().
+	 */
 	app.use(function(err, req, res, next) {
-		//This functions gets some erros like 'bodyParser errors'.
-		//To check if it is bodyparser error, remove the response below and just call next().
 		if(err){
 			return res.status(400).send({message: "Something wrong with your object", error: err.toString(), status: 400});
 		}
 		next();
 	});
+
+
+	/**
+	 * HTTP port number
+	 * @type {Number}
+	 * @memberof Main
+	 */
 	var httpPort = 8180;
+
+	/**
+	 * HTTPS port number
+	 * @type {Number}
+	 * @memberof Main
+	 */
 	var httpsPort = 8143;
 
-	var loginPath = '/login',
-			apiPath = '/api';
+	/**
+	 * Holds the path for the login route.
+	 * @type {String}
+	 */
+	var loginPath = '/login';
 
+	/**
+	 * Holds the path for the api route.
+	 * @type {String}
+	 */
+	var apiPath = '/api';
+
+	/**
+	 * Holds the path for the web app route.
+	 * @type {String}
+	 */
 	var webPath = global.__DevEnv? '/web-dev' : '/web';
 
+	//Load the application routes
 	var apiRoutes = new LoadRouter(apiPath);
 	var login = new LoadLoginRouter();
 
@@ -232,9 +270,12 @@ SynchronizeDb.start(function(err){
 		next();
 	});
 
+	//Redirect any request on the root path to the web application.
 	app.get('/', function(req, res){
 		res.redirect(webPath);
 	});
+
+	// Middleware that decides if a request is going to be redirected to the login page if there is not session.
 	var redirectMidler = function(req, res, next){
 		if(req.originalUrl.indexOf(webPath) !== -1){
 			return login.hasSession(req)? next() : res.redirect(loginPath);
@@ -246,25 +287,33 @@ SynchronizeDb.start(function(err){
 		}
 	};
 
+	//Staticaly serves the api documentation web page.
 	app.use('/api/doc', express.static(__dirname + '/apidoc'));
+
+	//Configures the Bearer authentication method for the api routes
 	var authenticate = new tokenAuthentication(app);
 	authenticate.useBearer(apiPath);
 
+	//Setup the session validation for web access.
 	app.use(webPath, redirectMidler);
 	app.use(loginPath, redirectMidler);
 
 	if(global.__DevEnv){
+		//If running in dev environment, uses the source from web-dev for the web application.
 		app.use(webPath, express.static('web-dev/private'));
 		app.use(loginPath, express.static('web-dev/public/login'));
 	}else{
-			app.use(webPath, express.static('web/private'));
-			app.use(loginPath, express.static('web/public/login'));
+		//Otherwise, uses the /web folder, where the deploy process have been done.
+		app.use(webPath, express.static('web/private'));
+		app.use(loginPath, express.static('web/public/login'));
 	}
 
+	//Set under 'apiPath' path every 'apiRoute' route
 	app.use(apiPath, apiRoutes);
+	//Set under root path the login routes.
 	app.use(login.routes);
 
-	//Create and start server for collectors
+	//Create and start the tcp server for communicating to the collectors
 	var server = new Server();
 	server.startServer();
 
@@ -286,13 +335,13 @@ SynchronizeDb.start(function(err){
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-CreateDefaults.html">CreateDefaults</a></li><li><a href="module-Logs.html">Logs</a></li><li><a href="module-main.html">main</a></li></ul><h3>Classes</h3><ul><li><a href="CollectorMonitor.html">CollectorMonitor</a></li><li><a href="CollectorPool.html">CollectorPool</a></li><li><a href="Controllers.html">Controllers</a></li><li><a href="CustomRoute.html">CustomRoute</a></li><li><a href="DEModelPool.html">DEModelPool</a></li><li><a href="DERoutesHandler.html">DERoutesHandler</a></li><li><a href="DEValidator.html">DEValidator</a></li><li><a href="DynamicEntities.html">DynamicEntities</a></li><li><a href="Hash.html">Hash</a></li><li><a href="LoadLoginRoutes.html">LoadLoginRoutes</a></li><li><a href="LoadRoutes.html">LoadRoutes</a></li><li><a href="ModelControllers.BaseModelController.html">BaseModelController</a></li><li><a href="module-Logs-Logs.html">Logs</a></li><li><a href="PlatformError.html">PlatformError</a></li><li><a href="PlatformSequelize.html">PlatformSequelize</a></li><li><a href="ProtocolConnectionController.html">ProtocolConnectionController</a></li><li><a href="ProtocolMessagesController.html">ProtocolMessagesController</a></li><li><a href="RandomChars.html">RandomChars</a></li><li><a href="Routes.html">Routes</a></li><li><a href="RoutingCore.html">RoutingCore</a></li><li><a href="SequelizeModels.AppClient.html">AppClient</a></li><li><a href="SequelizeModels.Collector.html">Collector</a></li><li><a href="SequelizeModels.DynamicEntity.html">DynamicEntity</a></li><li><a href="SequelizeModels.Group.html">Group</a></li><li><a href="SequelizeModels.Package.html">Package</a></li><li><a href="SequelizeModels.PlatformMedia.html">PlatformMedia</a></li><li><a href="SequelizeModels.Rfiddata.html">Rfiddata</a></li><li><a href="SequelizeModels.RfidImport.html">RfidImport</a></li><li><a href="SequelizeModels.RouteAccess.html">RouteAccess</a></li><li><a href="SequelizeModels.UriRoute.html">UriRoute</a></li><li><a href="SequelizeModels.User.html">User</a></li><li><a href="Server.html">Server</a></li><li><a href="SynchronizeDb.html">SynchronizeDb</a></li><li><a href="TokenAuthentication.html">TokenAuthentication</a></li></ul><h3>Namespaces</h3><ul><li><a href="DeDAO.html">DeDAO</a></li><li><a href="DynamicRoutes.html">DynamicRoutes</a></li><li><a href="Media.html">Media</a></li><li><a href="ModelControllers.html">ModelControllers</a></li><li><a href="module-main-app.html">app</a></li><li><a href="SequelizeModels.html">SequelizeModels</a></li><li><a href="Utils.html">Utils</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="CollectorMonitor.html">CollectorMonitor</a></li><li><a href="CollectorPool.html">CollectorPool</a></li><li><a href="Controllers.html">Controllers</a></li><li><a href="CreateDefaults.html">CreateDefaults</a></li><li><a href="CustomRoute.html">CustomRoute</a></li><li><a href="DEModelPool.html">DEModelPool</a></li><li><a href="DERoutesHandler.html">DERoutesHandler</a></li><li><a href="DEValidator.html">DEValidator</a></li><li><a href="DynamicEntities.html">DynamicEntities</a></li><li><a href="Hash.html">Hash</a></li><li><a href="LoadLoginRoutes.html">LoadLoginRoutes</a></li><li><a href="LoadRoutes.html">LoadRoutes</a></li><li><a href="Logs.html">Logs</a></li><li><a href="ModelControllers.BaseModelController.html">BaseModelController</a></li><li><a href="PlatformError.html">PlatformError</a></li><li><a href="PlatformSequelize.html">PlatformSequelize</a></li><li><a href="ProtocolConnectionController.html">ProtocolConnectionController</a></li><li><a href="ProtocolMessagesController.html">ProtocolMessagesController</a></li><li><a href="RandomChars.html">RandomChars</a></li><li><a href="Routes.html">Routes</a></li><li><a href="RoutingCore.html">RoutingCore</a></li><li><a href="SequelizeModels.AppClient.html">AppClient</a></li><li><a href="SequelizeModels.Collector.html">Collector</a></li><li><a href="SequelizeModels.DynamicEntity.html">DynamicEntity</a></li><li><a href="SequelizeModels.Group.html">Group</a></li><li><a href="SequelizeModels.Package.html">Package</a></li><li><a href="SequelizeModels.PlatformMedia.html">PlatformMedia</a></li><li><a href="SequelizeModels.Rfiddata.html">Rfiddata</a></li><li><a href="SequelizeModels.RfidImport.html">RfidImport</a></li><li><a href="SequelizeModels.RouteAccess.html">RouteAccess</a></li><li><a href="SequelizeModels.UriRoute.html">UriRoute</a></li><li><a href="SequelizeModels.User.html">User</a></li><li><a href="Server.html">Server</a></li><li><a href="SynchronizeDb.html">SynchronizeDb</a></li><li><a href="TokenAuthentication.html">TokenAuthentication</a></li></ul><h3>Namespaces</h3><ul><li><a href="DeDAO.html">DeDAO</a></li><li><a href="DynamicRoutes.html">DynamicRoutes</a></li><li><a href="Main.html">Main</a></li><li><a href="Media.html">Media</a></li><li><a href="ModelControllers.html">ModelControllers</a></li><li><a href="SequelizeModels.html">SequelizeModels</a></li><li><a href="Utils.html">Utils</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Mon Feb 20 2017 15:14:43 GMT-0300 (BRT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Tue Feb 21 2017 08:54:57 GMT-0300 (BRT)
 </footer>
 
 <script> prettyPrint(); </script>

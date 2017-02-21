@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: Group</title>
+    <title>JSDoc: Class: Logs</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: Group</h1>
+    <h1 class="page-title">Class: Logs</h1>
 
     
 
@@ -28,8 +28,7 @@
 
 <header>
     
-        <h2>
-            <span class="ancestors"><a href="SequelizeModels.html">SequelizeModels</a>.</span>Group</h2>
+        <h2>Logs</h2>
         
     
 </header>
@@ -41,14 +40,14 @@
 
     
 
-    <h4 class="name" id="Group"><span class="type-signature"></span>new Group<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="Logs"><span class="type-signature"></span>new Logs<span class="signature">(debugConsole, debugFile, sillyConsole, sillyFile)</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    Entity definition for Group
+    This module is able to log
 </div>
 
 
@@ -59,15 +58,10 @@
 
 
 
-
-
-
-
-    <h5 class="subsection-title">Properties:</h5>
-
+    <h5>Parameters:</h5>
     
 
-<table class="props">
+<table class="params">
     <thead>
     <tr>
         
@@ -89,13 +83,13 @@
 
         <tr>
             
-                <td class="name"><code>name</code></td>
+                <td class="name"><code>debugConsole</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">String</span>
+<span class="param-type">boolean</span>
 
 
             
@@ -105,20 +99,20 @@
 
             
 
-            <td class="description last">Entity's unique identifier</td>
+            <td class="description last">sends the logging output, for the debug type, to the console only.</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>isDefault</code></td>
+                <td class="name"><code>debugFile</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Boolean</span>
+<span class="param-type">boolean</span>
 
 
             
@@ -128,20 +122,20 @@
 
             
 
-            <td class="description last">defines if the entity is active</td>
+            <td class="description last">sends the logging output, for the debug type, to the file only.</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>description</code></td>
+                <td class="name"><code>sillyConsole</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">String</span>
+<span class="param-type">boolean</span>
 
 
             
@@ -151,20 +145,20 @@
 
             
 
-            <td class="description last">Entity's Sequelize model definition</td>
+            <td class="description last">sends the logging output, for the silly type, to the console only.</td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>deletedAt</code></td>
+                <td class="name"><code>sillyFile</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Date</span>
+<span class="param-type">boolean</span>
 
 
             
@@ -174,12 +168,14 @@
 
             
 
-            <td class="description last">holds the deletion date, and by consequence defines if the register is soft-deleted.</td>
+            <td class="description last">sends the logging output, for the silly type, to the file only.</td>
         </tr>
 
     
     </tbody>
 </table>
+
+
 
 
 
@@ -213,7 +209,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="server_models_group.js.html">server/models/group.js</a>, <a href="server_models_group.js.html#line29">line 29</a>
+        <a href="server_utils_logs.js.html">server/utils/logs.js</a>, <a href="server_utils_logs.js.html#line40">line 40</a>
     </li></ul></dd>
     
 
@@ -254,6 +250,194 @@
 
     
 
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id="checkLogsDir"><span class="type-signature"></span>checkLogsDir<span class="signature">()</span><span class="type-signature"> &rarr; {void}</span></h4>
+
+    
+
+
+
+<div class="description">
+    Check if the logging dir exists and is writeable. If there is a problem, throws an exception.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="server_utils_logs.js.html">server/utils/logs.js</a>, <a href="server_utils_logs.js.html#line147">line 147</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">void</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="removeOldLogs"><span class="type-signature"></span>removeOldLogs<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    Find and remove old log files.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <dt class="important tag-deprecated">Deprecated:</dt><dd class="yes-def tag-deprecated"><ul class="dummy"><li>Yes</li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="server_utils_logs.js.html">server/utils/logs.js</a>, <a href="server_utils_logs.js.html#line172">line 172</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
     
 
     

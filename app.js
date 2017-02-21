@@ -24,39 +24,34 @@
 
 /**
 * Main app module [ app.js ]
-* @module main
-*/
-
-/**
-* Main app namespace [ app.js ]
-* @namespace app
+* @namespace Main
 */
 
 /**
 * Holds the backend base code path
-* @memberof app
+* @memberof Main
 * @type string
 */
 global.__base = __dirname + '/server/';
 
 /**
 * Holds the app execution type between development and production.
-* @memberof app
+* @memberof Main
 * @type boolean
 */
 global.__DevEnv = false;
 
-/////////////////////////////////
-// Keep as firsts requires >>> //
-/////////////////////////////////
+////////////////////////////////////
+// Keep as first requirements >>> //
+////////////////////////////////////
 
 var Logs = require(__base + 'utils/logs');
 
 var logger = require('winston');
 
-/////////////////////////////////////////
-// <<< end of 'keep as first requires' //
-/////////////////////////////////////////
+/////////////////////////////////////////////
+// <<< end of 'Keep as first requirements' //
+/////////////////////////////////////////////
 
 //Requirements
 var express = require('express');
@@ -101,8 +96,11 @@ if(args.indexOf('--dev') > -1){
 	logger.warn('Starting on development mode');
 }
 
+//Synchronize the Sequelize Models (static and dynamic) to the database
 var SynchronizeDb = require(__base + 'controller/database/synchronizedb');
 SynchronizeDb.start(function(err){
+	//When the synchronization is finished, this current callback is triggered.
+
 	if(err){
 		logger.error("Erro to initialize Database: " + err);
 		return 1;
@@ -113,10 +111,11 @@ SynchronizeDb.start(function(err){
 	var LoadLoginRouter = require(__base + 'routes/loadloginroute');
 	var tokenAuthentication = require(__base + 'controller/tokenauthentication');
 	var createDefaults = require(__base + 'controller/database/createdefaults');
+
 	//Create default credentials if no user is found
 	createDefaults(function(err){
 		if(err)
-			throw new Error('Error on create default credentials: ' + err);
+		throw new Error('Error on create default credentials: ' + err);
 	});
 
 	//Clean restricted_media directory
@@ -126,18 +125,27 @@ SynchronizeDb.start(function(err){
 		return 1;
 	}
 
-	/*
-	How to generate ssl files. On terminal type:
-		openssl genrsa -out platform-key.pem 1024
-		openssl req -new -key platform-key.pem -out platform-cert-req.csr
-		openssl x509 -req -in platform-cert-req.csr -signkey platform-key.pem -out platform-cert.pem
+	/**
+	* To generate cert files, type on terminal:
+	* openssl genrsa -out platform-key.pem 4096
+	* openssl req -new -key platform-key.pem -out platform-cert-req.csr
+	* openssl x509 -req -in platform-cert-req.csr -signkey platform-key.pem -out platform-cert.pem
 	*/
+
 	var options = {
 		key: fs.readFileSync(__base + 'config/ssl/platform-key.pem'),
 		cert: fs.readFileSync(__base + 'config/ssl/platform-cert.pem')
 	};
 
+	//Create and configure the express server.
+
+	/**
+	 * Holds the Express Server
+	 * @type {Object}
+	 * @memberof Main
+	 */
 	var app = express();
+
 	app.use(Cors());
 	app.use(bodyParser.json({type: 'application/json'}));
 	app.use(bodyParser.urlencoded({limit: '5mb', extended: true}));
@@ -150,7 +158,7 @@ SynchronizeDb.start(function(err){
 		secure: true
 	}));
 
-	//Necessary headers to clients access.
+	//Needed headers for clients access.
 	app.all('*', function(req, res, next) {
 		res.header('Access-Control-Allow-Origin', '*');
 		res.header('Access-Control-Allow-Credentials', 'true');
@@ -159,12 +167,13 @@ SynchronizeDb.start(function(err){
 		next();
 	});
 
+	//Log every request
 	app.all('*', function(req, res, next){
 		logger.debug("Method " + req.method + " for URL " + req.url);
 		next();
 	});
 
-	//Definir se será usado
+	//Add to every request a new function called 'response'. This function handles a structed response.
 	app.all('*', function(req, res, next){
 		res.response = function(error, responseStatus, message){
 			var sendMessage = {message: message, status: responseStatus};
@@ -176,22 +185,51 @@ SynchronizeDb.start(function(err){
 		next();
 	});
 
+	/**
+	 * This functions gets some erros like 'bodyParser errors'.
+	 * To check if it is bodyparser error, remove the response below and just call next().
+	 */
 	app.use(function(err, req, res, next) {
-		//This functions gets some erros like 'bodyParser errors'.
-		//To check if it is bodyparser error, remove the response below and just call next().
 		if(err){
 			return res.status(400).send({message: "Something wrong with your object", error: err.toString(), status: 400});
 		}
 		next();
 	});
+
+
+	/**
+	 * HTTP port number
+	 * @type {Number}
+	 * @memberof Main
+	 */
 	var httpPort = 8180;
+
+	/**
+	 * HTTPS port number
+	 * @type {Number}
+	 * @memberof Main
+	 */
 	var httpsPort = 8143;
 
-	var loginPath = '/login',
-			apiPath = '/api';
+	/**
+	 * Holds the path for the login route.
+	 * @type {String}
+	 */
+	var loginPath = '/login';
 
+	/**
+	 * Holds the path for the api route.
+	 * @type {String}
+	 */
+	var apiPath = '/api';
+
+	/**
+	 * Holds the path for the web app route.
+	 * @type {String}
+	 */
 	var webPath = global.__DevEnv? '/web-dev' : '/web';
 
+	//Load the application routes
 	var apiRoutes = new LoadRouter(apiPath);
 	var login = new LoadLoginRouter();
 
@@ -204,9 +242,12 @@ SynchronizeDb.start(function(err){
 		next();
 	});
 
+	//Redirect any request on the root path to the web application.
 	app.get('/', function(req, res){
 		res.redirect(webPath);
 	});
+
+	// Middleware that decides if a request is going to be redirected to the login page if there is not session.
 	var redirectMidler = function(req, res, next){
 		if(req.originalUrl.indexOf(webPath) !== -1){
 			return login.hasSession(req)? next() : res.redirect(loginPath);
@@ -218,25 +259,33 @@ SynchronizeDb.start(function(err){
 		}
 	};
 
+	//Staticaly serves the api documentation web page.
 	app.use('/api/doc', express.static(__dirname + '/apidoc'));
+
+	//Configures the Bearer authentication method for the api routes
 	var authenticate = new tokenAuthentication(app);
 	authenticate.useBearer(apiPath);
 
+	//Setup the session validation for web access.
 	app.use(webPath, redirectMidler);
 	app.use(loginPath, redirectMidler);
 
 	if(global.__DevEnv){
+		//If running in dev environment, uses the source from web-dev for the web application.
 		app.use(webPath, express.static('web-dev/private'));
 		app.use(loginPath, express.static('web-dev/public/login'));
 	}else{
-			app.use(webPath, express.static('web/private'));
-			app.use(loginPath, express.static('web/public/login'));
+		//Otherwise, uses the /web folder, where the deploy process have been done.
+		app.use(webPath, express.static('web/private'));
+		app.use(loginPath, express.static('web/public/login'));
 	}
 
+	//Set under 'apiPath' path every 'apiRoute' route
 	app.use(apiPath, apiRoutes);
+	//Set under root path the login routes.
 	app.use(login.routes);
 
-	//Create and start server for collectors
+	//Create and start the tcp server for communicating to the collectors
 	var server = new Server();
 	server.startServer();
 

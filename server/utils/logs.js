@@ -22,20 +22,11 @@
 **
 ****************************************************************************/
 
-/**
- * Configure and mantain the logging functionality.
- * @module Logs
- */
-
 'use strict';
 
 var fs = require('fs');
 var winston = require('winston');
 
-/**
- * Holds the logging output path.
- * @type {string}
- */
 var logsDir = __base + 'logs/';
 
 /**
