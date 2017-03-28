@@ -105,7 +105,7 @@ SynchronizeDb.start(function(err){
 		logger.error("Erro to initialize Database: " + err);
 		return 1;
 	}
-	//Load Components olny after logger had started
+	//Load Components only after logger had started
 	var Server = require(__base + 'controller/collector/server');
 	var LoadRouter = require(__base + 'routes/loadroutes');
 	var LoadLoginRouter = require(__base + 'routes/loadloginroute');

@@ -36,6 +36,7 @@ var appDir = path.dirname(require.main.filename);
  * Clean up the restricted_media temporary folder.
  * @return {Error} Return null if no problem, and an error object if there is a problem.
  * @memberof Utils
+ * @alias CleanRestrictedMedia
  */
 var cleanRestrictedMediaTmpSync = function(){
 	var dir = appDir + '/restricted_media/tmp/';

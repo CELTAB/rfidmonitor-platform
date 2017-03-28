@@ -39,6 +39,7 @@ var controllers = [];
  * Is possible to register each controller individualy for any model,
  * or create default controllers for all modules defined in sequelize.
  * @class
+ * @alias ControllersModelPool
  */
 var Controllers = function(){
   /**
