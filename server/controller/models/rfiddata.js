@@ -405,7 +405,7 @@ var insertSummary = function(rfiddata, collector, callback){
 
     if(rfiddata.data.length === 0){
         logger.warn("Empty package received. send ACK-DATA");
-        return callback(null, rfiddata.md5diggest);
+        return callback(null, {hash: rfiddata.md5diggest});
     }
 
     var pack = {
